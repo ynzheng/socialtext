@@ -235,6 +235,13 @@ CREATE SEQUENCE default_gadget_id
     NO MINVALUE
     CACHE 1;
 
+CREATE TABLE error (
+    error_time integer NOT NULL,
+    jobid bigint NOT NULL,
+    message varchar(255) NOT NULL,
+    funcid integer DEFAULT 0 NOT NULL
+);
+
 CREATE TABLE event (
     "at" timestamptz NOT NULL,
     "action" text NOT NULL,
@@ -314,6 +321,37 @@ CREATE SEQUENCE gadget_user_pref_id
     NO MAXVALUE
     NO MINVALUE
     CACHE 1;
+
+CREATE TABLE exitstatus (
+    jobid bigint NOT NULL,
+    funcid integer DEFAULT 0 NOT NULL,
+    status smallint,
+    completion_time integer,
+    delete_after integer
+);
+
+CREATE TABLE funcmap (
+    funcid serial NOT NULL,
+    funcname varchar(255) NOT NULL
+);
+
+CREATE TABLE job (
+    jobid serial NOT NULL,
+    funcid integer NOT NULL,
+    arg bytea,
+    uniqkey varchar(255),
+    insert_time integer,
+    run_after integer NOT NULL,
+    grabbed_until integer NOT NULL,
+    priority smallint,
+    "coalesce" varchar(255)
+);
+
+CREATE TABLE note (
+    jobid bigint NOT NULL,
+    notekey varchar(255) NOT NULL,
+    value bytea
+);
 
 CREATE TABLE noun (
     noun_id bigint NOT NULL,
@@ -577,6 +615,22 @@ ALTER TABLE ONLY gadget_user_pref
     ADD CONSTRAINT gadget_user_pref_pk
             PRIMARY KEY (user_pref_id);
 
+ALTER TABLE ONLY exitstatus
+    ADD CONSTRAINT exitstatus_pkey
+            PRIMARY KEY (jobid);
+
+ALTER TABLE ONLY funcmap
+    ADD CONSTRAINT funcmap_funcname_key
+            UNIQUE (funcname);
+
+ALTER TABLE ONLY job
+    ADD CONSTRAINT job_funcid_key
+            UNIQUE (funcid, uniqkey);
+
+ALTER TABLE ONLY note
+    ADD CONSTRAINT note_pkey
+            PRIMARY KEY (jobid, notekey);
+
 ALTER TABLE ONLY noun
     ADD CONSTRAINT noun_pkey
             PRIMARY KEY (noun_id);
@@ -668,6 +722,21 @@ CREATE UNIQUE INDEX "Workspace___lower___name"
 CREATE INDEX "Workspace_account_id"
 	    ON "Workspace" (account_id);
 
+CREATE INDEX error_funcid_errortime
+	    ON error (funcid, error_time);
+
+CREATE INDEX error_jobid
+	    ON error (jobid);
+
+CREATE INDEX error_time
+	    ON error (error_time);
+
+CREATE INDEX exitstatus_deleteafter
+	    ON exitstatus (delete_after);
+
+CREATE INDEX exitstatus_funcid
+	    ON exitstatus (funcid);
+
 CREATE INDEX ix_event_actor_time
 	    ON event (actor_id, "at");
 
@@ -707,6 +776,12 @@ CREATE INDEX ix_noun_user_at
 CREATE INDEX ix_page_events_contribs_actor_time
 	    ON event (actor_id, "at")
 	    WHERE ((event_class = 'page') AND is_page_contribution("action"));
+
+CREATE INDEX job_funcid_coalesce
+	    ON job (funcid, "coalesce");
+
+CREATE INDEX job_funcid_runafter
+	    ON job (funcid, run_after);
 
 CREATE INDEX page_creator_time
 	    ON page (creator_id, create_time);
@@ -1026,4 +1101,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '27');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '28');
