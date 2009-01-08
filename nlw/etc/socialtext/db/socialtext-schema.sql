@@ -466,6 +466,19 @@ CREATE SEQUENCE users___user_id
     NO MINVALUE
     CACHE 1;
 
+CREATE TABLE webhook (
+    id bigint NOT NULL,
+    workspace_id bigint,
+    "action" text,
+    page_id text
+);
+
+CREATE SEQUENCE webhook___webhook_id
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
 CREATE TABLE workspace_plugin (
     workspace_id bigint NOT NULL,
     plugin text NOT NULL
@@ -615,6 +628,10 @@ ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey
             PRIMARY KEY (user_id);
 
+ALTER TABLE ONLY webhook
+    ADD CONSTRAINT webhook_ukey
+            UNIQUE (workspace_id, "action", page_id);
+
 ALTER TABLE ONLY workspace_plugin
     ADD CONSTRAINT workspace_plugin_pkey
             PRIMARY KEY (workspace_id, plugin);
@@ -745,6 +762,12 @@ CREATE UNIQUE INDEX users_lower_username_driver_key
 
 CREATE INDEX watchlist_user_workspace
 	    ON "Watchlist" (user_id, workspace_id);
+
+CREATE INDEX webhook__workspace_action_ix
+	    ON webhook (workspace_id, "action");
+
+CREATE INDEX webhook__workspace_ix
+	    ON webhook (workspace_id);
 
 ALTER TABLE ONLY account_plugin
     ADD CONSTRAINT account_plugin_account_fk
@@ -980,6 +1003,11 @@ ALTER TABLE ONLY "Watchlist"
     ADD CONSTRAINT watchlist_user_fk
             FOREIGN KEY (user_id)
             REFERENCES users(user_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY webhook
+    ADD CONSTRAINT webhook_workspace_id_fk
+            FOREIGN KEY (workspace_id)
+            REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY "Workspace"
     ADD CONSTRAINT workspace___account___account_id___account_id___n___1___1___0
