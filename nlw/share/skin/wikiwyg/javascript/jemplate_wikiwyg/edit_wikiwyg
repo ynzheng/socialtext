@@ -38,7 +38,7 @@
             <div id="contentTitle">
                 <div id="st-edit-summary" style="padding: 8px; border: 1px solid black; z-index: 1; background-color: white; position: absolute; display: none">
                     <div style="margin-bottom: 2px">
-                        <a href="#" id="st-edit-summary-close" style="color: black; text-decoration: none; font-weight: bold">[x]</a>&nbsp;&nbsp;<span id="st-edit-title" style="font-weight: bold">Additional Save Options<span>
+                        <a href="#" id="st-edit-summary-close" style="color: black; text-decoration: none; font-weight: bold">[x]</a>&nbsp;&nbsp;<span id="st-edit-title" style="font-weight: bold">Additional Save Options</span>
                     </div>
                     <div style="margin-left: 30px">
                         <form id="st-edit-summary-form">
