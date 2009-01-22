@@ -41,8 +41,8 @@
                         <a href="#" id="st-edit-summary-close" style="color: black; text-decoration: none; font-weight: bold">[x]</a>&nbsp;&nbsp;<span id="st-edit-title" style="font-weight: bold">Additional Save Options</span>
                     </div>
                     <div style="margin-left: 30px">
-                        <form id="st-edit-summary-form">
-                            <div style="width: 400px;">
+                        <form action="#" id="st-edit-summary-form">
+                            <div>
                                 <input type="text" id="st-edit-summary-input" style="width:400px; margin-right: 8px">
                             </div>
                             <div>
