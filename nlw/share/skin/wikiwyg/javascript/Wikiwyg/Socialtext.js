@@ -333,26 +333,22 @@ function setup_wikiwyg() {
         return false;
     });
 
-    // Edit summary logic
+    // Begin - Edit Summary Logic
+
+    // ToDo:
+    //
+    // - Make sure tab cycles through summary form fields
+    // - Heuristic code can appropriately set the values of the checkboxes
+    // - Box Shadow
+    //   -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+    //   -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+    //   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+
 
     var summary_ui_shown = true;
-    var summary_timeout = 0;
     var DEFAULT_TEXT = "Supply an optional summary for this edit...";
 
     setTimeout(function() { summary_ui_shown = false }, 1000);
-
-    var set_edit_summary_timeout = function () {
-        if (! summary_ui_shown) return;
-        summary_timeout = setTimeout(function() {
-            hide_edit_summary();
-        }, 1500);
-    }
-
-    var clear_edit_summary_timeout = function () {
-        if (! summary_timeout) return;
-        clearTimeout(summary_timeout);
-        summary_timeout = 0;
-    }
 
     var show_edit_summary = function () {
         if (summary_ui_shown) return;
@@ -369,7 +365,12 @@ function setup_wikiwyg() {
         if (! summary_ui_shown) return;
         jQuery('#st-edit-summary').hide();
         summary_ui_shown = false;
+        return false;
     }
+
+    jQuery('#st-edit-summary-close')
+        .unbind('click')
+        .click(hide_edit_summary);
 
     ww.edit_summary = function () {
         var val = jQuery('#st-edit-summary-input').val()
@@ -382,46 +383,43 @@ function setup_wikiwyg() {
 
     jQuery('#st-save-button-link')
         .unbind('hover')
-        .hover(
-            function () {
-                clear_edit_summary_timeout();
-                show_edit_summary();
-            },
-            function () {
-                if (! summary_ui_shown) return;
-                set_edit_summary_timeout();
-            }
-        );
+        .hover(show_edit_summary, function () {});
     
     jQuery('#st-edit-summary-input')
         .unbind('click')
         .click(
             function () {
-                console.log(jQuery('#st-edit-summary-input').val(), 42);
-
                 if (jQuery('#st-edit-summary-input').val() == DEFAULT_TEXT)
                     jQuery('#st-edit-summary-input').val('');
             }
         );
     
-    jQuery('#st-edit-summary')
-        .unbind('hover')
-        .hover(
-            function () { clear_edit_summary_timeout(); },
-            function () { set_edit_summary_timeout(); }
-        );
-
     jQuery('#st-edit-summary-form')
         .unbind('submit')
         .submit(function () {
-            hide_edit_summary();
+            jQuery('#st-save-button-link').click();
             return false;    
         });
 
     jQuery('#st-edit-summary-input')
         .unbind('change')
-        .change(function () {
-        });
+        .change(function () {}); // XXX What is this about? 
+
+    jQuery('#st-summary-minor-checkbox')
+        .unbind('click')
+        .click(
+            function () {
+                jQuery('#st-summary-signal-checkbox')[0].checked =
+                    ! jQuery('#st-summary-minor-checkbox')[0].checked;
+                jQuery('#st-edit-summary .anyway').css(
+                    'display',
+                    jQuery('#st-summary-minor-checkbox')[0].checked
+                    ? 'inline' : 'none'
+                );
+            }
+        );
+    
+    // End - Edit Summary Logic
 
     jQuery('#st-preview-button-link')
         .unbind('click')

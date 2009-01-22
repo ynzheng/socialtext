@@ -37,15 +37,20 @@
         <div id="contentContainer">
             <div id="contentTitle">
                 <div id="st-edit-summary" style="padding: 8px; border: 1px solid black; z-index: 1; background-color: white; position: absolute; display: none">
-                    <form id="st-edit-summary-form">
-                        <div style="width: 400px;">
-                            <input type="text" id="st-edit-summary-input" style="width:400px">
-                        </div>
-                        <div style="padding-left: 8px">
-                            <input id="st-summary-minor-cb" type="checkbox" /><label for="st-summary-minor-cb">Minor edit</label><br/>
-                            <input id="st-summary-signal-cb" type="checkbox" /><label for="st-summary-signal-cb">Signal this edit</label>
-                        </div>
-                    </form>
+                    <div style="margin-bottom: 2px">
+                        <a href="#" id="st-edit-summary-close" style="color: black; text-decoration: none; font-weight: bold">[x]</a>&nbsp;&nbsp;<span id="st-edit-title" style="font-weight: bold">Additional Save Options<span>
+                    </div>
+                    <div style="margin-left: 30px">
+                        <form id="st-edit-summary-form">
+                            <div style="width: 400px;">
+                                <input type="text" id="st-edit-summary-input" style="width:400px; margin-right: 8px">
+                            </div>
+                            <div>
+                                <input id="st-summary-minor-checkbox" type="checkbox" /><label for="st-summary-minor-checkbox">Minor edit</label>&nbsp;&nbsp;
+                                <input checked id="st-summary-signal-checkbox" type="checkbox" /><label for="st-summary-signal-checkbox">Signal this edit<span class="anyway" style="display: none"> anyway</span></label>
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 [% IF is_new && !is_incipient %]
                     <h2 id="st-editing-title" class="tableTitle">
