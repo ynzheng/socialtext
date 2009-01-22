@@ -2206,3 +2206,7 @@ body div#globalNav div input.searchText {
     margin-right: 10em;
 }
 
+#st-edit-summary {
+    padding: 8px; border: 1px solid black; z-index: 1; background-color: white; position: absolute; display: none;
+}
+
