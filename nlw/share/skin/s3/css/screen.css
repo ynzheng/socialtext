@@ -2227,10 +2227,11 @@ body div#globalNav div input.searchText {
 
 #st-edit-summary .signal {
     float: left;
-    width: 150px;
+    width: 200px;
 }
 
 #st-edit-summary .minor {
+    text-align: right;
     float: right;
     width: 150px;
 }
