@@ -345,26 +345,23 @@ function setup_wikiwyg() {
     //   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
 
 
-    var summary_ui_shown = true;
-    var DEFAULT_TEXT = "Supply an optional summary for this edit...";
+    var ok_to_show_summary = false;
+    var DEFAULT_TEXT = "Your edit summary...";
 
-    setTimeout(function() { summary_ui_shown = false }, 1000);
+    setTimeout(function() { ok_to_show_summary = true }, 2000);
 
     var show_edit_summary = function () {
-        if (summary_ui_shown) return;
+        if (! ok_to_show_summary) return;
         var $input = jQuery('#st-edit-summary .input');
         if (ww.edit_summary() == '')
             $input.val(DEFAULT_TEXT);
         jQuery('#st-edit-summary').show();
         $input.focus();
         $input.select();
-        summary_ui_shown = true;
     }
 
     var hide_edit_summary = function () {
-        if (! summary_ui_shown) return;
         jQuery('#st-edit-summary').hide();
-        summary_ui_shown = false;
         return false;
     }
 
@@ -383,7 +380,15 @@ function setup_wikiwyg() {
 
     jQuery('#st-save-button-link')
         .unbind('hover')
-        .hover(show_edit_summary, function () {});
+        .hover(
+            function() {
+                setTimeout(show_edit_summary, 100);
+            },
+            function () {
+                ok_to_show_summary = false;
+                setTimeout(function() { ok_to_show_summary = true }, 200);
+            }
+        );
     
     jQuery('#st-edit-summary .input')
         .unbind('click')
@@ -418,8 +423,14 @@ function setup_wikiwyg() {
                 );
             }
         );
-    
+
     // End - Edit Summary Logic
+
+    jQuery("body").click(function(e) {
+        if ( jQuery(e.target).parents("#st-edit-summary").size() > 0 ) return;
+        if ( jQuery(e.target).is("#st-edit-summary") ) return;
+        hide_edit_summary();
+    });
 
     jQuery('#st-preview-button-link')
         .unbind('click')
@@ -635,6 +646,8 @@ proto.preview_link_text = loc('Preview');
 proto.preview_link_more = loc('Edit More');
 
 proto.preview_link_action = function() {
+    jQuery("#st-edit-summary").hide();
+
     var preview = this.modeButtonMap[WW_PREVIEW_MODE];
     var current = this.current_mode;
 
@@ -1689,6 +1702,9 @@ proto.enableThis = function() {
             }, 1000
         );
     }
+
+    jQuery(self.get_edit_window()).bind("click", function() { jQuery("#st-edit-summary").hide(); });
+    jQuery(self.get_edit_document(), self.get_edit_window()).bind("click", function() { jQuery("#st-edit-summary").hide(); });
 }
 
 proto.on_pasted = function(html) {

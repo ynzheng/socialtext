@@ -144,3 +144,6 @@ t/wikitests/signals/
 t/wikitests/signals/data_signals.wiki
 t/wikitests/widgets/
 t/wikitests/widgets/proxy.wiki
+lib/Socialtext/Gadgets/Proxy.pm
+lib/Socialtext/Rest/Gadgets/Container.pm
+lib/Socialtext/Rest/Gadgets/Proxy.pm
