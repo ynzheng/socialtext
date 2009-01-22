@@ -333,6 +333,96 @@ function setup_wikiwyg() {
         return false;
     });
 
+    // Edit summary logic
+
+    var summary_ui_shown = true;
+    var summary_timeout = 0;
+    var DEFAULT_TEXT = "Supply an optional summary for this edit...";
+
+    setTimeout(function() { summary_ui_shown = false }, 1000);
+
+    var set_edit_summary_timeout = function () {
+        if (! summary_ui_shown) return;
+        summary_timeout = setTimeout(function() {
+            hide_edit_summary();
+        }, 1500);
+    }
+
+    var clear_edit_summary_timeout = function () {
+        if (! summary_timeout) return;
+        clearTimeout(summary_timeout);
+        summary_timeout = 0;
+    }
+
+    var show_edit_summary = function () {
+        if (summary_ui_shown) return;
+        var $input = jQuery('#st-edit-summary-input');
+        if (ww.edit_summary() == '')
+            $input.val(DEFAULT_TEXT);
+        jQuery('#st-edit-summary').show();
+        $input.focus();
+        $input.select();
+        summary_ui_shown = true;
+    }
+
+    var hide_edit_summary = function () {
+        if (! summary_ui_shown) return;
+        jQuery('#st-edit-summary').hide();
+        summary_ui_shown = false;
+    }
+
+    ww.edit_summary = function () {
+        var val = jQuery('#st-edit-summary-input').val()
+            .replace(/\s+/g, ' ')
+            .replace(/^\s*(.*?)\s*$/, '$1');
+        if (val == DEFAULT_TEXT)
+            val = '';
+        return val;
+    }
+
+    jQuery('#st-save-button-link')
+        .unbind('hover')
+        .hover(
+            function () {
+                clear_edit_summary_timeout();
+                show_edit_summary();
+            },
+            function () {
+                if (! summary_ui_shown) return;
+                set_edit_summary_timeout();
+            }
+        );
+    
+    jQuery('#st-edit-summary-input')
+        .unbind('click')
+        .click(
+            function () {
+                console.log(jQuery('#st-edit-summary-input').val(), 42);
+
+                if (jQuery('#st-edit-summary-input').val() == DEFAULT_TEXT)
+                    jQuery('#st-edit-summary-input').val('');
+            }
+        );
+    
+    jQuery('#st-edit-summary')
+        .unbind('hover')
+        .hover(
+            function () { clear_edit_summary_timeout(); },
+            function () { set_edit_summary_timeout(); }
+        );
+
+    jQuery('#st-edit-summary-form')
+        .unbind('submit')
+        .submit(function () {
+            hide_edit_summary();
+            return false;    
+        });
+
+    jQuery('#st-edit-summary-input')
+        .unbind('change')
+        .change(function () {
+        });
+
     jQuery('#st-preview-button-link')
         .unbind('click')
         .click(function () {
@@ -748,6 +838,7 @@ proto.newpage_save = function(page_name, pagename_editfield) {
         }
     }
     return saved;
+
 }
 
 proto.saveContent = function() {
@@ -872,11 +963,8 @@ proto.saveNewPage = function() {
 proto.saveChanges = function() {
     this.disableLinkConfirmations();
 
-    // Because the form sits above the edit area(s), putting the edit summary
-    // field there would look weird. Therefore we copy the value into the
-    // hidden parameter before submitting the form.
     jQuery('#st-page-editing-summary')
-        .val(jQuery('#st-summary-input').val());
+        .val(this.edit_summary())
 
     var submit_changes = function(wikitext) {
         /*
@@ -1123,18 +1211,13 @@ proto.get_offset_top = function (e) {
     return offset.top;
 }
 
-proto.get_summary = function () {
-    return jQuery('.st-summary');
-}
-
 // XXX - Hardcoded until we can get height of Save/Preview/Cancel buttons
 proto.get_edit_height = function() {
     var available_height = jQuery(window).height();
     var edit_height = available_height -
                       this.get_offset_top(this.div) -
                       this.wikiwyg.toolbarObject.div.offsetHeight -
-                      this.footer_offset -
-                      this.get_summary().outerHeight();
+                      this.footer_offset;
 
     if (edit_height < 100) edit_height = 100;
     return edit_height;

@@ -2,7 +2,7 @@
     <div id="controls">
         <div id="st-editing-tools-edit">
             <ul>
-                <li><a title="[% loc('Click this button to save the page') %]" id="st-save-button-link" class="saveButton" href="#">[% loc('Save') %]</a></li>
+                <li><a id="st-save-button-link" class="saveButton" href="#">[% loc('Save') %]</a></li>
                 <li><a class="previewButton" id="st-preview-button-link" href="#">[% loc('Preview') %]</a></li>
                 <li><a class="cancelButton" id="st-cancel-button-link" href="#">[% loc('Cancel') %]</a></li>
             </ul>
@@ -36,6 +36,17 @@
     <div id="st-edit-mode-view">
         <div id="contentContainer">
             <div id="contentTitle">
+                <div id="st-edit-summary" style="padding: 8px; border: 1px solid black; z-index: 1; background-color: white; position: absolute; display: none">
+                    <form id="st-edit-summary-form">
+                        <div style="width: 400px;">
+                            <input type="text" id="st-edit-summary-input" style="width:400px">
+                        </div>
+                        <div style="padding-left: 8px">
+                            <input id="st-summary-minor-cb" type="checkbox" /><label for="st-summary-minor-cb">Minor edit</label><br/>
+                            <input id="st-summary-signal-cb" type="checkbox" /><label for="st-summary-signal-cb">Signal this edit</label>
+                        </div>
+                    </form>
+                </div>
                 [% IF is_new && !is_incipient %]
                     <h2 id="st-editing-title" class="tableTitle">
                         [% loc('Editing:') %]
@@ -92,9 +103,6 @@
                 <iframe frameborder="0" id="st-page-editing-wysiwyg" src="[% wiki.skin_uri() %]/html/wikiwyg.html"></iframe>
                 <div id="st-page-preview"></div>
                 <div id="wikiwyg-page-content"></div>
-                <div class="st-summary" style="padding-top: 4px">
-                    <label for="st-summary-input">[% loc('Summary (optional)') %]:</label> <input id="st-summary-input" type="text" style="width: 300px"/>
-                </div>
                 <br style="clear: both; height: 1px" />
             </div>
         </div>
