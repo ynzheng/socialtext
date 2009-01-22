@@ -352,7 +352,7 @@ function setup_wikiwyg() {
 
     var show_edit_summary = function () {
         if (summary_ui_shown) return;
-        var $input = jQuery('#st-edit-summary-input');
+        var $input = jQuery('#st-edit-summary .input');
         if (ww.edit_summary() == '')
             $input.val(DEFAULT_TEXT);
         jQuery('#st-edit-summary').show();
@@ -368,12 +368,12 @@ function setup_wikiwyg() {
         return false;
     }
 
-    jQuery('#st-edit-summary-close')
+    jQuery('#st-edit-summary .close')
         .unbind('click')
         .click(hide_edit_summary);
 
     ww.edit_summary = function () {
-        var val = jQuery('#st-edit-summary-input').val()
+        var val = jQuery('#st-edit-summary .input').val()
             .replace(/\s+/g, ' ')
             .replace(/^\s*(.*?)\s*$/, '$1');
         if (val == DEFAULT_TEXT)
@@ -385,35 +385,35 @@ function setup_wikiwyg() {
         .unbind('hover')
         .hover(show_edit_summary, function () {});
     
-    jQuery('#st-edit-summary-input')
+    jQuery('#st-edit-summary .input')
         .unbind('click')
         .click(
             function () {
-                if (jQuery('#st-edit-summary-input').val() == DEFAULT_TEXT)
-                    jQuery('#st-edit-summary-input').val('');
+                if (jQuery('#st-edit-summary .input').val() == DEFAULT_TEXT)
+                    jQuery('#st-edit-summary .input').val('');
             }
         );
     
-    jQuery('#st-edit-summary-form')
+    jQuery('#st-edit-summary form')
         .unbind('submit')
         .submit(function () {
             jQuery('#st-save-button-link').click();
             return false;    
         });
 
-    jQuery('#st-edit-summary-input')
+    jQuery('#st-edit-summary .input')
         .unbind('change')
         .change(function () {}); // XXX What is this about? 
 
-    jQuery('#st-summary-minor-checkbox')
+    jQuery('#st-edit-summary-minor-checkbox')
         .unbind('click')
         .click(
             function () {
-                jQuery('#st-summary-signal-checkbox')[0].checked =
-                    ! jQuery('#st-summary-minor-checkbox')[0].checked;
+                jQuery('#st-edit-summary-signal-checkbox')[0].checked =
+                    ! jQuery('#st-edit-summary-minor-checkbox')[0].checked;
                 jQuery('#st-edit-summary .anyway').css(
                     'display',
-                    jQuery('#st-summary-minor-checkbox')[0].checked
+                    jQuery('#st-edit-summary-minor-checkbox')[0].checked
                     ? 'inline' : 'none'
                 );
             }
