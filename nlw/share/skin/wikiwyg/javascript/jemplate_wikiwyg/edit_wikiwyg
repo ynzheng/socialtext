@@ -42,14 +42,14 @@
                             <div>
                                 <input type="text" class="input">
                             </div>
-                            <div>
+                            [%# <div>
                                 <div class="signal">
                                     <input checked id="st-edit-summary-signal-checkbox" type="checkbox" /><label for="st-edit-summary-signal-checkbox">Signal this edit<span class="anyway" style="display: none"> anyway</span></label>
                                 </div>
                                 <div class="minor">
                                     <input id="st-edit-summary-minor-checkbox" type="checkbox" /><label for="st-edit-summary-minor-checkbox">Minor edit</label>&nbsp;&nbsp;
                                 </div>
-                            </div>
+                            </div> %]
                         </form>
                     </div>
                 </div>

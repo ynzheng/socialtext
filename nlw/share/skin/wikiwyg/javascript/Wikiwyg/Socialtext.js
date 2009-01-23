@@ -178,6 +178,12 @@ function setup_wikiwyg() {
         ww.starting_edit = true;
 
         try {
+            // if `Cancel` and then `Edit` buttons are clicked, we need
+            // to set a timer to prevent the edit summary box from displaying
+            // immediately
+            ok_to_show_summary = false;
+            setTimeout(function() { ok_to_show_summary = true }, 2000);
+
             if (Wikiwyg.is_safari) {
                 delete ww.current_wikitext;
             }
@@ -324,6 +330,8 @@ function setup_wikiwyg() {
             // XXX WTF? ENOFUNCTION
             //do_post_cancel_tidying();
             ww.disableLinkConfirmations();
+            hide_edit_summary();
+            jQuery('#st-edit-summary .input').val('')
 
             ww.is_editing = false;
             ww.showScrollbars();
@@ -347,8 +355,6 @@ function setup_wikiwyg() {
 
     var ok_to_show_summary = false;
     var DEFAULT_TEXT = "Your edit summary...";
-
-    setTimeout(function() { ok_to_show_summary = true }, 2000);
 
     var show_edit_summary = function () {
         if (! ok_to_show_summary) return;
