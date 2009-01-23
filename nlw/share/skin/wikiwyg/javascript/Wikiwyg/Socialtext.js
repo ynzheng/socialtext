@@ -330,6 +330,7 @@ function setup_wikiwyg() {
             // XXX WTF? ENOFUNCTION
             //do_post_cancel_tidying();
             ww.disableLinkConfirmations();
+
             hide_edit_summary();
             jQuery('#st-edit-summary .input').val('')
 
@@ -353,7 +354,6 @@ function setup_wikiwyg() {
     //   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
 
     var ok_to_show_summary = false;
-    var DEFAULT_TEXT = "Your edit summary...";
 
     var show_edit_summary = function () {
         if (! ok_to_show_summary) return;
@@ -370,16 +370,10 @@ function setup_wikiwyg() {
         return false;
     }
 
-    jQuery('#st-edit-summary .close')
-        .unbind('click')
-        .click(hide_edit_summary);
-
     ww.edit_summary = function () {
         var val = jQuery('#st-edit-summary .input').val()
             .replace(/\s+/g, ' ')
             .replace(/^\s*(.*?)\s*$/, '$1');
-        if (val == DEFAULT_TEXT)
-            val = '';
         return val;
     }
 
@@ -395,25 +389,12 @@ function setup_wikiwyg() {
             }
         );
     
-    jQuery('#st-edit-summary .input')
-        .unbind('click')
-        .click(
-            function () {
-                if (jQuery('#st-edit-summary .input').val() == DEFAULT_TEXT)
-                    jQuery('#st-edit-summary .input').val('');
-            }
-        );
-    
     jQuery('#st-edit-summary form')
         .unbind('submit')
         .submit(function () {
             jQuery('#st-save-button-link').click();
             return false;    
         });
-
-    jQuery('#st-edit-summary .input')
-        .unbind('change')
-        .change(function () {}); // XXX What is this about? 
 
     jQuery('#st-edit-summary-minor-checkbox')
         .unbind('click')
@@ -440,13 +421,13 @@ function setup_wikiwyg() {
             jQuery('#st-edit-summary .input').focus();
         });
 
-    // End - Edit Summary Logic
-
-    jQuery("body").click(function(e) {
+    jQuery("body").mousedown(function(e) {
         if ( jQuery(e.target).parents("#st-edit-summary").size() > 0 ) return;
         if ( jQuery(e.target).is("#st-edit-summary") ) return;
         hide_edit_summary();
     });
+
+    // End - Edit Summary Logic
 
     jQuery('#st-preview-button-link')
         .unbind('click')
@@ -1719,8 +1700,8 @@ proto.enableThis = function() {
         );
     }
 
-    jQuery(self.get_edit_window()).bind("click", function() { jQuery("#st-edit-summary").hide(); });
-    jQuery(self.get_edit_document(), self.get_edit_window()).bind("click", function() { jQuery("#st-edit-summary").hide(); });
+    jQuery(self.get_edit_window()).bind("mousedown", function() { jQuery("#st-edit-summary").hide(); });
+    jQuery(self.get_edit_document(), self.get_edit_window()).bind("mousedown", function() { jQuery("#st-edit-summary").hide(); });
 }
 
 proto.on_pasted = function(html) {
