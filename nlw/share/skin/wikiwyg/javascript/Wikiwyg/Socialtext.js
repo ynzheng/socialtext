@@ -352,18 +352,17 @@ function setup_wikiwyg() {
     //   -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
     //   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
 
-
     var ok_to_show_summary = false;
     var DEFAULT_TEXT = "Your edit summary...";
 
     var show_edit_summary = function () {
         if (! ok_to_show_summary) return;
+        if (! jQuery('#st-edit-summary').is(':hidden')) return;
         var $input = jQuery('#st-edit-summary .input');
         if (ww.edit_summary() == '')
-            $input.val(DEFAULT_TEXT);
+            $input.val('');
         jQuery('#st-edit-summary').show();
         $input.focus();
-        $input.select();
     }
 
     var hide_edit_summary = function () {
@@ -429,6 +428,17 @@ function setup_wikiwyg() {
                 );
             }
         );
+
+    jQuery('#st-edit-summary .close-window')
+        .unbind('click')
+        .click(hide_edit_summary);
+
+    jQuery('#st-edit-summary .explain a')
+        .unbind('click')
+        .click(function() {
+            alert(Jemplate.process('element/edit_summary_explanation'));
+            jQuery('#st-edit-summary .input').focus();
+        });
 
     // End - Edit Summary Logic
 
