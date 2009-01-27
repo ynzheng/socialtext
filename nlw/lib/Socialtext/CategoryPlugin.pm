@@ -64,7 +64,7 @@ sub tag_many_pages {
     my $self = shift;
 
     my @page_names = $self->cgi->page_selected;
-    my $category = $self->cgi->category;
+    my @categories = $self->cgi->category;
 
     if (0 == @page_names) {
         return loc("Error:<pre>No pages selected for tagging</pre>\n");
@@ -72,7 +72,7 @@ sub tag_many_pages {
 
     foreach my $page_name (@page_names) {
         my $page = $self->hub->pages->new_from_name($page_name);
-        $page->add_tags($category);
+        $page->add_tags(@categories);
     }
 
     return $self->category_display();
