@@ -38,6 +38,9 @@ sub cgi {
         if (!defined $value and wantarray) {
             return ();
         }
+        elsif (wantarray && ref($value)) {
+            return @$value;
+        }
         return $value;
     };
 
