@@ -179,5 +179,6 @@ sub Guest {
     return shift->new( username => 'guest' );
 }
 
+sub is_business_admin { 0 }
 
 1;
