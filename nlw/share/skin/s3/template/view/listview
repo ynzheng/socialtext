@@ -23,6 +23,9 @@
             <li class="first"><a title="[% loc('Create PDF document from checked pages') %]" id="st-listview-submit-pdfexport" href="#">[% loc('Export to PDF') %]</a></li>
             [% END %]
             <li class="separator"><a title="[% loc('Create Word document from checked pages') %]" id="st-listview-submit-rtfexport" href="#">[% loc('Export to Word') %]</a></li>
+          <li>
+            <a class="taggit" href="#" id="st-listview-submit-taggit">[% loc('Tag These Pages') %]</a>
+          </li>
           </ul>
         </li>
       </ul>
@@ -34,6 +37,7 @@
     <form id="st-listview-form" method="post" action="index.cgi">
     <input id="st-listview-action" name="action" value="" type="hidden">
     <input id="st-listview-filename" name="filename" value="" type="hidden">
+    <input id="st-listview-category" name="category" value="" type="hidden">
     <table class="dataTable pagelist" cellspacing="0">
       <tr>
         <th width="30" style="border-right: 0">

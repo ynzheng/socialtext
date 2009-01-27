@@ -52,10 +52,30 @@ sub register {
     $registry->add( action => 'category_list' );
     $registry->add( action => 'category_display' );
     $registry->add( action => 'category_delete_from_page' );
+    $registry->add( action => 'tag_many_pages' );
+
     $registry->add( wafl => 'category_list' => 'Socialtext::Category::Wafl' );
     $registry->add( wafl => 'category_list_full' => 'Socialtext::Category::Wafl' );
     $registry->add( wafl => 'tag_list' => 'Socialtext::Category::Wafl' );
     $registry->add( wafl => 'tag_list_full' => 'Socialtext::Category::Wafl' );
+}
+
+sub tag_many_pages {
+    my $self = shift;
+
+    my @page_names = $self->cgi->page_selected;
+    my $category = $self->cgi->category;
+
+    if (0 == @page_names) {
+        return loc("Error:<pre>No pages selected for tagging</pre>\n");
+    }
+
+    foreach my $page_name (@page_names) {
+        my $page = $self->hub->pages->new_from_name($page_name);
+        $page->add_tags($category);
+    }
+
+    return $self->category_display();
 }
 
 sub category_list {
@@ -479,6 +499,7 @@ cgi 'page_id' => '-clean_path';
 cgi 'sortby';
 cgi 'direction';
 cgi 'summaries';
+cgi 'page_selected';
 
 ######################################################################
 package Socialtext::Category::Wafl;

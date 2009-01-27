@@ -317,6 +317,19 @@ $(function() {
         jQuery("#st-page-content").one("dblclick", double_clicker);
     }
 
+    $('#st-listview-submit-taggit').click(function() {
+        var tag = prompt("tag please","");
+        if (!$('.st-listview-selectpage-checkbox:checked').size()) {
+            alert(loc("You must check at least one page to tag."));
+        }
+        else {
+            $('#st-listview-action').val('tag_many_pages')
+            $('#st-listview-category').val(tag);
+            $('#st-listview-form').submit();
+        }
+        return false;
+    });
+
     $('#st-listview-submit-pdfexport').click(function() {
         if (!$('.st-listview-selectpage-checkbox:checked').size()) {
             alert(loc("You must check at least one page in order to create a PDF."));
