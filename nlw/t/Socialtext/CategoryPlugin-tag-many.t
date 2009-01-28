@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 999;
+use Test::More tests => 13;
 use Data::Dumper;
 
 use mocked 'Apache::Cookie';
@@ -20,7 +20,8 @@ my $user = Socialtext::User->new(email_address => 'test@ken.socialtext.net');
 my $ws = Socialtext::Workspace->new(name => 'testws');
 my $hub = Socialtext::Hub->new(current_workspace => $ws, current_user => $user);
 
-my @added_tags;
+my (@added_tags, @removed_tags);
+
 {
     no warnings 'once', 'redefine';
     *Socialtext::Workspace::email_address = sub { 'category-addr@example.com'};
@@ -31,6 +32,11 @@ my @added_tags;
     *Socialtext::Page::add_tags = sub {
         my $page = shift;
         push @added_tags, [$page->id, @_];
+    };
+
+    *Socialtext::Page::delete_tag = sub {
+        my $page = shift;
+        push @removed_tags, [$page->id, @_];
     };
 }
 
@@ -72,6 +78,49 @@ many_pages_many_tags: {
         ['e','bird','parrot'],
     ], "pages tagged";
     @added_tags = ();
+}
+
+
+none_deleted: {
+    my $cgi = Socialtext::Category::CGI->new(
+        category => 'cats',
+    );
+    my $cat_plug = Socialtext::CategoryPlugin->new(hub => $hub, cgi => $cgi);
+    ok $cat_plug;
+    $cat_plug->untag_many_pages;
+    is_deeply \@removed_tags, [], 'no tags removed';
+    @removed_tags = ();
+}
+
+some_deleted: {
+    my $cgi = Socialtext::Category::CGI->new(
+        category => ['dogs'],
+        page_selected => ['a','b','c'],
+    );
+
+    my $cat_plug = Socialtext::CategoryPlugin->new(hub => $hub, cgi => $cgi);
+    ok $cat_plug;
+    $cat_plug->untag_many_pages;
+    is_deeply \@removed_tags, [['a','dogs'],['b','dogs'],['c','dogs']],
+        "three pages untagged";
+    @removed_tags = ();
+}
+
+many_pages_many_tags_deleted: {
+    my $cgi = Socialtext::Category::CGI->new(
+        category => ['bird', 'parrot'],
+        page_selected => ['d','e'],
+    );
+    my $cat_plug = Socialtext::CategoryPlugin->new(hub => $hub, cgi => $cgi);
+    ok $cat_plug;
+    $cat_plug->untag_many_pages;
+    is_deeply \@removed_tags, [
+        ['d','bird'],
+        ['d','parrot'],
+        ['e','bird'],
+        ['e','parrot'],
+    ], "pages untagged";
+    @removed_tags = ();
 }
 
 1;
