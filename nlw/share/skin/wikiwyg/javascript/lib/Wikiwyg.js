@@ -1113,12 +1113,6 @@ function setup_wikiwyg() {
         ww.starting_edit = true;
 
         try {
-            // if `Cancel` and then `Edit` buttons are clicked, we need
-            // to set a timer to prevent the edit summary box from displaying
-            // immediately
-            ok_to_show_summary = false;
-            setTimeout(function() { ok_to_show_summary = true }, 2000);
-
             if (Wikiwyg.is_safari) {
                 delete ww.current_wikitext;
 
@@ -1220,6 +1214,10 @@ function setup_wikiwyg() {
 
     if (!Socialtext.new_page) {
         jQuery('#st-save-button-link').click(function() {
+            if (jQuery('#st-edit-summary').is(':hidden')) {
+                ww.show_edit_summary(); 
+                return false;
+            };
             ww.is_editing = false;
             ww.showScrollbars();
             ww.saveButtonHandler();
@@ -1282,10 +1280,7 @@ function setup_wikiwyg() {
 
     // Begin - Edit Summary Logic
 
-    var ok_to_show_summary = false;
-
-    var show_edit_summary = function () {
-        if (! ok_to_show_summary) return;
+    ww.show_edit_summary = function () {
         if (! jQuery('#st-edit-summary').is(':hidden')) return;
         var $input = jQuery('#st-edit-summary .input');
         if (ww.edit_summary() == '')
@@ -1366,18 +1361,6 @@ function setup_wikiwyg() {
         return val;
     }
 
-    jQuery('#st-save-button-link')
-        .unbind('hover')
-        .hover(
-            function() {
-                setTimeout(show_edit_summary, 100);
-            },
-            function () {
-                ok_to_show_summary = false;
-                setTimeout(function() { ok_to_show_summary = true }, 200);
-            }
-        );
-    
     jQuery('#st-edit-summary form')
         .unbind('submit')
         .submit(function () {
@@ -1411,8 +1394,10 @@ function setup_wikiwyg() {
         });
 
     jQuery("body").mousedown(function(e) {
+        if ( jQuery('#st-edit-summary').is(':hidden')) return;
         if ( jQuery(e.target).parents("#st-edit-summary").size() > 0 ) return;
         if ( jQuery(e.target).is("#st-edit-summary") ) return;
+        if ( jQuery(e.target).is("#st-save-button-link") ) return;
         hide_edit_summary();
     });
 
@@ -1541,6 +1526,10 @@ function setup_wikiwyg() {
 Wikiwyg.setup_newpage = function() {
     if (Socialtext.new_page) {
         jQuery('#st-save-button-link').click(function () {
+            if (jQuery('#st-edit-summary').is(':hidden')) {
+                ww.show_edit_summary(); 
+                return false;
+            };
             wikiwyg.saveNewPage();
             return false;
         });
