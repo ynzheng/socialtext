@@ -1,4 +1,5 @@
 package Socialtext::WikiText::Emitter::Messages::HTML;
+# @COPYRIGHT@
 use strict;
 use warnings;
 
@@ -23,9 +24,9 @@ sub insert {
 }
 
 my $markup = {
-    'b' => ['<b>*', '*</b>'],
-    'i' => ['<i>_', '_</i>'],
-    'del' => ['<del>-', '-</del>'],
+    'b' => ['<b>', '</b>'],
+    'i' => ['<i>', '</i>'],
+    'del' => ['<del>', '</del>'],
 };
 sub begin_node {
     my $self = shift;

@@ -1283,10 +1283,24 @@ function setup_wikiwyg() {
     ww.show_edit_summary = function () {
         if (! jQuery('#st-edit-summary').is(':hidden')) return;
         var $input = jQuery('#st-edit-summary .input');
+
         if (ww.edit_summary() == '')
             $input.val('');
         jQuery('#st-edit-summary').show();
         $input.focus();
+
+        // position cursor at the end of the input field
+        var len = $input[0].value.length;
+        if ($input[0].createTextRange) {
+            var range = $input[0].createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', len);
+            range.moveStart('character', len);
+            range.select();
+        }
+        else if ($input[0].setSelectionRange) {
+            $input[0].setSelectionRange(len, len);
+        }
     }
 
     var hide_edit_summary = function () {
@@ -1471,16 +1485,17 @@ function setup_wikiwyg() {
         if ( skip ) { return false; }
 
         jQuery("#st-page-editing-files")
-            .append('<input type="hidden" name="add_tag" id="st-tagqueue-' + rand + '" value="' + tag + '" />');
+            .append(jQuery('<input type="hidden" name="add_tag" id="st-tagqueue-' + rand +'" />').val(tag));
 
         jQuery('#st-tagqueue-list').show();
 
         jQuery("#st-tagqueue-list")
             .append(
-                '<span class="st-tagqueue-taglist-name" id="st-taglist-'+rand+'">'
-                + (jQuery('.st-tagqueue-taglist-name').size() ? ', ' : '')
-                + tag
-                + '</span>'
+                jQuery('<span class="st-tagqueue-taglist-name" id="st-taglist-'+rand+'" />')
+                .text(
+                    (jQuery('.st-tagqueue-taglist-name').size() ? ', ' : '')
+                    + tag
+                )
             );
 
         jQuery("#st-taglist-" + rand)
