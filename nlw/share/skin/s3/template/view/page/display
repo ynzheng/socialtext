@@ -81,7 +81,7 @@
 
 <div id="contentContainer">
   [% IF is_fiction %]
-  <div id="contentTitle"><h2 id="st-page-titletext" class="tableTitle" title="Untitled Page">Untitled Page</h2>
+  <div id="contentTitle"><h2 id="st-page-titletext" class="tableTitle" title="[% fictional_name || 'Untitled Page' | html_encode %]">[% fictional_name || 'Untitled Page' | html_encode %]</h2>
   [% ELSE %]
   <div id="contentTitle"><h2 id="st-page-titletext" class="tableTitle" title="[% page.display_title %]">[% page.display_title %]</h2>
   [% END %]

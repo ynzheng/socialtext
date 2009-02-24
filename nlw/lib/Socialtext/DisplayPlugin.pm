@@ -173,7 +173,10 @@ sub display {
     if ($is_new_page) {
         push @new_tags, $self->_new_tags_to_add();
 
-        my $new_page = 'Untitled Page ' . time() . substr(rand(), 2);
+        use Data::UUID;
+        my $uuid = Data::UUID->new->create_str();
+        $uuid =~ s/-//g;
+        my $new_page = "Untitled Page $uuid " . $page->name;
 
         if (my $template = $self->cgi->template) {
             my $tmpl_page = $self->hub->pages->new_from_name($template);
@@ -205,7 +208,7 @@ sub display {
     $page->load;
 
     if (!$is_new_page &&
-        $page->id !~ /^untitled_page(?:_\d+)$/)
+        $page->id !~ /^untitled_page(?:_[a-f\d]+_|$)/i)
     {
         eval {
             Socialtext::Events->Record({
@@ -267,8 +270,13 @@ sub _render_display {
     ];
 
     my $is_fiction = 0;
-    if ($page->id =~ /^untitled_page_\d+/) {
+    my $fictional_name = '';
+    if ($page->id =~ /^untitled_page_[a-f\d]+_(.+)/i) {
         $is_fiction = 1;
+        $fictional_name = $1;
+        if ($fictional_name =~ /^untitled[_ ]page$/i) {
+            $fictional_name = '';
+        }
         $start_in_edit_mode = 1;
     }
 
@@ -279,7 +287,7 @@ sub _render_display {
             accept_encoding         => eval {
                 $self->hub->rest->request->header_in( 'Accept-Encoding' )
             } || '',
-            title                   => $page->title,
+            title                   => ($is_fiction ? ($fictional_name || 'Untitled Page') : $page->title),
             page                    => $self->_get_page_info($page),
             template_name           => $self->cgi->template || '',
             tag_count               => scalar @{ $page->metadata->Category }, # counts recent changes!
@@ -293,6 +301,7 @@ sub _render_display {
             is_new                  => $is_new_page,
             is_fiction              => $is_fiction,
             is_incipient            => ($self->cgi->is_incipient ? 1 : 0),
+            fictional_name          => $fictional_name,
             start_in_edit_mode      => $start_in_edit_mode,
             new_tags                => $new_tags,
             attachments             => $all_attachments,
