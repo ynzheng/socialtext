@@ -613,7 +613,7 @@ proto.displayNewPageDialog = function() {
 }
 
 proto.saveButtonHandler = function() {
-    if (Socialtext.new_page) {
+    if (Socialtext.new_page || Socialtext.is_fiction) {
         this.saveNewPage();
     }
     else {
@@ -1218,7 +1218,7 @@ function setup_wikiwyg() {
         jQuery("#st-page-content").bind("dblclick", ww.start_nlw_wikiwyg);
     }
 
-    if (!Socialtext.new_page) {
+    if (!Socialtext.new_page && !Socialtext.is_fiction) {
         jQuery('#st-save-button-link').click(function() {
             ww.is_editing = false;
             ww.showScrollbars();
@@ -1238,7 +1238,7 @@ function setup_wikiwyg() {
                     ww.confirmed = true;
             }
             Attachments.delete_new_attachments();
-            if (Socialtext.new_page) {
+            if (Socialtext.new_page || Socialtext.is_fiction) {
                 window.location = '?action=homepage';
             }
             else if (location.href.match(/caller_action=weblog_display;?/)) {
@@ -1554,7 +1554,7 @@ function setup_wikiwyg() {
 }
 
 Wikiwyg.setup_newpage = function() {
-    if (Socialtext.new_page) {
+    if (Socialtext.new_page || Socialtext.is_fiction) {
         jQuery('#st-save-button-link').click(function () {
             wikiwyg.saveNewPage();
             return false;

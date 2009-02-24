@@ -171,36 +171,33 @@ sub display {
     my @new_attachments = ();
     my @new_tags = ();
     if ($is_new_page) {
-        $page->metadata->Type(
-            $self->cgi->page_type eq 'spreadsheet' && 'spreadsheet' || 'wiki'
-        );
         push @new_tags, $self->_new_tags_to_add();
+
+        my $new_page = 'Untitled Page ' . time() . substr(rand(), 2);
 
         if (my $template = $self->cgi->template) {
             my $tmpl_page = $self->hub->pages->new_from_name($template);
             if ($tmpl_page->exists) {
-                push @new_tags, grep { $_ !~ /^template$/i }
-                                @{ $tmpl_page->metadata->Category };
-                $page->content($tmpl_page->content);
-        
-                my $attachments = $self->hub->attachments->all(
-                    page_id => $tmpl_page->id
+                $tmpl_page->duplicate(
+                    $self->hub->current_workspace,
+                    $new_page,
+                    0,
+                    1,
+                    1,
                 );
-                my $plugin_dir = $self->hub->attachments->plugin_directory;
-                for my $a (@$attachments) {
-                    my $target = $self->hub->attachments->new_attachment(
-                        id => $a->id,
-                        filename => $a->filename,
-                    );
-                    $target->copy($a, $target, $plugin_dir);
-                    $target->temporary(1);
-                    $target->store(user => $self->hub->current_user);
 
-                    # Keep track of temporary attachments for deletion
-                    push @new_attachments, $target;
-                }
+                return $self->redirect("action=display;page_name=$new_page");
             }
         }
+
+        # New page.
+        my $target_page = $self->hub->pages->new_from_name($new_page);
+        $target_page->content('Replace this text with your own.');
+        $target_page->metadata->Type(
+            $self->cgi->page_type eq 'spreadsheet' && 'spreadsheet' || 'wiki'
+        );
+        $target_page->store( user => $self->hub->current_user );
+        return $self->redirect("action=display;page_name=$new_page");
     }
     else {
         $page->add_tags( $self->_new_tags_to_add() );
@@ -208,7 +205,7 @@ sub display {
     $page->load;
 
     if (!$is_new_page &&
-        $page->id ne 'untitled_page') 
+        $page->id !~ /^untitled_page(?:_\d+)$/)
     {
         eval {
             Socialtext::Events->Record({
@@ -269,6 +266,12 @@ sub _render_display {
         @{$self->hub->attachments->all(page_id => $page->id)},
     ];
 
+    my $is_fiction = 0;
+    if ($page->id =~ /^untitled_page_\d+/) {
+        $is_fiction = 1;
+        $start_in_edit_mode = 1;
+    }
+
     return $self->template_render(
         template => 'view/page/display',
         vars     => {
@@ -288,6 +291,7 @@ sub _render_display {
                     and $page->title eq
                     $self->hub->current_workspace->title ),
             is_new                  => $is_new_page,
+            is_fiction              => $is_fiction,
             is_incipient            => ($self->cgi->is_incipient ? 1 : 0),
             start_in_edit_mode      => $start_in_edit_mode,
             new_tags                => $new_tags,

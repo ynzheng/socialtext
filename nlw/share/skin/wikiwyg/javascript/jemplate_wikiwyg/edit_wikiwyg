@@ -45,7 +45,12 @@
         <div id="contentContainer">
             [% INCLUDE element/edit_summary.html.tt2 %]
             <div id="contentTitle">
-                [% IF is_new && !is_incipient %]
+                [% IF is_fiction %]
+                    <h2 id="st-editing-title" class="tableTitle">
+                        [% loc('Editing:') %]
+                        <input type="text" size="65" id="st-newpage-pagename-edit" value="Untitled Page" onclick="Socialtext.clear_untitled(this)"/>
+                    </h2>
+                [% ELSIF is_new && !is_incipient %]
                     <h2 id="st-editing-title" class="tableTitle">
                         [% loc('Editing:') %]
                         <input type="text" size="65" id="st-newpage-pagename-edit" value="[% page.title | html_encode %]" onclick="Socialtext.clear_untitled(this)"/>

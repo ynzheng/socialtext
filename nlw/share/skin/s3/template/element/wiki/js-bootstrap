@@ -6,6 +6,7 @@
 var Socialtext = Socialtext || {};
 Socialtext.version = "[% app_version %]";
 Socialtext.new_page = [% IF is_new %] true; [% ELSE %] false; [% END %]
+Socialtext.is_fiction = [% IF is_fiction %] true; [% ELSE %] false; [% END %]
 Socialtext.username = '[% user.username.replace('\'', '\\\'') %]';
 Socialtext.email_address = '[% user.email_address.replace('\'', '\\\'') %]';
 Socialtext.accept_encoding = '[% accept_encoding %]';
@@ -100,6 +101,7 @@ var v = Socialtext.wikiwyg_variables = {};
 v.dropshadow = "[% dropshadow %]";
 v.dropshadow.defined = "[% dropshadow.defined %]";
 v.is_new = ("[% is_new %]" != "0");
+v.is_fiction = ("[% is_fiction %]" != "0");
 v.is_incipient = ("[% is_incipient %]" != "0");
 v.page = {};
 v.page.title = "[% page.title.replace('"', '\\"') %]";
