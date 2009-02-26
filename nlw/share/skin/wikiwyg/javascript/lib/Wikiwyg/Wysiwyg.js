@@ -458,11 +458,11 @@ proto.set_inner_html = function(html) {
             self._editable_div = null;
             self.get_editable_div();
 
-	    // 1.6sec clearly not enough -- give it another 10.1sec
-            // The heuristic here is to allow 10 tries of tryAppendDiv to pass.
+	    // 1.6sec clearly not enough -- give it another 1.6sec
+            // The heuristic here is to allow another try of tryAppendDiv to pass.
             setTimeout( function() {
                 self.set_inner_html(html);
-            }, 10100);
+            }, 1600);
         }
     }
 }
