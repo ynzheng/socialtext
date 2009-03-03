@@ -195,18 +195,32 @@ my $FIELDS = <<'EOSQL';
     e.context AS context
 EOSQL
 
+my $SIGNAL_VIS_SQL = <<'EOSQL';
+     AND account_id IN (
+        SELECT account_id 
+        FROM signal_account sa 
+        WHERE sa.signal_id = signal_id
+    )
+EOSQL
+
 sub visible_exists {
     my ($plugin, $event_field) = @_;
-    return <<EOSQL;
-        EXISTS (
+    my $sql = <<EOSQL;
+       EXISTS (
             SELECT 1
             FROM account_user viewer
             JOIN account_plugin USING (account_id)
             JOIN account_user othr USING (account_id)
             WHERE plugin = '$plugin' AND viewer.user_id = ?
               AND othr.user_id = $event_field
+              -- signal vis
         )
 EOSQL
+
+    if ($plugin eq 'signals') {
+        $sql =~ s/-- signal vis/$SIGNAL_VIS_SQL/;
+    }
+    return $sql;
 }
 
 my $VISIBILITY_SQL = join "\n",
@@ -223,7 +237,7 @@ my $VISIBILITY_SQL = join "\n",
 
 my $VISIBLE_WORKSPACES = <<'EOSQL';
     SELECT workspace_id FROM "UserWorkspaceRole" WHERE user_id = ? 
-    UNION
+    UNION ALL
     SELECT workspace_id
     FROM "WorkspaceRolePermission" wrp
     JOIN "Role" r USING (role_id)
@@ -232,8 +246,8 @@ my $VISIBLE_WORKSPACES = <<'EOSQL';
 EOSQL
 
 my $I_CAN_USE_THIS_WORKSPACE = <<"EOSQL";
-    w.workspace_id IS NULL OR 
-    w.workspace_id IN ( $VISIBLE_WORKSPACES )
+    page_workspace_id IS NULL OR 
+    page_workspace_id IN ( $VISIBLE_WORKSPACES )
 EOSQL
 
 my $FOLLOWED_PEOPLE_ONLY = <<'EOSQL';
@@ -250,26 +264,10 @@ my $FOLLOWED_PEOPLE_ONLY = <<'EOSQL';
 )
 EOSQL
 
-my $ACTIVITIES_FOR_A_USER = <<'EOSQL';
-    (event_class = 'person' AND 
-     action IN ('tag_add', 'edit_save') AND 
-     (person_id = ? OR actor_id = ?)
-    )
-    OR
-    (event_class = 'page' AND 
-     action IN ('edit_save','tag_add','comment',
-                'rename','duplicate','delete') AND
-     actor_id = ?)
-    OR
-    (event_class = 'signal' AND actor_id = ?)
-EOSQL
-
 my $CONTRIBUTIONS = <<'EOSQL';
-    (event_class = 'person') 
+    (event_class = 'person' AND is_profile_contribution(action)) 
     OR
-    (event_class = 'page' AND 
-     action IN ('edit_save','tag_add','comment',
-                'rename','duplicate','delete'))
+    (event_class = 'page' AND is_page_contribution(action))
     OR
     (event_class = 'signal') 
 EOSQL
@@ -336,16 +334,17 @@ sub _build_standard_sql {
     $self->prepend_condition(
         $I_CAN_USE_THIS_WORKSPACE => $self->viewer->user_id
     );
-    $self->add_outer_condition(
-        $VISIBILITY_SQL => ($self->viewer->user_id) x 3
-    );
+
+    unless ($self->{_skip_visibility}) {
+        $self->add_outer_condition(
+            $VISIBILITY_SQL => ($self->viewer->user_id) x 3
+        );
+    }
 
     if ($opts->{followed}) {
         $self->add_condition(
             $FOLLOWED_PEOPLE_ONLY => ($self->viewer->user_id) x 2
         );
-        # limiting to these event types will give a bit of a perf boost:
-        $opts->{event_class} = ['person','page', 'signal'];
     }
 
     # filter for contributions-type events
@@ -357,36 +356,43 @@ sub _build_standard_sql {
     my ($limit_stmt, @limit_args) = $self->_limit_and_offset($opts);
 
     my $where = join("\n  AND ", 
-                     map {"($_)"} @{$self->{_conditions}});
+                     map {"($_)"} ('1=1',@{$self->{_conditions}}));
     my $outer_where = join("\n  AND ", 
-                           map {"($_)"} @{$self->{_outer_conditions}});
+                           map {"($_)"} ('1=1',@{$self->{_outer_conditions}}));
+
+    (my $fields = $FIELDS) =~ s/\be\.//sg;
 
     my $sql = <<EOSQL;
-SELECT * FROM (
-    SELECT $FIELDS
-    FROM event e 
-        LEFT JOIN page ON (e.page_workspace_id = page.workspace_id AND 
-                           e.page_id = page.page_id)
-        LEFT JOIN "Workspace" w ON (e.page_workspace_id = w.workspace_id)
-    WHERE $where
-    ORDER BY at DESC
-) evt
-WHERE
-$outer_where
-$limit_stmt
+SELECT $fields FROM (
+    SELECT evt.* FROM (
+        SELECT e.*
+        FROM event e 
+        WHERE $where
+        ORDER BY at DESC
+    ) evt
+    WHERE
+    $outer_where
+    $limit_stmt
+) outer_e
+LEFT JOIN page ON (outer_e.page_workspace_id = page.workspace_id AND 
+                   outer_e.page_id = page.page_id)
+LEFT JOIN "Workspace" w ON (outer_e.page_workspace_id = w.workspace_id)
+
 EOSQL
 
     return $sql, [@{$self->{_condition_args}}, @{$self->{_outer_condition_args}}, @limit_args];
 }
 
-sub get_events {
+sub _get_events {
     my $self   = shift;
-    my $opts   = {@_};
+    my $opts = ref($_[0]) eq 'HASH' ? $_[0] : {@_};
 
     my ($sql, $args) = $self->_build_standard_sql($opts);
 
     Socialtext::Timer->Continue('get_events');
+    #$Socialtext::SQL::PROFILE_SQL = 1;
     my $sth = sql_execute($sql, @$args);
+    #$Socialtext::SQL::PROFILE_SQL = 0;
     my $result = $self->decorate_event_set($sth);
     Socialtext::Timer->Pause('get_events');
 
@@ -394,14 +400,105 @@ sub get_events {
     return $result;
 }
 
+sub get_events {
+    my $self   = shift;
+    my $opts = ref($_[0]) eq 'HASH' ? $_[0] : {@_};
+
+    if ($opts->{event_class} && !(ref $opts->{event_class}) && 
+        $opts->{event_class} eq 'page' && $opts->{contributions}) 
+    {
+        warn "getting page contribs";
+        return $self->get_events_page_contribs($opts);
+    }
+
+    return $self->_get_events($opts);
+}
+
+sub get_events_page_contribs {
+    my $self = shift;
+    my $opts = ref($_[0]) eq 'HASH' ? $_[0] : {@_};
+
+    $self->add_condition(
+        q{event_class = 'page' AND is_page_contribution(action)}
+    );
+    local $self->{_skip_visibility} = 1;
+    my ($sql, $args) = $self->_build_standard_sql($opts);
+
+    my %opts_slice = map { $_ => $opts->{$_} } 
+        qw(limit count offset before after followed);
+
+    Socialtext::Timer->Continue('get_page_contribs');
+    #$Socialtext::SQL::PROFILE_SQL = 1;
+    my $sth = sql_execute($sql, @$args);
+    #$Socialtext::SQL::PROFILE_SQL = 0;
+    my $result = $self->decorate_event_set($sth);
+    Socialtext::Timer->Pause('get_page_contribs');
+
+    return @$result if wantarray;
+    return $result;
+}
+
 sub get_events_activities {
-    my ($self, $maybe_user) = @_; 
+    my $self = shift;
+    my $maybe_user = shift;
+    my $opts = ref($_[0]) eq 'HASH' ? $_[0] : {@_};
+
+    Socialtext::Timer->Continue('get_activity');
+
     # First we need to get the user id in case this was email or username used
     my $user = Socialtext::User->Resolve($maybe_user);
     my $user_id = $user->user_id;
 
-    $self->add_condition($ACTIVITIES_FOR_A_USER, ($user_id) x 4);
-    return $self->get_events(@_)
+    my $user_ids;
+    my @conditions;
+    if (!$opts->{event_class}) {
+        $opts->{event_class} = [qw(page person signal)];
+    }
+
+    my %classes;
+    if (ref $opts->{event_class}) {
+        %classes = map {$_ => 1} @{$opts->{event_class}};
+    }
+    else {
+        $classes{$opts->{event_class}} = 1;
+    }
+
+    if ($classes{page}) {
+        push @conditions, q{
+            event_class = 'page' 
+            AND is_page_contribution(action) 
+            AND actor_id = ?
+        };
+        $user_ids++;
+    }
+    
+    if ($classes{person}) {
+        push @conditions, q{
+            -- target ix_event_person_contribs_actor
+            (event_class = 'person' AND is_profile_contribution(action) 
+                AND actor_id = ?)
+            OR
+            -- target ix_event_person_contribs_person
+            (event_class = 'person' AND is_profile_contribution(action) 
+                AND person_id = ?)
+        };
+        $user_ids += 2;
+    }
+    
+    if ($classes{signal}) {
+        push @conditions, q{
+            event_class = 'signal' AND actor_id = ?
+        };
+        $user_ids++;
+    }
+
+    my $cond_sql = join(' OR ', map {"($_)"} @conditions);
+    $self->add_condition($cond_sql, ($user_id) x $user_ids);
+    my $evs = $self->_get_events(@_);
+    Socialtext::Timer->Pause('get_activity');
+
+    return @$evs if wantarray;
+    return $evs;
 }
 
 my $PAGES_I_CARE_ABOUT = <<'EOSQL';
@@ -486,7 +583,7 @@ EOSQL
 sub get_events_conversations {
     my $self = shift;
     my $maybe_user = shift;
-    my $opts = {@_};
+    my $opts = (@_==1) ? $_[0] : {@_};
 
     # First we need to get the user id in case this was email or username used
     my $user = Socialtext::User->Resolve($maybe_user);
@@ -499,12 +596,41 @@ sub get_events_conversations {
 
     Socialtext::Timer->Continue('get_convos');
 
+    #$Socialtext::SQL::PROFILE_SQL = 1;
     my $sth = sql_execute($sql, @$args);
+    #$Socialtext::SQL::PROFILE_SQL = 0;
     my $result = $self->decorate_event_set($sth);
 
     Socialtext::Timer->Pause('get_convos');
 
     return @$result if wantarray;
+    return $result;
+}
+
+sub get_events_followed {
+    my $self = shift;
+    my $opts = (@_ == 1) ? $_[0] : {@_};
+
+    $opts->{followed} = 1;
+    $opts->{contributions} = 1;
+    die "no limit?!" unless $opts->{count};
+
+    if ($opts->{action} && $opts->{action} eq 'view') {
+        return []; # view events aren't contributions
+    }
+    else {
+        # by using non-view indexes, we can get a simple perf boost until we
+        # devise something better
+        $self->prepend_condition(q{action <> 'view'});
+    }
+    my ($followed_sql, $followed_args) = $self->_build_standard_sql($opts);
+
+    Socialtext::Timer->Continue('get_followed_events');
+    #$Socialtext::SQL::PROFILE_SQL = 1;
+    my $sth = sql_execute($followed_sql, @$followed_args);
+    #$Socialtext::SQL::PROFILE_SQL = 0;
+    my $result = $self->decorate_event_set($sth);
+    Socialtext::Timer->Pause('get_followed_events');
     return $result;
 }
 

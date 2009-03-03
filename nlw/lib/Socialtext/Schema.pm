@@ -124,7 +124,7 @@ sub sync {
     my $self      = shift;
     my %sync_opts = @_;
 
-    eval { $self->createdb };
+    eval { $self->createdb } unless $sync_opts{no_create};
     my $current_version = $self->current_version;
     $self->_display("Current schema version is $current_version\n");
     if ($current_version == 0) {
@@ -138,7 +138,7 @@ sub sync {
             to   => $sync_opts{to_version},
         );
         if (@scripts) {
-            eval { $self->dump };
+            eval { $self->dump } unless $sync_opts{no_dump};
     
             for my $s (@scripts) {
                 $self->run_sql_file($s->{name});
@@ -179,6 +179,7 @@ sub sync {
 
 sub _add_required_data {
     my $self = shift;
+    return if $self->{no_add_required_data};
     return unless $self->schema_name eq 'socialtext';
     require Socialtext::Data;
 
@@ -356,7 +357,7 @@ sub _display {
     my $self = shift;
     my $msg = shift;
 
-    print $self->schema_name . ": $msg";
+    print $self->schema_name . ": $msg" unless $self->{quiet};
 }
 
 =head2 run_sql_file 

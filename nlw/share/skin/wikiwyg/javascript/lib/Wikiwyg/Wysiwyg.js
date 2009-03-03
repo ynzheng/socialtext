@@ -627,25 +627,41 @@ proto.enableThis = function() {
 
     var self = this;
     var ready = function() {
-        if (!self.is_ready)
-            self.fromHtml( self.wikiwyg.div.innerHTML );
-        self.get_edit_document().designMode = 'on';
-        self.enable_keybindings();
-        self.set_clear_handler();
-
         if (Wikiwyg.is_gecko) {
+            self.get_edit_document().designMode = 'on';
             setTimeout(function() {
                 self.get_edit_document().execCommand("enableObjectResizing", false, false);
                 self.get_edit_document().execCommand("enableInlineTableEditing", false, false);
             }, 100);
         }
 
+        self.enable_keybindings();
+        self.set_clear_handler();
+
+        jQuery('table.sort', self.get_edit_document())
+            .each(function() {
+                Socialtext.make_table_sortable(this);
+            });
+
         self.is_ready = true;
     };
+
     if (self.is_ready)
         ready();
     else
-        self.get_edit_window().onload = ready;
+        jQuery(self.get_edit_window()).bind("load", function() {
+            var doc = self.get_edit_document();
+            if (jQuery.browser.msie) {
+                var i = setInterval(function() {
+                    if (doc.readyState && (doc.readyState == "interactive" || doc.readyState == "complete") && doc.body && doc.body.innerHTML) { 
+                        clearInterval(i);
+                        ready();
+                    }
+                }, 1800);
+                return ;
+            }
+            ready();
+        });
 
     setTimeout(function() {
         try {
@@ -694,6 +710,13 @@ proto.enableThis = function() {
         .bind("mousedown", function() {
             jQuery("#st-edit-summary").hide(); 
         });
+
+}
+
+proto.disableThis = function() {
+    Wikiwyg.Mode.prototype.disableThis.call(this);
+    clearInterval( this.__toolbar_styling_interval );
+    this.__toolbar_styling_interval = null;
 }
 
 proto.on_pasted = function(html) {
@@ -747,27 +770,96 @@ proto.paste_buffer_is_simple = function(buffer) {
 proto.toolbarStyling = function() {
     if (this.busy_styling)
         return;
-    this.busy_styling = true;
-    try {
-        var selection = this.get_edit_document().selection
-            ? this.get_edit_document().selection
-            : this.get_edit_window().getSelection();
-        var anchor = selection.anchorNode
-            ? selection.anchorNode
-            : selection.createRange().parentElement();
 
-        if( jQuery(anchor, this.get_edit_window()).parents("table").size() > 0 ) {
-            jQuery(".table_buttons").removeClass("disabled");
+    this.busy_styling = true;
+
+    try {
+        var cursor_state = this.get_cursor_state();
+        if( cursor_state.inside_table ) {
+            jQuery(".table_buttons, .table_buttons img").removeClass("disabled");
+
+            jQuery("#wikiwyg_button_table").addClass("disabled");
+            jQuery("#wikiwyg_button_table-settings").removeClass("disabled");
+            if (jQuery(cursor_state.table).find('tr').size() < 2) {
+                jQuery("#wikiwyg_button_table-settings").addClass("disabled");
+            }
+
+            if (cursor_state.header_row) {
+                jQuery("#wikiwyg_button_move-row-down, #wikiwyg_button_move-row-up, #wikiwyg_button_add-row-above").addClass("disabled");
+            }
+            if (cursor_state.first_row) {
+                jQuery("#wikiwyg_button_move-row-up").addClass("disabled");
+            }
+            if (cursor_state.last_row) {
+                jQuery("#wikiwyg_button_move-row-down").addClass("disabled");
+            }
+            if (cursor_state.first_column) {
+                jQuery("#wikiwyg_button_move-col-left").addClass("disabled");
+            }
+            if (cursor_state.last_column) {
+                jQuery("#wikiwyg_button_move-col-right").addClass("disabled");
+            }
         }
         else {
             jQuery(".table_buttons").addClass("disabled");
+            jQuery("#wikiwyg_button_table").removeClass("disabled");
+            jQuery("#wikiwyg_button_table-settings").addClass("disabled");
         }
 
         if (Wikiwyg.is_gecko) {
             this.get_edit_document().execCommand("enableInlineTableEditing", false, false);
         }
-    } catch(e) {}
+    } catch(e) { }
     this.busy_styling = false;
+}
+
+proto.get_cursor_state = function() {
+    var selection = this.get_edit_document().selection
+        ? this.get_edit_document().selection
+        : this.get_edit_window().getSelection();
+    var anchor = selection.anchorNode
+        ? selection.anchorNode
+        : selection.createRange().parentElement();
+
+    var cursor_state = {
+        sortable_table: false,
+        inside_table: false,
+        header_row: false,
+        first_row: false,
+        last_row: false,
+        last_column: false
+    };
+
+    var $table = jQuery(anchor, this.get_edit_window()).parents("table");
+    if( $table.size() == 0 ) {
+        return cursor_state;
+    }
+
+    cursor_state.inside_table = true;
+    cursor_state.table = $table.get(0);
+    cursor_state.sortable_table = $table.is(".sort");
+
+    var $tr = jQuery(anchor, this.get_edit_window()).parents("tr");
+
+    if ($tr.size() == 0) return cursor_state;
+
+    if ($tr.prev("tr").size() == 0) cursor_state.first_row = true;
+    if ($tr.next("tr").size() == 0) cursor_state.last_row = true;
+
+    var $td = jQuery(anchor, this.get_edit_window()).parents("td");
+    var $th = jQuery(anchor, this.get_edit_window()).parents("th");
+
+    if ($td.size() > 0) {
+        if ($td.prev("td").size() == 0) cursor_state.first_column = true;
+        if ($td.next("td").size() == 0) cursor_state.last_column = true;
+    }
+    if ($th.size() > 0) {
+        if ($th.prev("th").size() == 0) cursor_state.first_column = true;
+        if ($th.next("th").size() == 0) cursor_state.last_column = true;
+        cursor_state.header_row = true;
+    }
+
+    return cursor_state;
 }
 
 proto.set_clear_handler = function () {
@@ -1149,7 +1241,58 @@ proto._do_table_manip = function(callback) {
                 r.select();
             }
         }
+
+        setTimeout(function() {
+            var $table = $cell.parents("table.sort:eq(0)");
+            if ($table.size()) {
+                Socialtext.make_table_sortable($table[0]);
+            }
+        }, 50);
+
     }, 100);
+}
+
+proto.do_table_settings = function() {
+    var self = this;
+
+    this._do_table_manip(function($cell) {
+        if ($cell.parents('table:eq(0)').find('tr').size() < 2) {
+            return;
+        }
+        jQuery.showLightbox({
+            content: '#st-table-settings',
+            callback: function() {
+                var $table = $cell.parents("table:eq(0)");
+                var $form = jQuery("#st-table-settings form");
+
+                if ($table.is(".sort") ){
+                    $form.find("input[name=sort]").attr("checked", "checked");
+                }
+
+                jQuery("#st-table-settings form").one("reset", function() {
+                    jQuery.hideLightbox();
+                });
+
+                jQuery("#st-table-settings form").one("submit", function() {
+                    if ( $("input[name=sort]", this).is(":checked") ) {
+                        $table.addClass("sort");
+                        setTimeout(function() {
+                            Socialtext.make_table_sortable($table.get(0));
+                        }, 100);
+                    }
+                    else {
+                        $table.removeClass("sort");
+                        var table = $table.get(0);
+                        delete table.config;
+                        Socialtext.make_table_unsortable(table);
+                    }
+
+                    jQuery.hideLightbox();
+                    return false;
+                });
+            }
+        });
+    });
 }
 
 proto.do_add_row_below = function() {
@@ -1158,7 +1301,7 @@ proto.do_add_row_below = function() {
         var doc = this.get_edit_document();
         var $tr = jQuery(doc.createElement('tr'));
         $cell.parents("tr").find("td").each(function() {
-            $tr.append('<td><span style=\"padding:0.5em\"></span></td>');
+            $tr.append('<td style="border: 1px solid black; padding: 0.2em;">&nbsp;</td>');
         });
         $tr.insertAfter( $cell.parents("tr") );
     });
@@ -1171,7 +1314,7 @@ proto.do_add_row_above = function() {
         var $tr = jQuery(doc.createElement('tr'));
 
         $cell.parents("tr").find("td").each(function() {
-            $tr.append('<td><span style=\"padding:0.5em\"></span></td>');
+            $tr.append('<td style="border: 1px solid black; padding: 0.2em;">&nbsp;</td>');
         });
         $tr.insertBefore( $cell.parents("tr") );
     });
@@ -1183,10 +1326,12 @@ proto.do_add_col_left = function() {
         var doc = this.get_edit_document();
         self._traverse_column($cell, function($td) {
             $td.before(
-                $(doc.createElement('td'))
-                    .html('<span style=\"padding:0.5em\"></span>')
+                $(doc.createElement( $td.get(0).tagName ))
+                    .attr({style: 'border: 1px solid black;', padding: '0.2em'})
+                    .html("&nbsp;")
             );
         });
+        Socialtext.make_table_unsortable( $cell.parents("table:eq(0)").get(0) );
     });
 }
 
@@ -1196,10 +1341,12 @@ proto.do_add_col_right = function() {
         var doc = this.get_edit_document();
         self._traverse_column($cell, function($td) {
             $td.after(
-                $(doc.createElement('td'))
-                    .html('<span style=\"padding:0.5em\"></span>')
+                $(doc.createElement( $td.get(0).tagName ))
+                    .attr({style: 'border: 1px solid black;', padding: '0.2em'})
+                    .html("&nbsp;")
             );
         });
+        Socialtext.make_table_unsortable( $cell.parents("table:eq(0)").get(0) );
     });
 }
 
@@ -1235,14 +1382,14 @@ proto._traverse_column_with_next = function($cell, callback) {
 proto._traverse_column = function($cell, callback, offset) {
     var $table = $cell.parents("table");
     var col = this._find_column_index($cell);
-    var trs = $table.find('tr');
-    for (var i = 0; i < trs.length; i++) {
-        var tds = $(trs[i]).find('td');
-        if (tds.length >= col) {
-            var $td = $(tds.get(col-1));
+    var $trs = $table.find('tr');
+    for (var i = 0; i < $trs.length; i++) {
+        var $tds = $($trs[i]).find('td,th');
+        if ($tds.length >= col) {
+            var $td = $($tds.get(col-1));
             if (offset) {
-                if (tds.length >= col+offset && col+offset >= 1) {
-                    var $td2 = $(tds.get(col+offset-1));
+                if ($tds.length >= col+offset && col+offset >= 1) {
+                    var $td2 = $($tds.get(col+offset-1));
                     callback($td, $td2);
                 }
             }

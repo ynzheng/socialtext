@@ -159,7 +159,6 @@ proto.initializeObject = function(div, config) {
         this.toolbarObject.wikiwyg = this;
         this.toolbarObject.set_config(config.toolbar);
         this.toolbarObject.initializeObject();
-        this.placeToolbar(this.toolbarObject.div);
     }
 
     // These objects must be _created_ before the toolbar is created
@@ -225,6 +224,11 @@ proto.displayMode = function() {
     this.toolbarObject.disableThis();
     this.div.style.display = 'block';
     this.divHeight = this.div.offsetHeight;
+
+    jQuery('table.sort')
+        .each(function() {
+            Socialtext.make_table_sortable(this);
+        });
 }
 
 proto.switchMode = function(new_mode_key) {
@@ -269,11 +273,6 @@ if (! window.wikiwyg_nlw_debug)
 
 if (window.wikiwyg_nlw_debug)
     proto.default_config.modeClasses.push(WW_HTML_MODE);
-
-proto.placeToolbar = function(toolbar_div) {
-    jQuery('#st-page-editing-toolbar')
-        .prepend(toolbar_div);
-}
 
 proto.hideScrollbars = function () {
     this._originalHTMLOverflow = jQuery('html').css('overflow') || 'visible';

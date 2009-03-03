@@ -16,7 +16,7 @@ proto.show = function () {
 
         jQuery('<div class="lightbox" id="st-email-lightbox" />')
             .appendTo('body')
-            .html( Jemplate.process('email_lightbox.tt2', Socialtext) );
+            .html( Jemplate.process('email.tt2', Socialtext) );
 
         jQuery('#email_page_add_one').click(function () {
             jQuery(this).val('');
@@ -89,6 +89,11 @@ proto.show = function () {
             return false;
         });
     }
+
+    $('#st-email-lightbox .submit').click(function () {
+        $(this).parents('form').submit();
+    });
+
     jQuery.showLightbox({
         content: '#st-email-lightbox',
         close: '#email_cancel',

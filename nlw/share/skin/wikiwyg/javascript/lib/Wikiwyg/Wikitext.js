@@ -63,7 +63,11 @@ proto.clear_inner_text = function() {
 }
 
 proto.enableStarted = function() {
+    jQuery("#wikiwyg_button_table").removeClass("disabled");
+    jQuery("#wikiwyg_button_table-settings").addClass("disabled");
+    jQuery(".table_buttons img").removeClass("disabled");
     jQuery(".table_buttons").addClass("disabled");
+
     jQuery('#st-mode-wikitext-button').addClass('disabled');
 }
 
@@ -1151,6 +1155,8 @@ proto.enableThis = function() {
     if (jQuery('#contentRight').is(':visible')) {
         jQuery('#st-page-maincontent').css('marginRight', '240px');
     }
+
+
 }
 
 proto.toHtml = function(func) {
@@ -1955,7 +1961,7 @@ proto.format_ol = function(elem) {
 
 proto.format_table = function(elem) {
     elem.top_level_block = true;
-    return elem.wikitext;
+    return (jQuery(elem).hasClass('sort') ? '|| sort\n' : '') + elem.wikitext;
 }
 
 proto.format_tr = function(elem) {

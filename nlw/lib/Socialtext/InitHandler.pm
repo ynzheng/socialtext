@@ -26,8 +26,8 @@ sub handler {
                 open M, "> $stamp_file";
                 print M time();
                 close M;
-                _regen_combined_js($r);
                 Socialtext::Pluggable::Adapter->make;
+                _regen_combined_js($r);
             }
             local $Socialtext::System::SILENT_RUN = 1;
             shell_run '-st-widgets update-all --noremote';
@@ -40,6 +40,9 @@ sub handler {
         $Socialtext::User::Cache::Enabled = 1;
     }
 
+    if (my $proxy = Socialtext::AppConfig->web_services_proxy) {
+        $ENV{http_proxy} = $ENV{HTTP_proxy} = $proxy;
+    }
 }
 
 sub _regen_combined_js {

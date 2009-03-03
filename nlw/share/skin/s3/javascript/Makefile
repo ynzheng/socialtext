@@ -16,20 +16,6 @@ EDITOR_FILE=socialtext-editor.js
 EDITOR_FILE_MINI=socialtext-editor-mini.js
 EDITOR_FILE_GZIP=socialtext-editor.js.gz
 
-LIGHTBOX_FILE=socialtext-lightbox.js
-LIGHTBOX_FILE_MINI=socialtext-lightbox-mini.js
-LIGHTBOX_FILE_GZIP=$(LIGHTBOX_FILE).gz
-
-LIGHTBOX_JEMPLATE=jemplateLightboxes.js
-LIGHTBOX_TEMPLATES= \
-		     template/comment_lightbox.tt2 \
-		     template/email_lightbox.tt2 \
-		     template/duplicate_lightbox.tt2 \
-		     template/rename_lightbox.tt2 \
-		     template/copy_lightbox.tt2 \
-		     template/create_content_lightbox.tt2 \
-		     template/attachment_lightbox.tt2 \
-
 ALL_EDITOR_FILES:=$(shell find $(WIKIWYG_ST) $(COMMON_JAVASCRIPT) -type f | grep -v .svn | grep -v editor.js)
 ALL_JEMPLATE_PLUGINS:=$(shell find JemplatePlugin -name \*.js)
 
@@ -51,20 +37,17 @@ S3_SOURCE_FILES= \
 		email.js \
 		s3.js \
 
-LIGHTBOX_SOURCE_FILES= \
-		timestamp.js \
-		$(LIGHTBOX_JEMPLATE) \
-		comment.js \
-		email-lightbox.js \
-		move.js \
-		create_content.js \
-		pageattachments.js \
+LIGHTBOX_TEMPLATES=$(wildcard lightbox/*.tt2)
+LIGHTBOX_OUTPUT=$(LIGHTBOX_TEMPLATES:lightbox/%.tt2=lightbox-%.js)
+LIGHTBOX_OUTPUT_GZIPS=$(LIGHTBOX_OUTPUT:%=%.gz)
+PLUGIN_LIGHTBOXES=$(wildcard ../../../plugin/*/share/javascript/lightbox-*.js)
 
 all: \
+    $(LIGHTBOX_OUTPUT_GZIPS) \
+    $(LIGHTBOX_OUTPUT) \
     timestamp.js \
     $(S3_FILE_GZIP) \
     $(EDITOR_FILE_GZIP) \
-    $(LIGHTBOX_FILE_GZIP) \
     Selection.htc \
 
 clean:
@@ -72,17 +55,14 @@ clean:
 	    info.js \
 	    timestamp.js \
 	    Jemplate.js \
-	    $(JEMPLATE_MODULE) \
-	    $(LIGHTBOX_JEMPLATE) \
+	    $(LIGHTBOX_OUTPUT) \
+	    $(LIGHTBOX_OUTPUT_GZIPS) \
 	    $(S3_FILE) \
 	    $(S3_FILE_MINI) \
 	    $(S3_FILE_GZIP) \
 	    $(EDITOR_FILE) \
 	    $(EDITOR_FILE_MINI) \
 	    $(EDITOR_FILE_GZIP) \
-	    $(LIGHTBOX_FILE) \
-	    $(LIGHTBOX_FILE_MINI) \
-	    $(LIGHTBOX_FILE_GZIP) \
 	    build-semaphore \
 	    Selection.htc \
 
@@ -91,9 +71,19 @@ clean:
 .js-mini.js:
 	$(MINIFY) $< > $@
 
-$(EDITOR_FILE): $(LIGHTBOX_FILE) $(ST_EDITOR_FILE)
+$(PLUGIN_LIGHTBOXES):
+	# Do nothing. But this avoids us messing up plugin lightboxes in the
+	# folowing section
+
+lightbox-%.js: st-lightbox.js lightbox/%.tt2 lightbox/%.js
+	jemplate --compile $(@:lightbox-%.js=lightbox/%.tt2) > $@; \
+	for js in st-lightbox.js $(@:lightbox-%.js=lightbox/%.js); do \
+	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
+	done
+
+$(EDITOR_FILE): lightbox-attachment.js $(ST_EDITOR_FILE)
 	rm -f $@;
-	cat $(LIGHTBOX_FILE) $(ST_EDITOR_FILE) >> $@
+	cat lightbox-attachment.js $(ST_EDITOR_FILE) >> $@
 
 $(EDITOR_FILE_MINI): $(EDITOR_FILE)
 	$(MINIFY) $< > $@
@@ -104,9 +94,6 @@ $(EDITOR_FILE_MINI): $(EDITOR_FILE)
 Jemplate.js:
 	jemplate --runtime=jquery > $@
 
-$(LIGHTBOX_JEMPLATE): $(LIGHTBOX_TEMPLATES)
-	jemplate --compile $(LIGHTBOX_TEMPLATES) > $(LIGHTBOX_JEMPLATE)
-
 $(S3_FILE): $(S3_SOURCE_FILES) Makefile
 	rm -f $@;
 	for js in $(S3_SOURCE_FILES); do \
@@ -116,17 +103,11 @@ $(S3_FILE): $(S3_SOURCE_FILES) Makefile
 $(ST_EDITOR_FILE): $(ALL_EDITOR_FILES)
 	make -C $(WIKIWYG_ST) all
 
-$(LIGHTBOX_FILE): $(LIGHTBOX_SOURCE_FILES) Makefile
-	rm -f $@;
-	for js in $(LIGHTBOX_SOURCE_FILES); do \
-	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
-	done
-
 info.js: ../info.yaml
 	perl -MYAML -MTemplate -e \
 	    'Template->new->process("template/$@", YAML::LoadFile("$<"))' > $@
 
-timestamp.js: $(ST_EDITOR_FILE) $(S3_SOURCE_FILES:timestamp.js%=%) $(LIGHTBOX_SOURCE_FILES:timestamp.js%=%)
+timestamp.js: $(ST_EDITOR_FILE) $(S3_SOURCE_FILES:timestamp.js%=%) $(LIGHTBOX_OUTPUT) $(PLUGIN_LIGHTBOXES)
 	echo 'var Socialtext = Socialtext || {};' > $@
 	perl -le 'print "Socialtext.make_time = \"" . time . "\";"' >> $@
 

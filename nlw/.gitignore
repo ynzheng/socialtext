@@ -11,6 +11,7 @@ share/html/502.html.en
 share/html/502.html.html
 share/html/502.html.ja
 t/test-data/ja/mecabif
+t/share/plugin/fakeplugin/etc/widgets.yaml
 blib
 share/l10n/mecab/char.bin
 share/l10n/mecab/dicrc
@@ -175,3 +176,10 @@ t/widget/Test1.xml
 t/widget/Test2.xml
 t/widget/lang/Test_en.xml
 t/widget/lang/Test_es.xml
+lib/Socialtext/Gadgets/Gallery.pm
+t/Socialtext/Gadgets/Gallery.t
+lib/Socialtext/Rest/Gadgets/Gallery.pm
+lib/Socialtext/Gadgets/UserAgent.pm
+lib/Socialtext/Rest/Gadgets/GadgetInstance.pm
+t/Socialtext/Rest/Gadgets/GadgetInstance.t
+t/Socialtext/Signal/export_import.t

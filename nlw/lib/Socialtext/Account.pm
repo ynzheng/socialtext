@@ -27,7 +27,8 @@ Readonly our @ACCT_COLS => (
     'name',
     'skin_name',
     'is_system_created',
-    'email_addresses_are_hidden'
+    'email_addresses_are_hidden',
+    'is_exportable',
 );
 
 my %ACCT_COLS = map { $_ => 1 } @ACCT_COLS;
@@ -79,6 +80,12 @@ sub Resolve {
 
     $account ||= Socialtext::Account->new( name => $maybe_account );
     return $account;
+}
+
+sub PluginsEnabledForAny {
+    my $class = shift;
+    my $sth = sql_execute('SELECT distinct plugin FROM account_plugin');
+    return map{ $_->[0] } @{ $sth->fetchall_arrayref };
 }
 
 sub EnablePluginForAll {
@@ -502,8 +509,14 @@ sub update {
 sub Count {
     my ( $class, %p ) = @_;
 
-    my $sth = sql_execute('SELECT COUNT(*) FROM "Account"');
-    return $sth->fetchall_arrayref->[0][0];
+    my @bind  = ();
+    my $where = '';
+    if ( $p{is_exportable} ) {
+        $where = 'WHERE "Account".is_exportable = ?';
+        push @bind, $p{is_exportable};
+    }
+
+    return sql_singlevalue("SELECT COUNT(*) FROM \"Account\" $where", @bind);
 }
 
 sub CountByName {
@@ -902,6 +915,10 @@ Returns a count of all accounts.
 
 Inserts required accounts into the DBMS if they are not present. See
 L<Socialtext::Data> for more details on required data.
+
+=item Socialtext::Account->PluginsEnabledForAny()
+
+Plugin(s) enabled for any account
 
 =item Socialtext::Account->EnablePluginForAll($plugin)
 

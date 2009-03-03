@@ -33,7 +33,54 @@ function nlw_name_to_id(name) {
 
 push_onload_function = function (fcn) { jQuery(fcn) }
 
+Socialtext.make_table_sortable = function(table) {
+    var undefined;
+    if (typeof(table.config) != 'undefined') {
+        table.config = undefined;
+    }
+
+    var $table = $(table);
+    var $row = $table
+        .children('tbody:first')
+        .children('tr:first');
+
+    if ($row.length) {
+        if ($table.find("th").size() == 0) {
+            var $newRow = $('<tr />');
+            $row.children('td').each(function() {
+                var $col = $(this);
+                $newRow.append(
+                    $('<th />')
+                        .html($col.html())
+                        .attr('style', $col.attr('style'))
+                );
+            });
+            $row.remove();
+            $table.prepend("<thead><tr>" + $newRow.html() + "</tr></thead>");
+        }
+        $table.tablesorter();
+    }
+}
+
+Socialtext.make_table_unsortable = function(table) {
+    var undefined;
+    var $table = jQuery(table);
+
+    table.config = undefined;
+
+    $table.find("thead tr").prependTo( $table.find("tbody") );
+    $table.find("thead").remove();
+
+    $table.find("th").each(function() {
+        jQuery(this).replaceWith("<td style=\"" + jQuery(this).attr("style") + "\">" + this.innerHTML + "</td>");
+    });
+
+}
+
 $(function() {
+    $('table.sort')
+        .each(function() { Socialtext.make_table_sortable(this) });
+
     $('#st-page-boxes-toggle-link')
         .bind('click', function() {
             var hidden = $('#contentColumns').hasClass('hidebox');
@@ -100,7 +147,7 @@ $(function() {
         });
 
     $('#st-attachments-uploadbutton').unbind('click').click(function () {
-        get_lightbox(function () {
+        get_lightbox('attachment', function () {
             $('#st-attachments-attach-list').html('').hide();
             Attachments.showUploadInterface();
         });
@@ -108,7 +155,7 @@ $(function() {
     });
 
     $('.extract_attachment').unbind('click').click(function () {
-        get_lightbox(function() {
+        get_lightbox('attachment', function() {
             $(this).children('img')
                 .attr('src', '/static/skin/common/images/ajax-loader.gif');
                 Attachments.extractAttachment($(this).attr('name'));
@@ -118,7 +165,7 @@ $(function() {
 
     $('.delete_attachment').unbind('click').click(function () {
         var self = this;
-        get_lightbox(function() {
+        get_lightbox('attachment', function() {
             $(self).children('img')
                 .attr('src', '/static/skin/common/images/ajax-loader.gif');
             Attachments.delAttachment(
@@ -137,23 +184,43 @@ $(function() {
     var editor_uri = nlw_make_s3_path('/javascript/socialtext-editor.js' + _gz)
         .replace(/(\d+\.\d+\.\d+\.\d+)/,'$1.'+Socialtext.make_time);
 
-    var lightbox_uri = nlw_make_s3_path('/javascript/socialtext-lightbox.js' + _gz)
-        .replace(/(\d+\.\d+\.\d+\.\d+)/,'$1.'+Socialtext.make_time);
-
     var socialcalc_uri = nlw_make_plugin_path("/socialcalc/javascript/socialtext-socialcalc.js" + _gz)
             .replace(/(\d+\.\d+\.\d+\.\d+)/, '$1.' + Socialtext.make_time);
 
-    function get_lightbox (cb) {
-        if (Socialtext.lightbox_loaded) {
+    function get_lightbox (lightbox, cb) {
+        Socialtext.lightbox_loaded = Socialtext.lightbox_loaded || {};
+        if (Socialtext.lightbox_loaded[lightbox]) {
             cb();
         }
         else {
-            Socialtext.lightbox_loaded = true;
+            Socialtext.lightbox_loaded[lightbox] = true;
+            var uri = nlw_make_s3_path(
+                '/javascript/lightbox-' + lightbox + '.js' + _gz
+            ).replace(/(\d+\.\d+\.\d+\.\d+)/,'$1.'+Socialtext.make_time);
+
             $.ajaxSettings.cache = true;
-            $.getScript(lightbox_uri, cb);
+            $.getScript(uri, cb);
             $.ajaxSettings.cache = false;
         }
     }
+    window.get_lightbox = get_lightbox;
+
+    function get_plugin_lightbox (plugin, lightbox, cb) {
+        Socialtext.plugin_lightbox_loaded =
+            Socialtext.plugin_lightbox_loaded || {};
+        if (Socialtext.plugin_lightbox_loaded[lightbox]) {
+            cb()
+        }
+        else {
+            var uri = nlw_make_plugin_path(
+                '/' + plugin + '/javascript/lightbox-' + lightbox + '.js' + _gz
+            ).replace(/(\d+\.\d+\.\d+\.\d+)/,'$1.'+Socialtext.make_time);
+            $.ajaxSettings.cache = true;
+            $.getScript(uri, cb);
+            $.ajaxSettings.cache = false;
+        }
+    }
+    window.get_plugin_lightbox = get_plugin_lightbox;
 
     $("#st-comment-button-link, #bottomButtons .commentButton")
         .click(function () {
@@ -162,7 +229,7 @@ $(function() {
                 return;
             }
 
-            get_lightbox(function () {
+            get_lightbox('comment', function () {
                 var ge = new GuiEdit({
                     id: 'contentLeft',
                     oncomplete: function () {
@@ -183,7 +250,7 @@ $(function() {
 
     $(".weblog_comment").click(function () {
         var page_id = this.id.replace(/^comment_/,'');
-        get_lightbox(function () {
+        get_lightbox('comment', function () {
             var ge = new GuiEdit({
                 page_id: page_id,
                 id: 'content_'+page_id,
@@ -199,7 +266,7 @@ $(function() {
     });
 
     $("#st-pagetools-email").click(function () {
-        get_lightbox(function () {
+        get_lightbox('email', function () {
             var Email = new ST.Email;
             Email.show();
         });
@@ -208,26 +275,26 @@ $(function() {
 
     //index.cgi?action=duplicate_popup;page_name=[% page.id %]
     $("#st-pagetools-duplicate").click(function () {
-        get_lightbox(function () {
-            var move = new ST.Move;
-            move.duplicateLightbox();
+        get_lightbox('duplicate', function () {
+            var duplicate = new ST.Duplicate;
+            duplicate.duplicateLightbox();
         });
         return false;
     });
 
     $("#st-pagetools-rename").click(function () {
-        get_lightbox(function () {
-            var move = new ST.Move;
-            move.renameLightbox();
+        get_lightbox('rename', function () {
+            var rename = new ST.Rename;
+            rename.renameLightbox();
         });
         return false;
     });
 
     //index.cgi?action=copy_to_workspace_popup;page_name=[% page.id %]')
     $("#st-pagetools-copy").click(function () {
-        get_lightbox(function () {
-            var move = new ST.Move;
-            move.copyLightbox();
+        get_lightbox('copy', function () {
+            var copy = new ST.Copy;
+            copy.copyLightbox();
         });
         return false;
     });
@@ -250,7 +317,7 @@ $(function() {
             title = data.title
         }
 
-        get_lightbox(function () {
+        get_lightbox('create_content', function () {
             var create_content = new ST.CreateContent;
             create_content.show();
             if (title) {
@@ -261,10 +328,10 @@ $(function() {
     });
 
     $("#st-pagetools-delete").click(function () {
-        if (confirm(loc("Are you sure you want to delete this page?"))) {
-            var page = Socialtext.page_id;
-            document.location = "index.cgi?action=delete_page;page_name=" + page;
-        }
+        get_lightbox('delete', function () {
+            var del = new ST.Delete;
+            del.deleteLightbox();
+        });
         return false;
     });
 

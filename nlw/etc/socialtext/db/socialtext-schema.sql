@@ -8,11 +8,11 @@ SET search_path = public, pg_catalog;
 
 CREATE FUNCTION auto_vivify_user_rollups() RETURNS "trigger"
     AS $$
-        BEGIN
-            INSERT INTO rollup_user_signal (user_id) VALUES (NEW.user_id);
-            RETURN NULL; -- after trigger
-        END
-    $$
+    BEGIN
+        INSERT INTO rollup_user_signal (user_id) VALUES (NEW.user_id);
+        RETURN NULL; -- trigger return val is ignored
+    END
+$$
     LANGUAGE plpgsql;
 
 CREATE FUNCTION cleanup_sessions() RETURNS "trigger"
@@ -39,21 +39,33 @@ END;
 $$
     LANGUAGE plpgsql IMMUTABLE;
 
+CREATE FUNCTION is_profile_contribution("action" text) RETURNS boolean
+    AS $$
+BEGIN
+    IF action IN ('edit_save', 'tag_add', 'tag_delete')
+    THEN
+        RETURN true;
+    END IF;
+    RETURN false;
+END;
+$$
+    LANGUAGE plpgsql IMMUTABLE;
+
 CREATE FUNCTION signal_sent() RETURNS "trigger"
     AS $$
-        BEGIN
+    BEGIN
 
-            UPDATE rollup_user_signal
-               SET sent_count = sent_count + 1,
-                   sent_latest = GREATEST(NEW."at", sent_latest),
-                   sent_earliest = LEAST(NEW."at", sent_earliest)
-             WHERE user_id = NEW.user_id;
+        UPDATE rollup_user_signal
+           SET sent_count = sent_count + 1,
+               sent_latest = GREATEST(NEW."at", sent_latest),
+               sent_earliest = LEAST(NEW."at", sent_earliest)
+         WHERE user_id = NEW.user_id;
 
-            NOTIFY new_signal;
+        NOTIFY new_signal; -- not strictly needed yet
 
-            RETURN NULL;
-        END
-    $$
+        RETURN NULL; -- trigger return val is ignored
+    END
+$$
     LANGUAGE plpgsql;
 
 CREATE AGGREGATE array_accum (
@@ -72,7 +84,8 @@ CREATE TABLE "Account" (
     name varchar(250) NOT NULL,
     is_system_created boolean DEFAULT false NOT NULL,
     skin_name varchar(30) DEFAULT 's3'::varchar NOT NULL,
-    email_addresses_are_hidden boolean
+    email_addresses_are_hidden boolean,
+    is_exportable boolean DEFAULT false NOT NULL
 );
 
 CREATE SEQUENCE "Account___account_id"
@@ -285,7 +298,7 @@ CREATE TABLE event (
 
 CREATE TABLE gadget (
     gadget_id bigint NOT NULL,
-    src text NOT NULL,
+    src text,
     plugin text,
     href text NOT NULL,
     last_update timestamptz DEFAULT now() NOT NULL,
@@ -296,7 +309,8 @@ CREATE TABLE gadget (
     title text,
     thumbnail text,
     scrolling boolean DEFAULT false,
-    height integer
+    height integer,
+    description text
 );
 
 CREATE SEQUENCE gadget_id
@@ -308,11 +322,11 @@ CREATE SEQUENCE gadget_id
 CREATE TABLE gadget_instance (
     gadget_instance_id bigint NOT NULL,
     container_id bigint NOT NULL,
-    default_gadget_id bigint,
     gadget_id bigint NOT NULL,
     col integer NOT NULL,
     "row" integer NOT NULL,
-    minimized boolean DEFAULT false
+    minimized boolean DEFAULT false,
+    fixed boolean DEFAULT false
 );
 
 CREATE SEQUENCE gadget_instance_id
@@ -347,6 +361,27 @@ CREATE TABLE gadget_user_pref (
 );
 
 CREATE SEQUENCE gadget_user_pref_id
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+CREATE TABLE gallery (
+    gallery_id bigint NOT NULL,
+    last_update timestamptz DEFAULT now() NOT NULL,
+    account_id bigint,
+    CONSTRAINT gallery_id_or_account_id
+            CHECK (((gallery_id = 0) AND (account_id IS NULL)) OR ((gallery_id <> 0) AND (account_id IS NOT NULL)))
+);
+
+CREATE TABLE gallery_gadget (
+    gadget_id bigint NOT NULL,
+    gallery_id bigint NOT NULL,
+    "position" integer NOT NULL,
+    socialtext boolean NOT NULL
+);
+
+CREATE SEQUENCE gallery_id
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -456,6 +491,11 @@ CREATE TABLE signal (
     "at" timestamptz DEFAULT now(),
     user_id bigint NOT NULL,
     body text NOT NULL
+);
+
+CREATE TABLE signal_account (
+    signal_id bigint NOT NULL,
+    account_id bigint NOT NULL
 );
 
 CREATE SEQUENCE signal_id_seq
@@ -614,6 +654,14 @@ ALTER TABLE ONLY gadget_user_pref
     ADD CONSTRAINT gadget_user_pref_pk
             PRIMARY KEY (user_pref_id);
 
+ALTER TABLE ONLY gallery
+    ADD CONSTRAINT gallery_account_uniq
+            UNIQUE (account_id);
+
+ALTER TABLE ONLY gallery
+    ADD CONSTRAINT gallery_pk
+            PRIMARY KEY (gallery_id);
+
 ALTER TABLE ONLY page
     ADD CONSTRAINT page_pkey
             PRIMARY KEY (workspace_id, page_id);
@@ -649,6 +697,10 @@ ALTER TABLE ONLY search_sets
 ALTER TABLE ONLY sessions
     ADD CONSTRAINT sessions_pkey
             PRIMARY KEY (id);
+
+ALTER TABLE ONLY signal_account
+    ADD CONSTRAINT signal_account_pkey
+            PRIMARY KEY (signal_id, account_id);
 
 ALTER TABLE ONLY signal
     ADD CONSTRAINT signal_pkey
@@ -739,9 +791,49 @@ CREATE INDEX ix_event_for_page
 	    ON event (page_workspace_id, page_id, "at")
 	    WHERE (event_class = 'page');
 
+CREATE INDEX ix_event_noview_at
+	    ON event ("at")
+	    WHERE ("action" <> 'view');
+
+CREATE INDEX ix_event_noview_at_page
+	    ON event ("at")
+	    WHERE (("action" <> 'view') AND (event_class = 'page'));
+
+CREATE INDEX ix_event_noview_at_person
+	    ON event ("at")
+	    WHERE (("action" <> 'view') AND (event_class = 'person'));
+
+CREATE INDEX ix_event_noview_class_at
+	    ON event (event_class, "at")
+	    WHERE ("action" <> 'view');
+
+CREATE INDEX ix_event_page_contribs
+	    ON event ("at")
+	    WHERE ((event_class = 'page') AND is_page_contribution("action"));
+
+CREATE INDEX ix_event_person_contribs
+	    ON event ("at")
+	    WHERE ((event_class = 'person') AND is_profile_contribution("action"));
+
+CREATE INDEX ix_event_person_contribs_actor
+	    ON event (actor_id, "at")
+	    WHERE ((event_class = 'person') AND is_profile_contribution("action"));
+
+CREATE INDEX ix_event_person_contribs_person
+	    ON event (person_id, "at")
+	    WHERE ((event_class = 'person') AND is_profile_contribution("action"));
+
 CREATE INDEX ix_event_person_time
 	    ON event (person_id, "at")
 	    WHERE (event_class = 'person');
+
+CREATE INDEX ix_event_signal_actor_at
+	    ON event (actor_id, "at")
+	    WHERE (event_class = 'signal');
+
+CREATE INDEX ix_event_signal_at
+	    ON event ("at")
+	    WHERE (event_class = 'signal');
 
 CREATE INDEX ix_event_signal_id_at
 	    ON event (signal_id, "at");
@@ -774,6 +866,12 @@ CREATE INDEX ix_rollup_user_signal_user
 
 CREATE INDEX ix_session_last_updated
 	    ON sessions (last_updated);
+
+CREATE INDEX ix_signal_account
+	    ON signal_account (signal_id);
+
+CREATE UNIQUE INDEX ix_signal_account_account
+	    ON signal_account (account_id, signal_id);
 
 CREATE INDEX ix_signal_at
 	    ON signal ("at");
@@ -894,11 +992,6 @@ ALTER TABLE ONLY container
             FOREIGN KEY (workspace_id)
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY gadget_instance
-    ADD CONSTRAINT default_gadget_id_fk
-            FOREIGN KEY (default_gadget_id)
-            REFERENCES default_gadget(default_gadget_id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY event
     ADD CONSTRAINT event_actor_id_fk
             FOREIGN KEY (actor_id)
@@ -1009,6 +1102,21 @@ ALTER TABLE ONLY gadget_user_pref
             FOREIGN KEY (gadget_id)
             REFERENCES gadget(gadget_id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY gallery
+    ADD CONSTRAINT gallery_account_fk
+            FOREIGN KEY (account_id)
+            REFERENCES "Account"(account_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY gallery_gadget
+    ADD CONSTRAINT gallery_gadget_account_fk
+            FOREIGN KEY (gallery_id)
+            REFERENCES gallery(gallery_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY gallery_gadget
+    ADD CONSTRAINT gallery_gadget_fk
+            FOREIGN KEY (gadget_id)
+            REFERENCES gadget(gadget_id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY page
     ADD CONSTRAINT page_creator_id_fk
             FOREIGN KEY (creator_id)
@@ -1084,6 +1192,16 @@ ALTER TABLE ONLY rollup_user_signal
             FOREIGN KEY (user_id)
             REFERENCES users(user_id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY signal_account
+    ADD CONSTRAINT signal_account_fk
+            FOREIGN KEY (signal_id)
+            REFERENCES signal(signal_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY signal_account
+    ADD CONSTRAINT signal_account_signal_fk
+            FOREIGN KEY (account_id)
+            REFERENCES "Account"(account_id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY signal
     ADD CONSTRAINT signal_user_id_fk
             FOREIGN KEY (user_id)
@@ -1135,4 +1253,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '35');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '41');
