@@ -322,8 +322,6 @@ proto.preview_link_text = loc('Preview');
 proto.preview_link_more = loc('Edit More');
 
 proto.preview_link_action = function() {
-    jQuery("#st-edit-summary").hide();
-
     var preview = this.modeButtonMap[WW_PREVIEW_MODE];
     var current = this.current_mode;
 
@@ -1268,9 +1266,6 @@ function setup_wikiwyg() {
             //do_post_cancel_tidying();
             ww.disableLinkConfirmations();
 
-            hide_edit_summary();
-            jQuery('#st-edit-summary .input').val('')
-
             ww.is_editing = false;
             ww.showScrollbars();
 
@@ -1280,37 +1275,26 @@ function setup_wikiwyg() {
     });
 
     // Begin - Edit Summary Logic
+    jQuery("#st-edit-summary .field input").each(function() {
+        var $self = jQuery(this);
+        var label = $self.prev("label").text();
+
+        $self
+        .val("")
+        .addClass("default")
+        .bind("focus", function() {
+            $self.addClass("focus");
+        })
+        .bind("blur", function() {
+            $self.removeClass("focus");
+            if( $self.val() == "" )
+                $self.addClass("default");
+            else
+                $self.removeClass("default");
+        });
+    });
 
     var ok_to_show_summary = false;
-
-    var show_edit_summary = function () {
-        if (! ok_to_show_summary) return;
-        if (! jQuery('#st-edit-summary').is(':hidden')) return;
-        var $input = jQuery('#st-edit-summary .input');
-
-        if (ww.edit_summary() == '')
-            $input.val('');
-        jQuery('#st-edit-summary').show();
-        $input.focus();
-
-        // position cursor at the end of the input field
-        var len = $input[0].value.length;
-        if ($input[0].createTextRange) {
-            var range = $input[0].createTextRange();
-            range.collapse(true);
-            range.moveEnd('character', len);
-            range.moveStart('character', len);
-            range.select();
-        }
-        else if ($input[0].setSelectionRange) {
-            $input[0].setSelectionRange(len, len);
-        }
-    }
-
-    var hide_edit_summary = function () {
-        jQuery('#st-edit-summary').hide();
-        return false;
-    }
 
     ww.update_edit_summary_preview = function () {
         if (jQuery('#st-edit-summary .preview').is(':hidden')) return true;
@@ -1379,18 +1363,6 @@ function setup_wikiwyg() {
         return val;
     }
 
-    jQuery('#st-save-button-link')
-        .unbind('hover')
-        .hover(
-            function() {
-                setTimeout(show_edit_summary, 100);
-            },
-            function () {
-                ok_to_show_summary = false;
-                setTimeout(function() { ok_to_show_summary = true }, 200);
-            }
-        );
-    
     jQuery('#st-edit-summary form')
         .unbind('submit')
         .submit(function () {
@@ -1398,35 +1370,9 @@ function setup_wikiwyg() {
             return false;    
         });
 
-    jQuery('#st-edit-summary-signal-checkbox')
-        .click(function () {
-            if (jQuery(this)[0].checked) {
-                jQuery('#st-edit-summary .preview').show();
-                jQuery('#st-edit-summary .truncate-message').show();
-                ww.update_edit_summary_preview();
-            }
-            else {
-                jQuery('#st-edit-summary .preview').hide();
-                jQuery('#st-edit-summary .truncate-message').hide();
-            }
-            return true;
-        });
-
-    jQuery('#st-edit-summary .close-window')
-        .unbind('click')
-        .click(hide_edit_summary);
-
-    jQuery('#st-edit-summary .explain a')
-        .unbind('click')
-        .click(function() {
-            alert(Jemplate.process('element/edit_summary_explanation'));
-            jQuery('#st-edit-summary .input').focus();
-        });
-
     jQuery("body").mousedown(function(e) {
         if ( jQuery(e.target).parents("#st-edit-summary").size() > 0 ) return;
         if ( jQuery(e.target).is("#st-edit-summary") ) return;
-        hide_edit_summary();
     });
 
     jQuery('#st-preview-button-link')

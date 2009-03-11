@@ -334,6 +334,7 @@ sub import_file {
     }
 
     $hub->pluggable->hook('nlw.import_account', $account, $hash);
+    $account->{_import_hash} = $hash;
 
     # Create all the profiles after so that user references resolve.
     eval "require Socialtext::People::Profile";
@@ -343,6 +344,14 @@ sub import_file {
     }
 
     return $account;
+}
+
+sub finish_import {
+    my $self = shift;
+    my %opts = @_;
+    my $hub  = $opts{hub};
+
+    $hub->pluggable->hook('nlw.finish_import_account', $self, $self->{_import_hash});
 }
 
 sub users {
@@ -718,6 +727,15 @@ sub _validate_and_clean_data {
     data_validation_error errors => \@errors if @errors;
 }
 
+sub hash_representation {
+    my $self = shift;
+    return {
+        account_name    => $self->name,
+        account_id      => $self->account_id,
+        plugins_enabled => [ $self->plugins_enabled ]
+    };
+}  
+
 1;
 
 __END__
@@ -872,9 +890,17 @@ Disables the plugin for the specified account.
 Export the account data to a file in the specified directory.
 
 =item $account->import_file(file => $file, [ name => $name ])
+=item $account->finish_import();
 
 Imports an account from data in the specified file.  If a name
 is supplied, that name will be used instead of the original account name.
+
+finish_import is also called after all the workspace data has been imported
+to allow plugins to finish the import of their data.
+
+=item $account->hash_representation()
+
+Returns a hash representation of the account.
 
 =item Socialtext::Account->Unknown()
 

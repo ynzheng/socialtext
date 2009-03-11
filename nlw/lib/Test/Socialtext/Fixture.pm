@@ -7,6 +7,7 @@ package Test::Socialtext::Fixture;
 use strict;
 use warnings;
 use Carp qw( confess );
+use Class::Field qw(const);
 use DateTime;
 use File::Basename ();
 use File::chdir;
@@ -23,8 +24,8 @@ use Socialtext::Pages;
 use Socialtext::User;
 use Socialtext::AppConfig;
 
-my $DefaultUsername = 'devnull1@socialtext.com';
-
+const 'test_username' => 'devnull1@socialtext.com';
+const 'test_password' => 'd3vnu11l';
 
 sub new {
     my $class = shift;
@@ -80,7 +81,7 @@ sub _built_in_base_layout {
     my $self = shift;
     my $env  = $self->env;
     my @layout;
-    foreach my $based (qw(docroot storage data plugin user)) {
+    foreach my $based (qw(docroot storage storage/db-backups data plugin user)) {
         push @layout, File::Spec->catdir( $env->base_dir, $based );
     }
     foreach my $rooted (qw(ceq etc/socialtext lock log run)) {
@@ -103,7 +104,6 @@ sub _built_in_base_config {
         $gen_config,
         '--quiet',
         '--root',           $env->root_dir,
-        '--ports-start-at', $env->ports_start_at,
         '--apache-proxy=' . $apache_proxy,
         '--socialtext-open=' . $socialtext_open,
         '--dev=0',    # Don't create the files in ~/.nlw
@@ -240,7 +240,6 @@ sub _run_custom_generator {
     if (-r "$dir/generate") {
         local $ENV{NLW_DIR} = $env->nlw_dir;
         local $ENV{NLW_ROOT_DIR} = $env->root_dir;
-        local $ENV{NLW_STARTING_PORT} = $env->ports_start_at;
 
         (system "$dir/generate") == 0
             or die $self->name . "/generate exit ", $? >> 8;
@@ -291,8 +290,8 @@ sub _generate_workspaces {
     return unless $self->config->{workspaces};
 
     my $creator = $self->_create_user(
-        username           => $DefaultUsername,
-        passwd             => 'd3vnu11l',
+        username           => test_username(),
+        passwd             => test_password(),
         is_business_admin  => 1,
         is_technical_admin => 1,
     );

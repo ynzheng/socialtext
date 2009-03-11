@@ -2651,17 +2651,24 @@ body#contentPage #controlsRight ul.level2 {
  * XXX: Hack around the fact that we don't have buttons for these elements yet
  */
 a#st-mode-wysiwyg-button,
-a#st-mode-wikitext-button,
-a#st-edit-tips {
+a#st-mode-wikitext-button {
     top: 0 !important;
     padding-left: 10px !important;
     margin-left: 0px !important;
+}
+a#st-edit-tips {
+    top: 0 !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
 }
 
 /* Loading... message */
 div#bootstrap-loader {
     float: left;
-    display: none;
+    float:left;
+    position:relative;
+    padding:11px;
+    display:none
 }
 
 /* pagetools : the top right New Page, Print, Email, and Tools items at top right */
@@ -4123,30 +4130,47 @@ ul li.flexButtonBlue a.addButton:hover {
 }
 
 #st-edit-summary {
-    width: 400px;
-    background: #e8e8e8;
-    padding: 10px 14px 10px 10px;
-    border: 1px solid black;
-    z-index: 1;
-    position: absolute;
-    display: none;
-    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
-    -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+    float: left;
+    height: 44px;
+    line-height:44px;
+    margin-left: 15px;
 }
 
-#st-edit-summary .input {
+#st-edit-summary form .field {
+    float: left;
+}
+
+#st-edit-summary form .field label {
+    display: block;
+    color: #aaa;
+    font-style: italic;
+    background:#fff;
+    height: 1.4em;
+    line-height:1.4em;
+    margin: 1.4em 0 -2.8em 0;
+    width:270px;
+    padding: 0 5px
+}
+
+#st-edit-summary form .field input {
+    width: 280px;
     background: #fff;
-    width:400px;
-    /* margin-bottom: 8px; */
 }
 
-#st-edit-summary .explain {
-    font-size: smaller;
+#st-edit-summary form .field input.default {
+    background: transparent;
+}
+
+#st-edit-summary form .field input.default.focus,
+#st-edit-summary form .field input.focus {
+    background: #fff;
 }
 
 #st-edit-summary .signal {
     float: left;
+}
+#st-edit-summary .signal label:focus {
+    outline: none;
 }
 
 #st-edit-summary .preview {
@@ -4157,25 +4181,6 @@ ul li.flexButtonBlue a.addButton:hover {
     text-align: right;
     float: right;
     width: 150px;
-}
-
-#st-edit-summary .title-area {
-    float: left;
-    margin-bottom: 5px;
-}
-
-#st-edit-summary .title {
-    font-size: 120%;
-    font-weight: bold;
-}
-
-#st-edit-summary .close-area {
-    float: right;
-}
-
-#st-edit-summary .close-window {
-    padding: 0;
-    margin: 0;
 }
 
 #st-page-title .st-edit-summary {
@@ -4234,5 +4239,41 @@ ul li.flexButtonBlue a.addButton:hover {
 }
 .wiki table.sort th.headerSortDown:hover {
     background-image: url(../images/sort-down-hover.png);
+}
+
+div#contentContainer ul.editModeSwitcher {
+    float:left;
+    width: 140px;
+    margin-right: 15px;
+    height: 40px;
+    line-height: 40px;
+}
+
+div#contentContainer ul.editModeSwitcher li {
+    display:inline;
+}
+
+div#contentContainer ul.editModeSwitcher li a.disabled {
+    color: black;
+    font-weight: bold;
+}
+
+div#contentContainer h2.tableTitle {
+    float: left;
+    width: 700px;
+}
+
+
+body#contentPage div#controls div#controlsRight ul li a#st-edit-pagetools-expand {
+    display: block;
+    background-image: url(../images/expand-icon.png);
+    width: 16px !important;
+    height: 16px;
+    overflow: hidden;
+    margin: 13px 0;
+}
+
+body#contentPage div#controls div#controlsRight ul li a#st-edit-pagetools-expand.contract {
+    background-image: url(../images/contract-icon.png);
 }
 

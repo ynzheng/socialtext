@@ -20,14 +20,15 @@ sub create_grammar {
         phrases => $phrases,
         filter => sub {
             chomp;
-            die "Message text cannot contain newline:\n>$_<"
-              if /\n/;
+            s/\n/ /g; # Turn all newlines into spaces
         }
     };
-#     $grammar->{b} = {
-#         match => re_huggy(q{\*}),
-#         phrases => $phrases,
-#     };
+
+    $grammar->{asis}{filter} = sub {
+        my $node = shift;
+        $_ = $node->{1} . $node->{2};
+    };
+
     return $grammar;
 }
 
@@ -54,12 +55,24 @@ sub handle_waflphrase {
             my $text = $match->{text} || $page_id;
             $page_id = $self->name_to_id($page_id);
             $self->{receiver}->insert({
-                output =>
-                    qq{<a href="/$workspace_id/index.cgi?$page_id">$text</a>}
+                wafl_type => 'link',
+                workspace_id => $workspace_id,
+                page_id => $page_id,
+                text => $text,
+                wafl_string => $options,
             });
             return;
         }
     }
+    elsif ($match->{2} eq 'user') {
+        my $options = $match->{3};
+        $self->{receiver}->insert({
+            wafl_type   => 'user',
+            user_string => $options,
+        });
+        return;
+    }
+
     $self->unknown_wafl($match);
 }
 

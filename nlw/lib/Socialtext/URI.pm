@@ -5,10 +5,11 @@ use strict;
 use warnings;
 
 use Socialtext::AppConfig;
-use Socialtext::HTTPPorts qw(SSL_PORT_DIFFERENCE);
+use Socialtext::HTTP::Ports;
 use URI::FromHash;
 use Socialtext::Cache;
 
+# Default scheme, which *is* over-ridden by at least one module (ST::CLI)
 our $default_scheme = 'http';
 
 sub uri {
@@ -38,68 +39,33 @@ sub _scheme_host_port {
     my $scheme = _scheme();
     return (
         scheme => $scheme,
-        _host(),
+        host   => Socialtext::AppConfig->web_hostname(),
         (($scheme eq 'http') ? _http_port() : _https_port())
     );
 }
 
 sub _scheme {
-    my $apr    = _apr();
     my $scheme = $default_scheme;
-
-    if ($apr) {
-        # FIXME: we should look in the ENV here not the apache
-        # dir config
+    if (_running_under_mod_perl()) {
         $scheme = $ENV{NLWHTTPSRedirect} ? 'https' : 'http';
     }
     return ( scheme => $scheme );
 }
 
-sub _host {
-    return ( host => Socialtext::AppConfig->web_hostname() );
-}
-
-sub _port {
-    if (_scheme() eq 'http') {
-        return _http_port();
-    }
-    else {
-        return _https_port();
-    }
-}
-
 sub _http_port {
-    my $custom_port = Socialtext::AppConfig->custom_http_port();
-    return () unless ($ENV{NLW_FRONTEND_PORT} or $custom_port);
-    return ( port => ( $custom_port || $ENV{NLW_FRONTEND_PORT} ) );
+    my $port = Socialtext::HTTP::Ports->http_port();
+    return () if ($port == Socialtext::HTTP::Ports->STANDARD_HTTP_PORT());
+    return (port => $port);
 }
 
 sub _https_port {
-    # NLW_FRONTEND_PORT only set in dev-env when there
-    # is a front and backend
-    if ($ENV{NLW_FRONTEND_PORT}) {
-        return ( port => ( $ENV{NLW_FRONTEND_PORT} + SSL_PORT_DIFFERENCE ));
-    }
-
-    # set no special port if the user is using custom_http_port
-    # current use cases define no special behavior for SSL in
-    # those circumstances
-    return () if Socialtext::AppConfig->custom_http_port();
-
-    # sigh under some circumstances in tests when using a mock
-    # Apache::Request we can reach here.
-    return ();
+    my $port = Socialtext::HTTP::Ports->https_port();
+    return () if ($port == Socialtext::HTTP::Ports->STANDARD_HTTPS_PORT());
+    return (port => $port);
 }
 
-sub _apr {
-    my $apr;
-    eval {
-        require Apache;
-        require Apache::Request;
-        $apr = Apache::Request->instance( Apache->request );
-    };
-    return undef if $@;
-    return $apr;
+sub _running_under_mod_perl {
+    return exists $ENV{MOD_PERL} ? 1 : 0;
 }
 
 1;

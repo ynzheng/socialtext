@@ -248,8 +248,9 @@ CREATE TABLE container (
     account_id bigint,
     name text DEFAULT '' NOT NULL,
     page_id text,
+    layout_template text,
     CONSTRAINT container_scope_ptr
-            CHECK ((((user_id IS NOT NULL) <> (workspace_id IS NOT NULL)) <> (account_id IS NOT NULL)) <> (page_id IS NOT NULL))
+            CHECK ((((((user_id IS NOT NULL) AND (account_id IS NULL)) AND (workspace_id IS NULL)) AND (page_id IS NULL)) OR ((((user_id IS NULL) AND (account_id IS NOT NULL)) AND (workspace_id IS NULL)) AND (page_id IS NULL))) OR (((user_id IS NULL) AND (account_id IS NULL)) AND (workspace_id IS NOT NULL)))
 );
 
 CREATE SEQUENCE container_id
@@ -326,7 +327,8 @@ CREATE TABLE gadget_instance (
     col integer NOT NULL,
     "row" integer NOT NULL,
     minimized boolean DEFAULT false,
-    fixed boolean DEFAULT false
+    fixed boolean DEFAULT false,
+    parent_instance_id bigint
 );
 
 CREATE SEQUENCE gadget_instance_id
@@ -775,6 +777,10 @@ CREATE INDEX ix_container_workspace_id
 CREATE INDEX ix_default_gadget__container_type
 	    ON default_gadget (container_type);
 
+CREATE INDEX ix_event_actor_page_contribs
+	    ON event (actor_id, page_workspace_id, page_id, "at")
+	    WHERE ((event_class = 'page') AND is_page_contribution("action"));
+
 CREATE INDEX ix_event_actor_time
 	    ON event (actor_id, "at");
 
@@ -850,6 +856,9 @@ CREATE INDEX ix_gadget__src
 
 CREATE INDEX ix_gadget_instance__container_id
 	    ON gadget_instance (container_id);
+
+CREATE INDEX ix_gadget_instance__parent_id
+	    ON gadget_instance (parent_instance_id);
 
 CREATE INDEX ix_gadget_instance_user_pref__user_pref_id
 	    ON gadget_instance_user_pref (user_pref_id);
@@ -972,6 +981,11 @@ ALTER TABLE ONLY container
             FOREIGN KEY (account_id)
             REFERENCES "Account"(account_id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY container
+    ADD CONSTRAINT container_page_id_fk
+            FOREIGN KEY (workspace_id, page_id)
+            REFERENCES page(workspace_id, page_id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY default_gadget
     ADD CONSTRAINT container_type_fk
             FOREIGN KEY (container_type)
@@ -1081,6 +1095,11 @@ ALTER TABLE ONLY gadget_instance
     ADD CONSTRAINT gadget_instance_gadget_fk
             FOREIGN KEY (gadget_id)
             REFERENCES gadget(gadget_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY gadget_instance
+    ADD CONSTRAINT gadget_instance_parent_fk
+            FOREIGN KEY (parent_instance_id)
+            REFERENCES gadget_instance(gadget_instance_id) ON DELETE RESTRICT;
 
 ALTER TABLE ONLY gadget_instance_user_pref
     ADD CONSTRAINT gadget_instance_user_pref_gadget_instance_fk
@@ -1253,4 +1272,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '41');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '43');

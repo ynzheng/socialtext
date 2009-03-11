@@ -6,6 +6,13 @@ if [ "$ST_CURRENT" != "" ]; then
     cd $ST_CURRENT/nlw
 fi
 
+# Cleanup plugins that don't exist here
+for link in lib/Socialtext/Pluggable/Plugin/*.pm; do
+    [ -e $link ] && continue;
+    echo "Unlinking dead symlink $link"
+    rm $link
+done
+
 perl -MCwd -le'print "Running ", Cwd::abs_path(shift)' $0
 
 START_PORT=21000 # for SSL
@@ -37,10 +44,18 @@ fi
 rm_dir "template_compile_dir";
 rm_dir "formatter_cache_dir";
 
+# Shut down any running copy of ST and/or OpenLDAP
 set -x
 NLWCTL_QUIET=1 dev-bin/nlwctl stop
-dev-bin/st-bootstrap-openldap stop
-dev-bin/_fresh-dev-env
+if [ -e ~/.nlw ]; then
+    dev-bin/st-bootstrap-openldap stop
+fi
+
+# Create the basic dev-env
+rm -rf $HOME/.nlw/
+dev-bin/make-test-fixture --home_dir $HOME --fixture clean
+dev-bin/make-test-fixture --home_dir $HOME --preserve --fixture base_config
+dev-bin/make-test-fixture --home_dir $HOME --preserve --fixture ALL
 
 # Setup robots.txt file to prevent dev-env heat death
 perl -le 'print "User-agent: *\nDisallow: /"' > ~/.nlw/root/docroot/robots.txt
@@ -52,7 +67,7 @@ set +e
 dev-bin/link-control-panel
 dev-bin/link-console
 dev-bin/link-reports
-dev-bin/link-plugins widgets agile csskit dashboard people signals socialcalc
+dev-bin/link-plugins widgets agile csskit dashboard people signals socialcalc apache
 set -e
 
 (cd ../plugins; make clean all);
@@ -63,7 +78,7 @@ psql -f etc/socialtext/db/dev.sql
 
 if [ $FDEFS_PROXY = 0 ]; then
     echo "Starting in single-Apache mode";
-    dev-bin/gen-config --root=$HOME/.nlw --ports-start-at=20000 --apache-proxy=$FDEFS_PROXY --socialtext-open=0;
+    dev-bin/gen-config --root=$HOME/.nlw --apache-proxy=$FDEFS_PROXY --socialtext-open=0;
     dev-bin/nlwctl -c start;
     dev-bin/nlwctl -1 start;
 else
