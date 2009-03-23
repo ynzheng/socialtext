@@ -32,11 +32,8 @@ my $nlw = "test_nlw.log";
 #----------------------------------------------------------#
 #  Create the Files and setup for import
 print_nlw_log(\@wsObjects, $userObjs, $nlw);
-my $access = "test_access.log";
-#Now we are going to delete a workspace and a user
-#$wsObjects[1]->delete;
-#$wsObjects[0]->remove_user(user => $userObjs->[1]);
-print_access_log(\@wsObjects, $userObjs, $access);
+#my $access = "test_access.log";
+#print_access_log(\@wsObjects, $userObjs, $access);
 
 #my $str = 'psql -U nlw NLW_reports -c "delete from actions_by_user where account_id =' . $account_id . '; "';
 #`$str`; 

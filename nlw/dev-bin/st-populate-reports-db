@@ -77,7 +77,7 @@ if (is_dev_env($host)) {
    `./st-consume-stub-reports`;
 } else {
    `sudo /usr/bin/st-reports-import-nlw-data test_nlw.log`;
-   `sudo /usr/bin/st-reports-consume-access-log test_access.log`;
+   #`sudo /usr/bin/st-reports-consume-access-log test_access.log`;
    `sudo /usr/bin/st-reports-consume-nlw-log test_nlw.log`;
 }
 
@@ -100,11 +100,11 @@ sub is_dev_env {
 sub grant_write_permissions_to_local_logs {  
     my $host = shift;
     `chmod 777 ./`;
-    `rm test_access.log`;
+    #`rm test_access.log`;
     `rm test_nlw.log`;
-    `touch test_access.log`;
+    #`touch test_access.log`;
     `touch test_nlw.log`;
-    `chmod 666 test_access.log`;
+    #`chmod 666 test_access.log`;
     `chmod 666 test_nlw.log`;
     if (is_dev_env($host)) {
         `rm ~/.nlw/cache/logreader/test* >& /dev/null`;
