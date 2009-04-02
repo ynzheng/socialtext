@@ -205,3 +205,4 @@ lib/Socialtext/Gadgets/GadgetInstance.pm
 t/wikitests/signals/data_signals_direct.wiki
 lib/Socialtext/Gadgets.pm
 lib/Socialtext/Rest/Gadgets.pm
+lib/Socialtext/Gadgets/Gadget/XML.pm
