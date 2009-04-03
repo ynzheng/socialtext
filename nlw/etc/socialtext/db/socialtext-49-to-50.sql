@@ -15,9 +15,9 @@ ALTER TABLE "Account"
 ALTER TABLE "Account"
     ADD COLUMN desktop_text_color varchar(7) DEFAULT '#000000';
 ALTER TABLE "Account"
-    ADD COLUMN desktop_link_color varchar(7) DEFAULT '#0000FF';
+    ADD COLUMN desktop_link_color varchar(7) DEFAULT '#0081F8';
 ALTER TABLE "Account"
-    ADD COLUMN desktop_highlight_color varchar(7) DEFAULT '#55BBFF';
+    ADD COLUMN desktop_highlight_color varchar(7) DEFAULT '#FFFDD3';
 
 UPDATE "System"
    SET value = '50'

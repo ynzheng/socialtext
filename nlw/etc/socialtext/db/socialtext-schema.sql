@@ -92,8 +92,8 @@ CREATE TABLE "Account" (
     desktop_bg_color varchar(7) DEFAULT '#FFFFFF'::varchar,
     desktop_2nd_bg_color varchar(7) DEFAULT '#F2F2F2'::varchar,
     desktop_text_color varchar(7) DEFAULT '#000000'::varchar,
-    desktop_link_color varchar(7) DEFAULT '#0000FF'::varchar,
-    desktop_highlight_color varchar(7) DEFAULT '#55BBFF'::varchar
+    desktop_link_color varchar(7) DEFAULT '#0081F8'::varchar,
+    desktop_highlight_color varchar(7) DEFAULT '#FFFDD3'::varchar
 );
 
 CREATE SEQUENCE "Account___account_id"
