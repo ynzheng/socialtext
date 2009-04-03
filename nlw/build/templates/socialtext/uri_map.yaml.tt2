@@ -101,6 +101,14 @@
             'text/plain':   *default
         '*': [Socialtext::Rest::PageTags, bad_method]
 -
+    '/data/workspaces/:ws/pages/:pname/taghistory':
+        'GET':   
+            '*/*':     &default [Socialtext::Rest::PageTagHistory, GET_html]
+            'application/json': [Socialtext::Rest::PageTagHistory, GET_json]
+            'text/html':        *default
+            'text/plain':       [Socialtext::Rest::PageTagHistory, GET_text]
+        '*':      [Socialtext::Rest::PageTag, bad_method]
+-
     '/data/workspaces/:ws/pages/:pname/sections':
         'GET':
             '*/*':     &default [Socialtext::Rest::Sections, GET_html]

@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 use utf8;
-use Test::Socialtext tests => 52;
+use Test::Socialtext tests => 54;
 
 BEGIN { use_ok("Socialtext::Search::KinoSearch::Analyzer") }
 require bytes;
@@ -103,6 +103,18 @@ STEMS_FROM_THE_PORTUGUESE_AS_ENGLISH: {
     tokens_contain_what_i_want(
         'en', 'cows like quilométricas',
         "quilométrica" => "quilométricas -> quilométrica"
+    );
+}
+
+STEMS_FROM_CANADIAN_ENGLISH: {
+    tokens_contain_what_i_want(
+        'en', 'story',
+        "stori" => "story -> stori",
+    );
+
+    tokens_contain_what_i_want(
+        'en_CA', 'story',
+        "stori" => "story -> stori",
     );
 }
 

@@ -14,9 +14,14 @@ use Socialtext::l10n qw/loc_lang/;
 use Fcntl ':flock';
 use File::chdir;
 use Module::Pluggable search_path => ['Socialtext::Pluggable::Plugin'],
-                      search_dirs => \@libs;
+                      search_dirs => \@libs,
+                      sub_name => 'plugins';
 use Socialtext::Pluggable::WaflPhrase;
 use List::Util qw(first);
+use Memoize;
+
+# Cache our plugins - ignore all method args
+memoize('plugins', NORMALIZER => sub { '' } );
 
 # These hook types are executed only once, all other types are called as many
 # times as they are registered

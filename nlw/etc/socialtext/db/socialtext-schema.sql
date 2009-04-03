@@ -85,7 +85,15 @@ CREATE TABLE "Account" (
     is_system_created boolean DEFAULT false NOT NULL,
     skin_name varchar(30) DEFAULT 's3'::varchar NOT NULL,
     email_addresses_are_hidden boolean,
-    is_exportable boolean DEFAULT false NOT NULL
+    is_exportable boolean DEFAULT false NOT NULL,
+    desktop_logo_uri varchar(250) DEFAULT '/static/desktop/images/sd-logo.png'::varchar,
+    desktop_header_gradient_top varchar(7) DEFAULT '#4C739B'::varchar,
+    desktop_header_gradient_bottom varchar(7) DEFAULT '#506481'::varchar,
+    desktop_bg_color varchar(7) DEFAULT '#FFFFFF'::varchar,
+    desktop_2nd_bg_color varchar(7) DEFAULT '#F2F2F2'::varchar,
+    desktop_text_color varchar(7) DEFAULT '#000000'::varchar,
+    desktop_link_color varchar(7) DEFAULT '#0081F8'::varchar,
+    desktop_highlight_color varchar(7) DEFAULT '#FFFDD3'::varchar
 );
 
 CREATE SEQUENCE "Account___account_id"
@@ -1372,4 +1380,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '48');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '50');

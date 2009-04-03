@@ -7,7 +7,7 @@ use Socialtext::Timer;
 use DateTime::Format::Pg;
 use DBI;
 use base 'Exporter';
-use Carp qw/croak cluck/;
+use Carp qw/carp croak cluck/;
 
 =head1 NAME
 
@@ -15,7 +15,7 @@ Socialtext::SQL - wrapper interface around SQL methods
 
 =head1 SYNOPSIS
 
-  use Socialtext::SQL qw/sql_execute sql_begin_work sql_commit sql_rollback/;
+  use Socialtext::SQL qw/:exec :txn/;
 
   # Regular, auto-commit style:
   my $sth = sql_execute( $SQL, @BIND );
@@ -34,12 +34,10 @@ Socialtext::SQL - wrapper interface around SQL methods
 
 Provides methods with extra error checking and connections to the database.
 
-=head1 METHODS
-
 =cut
 
 our @EXPORT_OK = qw(
-    get_dbh disconnect_dbh
+    get_dbh disconnect_dbh invalidate_dbh
     sql_execute sql_execute_array sql_selectrow sql_singlevalue 
     sql_commit sql_begin_work sql_rollback sql_in_transaction
     sql_convert_to_boolean sql_convert_from_boolean
@@ -59,50 +57,175 @@ our %EXPORT_TAGS = (
 our $DEBUG = 0;
 our $TRACE_SQL = 0;
 our $PROFILE_SQL = 0;
-our %DBH;
 our $Level = 0;
+
+protect_the_dbh: {
+    my $DBH;
+    my $NEEDS_PING = 1;
+
+=head1 Connection
 
 =head2 get_dbh()
 
-Returns a handle to the database.
+Returns a raw C<DBI> handle to the database.  The connection will be cached.
+
+When forking a new process be sure to, C<disconnect_dbh()> first.
 
 =cut
 
-sub get_dbh {
-    Socialtext::Timer->Continue('get_dbh');
-    if ($DBH{handle} and $DBH{handle}->ping) {
-        warn "Returning existing handle $DBH{handle}" if $DEBUG;
-        Socialtext::Timer->Pause('get_dbh');
-        return $DBH{handle} 
-    }
-    cluck "Creating a new DBH" if $DEBUG;
-    my %params = Socialtext::AppConfig->db_connect_params();
-    my $dsn = "dbi:Pg:database=$params{db_name}";
+    sub get_dbh {
+        if ($DBH && !$NEEDS_PING) {
+            warn "Returning cached connection" if $DEBUG;
+            return $DBH
+        }
 
-    $DBH{handle} = DBI->connect($dsn, $params{user}, "",  {
-            AutoCommit => 0,
-            pg_enable_utf8 => 1,
-            PrintError => 0,
-            RaiseError => 0,
-        }) or croak "Could not connect to database with dsn: $dsn: $!";
-    $DBH{st_in_transaction} = 0;
-    Socialtext::Timer->Pause('get_dbh');
-    return $DBH{handle};
-}
+        Socialtext::Timer->Continue('get_dbh');
+        eval {
+            if (!$DBH) {
+                warn "No connection" if $DEBUG;
+                _connect_dbh();
+            }
+            elsif ($NEEDS_PING && !$DBH->ping()) {
+                warn "dbh ping failed\n";
+                disconnect_dbh();
+                _connect_dbh();
+            }
+        };
+        my $err = $@;
+        Socialtext::Timer->Pause('get_dbh');
+
+        croak $err if $@;
+        return $DBH;
+    }
+
+    sub _connect_dbh {
+        cluck "Creating a new DBH" if $DEBUG;
+        my %params = Socialtext::AppConfig->db_connect_params();
+        my $dsn = "dbi:Pg:database=$params{db_name}";
+
+        $DBH = DBI->connect($dsn, $params{user}, "",  {
+                AutoCommit => 1,
+                pg_enable_utf8 => 1,
+                PrintError => 0,
+                RaiseError => 0,
+            });
+
+        die "Could not connect to database with dsn: $dsn: $!\n" unless $DBH;
+
+        $DBH->do("SET client_min_messages TO 'WARNING'");
+        $DBH->{'private_Socialtext::SQL'} = {
+            txn_stack => [],
+        };
+
+        $NEEDS_PING = 0;
+    }
 
 =head2 disconnect_dbh
 
-Forces the DBH to disconnect.  Useful for scripts to avoid deadlocks.
+Forces the DBI connection to close.  Useful for scripts to avoid deadlocks.
 
 =cut
 
-sub disconnect_dbh {
-    if ($DBH{handle}) {
-        $DBH{handle}->disconnect;
-        %DBH = ();
+    sub disconnect_dbh {
+        warn "Disconnecting dbh" if $DEBUG;
+        if ($DBH && !$DBH->{AutoCommit}) {
+            carp "WARNING: Transaction left dangling at disconnect";
+            _dump_txn_stack($DBH);
+        }
+        $DBH->disconnect if $DBH;
+        $DBH = undef;
+        return;
+    }
+
+=head2 invalidate_dbh
+
+Make the next call to C<get_dbh()> ping the database and rollback any
+outstanding transaction(s).  If the ping fails, a reconnect will occur.  This
+should be used before sleeping or entering a blocking-wait state (e.g. at
+apache request boundaries)
+
+=cut
+
+    sub invalidate_dbh {
+        warn "Invalidating dbh" if $DEBUG;
+        if ($DBH && !$DBH->{AutoCommit}) {
+            carp "WARNING: Transaction left dangling at end of request, ".
+                 "rolling back";
+            _dump_txn_stack($DBH);
+            $DBH->rollback();
+        }
+        $NEEDS_PING = 1
     }
 }
 
+=head1 Transactions
+
+Currently we support just one level of transaction.  Call sql_in_transaction
+to check.
+
+=head2 sql_in_transaction()
+
+Returns true if we currently in a transaction
+
+=head2 sql_begin_work()
+
+Starts a transaction, so sql_execute will not auto-commit.
+
+=head2 sql_commit()
+
+Commit a transaction started by the calling code.
+
+=head2 sql_rollback()
+
+Rollback a transaction started by the calling code.
+
+=cut
+
+
+sub sql_in_transaction { 
+    my $dbh = get_dbh();
+    return $dbh->{AutoCommit} ? 0 : 1;
+}
+sub sql_begin_work {
+    my $dbh = get_dbh();
+    croak "Already in a transaction!" unless $dbh->{AutoCommit};
+    warn "Beginning transaction" if $DEBUG;
+    $dbh->begin_work();
+    push @{$dbh->{'private_Socialtext::SQL'}{txn_stack}}, [caller];
+}
+sub sql_commit {
+    my $dbh = get_dbh();
+    if ($dbh->{AutoCommit}) {
+        carp "commit while outside of transaction";
+        return;
+    }
+    carp "Committing transaction" if $DEBUG;
+    pop @{$dbh->{'private_Socialtext::SQL'}{txn_stack}};
+    return $dbh->commit();
+}
+sub sql_rollback {
+    my $dbh = get_dbh();
+    if ($dbh->{AutoCommit}) {
+        carp "rollback while outside of transaction";
+        return;
+    }
+    carp "Rolling back transaction" if $DEBUG;
+    pop @{$dbh->{'private_Socialtext::SQL'}{txn_stack}};
+    return $dbh->rollback();
+}
+
+sub _dump_txn_stack {
+    my $dbh = shift;
+    my @w = ("Transaction stack:\n");
+    my $stack = $dbh->{'private_Socialtext::SQL'}{txn_stack};
+    foreach my $caller (@$stack) {
+        push @w, "\tFile: $caller->[1], Line: $caller->[2] ($caller->[0])\n";
+    }
+    warn join('',@w); # so as to just call 'warn' once
+    @$stack = ();
+}
+
+=head1 Querying
 
 =head2 sql_execute( $SQL, @BIND )
 
@@ -167,10 +290,6 @@ sub _sql_execute {
     my $dbh = get_dbh();
     Socialtext::Timer->Continue('sql_execute');
 
-    my $in_tx = sql_in_transaction();
-    warn "In transaction at start of sql_execute() - $in_tx" 
-        if $in_tx and $DEBUG;
-
     my ($sth, $rv);
     if ($DEBUG or $TRACE_SQL) {
         my (undef, $file, $line) = caller($Level);
@@ -199,21 +318,8 @@ sub _sql_execute {
     };
 
     if (my $err = $@) {
-        unless ($in_tx) {
-            warn "Rolling back in sql_execute()" if $DEBUG;
-            sql_rollback();
-        }
         Socialtext::Timer->Pause('sql_execute');
         die "$@\n";
-    }
-
-    # Unless the caller has explicitly specified a transaction via
-    # sql_begin_work(), we will commit each chunk.
-    # If the caller is using a transaction, they are responsible for
-    # committing or rolling back
-    unless ($in_tx) {
-        warn "Committing in sql_execute()" if $DEBUG;
-        sql_commit();
     }
 
     Socialtext::Timer->Pause('sql_execute');
@@ -261,51 +367,7 @@ sub sql_singlevalue {
     return $value;
 }
 
-=head2 sql_in_transaction()
-
-Returns true if we currently in a transaction
-
-=head2 sql_begin_work()
-
-Starts a transaction, so sql_execute will not auto-commit.
-
-=head2 sql_commit()
-
-Commit a transaction started by the calling code.
-
-=head2 sql_rollback()
-
-Rollback a transaction started by the calling code.
-
-=cut
-
-# Only allow 1 transaction at a time, ignore nested transactions.  This
-# may or may not be a good strategy.  Ponder.
-{
-    sub sql_in_transaction { 
-        return $DBH{st_in_transaction};
-    }
-
-    sub sql_begin_work {
-        if ($DBH{st_in_transaction}) {
-            croak "Already in a transaction!";
-        }
-        warn "Beginning transaction" if $DEBUG;
-        $DBH{st_in_transaction}++;
-    }
-    sub sql_commit {
-        my $dbh = get_dbh();
-        $DBH{st_in_transaction}-- if $DBH{st_in_transaction};
-        warn "Committing transaction" if $DEBUG;
-        return $dbh->commit()
-    }
-    sub sql_rollback {
-        my $dbh = get_dbh();
-        $DBH{st_in_transaction}-- if $DBH{st_in_transaction};
-        warn "Rolling back transaction" if $DEBUG;
-        return $dbh->rollback()
-    }
-}
+=head1 Utility
 
 =head2 sql_convert_to_boolean()
 

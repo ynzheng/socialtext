@@ -22,13 +22,22 @@ use Socialtext::Timer;
 use Socialtext::Pluggable::Adapter;
 use YAML qw/DumpFile LoadFile/;
 
-Readonly our @ACCT_COLS => (
-    'account_id',
-    'name',
-    'skin_name',
-    'is_system_created',
-    'email_addresses_are_hidden',
-    'is_exportable',
+Readonly our @ACCT_COLS => qw(
+    account_id
+    name
+    skin_name
+    is_system_created
+    email_addresses_are_hidden
+    is_exportable
+
+    desktop_logo_url
+    desktop_header_gradient_top
+    desktop_header_gradient_bottom
+    desktop_bg_color
+    desktop_2nd_bg_color
+    desktop_text_color
+    desktop_link_color
+    desktop_highlight_color
 );
 
 my %ACCT_COLS = map { $_ => 1 } @ACCT_COLS;
@@ -739,7 +748,8 @@ sub hash_representation {
     return {
         account_name    => $self->name,
         account_id      => $self->account_id,
-        plugins_enabled => [ $self->plugins_enabled ]
+        plugins_enabled => [ $self->plugins_enabled ],
+        (map { $_ => $self->$_ } grep { /^desktop_/ } @ACCT_COLS),
     };
 }  
 
