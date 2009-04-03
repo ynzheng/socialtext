@@ -663,9 +663,10 @@ proto.enableThis = function() {
             self.set_clear_handler();
         }
 
+        self.enable_keybindings();
+
         if (self.is_ready) {
             self.set_focus();
-            self.enable_keybindings();
             self.set_key_interception_handler();
             self.set_clear_handler();
         }
