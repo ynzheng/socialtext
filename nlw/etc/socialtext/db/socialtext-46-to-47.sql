@@ -8,13 +8,13 @@ BEGIN;
 -- Created by: Michael Zedeler <michael@zedeler.dk>
 
 CREATE TABLE funcmap (
-        funcid SERIAL,
+        funcid SERIAL PRIMARY KEY NOT NULL,
         funcname       VARCHAR(255) NOT NULL,
         UNIQUE(funcname)
 );
 
 CREATE TABLE job (
-        jobid           SERIAL,
+        jobid           SERIAL PRIMARY KEY NOT NULL,
         funcid          INT NOT NULL,
         arg             BYTEA,
         uniqkey         VARCHAR(255) NULL,
@@ -27,8 +27,8 @@ CREATE TABLE job (
 );
 
 CREATE INDEX job_funcid_runafter ON job (funcid, run_after);
-
-CREATE INDEX job_funcid_coalesce ON job (funcid, coalesce);
+CREATE INDEX job_funcid_coalesce ON job (funcid, coalesce text_pattern_ops);
+CREATE INDEX job_coalesce ON job (coalesce text_pattern_ops);
 
 CREATE TABLE note (
         jobid           BIGINT NOT NULL,

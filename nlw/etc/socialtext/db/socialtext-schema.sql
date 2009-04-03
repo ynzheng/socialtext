@@ -679,6 +679,10 @@ ALTER TABLE ONLY funcmap
     ADD CONSTRAINT funcmap_funcname_key
             UNIQUE (funcname);
 
+ALTER TABLE ONLY funcmap
+    ADD CONSTRAINT funcmap_pkey
+            PRIMARY KEY (funcid);
+
 ALTER TABLE ONLY gadget_instance
     ADD CONSTRAINT gadget_instace_pk
             PRIMARY KEY (gadget_instance_id);
@@ -714,6 +718,10 @@ ALTER TABLE ONLY gallery
 ALTER TABLE ONLY job
     ADD CONSTRAINT job_funcid_key
             UNIQUE (funcid, uniqkey);
+
+ALTER TABLE ONLY job
+    ADD CONSTRAINT job_pkey
+            PRIMARY KEY (jobid);
 
 ALTER TABLE ONLY note
     ADD CONSTRAINT note_pkey
@@ -977,8 +985,11 @@ CREATE INDEX ix_topic_signal_page_reverse
 CREATE INDEX ix_tsu_user
 	    ON topic_signal_user (user_id);
 
+CREATE INDEX job_coalesce
+	    ON job ("coalesce" text_pattern_ops);
+
 CREATE INDEX job_funcid_coalesce
-	    ON job (funcid, "coalesce");
+	    ON job (funcid, "coalesce" text_pattern_ops);
 
 CREATE INDEX job_funcid_runafter
 	    ON job (funcid, run_after);
