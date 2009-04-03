@@ -329,7 +329,8 @@ CREATE TABLE gadget (
     thumbnail text,
     scrolling boolean DEFAULT false,
     height integer,
-    description text
+    description text,
+    name text
 );
 
 CREATE SEQUENCE gadget_id
@@ -1380,4 +1381,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '50');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '51');
