@@ -7,7 +7,7 @@ use Socialtext::Paths;
 use Socialtext::AppConfig;
 use Socialtext::System qw/shell_run/;
 use Socialtext::SQL qw/sql_singlevalue sql_execute sql_begin_work 
-                       sql_commit sql_rollback disconnect_dbh/;
+                       sql_commit disconnect_dbh/;
 use Socialtext::SystemSettings qw/get_system_setting set_system_setting/;
 
 # Ignore PG environment variables that may be hanging around.
@@ -284,7 +284,6 @@ sub current_version {
         local $SIG{__WARN__} = sub {}; # ignore warnings
         $version = get_system_setting($self->_schema_field);
     };
-    eval { sql_rollback() };
     return $version if $version;
 
     # If we couldn't find a version, check for a given SQL returning something
