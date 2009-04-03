@@ -318,10 +318,9 @@ CREATE TABLE funcmap (
 CREATE TABLE gadget (
     gadget_id bigint NOT NULL,
     src text,
-    plugin text,
-    href text NOT NULL,
+    href text,
     last_update timestamptz DEFAULT now() NOT NULL,
-    content_type text NOT NULL,
+    content_type text,
     features text[],
     preloads text[],
     content text,
@@ -329,8 +328,7 @@ CREATE TABLE gadget (
     thumbnail text,
     scrolling boolean DEFAULT false,
     height integer,
-    description text,
-    name text
+    description text
 );
 
 CREATE SEQUENCE gadget_id

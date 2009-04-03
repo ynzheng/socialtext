@@ -1,11 +1,13 @@
 BEGIN;
 
 ALTER TABLE gadget
-  ADD COLUMN name TEXT;
+    DROP COLUMN plugin,
+    ALTER COLUMN href DROP NOT NULL,
+    ALTER COLUMN content_type DROP NOT NULL;
 
 UPDATE gadget
-  SET name = regexp_replace(src, '^.*?([^/]*).xml$', '\\1')
-WHERE plugin IS NOT NULL;
+  SET src = regexp_replace(src, '^file:([^/]*).*?([^/]*).xml$', 'local:\\1:\\2')
+WHERE src LIKE 'file:%';
 
 UPDATE "System"
    SET value = '51'
