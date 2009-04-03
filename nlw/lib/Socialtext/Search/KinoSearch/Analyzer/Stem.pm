@@ -10,10 +10,19 @@ use Lingua::Stem::Snowball qw(stemmers);
 sub analyze {
     my ( $self, $batch ) = @_;
     $batch = $self->_get_batch_from_input($batch);
+
+    local $@;
     my $stemmer = Lingua::Stem::Snowball->new(
         lang     => $self->{language},
         encoding => 'UTF-8'
     );
+
+    if ($@ and $self->{language} =~ /^([a-zA-Z]+)[-_]/) {
+        $stemmer = Lingua::Stem::Snowball->new(
+            lang     => $1,
+            encoding => 'UTF-8'
+        );
+    }
 
     my $all_texts = $batch->get_all_texts;
     $all_texts = [ map decode_utf8($_), @$all_texts ];
