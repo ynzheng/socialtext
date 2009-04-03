@@ -23,6 +23,9 @@ my $sth = $dbh->prepare("delete from nlw_log_actions where workspace = '$workspa
 $sth->execute();
 my $sth2 = $dbh->prepare("delete from actions_by_user where workspace = '$workspace'");
 $sth2->execute();
+my $sth3 = $dbh->prepare("delete from meta_actions_by_user where workspace = '$workspace'");
+$sth3->execute();
+
 
 
 #INSERT Setup info into NLW LOG
@@ -85,17 +88,25 @@ sub process_month {
     
         my $r = $users->{$key}->{'pages'};
         for my $page (@$r)  {
-            my $str = "INSERT INTO ACTIONS_BY_USER VALUES ('$date 20:00:00+00',-1,'$workspace','$key','$page','view',2)";
+            my $str = "INSERT INTO ACTIONS_BY_USER VALUES ('$date 20:00:00+00',-1,'$workspace','$key','$page','view_page',2)";
             #print "$str\n";
             my $sth = $dbh->prepare($str); $sth->execute();
+
+           my $sql = "INSERT INTO META_ACTIONS_BY_USER VALUES ('$date 20:00:00+00',-1,'$workspace','$key','$page',2, 0)";
+           my $sth2 = $dbh->prepare($sql);
+           $sth2->execute();
         }
         
         if (defined($users->{$key}->{'behavior'}) && $users->{$key}->{'behavior'} eq 'editor') {
             my @r = $users->{$key}->{'pages'};        
             for  my $page (@$r) {
-               my $str = "INSERT INTO ACTIONS_BY_USER VALUES ('$date 20:00:00+00',-1,'$workspace','$key','$page','edit',1)";
+               my $str = "INSERT INTO ACTIONS_BY_USER VALUES ('$date 20:00:00+00',-1,'$workspace','$key','$page','edit_page',1)";
                my $sth = $dbh->prepare($str); $sth->execute();
-            }
+
+               my $sql = "INSERT INTO META_ACTIONS_BY_USER VALUES ('$date 20:00:00+00',-1,'$workspace','$key','$page',0, 1)";
+               my $sth2 = $dbh->prepare($sql);
+               $sth2->execute();
+           }
         }
     }
 
