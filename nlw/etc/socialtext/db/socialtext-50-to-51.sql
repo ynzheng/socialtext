@@ -1,7 +1,6 @@
 BEGIN;
 
 ALTER TABLE gadget
-    DROP COLUMN plugin,
     ALTER COLUMN href DROP NOT NULL,
     ALTER COLUMN content_type DROP NOT NULL;
 

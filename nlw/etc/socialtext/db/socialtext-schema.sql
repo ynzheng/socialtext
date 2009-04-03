@@ -318,6 +318,7 @@ CREATE TABLE funcmap (
 CREATE TABLE gadget (
     gadget_id bigint NOT NULL,
     src text,
+    plugin text,
     href text,
     last_update timestamptz DEFAULT now() NOT NULL,
     content_type text,
