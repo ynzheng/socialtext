@@ -1,24 +1,29 @@
 package Socialtext::Job::Test;
-use strict;
-use warnings;
-use base qw( TheSchwartz::Worker );
-use Socialtext::Log 'st_log';
+use Moose;
+use Socialtext::Log qw/st_log/;
 use Time::HiRes qw/sleep/;
+use namespace::clean -except => 'meta';
+
+extends 'Socialtext::Job';
 
 our $Work_count = 0;
+our $Retries = 0;
 
-sub work {
-    my $class = shift;
-    my TheSchwartz::Job $job = shift;
-    my $args = $job->arg;
+override 'max_retries' => sub { $Retries };
 
+sub do_work {
+    my $self = shift;
+    my $args = $self->arg;
+
+    die "failed!\n" if $args->{fail};
     $Work_count++;
 
     st_log->debug($args->{message})      if $args->{message};
     sleep $args->{sleep}                 if $args->{sleep};
     st_log->debug($args->{post_message}) if $args->{post_message};
 
-    $job->completed();
+    $self->completed();
 }
 
+__PACKAGE__->meta->make_immutable;
 1;
