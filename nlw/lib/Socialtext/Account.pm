@@ -748,7 +748,8 @@ sub hash_representation {
     return {
         account_name    => $self->name,
         account_id      => $self->account_id,
-        plugins_enabled => [ $self->plugins_enabled ]
+        plugins_enabled => [ $self->plugins_enabled ],
+        (map { $_ => $self->$_ } grep { /^desktop_/ } @ACCT_COLS),
     };
 }  
 
