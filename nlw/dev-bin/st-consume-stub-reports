@@ -5,4 +5,6 @@ source $REPORTS/dev-env-vars
 
 #perl $REPORTS/bin/st-reports-consume-access-log test_access.log
 perl $REPORTS/bin/st-reports-import-nlw-data test_nlw.log >& /dev/null
+# delete logreader cache, so we can consume test_nlw.log, per ltc, 3/09  
+rm ~/.nlw/cache/logreader/*
 perl $REPORTS/bin/st-reports-consume-nlw-log test_nlw.log
