@@ -55,7 +55,7 @@
         filterName: 'filter',
         params: { 
             order: 'alpha',
-            count: 30, // for fetching
+            count: 30 // for fetching
         }
     };
 
