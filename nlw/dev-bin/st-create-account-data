@@ -21,6 +21,7 @@ require Socialtext::Account;
 my $name = 'test_stub_account';
 my @aWorkspaces = ('a_test_stub_ws','b_test_stub_ws');
 my ($account, $account_id) = get_account($name);
+
 my @wsObjects = create_workspaces($account, \@aWorkspaces, $account_id);
 my @users = ('t_stub01@socialtext.com','t_stub02@socialtext.com','t_stub03@socialtext.com','t_stub04@socialtext.com',
              't_stub05@socialtext.com', 't_stub06@socialtext.com');
@@ -31,17 +32,16 @@ my $nlw = "test_nlw.log";
 
 #----------------------------------------------------------#
 #  Create the Files and setup for import
-print_nlw_log(\@wsObjects, $userObjs, $nlw);
-my $access = "test_access.log";
-#Now we are going to delete a workspace and a user
-#$wsObjects[1]->delete;
-#$wsObjects[0]->remove_user(user => $userObjs->[1]);
-print_access_log(\@wsObjects, $userObjs, $access);
+print_nlw_log(\@wsObjects, $userObjs, $nlw, $account, $account_id);
+print_views_edits_deletes(\@wsObjects, $userObjs, $nlw);
 
-#my $str = 'psql -U nlw NLW_reports -c "delete from actions_by_user where account_id =' . $account_id . '; "';
-#`$str`; 
-#$str = 'psql -U nlw NLW_reports -c "delete from nlw_log_actions where account_id =' . $account_id . '; "';
-#`$str`;
+#my $sql = 'psql -U nlw NLW_reports -c "delete from actions_by_user where account_id =' . $account_id . '; "';
+#`$sql`; 
+#$sql = 'psql -U nlw NLW_reports -c "delete from nlw_log_actions where account_id =' . $account_id . '; "';
+#`$sql`;
+#$sql = 'psql -U nlw NLW_reports -c "delete from meta_actions_by_user where account_id =' . $account_id . '; "';
+#`$sql`;
+
 #----------------------------------------------------------#
 
 
@@ -80,18 +80,14 @@ sub create_workspaces {
     my @wsObjs;
     my ($account, $workspaces, $account_id) = @_;
     foreach my $workspace (@$workspaces) {
-        print "Looping in $workspace\n";
         my $ws;
         eval {
             $ws = Socialtext::Workspace->new(name => $workspace);
             if (Socialtext::Workspace->NameIsValid( name => $workspace ) ) {
-                print "Creating Workspace $workspace ...\n";
                 $ws = Socialtext::Workspace->create(name       => $workspace,
                                                     title      => $workspace,
                                                     account_id => $account_id);
-                print "Created workspace $workspace \n";
                 push @wsObjs, $ws;
-                print "Ref to workspace is " . ref($ws) . "\n";
             } else {
                print "Name $workspace is not valid\n";
             }
@@ -99,7 +95,6 @@ sub create_workspaces {
 
         if (defined($ws)) { 
             push @wsObjs, $ws;
-            print "pushing object" . ref($ws) . "\n";
         }
     } 
     return @wsObjs;
@@ -139,9 +134,9 @@ sub create_users {
 
 sub print_nlw_log {
     #Add all users to workspaces
-    my @dates = ('Dec 30 2007','Dec 11 2007','Jan 10 2008','Jan 11 2008','Jan 12 2008', 'Jan 13 2008', 'Feb 1 2008');
+    my @dates = ('Dec 30','Dec 11','Jan 10','Jan 11','Jan 12', 'Jan 13', 'Feb 01');
     my $date_count = 0;
-    my ($raWorkspaces, $rausers, $nlw) = @_;
+    my ($raWorkspaces, $rausers, $nlw, $account, $account_id) = @_;
     my $page = 'a';
 
     #Open The File
@@ -149,11 +144,10 @@ sub print_nlw_log {
    
     #Print Create Workspace for Each Workspace
     foreach my $workspace (@$raWorkspaces) {
-        print "Creating workspace entry " . $workspace->name . "\n";
-        my $str = create_workspace_nlw_entry($workspace);
+        my $str = create_workspace_nlw_entry($workspace, $account, $account_id);
         print NLWFILE $str;
         foreach my $user (@$rausers) {
-          my $str = create_user_nlw_entry($user, $workspace);
+          my $str = create_user_nlw_entry($user, $workspace, $account);
             print NLWFILE $str;
             if (defined($dates[$date_count])) {
                 $str = create_page_nlw_entry($user, $workspace, $dates[$date_count], $page);
@@ -170,6 +164,7 @@ sub print_nlw_log {
  
     print NLWFILE $add_delete;
 
+    
 #my $str = 'Feb 28 08:41:09 www nlw[7146]: [33] DELETE,WORKSPACE,workspace:b_test_stub_ws(32787),[1.029888]';
     #$str.= "\n". 'Feb 28 08:41:09 www nlw[7146]: [33] DELETE,USER,user:t_stub02@socialtext.com(32787),[1.029888]' . "\n"; 
     #print NLWFILE $str;
@@ -185,31 +180,33 @@ sub create_and_delete_thirty_pages {
         #Add a page and delete it
         my $month = 'Mar';
         my $page = 'blue' . $idx;
-        $add_delete .= create_page_nlw_entry($rausers->[0], $raWorkspaces->[-0], $month.' 1 2008',$page);   
-        $add_delete .= $month .  ' 2 2008 13:03:08 qa2 nlw[21556]: [33] ACTION,EDIT_CONTENT,page_name:'.$page.',WORKSPACE:'.
-                                 $raWorkspaces->[0]->workspace_id . ',USER:'.$rausers->[0]->user_id . ',PAGE:'  
-                                 . $raWorkspaces->[0]->name . ',[drop_workspace_breadcrumb:0.003885,overall:0.021291]' . "\n";
+        $add_delete .= create_page_nlw_entry($rausers->[0], $raWorkspaces->[0], $month.' 01',$page);   
 
-        $add_delete .= $month . ' 2 2008 13:03:23 qa2 nlw[21558]: [33] ACTION,DISPLAY,page_name:'.$page.',WORKSPACE:' .
-                                  $raWorkspaces->[0]->workspace_id . ',USER:'.$rausers->[0]->user_id .
-                                  ',PAGE:blue,[drop_workspace_breadcrumb:0.002642,overall:0.243288]' . "\n";
- 
-        $add_delete .= $month . ' 2 2008 13:07:05 qa2 nlw[21563]: [33] DELETE,PAGE,workspace:' . $raWorkspaces->[0]->name . '(' .
-                                   $raWorkspaces->[0]->workspace_id . ')' .
-                                 ',page:blue,user:'. $rausers->[0]->email_address . 
-                                 '(' . $rausers->[0]->user_id . '),[NA]' . "\n";
-  
-         $add_delete .= $month . ' 2 2008 13:07:05 qa2 nlw[21563]: [33] ACTION,DELETE_PAGE,page_name:'.$page.',WORKSPACE:'
-                                  . $raWorkspaces->[0]->workspace_id . ',USER:'.$rausers->[0]->user_id . 
-                                  'PAGE:blue,[drop_workspace_breadcrumb:0.005555,overall:0.143584]' . "\n";
+        $add_delete .= $month . ' 02 13:00:53 socialtext nlw[9760]: [2204] DELETE,PAGE,workspace:'.$raWorkspaces->[0]->name . '(' .
+                                $raWorkspaces->[0]->workspace_id . '),page:' . $page . ',user:' . $rausers->[0]->email_address . 
+                                '(' . $rausers->[0]->user_id . '),[NA]' . "\n";
+        
+        $add_delete .= $month . ' 02 13:00:53 socialtext nlw[9760]: [2204] WEB,GET,/:WS/INDEX.CGI,UNDEF,ACTOR_ID:' . $rausers->[0]->user_id . ',{"q":{"page_name":"' . $page . 
+                                '","action":"delete_page"},"ws":"' . $raWorkspaces->[0]->name .'",' .
+                                '"timers":"overall:0.478,handler_run:0.470,hub_process:0.443,sql_execute:0.076,drop_workspace_breadcrumb:0.057,' .
+                                'user_new:0.006,web_auth:0.006,get_dbh:0.005,plugin_enabled_for_workspace:0.002,sql_prepare:0.002,sql_selectrow:0.001"}' . "\n";
+        
+        $add_delete .= $month . ' 02 13:00:53 socialtext nlw[9761]: [2204] WEB,GET,/:WS/INDEX.CGI,UNDEF,ACTOR_ID:' . $rausers->[0]->user_id . 
+                                ',{"q":{"page_id":"' . $page . '","action":"delete_epilogue"},"ws":"'. $raWorkspaces->[0]->name . 
+                                '","timers":"overall:0.249,handler_run:0.240,hub_process:0.224,global_tt2_vars:0.154,sql_execute:0.069,tt2_render:0.039,' .
+                                'plugin_enabled_for_user:0.023,drop_workspace_breadcrumb:0.020,plugin_enabled_for_workspace:0.015,get_dbh:0.015,' .
+                                'user_new:0.010,web_auth:0.006,sql_prepare:0.005,sql_selectrow:0.002,ppl_listing:0.001"}' . "\n";
+      
     }
+    
     return $add_delete;
 }
 
-sub print_access_log {
+sub print_views_edits_deletes {
     my ($wsObjects, $userObjs, $filename) = @_;
     my $accessfile;
-    open $accessfile, "> $filename" or die "Can't open $filename : !";
+    #open for APPEND
+    open $accessfile, ">> $filename" or die "Can't open $filename : !";
     #Each User Reads once from the first WS, Twice from the second
     #The first two users edit pages
     #Everyone vies
@@ -217,19 +214,19 @@ sub print_access_log {
     $arrBelongs[0] = { 'user' => $userObjs->[0],'pages' => ['a','b','c','d'], 'alt-pages'=>['ab','ba','ca'], function=>'both'};
     $arrBelongs[1] = { 'user' => $userObjs->[1],'pages' => ['a','b','c'], 'alt-pages'=>['ab','ba'], function=>'viewer'};
     
-    Process_Access_Log($wsObjects, '30/Dec/2007', \@arrBelongs, $accessfile);
+    Process_view_edits($wsObjects, 'Dec 30 ', \@arrBelongs, $accessfile);
     $arrBelongs[2] = { 'user' => $userObjs->[2],'pages' => ['a','b','c','d'], 'alt-pages'=>['ab','ba','ca'], function=>'viewer', 'comments'=>['b','d']};
     $arrBelongs[3] = { 'user' => $userObjs->[3],'pages' => ['a','c'], 'alt-pages'=>['ab','ca'], function=>'viewer'};
         
-    Process_Access_Log($wsObjects, '30/Jan/2008', \@arrBelongs, $accessfile);
+    Process_view_edits($wsObjects, 'Jan 30 ', \@arrBelongs, $accessfile);
     $arrBelongs[4] = { 'user' => $userObjs->[4],'pages' => ['d','e','f','a'], 'alt-pages'=>['da','ea','fa'], function=>'both'};
     $arrBelongs[3] = { 'user' => $userObjs->[3],'pages' => ['a','c','d'], 'alt-pages'=>['ab','ca','da'], function=>'viewer'};
     $arrBelongs[5] = { 'user' => $userObjs->[5],'pages' => ['a','b','f'], 'alt-pages'=>['ab','ba','fa'], function=>'viewer', 'alt-comments'=>['ef']};
-    Process_Access_Log($wsObjects, '28/Feb/2008', \@arrBelongs, $accessfile);
-            
-    Process_Access_Log($wsObjects, '19/Mar/2008', \@arrBelongs, $accessfile);
+    Process_view_edits($wsObjects, 'Feb 28 ', \@arrBelongs, $accessfile);
+           
+    Process_view_edits($wsObjects, 'Mar 19 ', \@arrBelongs, $accessfile);
     #Double Up In March For good measure
-    Process_Access_Log($wsObjects, '20/Mar/2008', \@arrBelongs, $accessfile);
+    Process_view_edits($wsObjects, 'Mar 20 ', \@arrBelongs, $accessfile);
        
     my $str=<<EOQ;
 127.0.0.1 - - [01/Mar/2008:13:33:33 -0700] "GET /nlw/submit/logout HTTP/1.1" 302 286 "http://qa2.socialtext.net:22015/a_test_stub_ws/`/index.cgi?announcements_and_links" "Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.12) Gecko/20080201 Firefox/2.0.0.12" 25472 3
@@ -256,15 +253,9 @@ my $str2 =<<EOQ;
 127.0.0.1 - t_stub01\@socialtext.com [08/Mar/2008:14:55:00 +0000] "GET /a_test_stub_ws/index.cgi?blue HTTP/1.1" 200 33410 "http://qa2.socialtext.net/test-data/index.cgi?action=display;page_name=Untitled%20Page" "Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13" 21569 0
 EOQ
 
-#127.0.0.1 - t_stub01\@socialtext.com [08/Apr/2008:14:55:11 +0000] "GET /a_test_stub_ws/index.cgi?action=delete_page;page_name=blue HTTP/1.1" 302 5 "http://qa2.socialtext.net/test-data/index.cgi?blue" "Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13" 21570 0
-#127.0.0.1 - t_stub01\@socialtext.com [08/Apr/2008:14:55:11 +0000] "GET /a_test_stub_ws/index.cgi?action=delete_epilogue&page_id=blue HTTP/1.1" 200 6617 "http://qa2.socialtext.net/test-data/index.cgi?blue" "Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13" 21569 0
-#EOQ
 
       $str=~s/\n$//g;
       $str2=~s/\n$//g;
-      #my $date = get_current_month(); 
-      #my $fulldate = '01/' . $date . '/';
-      #$str=~s/25\/Mar\//$fulldate/g;
      
 #
     print $accessfile $str;
@@ -278,8 +269,8 @@ sub get_current_month {
   return $date;
 }
 
-sub Process_Access_Log {
-    my ($wsObjects, $date, $arrBelongs, $accessfile) = @_;
+sub Process_view_edits {
+    my ($wsObjects, $date, $arrBelongs, $file) = @_;
    
     my $ws_num = 1;
     foreach my $ws (@$wsObjects) {
@@ -289,35 +280,43 @@ sub Process_Access_Log {
              $key = 'alt-pages';
              $comments = 'alt-comments';
          } 
+
          foreach my $user (@$arrBelongs) {
             my $ra = $user->{$key};
             my $email = $user->{'user'}->email_address;
             foreach my $page (@$ra) {
                 if ($user->{'function'} eq 'both') {
                     #Add edit notices 
-                    my $str = '127.0.0.1 - ' .$email . ' [' . $date . ':10:00:09 -0700] "POST /'. $ws->name 
-                              . '/index.cgi HTTP/1.1" 200 28428 "http://www.socialtext.net/' . $ws->name . '/index.cgi?' 
-                              . $page . '" "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.12) Gecko/20080201 Firefox/2.0.0.12" 18115 1' . "\n";
-                    
-                    print $accessfile $str;
+                    my $str = 'Mar 17 15:58:48 topaz nlw[2483]: [2017] WEB,POST,/:WS/INDEX.CGI,UNDEF,ACTOR_ID:' . $user->{'user'}->user_id . ',{"q":{"page_name":' . 
+                              '"' . $page . '"' . 
+                              ',"append_mode":"","page_type":"wiki","edit_summary":"","revision_id":"20090323234936","action":"edit_content"' .
+                              ',"signal_edit_summary":"0","caller_action":""},"ws":"' . $ws->name . '"' .
+                              ',"timers":"overall:0.089,handler_run:0.078,hub_process:0.067,sql_execute:0.013,web_auth:0.006,user_new:0.005' .
+                              ',drop_workspace_breadcrumb:0.005,get_dbh:0.003,sql_selectrow:0.002,plugin_enabled_for_workspace:0.001,sql_prepare:0.001"}' . "\n";
+                    print $file $str;
                 }
                 
                 #Plus Two Views of Said Page
-                my $str = '127.0.0.1 - ' .$email . ' [' . $date . ':10:00:09 -0700] "GET /' . $ws->name
-                          . '/index.cgi/' . $page . ' HTTP/1.1" 200 28428 "http://www.socialtext.net/' . $ws->name . '/index.cgi?'
-                          . $page . '" "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.12) Gecko/20080201 Firefox/2.0.0.12" 18115 1' . "\n";
-                                                                                           
-                print $accessfile $str; print $accessfile $str;
+                my $str = $date . '10:00:09 talc nlw[2483]: [2017] WEB,GET,/:WS/INDEX.CGI,UNDEF,ACTOR_ID:' . $user->{'user'}->user_id . ',{"q":{' . 
+                          '"' . $page . '":null}' .
+                          ',"ws":"' . $ws->name . '"' .
+                          ',"timers":"overall:0.278,handler_run:0.272,hub_process:0.261,global_tt2_vars:0.093,tt2_render:0.090,sql_execute:0.079,' .
+                          'viewer_process:0.019,s2_page_html:0.019,get_dbh:0.017,plugin_enabled_for_user:0.017,user_new:0.012,drop_workspace_breadcrumb:0.010,' .
+                          'plugin_enabled_for_workspace:0.008,web_auth:0.005,sql_prepare:0.004,sql_selectrow:0.003,plugin_enabled_for_users:0.002,ppl_listing:0.001"}' . "\n"; 
+                print $file $str; print $file $str;
             }
             
             if (defined($user->{$comments})) {
                 my $ra = $user->{$comments};
                 foreach my $page (@$ra) {
                     my $email = $user->{'user'}->email_address;
-                    my $str = '127.0.0.1 - ' . $email .' [' . $date . ':10:10:09 -0700] "POST /' . $ws->name
-                          . '/index.cgi HTTP/1.1" 200 359 "http://qa2.socialtext.net/' . $ws->name . '/index.cgi?action=enter_comment;page_name=' 
-                          . $page . ';caller_action=display" "Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.12) Gecko/20080201 Firefox/2.0.0.12" 25473 1' . "\n";
-                    print $accessfile $str;
+                    my $str = $date . '0:00:09 talc nlw[2483]: [2017] WEB,POST,/:WS/INDEX.CGI,UNDEF,ACTOR_ID:' . $user->{'user'}->user_id . ',{"q":{"page_name":"' .
+                              $page .
+                              '","comment":"RADICAL","action":"submit_comment"},"ws":"' . $ws->name . 
+                              '","timers":"overall:0.147,handler_run:0.141,hub_process:0.129,sql_execute:0.024,web_auth:0.005,user_new:0.004,' .
+                              'get_dbh:0.004,drop_workspace_breadcrumb:0.002,sql_selectrow:0.001,plugin_enabled_for_workspace:0.001,sql_prepare:0.001,tt2_render:0.001"}' . "\n";
+
+                    print $file $str;
                 }
             }                
         }   
@@ -327,37 +326,56 @@ sub Process_Access_Log {
 
 
 sub create_workspace_nlw_entry {
-    my ($ws) = @_;
-    my $str = "Dec 01 2007 13:20:15 talc nlw[30088]: [2013] CREATE,WORKSPACE,workspace:" . $ws->name . '(' . $ws->workspace_id . '),[0.449366]' . "\n";
+    my ($ws, $accoumt, $account_id) = @_;
+    my $str = 'Dec 01 13:20:15 socialtext nlw[1355]: [2204] CREATE,WORKSPACE,workspace:' . $ws->name . '(' . $ws->workspace_id . '),[5.45482993125916]' . "\n";
+    $str .= 'Dec 01 13:20:15 socialtext nlw[30088]: [2013] CLI,CREATE-WORKSPACE,ACTOR_ID:1,{"args":"create-workspace --name ' . $ws->name .
+           ' --title ' . $ws->name . 
+           ' --account ' . $account->name . '","timers":"overall:5.566,CLI_create_workspace:5.565,' .
+           'sql_execute:0.599,user_new:0.389,get_dbh:0.165,tt2_render:0.073,sql_prepare:0.033,' .
+           'By_category:0.020,plugin_enabled_for_workspace:0.002,sql_selectrow:0.001,all_ids:0.001"}' . "\n";
     return $str;
-
 }
+
+
 
 
 sub create_page_nlw_entry {
     my ($user, $ws, $date, $page) = @_;
-   my $user_id = $user->user_id;
+    my $user_id = $user->user_id;
 
-    my $str = "$date 13:57:00 qa2 nlw[7636]: [33] CREATE,PAGE,workspace:";
-    $str.=$ws->name . '(' . $ws->workspace_id . ')';
-    $str.=',page:'.$page .',user:' . $user->email_address . '(' . $user_id . '),[0.035587]' . "\n"; 
-    $str.="$date 13:57:00 qa2 nlw[7635]: [33] DISPLAY_PAGE,workspace:" . $ws->name . '(' . $ws->workspace_id . ')' . ',page:'.$page .',user:' . $user->email_address . '(' . $user_id .  '),[0.035587]' . "\n";
+    my $str;
+    $str = $date . ' 13:42:24 socialtext nlw[9760]: [2204] CREATE,PAGE,workspace:' . $ws->name . '('. $ws->workspace_id . '),page:' . 
+              $page . ',user:' . $user->email_address . '(' . $user->user_id . '),[NA]' . "\n";
+    
+    $str.= $date . ' 13:57:00 talc nlw[7636]: [2204] WEB,POST,/:WS/INDEX.CGI,UNDEF,ACTOR_ID:' . $user->user_id .
+           ',{"q":{"page_name":"' . $page . '","page_body":"All day long\r\n","append_mode":"","page_type":"wiki","edit_summary":""' .
+           ',"revision_id":"","action":"edit_content","signal_edit_summary":"0","caller_action":""},"ws":"' .
+           $ws->name . '"' . 
+           ',"timers":"overall:0.099,handler_run:0.087,hub_process:0.072,sql_execute:0.036,drop_workspace_breadcrumb:0.010,' .
+           'web_auth:0.007,user_new:0.006,get_dbh:0.006,plugin_enabled_for_workspace:0.003,sql_selectrow:0.002,sql_prepare:0.001"}' . "\n";
     return $str;
 }
 
 
+
+
+
 sub create_user_nlw_entry {
-   my ($user, $ws) = @_;
+   my ($user, $ws, $account) = @_;
    my $email = $user->email_address;
    my $user_id = $user->user_id;
-   my @monthArr = ('Dec 01 2007','Dec 01 2007','Jan 01 2008','Jan 01 2008','Feb 01 2008','Feb 01 2008');
+   my @monthArr = ('Dec 01','Dec 01','Jan 01','Jan 01','Feb 01','Feb 01');
    my $month = $monthArr[$iMonth];
-   my $str = $month . " 12:00:00 talc nlw[30088]: [2013] ASSIGN,USER_ROLE,role:member,user:$email" .
-             '(' . $user_id . ')' . ",workspace:" . $ws->name .'('.$ws->workspace_id.'),[0.001709]'."\n";
    
+   my $str = $month . ' 12:53:18 talc nlw[2805]: [2204] CLI,CREATE-USER,ACTOR_ID:' . $user->user_id .
+             ',{"args":"create-user --email ' . $user->email_address . '--password itdoesntmatter --account ' . $account->name . '"' .
+             ',"timers":"overall:0.326,CLI_create_user:0.325,sql_execute:0.189,user_new:0.114,get_dbh:0.098,sql_prepare:0.001"}' . "\n";
+   $str.=    $month . ' 12:53:23 socialtext nlw[16701]: [2204] ASSIGN,USER_ROLE,role:member,user: ' . 
+             $email . '(' . $user->user_id . '),workspace:' . $ws->name . '(' . $ws->workspace_id . '),[0.0222740173339844]' . "\n";
+   
+             
    $iMonth++;
    if ($iMonth>5) { $iMonth=5; }
    return $str;
 }
-
 

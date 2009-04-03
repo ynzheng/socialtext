@@ -58,7 +58,7 @@ st_qa_setup_reports | | |
 | text_like | Total unique visitors: 8 |  |  |
 | text_like | Total members (current): 8 |  |  |
 | text_like | Collaborativeness: 50% (unique contributors as a percent of unique visitors) |  |  |
-| text_like | qr/devnull1\@socialtext.net\s*16\s*8\s*0/ |  |  |
+| text_like | qr/devnull1\@socialtext.net\s*16\s*8/ |  |  |
 | selectFrame | relative=top |  |  |
 
 | *Comment* | Test case: Control Panel Reports - Workspace Growth |  |
@@ -125,20 +125,20 @@ open_ok | /nlw/reports/workspace_growth.csv?workspace=growth_report_test&downloa
 | selectFrame | report-iframe |  |
 | text_like | Account Growth - %%testingaccount%% |  |
 | text_like | qr/Date\s*Workspaces\s*Unique members\s*Unique Visitors\s*Unique contributors\s*Pages\s*Page views\s*Contributions/i |  |
-| text_like | qr/Apr\s*2008\s*2\s*6\s*0\s*0\s*7\s*0\s*0/ |  |
-| text_like | qr/Mar\s*2008\s*2\s*6\s*6\s*4\s*37\s*158\s*36/ |  |
-| text_like | qr/Feb\s*2008\s*2\s*6\s*6\s*4\s*7\s*76\s*17/ |  |
-| text_like | qr/Jan\s*2008\s*2\s*4\s*4\s*2\s*6\s*46\s*9/ |  |
-| text_like | qr/Dec\s*2007\s*2\s*2\s*2\s*1\s*2\s*24\s*7/ |  |
+| text_like | qr/Apr\s*2009\s*2\s*6\s*0\s*0\s*7\s*0\s*0/ |  |
+| text_like | qr/Mar\s*2009\s*2\s*6\s*6\s*4\s*37\s*152\s*92/ |  |
+| text_like | qr/Feb\s*2009\s*2\s*6\s*6\s*3\s*7\s*76\s*4/ |  |
+| text_like | qr/Jan\s*2009\s*2\s*4\s*6\s*4\s*6\s*46\s*6/ |  |
+| text_like | qr/Dec\s*2008\s*2\s*2\s*2\s*2\s*2\s*24\s*2/ |  |
 
 | *Comment* | Test Case: Control Panel Reports (Account-level, Growth) Printer Friendly |  |
 | selectFrame | relative=top |  |
 | clickAndWait | link=Printer Friendly Report |  |
-| text_like | qr/Apr\s*2008\s*2\s*6\s*0\s*0\s*7\s*0\s*0/ |  |
-| text_like | qr/Mar\s*2008\s*2\s*6\s*6\s*4\s*37\s*158\s*36/ |  |
-| text_like | qr/Feb\s*2008\s*2\s*6\s*6\s*4\s*7\s*76\s*17/ |  |
-| text_like | qr/Jan\s*2008\s*2\s*4\s*4\s*2\s*6\s*46\s*9/ |  |
-| text_like | qr/Dec\s*2007\s*2\s*2\s*2\s*1\s*2\s*24\s*7/ |  |
+| text_like | qr/Apr\s*2009\s*2\s*6\s*0\s*0\s*7\s*0\s*0/ |  |
+| text_like | qr/Mar\s*2009\s*2\s*6\s*6\s*4\s*37\s*152\s*92/ |  |
+| text_like | qr/Feb\s*2009\s*2\s*6\s*6\s*3\s*7\s*76\s*4/ |  |
+| text_like | qr/Jan\s*2009\s*2\s*4\s*6\s*4\s*6\s*46\s*6/ |  |
+| text_like | qr/Dec\s*2008\s*2\s*2\s*2\s*2\s*2\s*24\s*2/ |  |
 
 | *Comment* | Test case: Control Panel Reports (Account-level) Get Usage |  |
 | open_ok | /nlw/control |  |
@@ -158,7 +158,7 @@ open_ok | /nlw/reports/workspace_growth.csv?workspace=growth_report_test&downloa
 | select_ok | report_day | 31 |
 | select_ok | report_day | 25 |
 | select_ok | report_year | 2006 |
-| select_ok | report_year | 2008 |
+| select_ok | report_year | 2009 |
 | select_ok | report_duration | 1 Week |
 | select_ok | report_duration | 1 Month |
 | select_ok | report_duration | 1 Quarter |
@@ -179,17 +179,17 @@ open_ok | /nlw/reports/workspace_growth.csv?workspace=growth_report_test&downloa
 | text_like | qr/Total members \(current\): \d+/ |  |
 | text_like | Collaborativeness: |  |
 | text_like | (unique contributors as a percent of unique visitors) |  |
-| text_like | Total unique contributors: 4 |  |
+| text_like | Total unique contributors: 5 |  |
 | text_like | Total unique visitors: 6 |  |
 | text_like | Total members (current): 6 |  |
-| text_like | Collaborativeness: 66% (unique contributors as a percent of unique visitors) |  |
-| text_like | UsernameViewsEditsComments |  |
-| text_like | qr/t_stub01\@socialtext.com\s*71\s*35\s*0/ |  |
-| text_like | qr/t_stub02\@socialtext.com\s*50\s*0\s*0/ |  |
-| text_like | qr/t_stub03\@socialtext.com\s*56\s*0\s*8/ |  |
-| text_like | qr/t_stub04\@socialtext.com\s*44\s*0\s*0/ |  |
-| text_like | qr/t_stub05\@socialtext.com\s*42\s*21\s*0/ |  |
-| text_like | qr/t_stub06\@socialtext.com\s*36\s*0\s*3/ |  |
+| text_like | Collaborativeness: 83% (unique contributors as a percent of unique visitors) |  |
+| text_like | UsernameViewsContributions |  |
+| text_like | qr/t_stub01\@socialtext.com\s*70\s*67/ |  |
+| text_like | qr/t_stub02\@socialtext.com\s*50\s*0/ |  |
+| text_like | qr/t_stub03\@socialtext.com\s*56\s*9/ |  |
+| text_like | qr/t_stub04\@socialtext.com\s*44\s*1/ |  |
+| text_like | qr/t_stub05\@socialtext.com\s*42\s*22/ |  |
+| text_like | qr/t_stub06\@socialtext.com\s*36\s*4/ |  |
 | selectFrame | relative=top |  |
 
 | *Comment* | Test Case: Control Panel Reports COMPLETED |  |

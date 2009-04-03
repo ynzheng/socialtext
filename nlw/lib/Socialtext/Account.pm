@@ -30,7 +30,7 @@ Readonly our @ACCT_COLS => qw(
     email_addresses_are_hidden
     is_exportable
 
-    desktop_logo_url
+    desktop_logo_uri
     desktop_header_gradient_top
     desktop_header_gradient_bottom
     desktop_bg_color
