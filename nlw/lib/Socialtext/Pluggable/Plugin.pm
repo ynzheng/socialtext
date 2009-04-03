@@ -339,6 +339,14 @@ sub share {
     return "/nlw/plugin/$prod_ver/$plugin";
 }
 
+sub template_paths {
+    my $self = shift;
+    $self->{_template_paths} ||= [
+        glob($self->code_base . "/plugin/*/template"),
+    ];
+    return $self->{_template_paths};
+}
+
 sub template_render {
     my ($self, $template, %args) = @_;
 
@@ -348,13 +356,14 @@ sub template_render {
 
     my $name = $self->name;
     my $plugin_dir = $self->plugin_dir;
-    my $paths = $self->hub->skin->template_paths;
-    push @$paths, glob($self->code_base . "/plugin/*/template");
 
     my $renderer = Socialtext::TT2::Renderer->instance;
     return $renderer->render(
         template => $template,
-        paths => $paths,
+        paths => [
+            @{$self->hub->skin->template_paths},
+            @{$self->template_paths},
+        ],
         vars     => {
             share => $self->share,
             workspaces => [$self->hub->current_user->workspaces->all],
