@@ -3,6 +3,7 @@ package Socialtext::JobCreator;
 use MooseX::Singleton;
 use Socialtext::TheSchwartz;
 use Carp qw/croak/;
+use Socialtext::Log qw/st_log/;
 use namespace::clean -except => 'meta';
 
 has '_client' => (
@@ -26,7 +27,7 @@ sub index_attachment {
     my $attachment = shift;
     my $search_config = shift;
 
-    return $self->index(
+    return $self->insert(
         'Socialtext::Job::AttachmentIndex' => {
             workspace_id => $attachment->hub->current_workspace->workspace_id,
             page_id => $attachment->page_id,
@@ -45,7 +46,7 @@ sub index_page {
 
     $self->_log_page_action($page);
 
-    my $main_job_id = $self->index(
+    my $main_job_id = $self->insert(
         'Socialtext::Job::PageIndex' => {
             workspace_id => $page->hub->current_workspace->workspace_id,
             page_id => $page->id,
