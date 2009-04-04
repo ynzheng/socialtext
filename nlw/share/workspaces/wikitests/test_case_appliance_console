@@ -214,11 +214,10 @@
 | is_element_present_ok | link=Socialtext, Inc. |
 | is_text_present_ok | Appliance Documentation |
 | is_element_present_ok | link=Appliance Manual Workspace |
-| is_element_present_ok | link=Socialtext Support |
 | is_text_present_ok | Contact Socialtext Support |
-| is_element_present_ok | link=support@socialtext.com |
+| is_element_present_ok | link=Socialtext Support Form |
 
-| type_ok | tarball_email | bogus_qa_email@ken.socialtext.com |
+| type_ok | tarball_email | bogus_qa_email@ken.socialtext.net |
 | type_ok | tarball_desc | THIS REPORT GENERATED FROM APPLIANCE WIKITESTS RUN BY QA. PLEASE IGNORE OR FORWARD TO QA. |
 | click_ok | tarball_button |  |
 | wait_for_element_visible_ok | tarball_message | 60000 |
