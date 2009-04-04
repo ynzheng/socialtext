@@ -3845,11 +3845,10 @@ span.st-weblog-nextentries:before {
 .widgetHeaderButtons {
     text-align: right;
     float: right;
-    width: 33%;
+    width: 89px;
 }
 
 .widgetHeaderTitle {
-    width: 67%;
     height: 28px;
     overflow: hidden;
     float: none;
@@ -3863,6 +3862,7 @@ span.st-weblog-nextentries:before {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    padding-right: 3px;
 }
 
 .widgetHeader {
