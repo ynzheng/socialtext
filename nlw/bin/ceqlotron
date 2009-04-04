@@ -196,8 +196,8 @@ sub redirect_output {
         select $oldfh;
     }
     elsif (!$RunInForeground) {
-#         open STDOUT, '>', '/dev/null';
-#         open STDERR, '>', '/dev/null';
+        open STDOUT, '>', '/dev/null';
+        open STDERR, '>', '/dev/null';
     }
 }
 
