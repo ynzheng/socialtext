@@ -7,7 +7,7 @@ use Email::Valid;
 use MIME::Types;
 use Socialtext::Encode;
 use Socialtext::File::Stringify;
-use Socialtext::Job::AttachmentIndex;
+use Socialtext::JobCreator;
 
 my $MAX_WIDTH  = 600;
 my $MAX_HEIGHT = 600;
@@ -367,7 +367,7 @@ QUOTEDTEXT
     $self->From($from);
 
     $self->hub->attachments->index->add($self) unless $self->deleted;
-    Socialtext::Job::AttachmentIndex->Record($self);
+    Socialtext::JobCreator->index_attachment($self);
 }
 
 sub page {

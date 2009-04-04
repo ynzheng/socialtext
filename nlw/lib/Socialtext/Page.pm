@@ -13,7 +13,7 @@ use warnings;
 use base 'Socialtext::Base';
 use base 'Socialtext::Page::Base';
 use Socialtext::AppConfig;
-use Socialtext::Job::PageIndex;
+use Socialtext::JobCreator;
 use Socialtext::Encode;
 use Socialtext::File;
 use Socialtext::Formatter::Parser;
@@ -827,7 +827,7 @@ sub _log_edit_summary {
 sub _perform_store_actions {
     my $self = shift;
     $self->hub->backlinks->update($self);
-    Socialtext::Job::PageIndex->Record($self);
+    Socialtext::JobCreator->index_page($self);
     $self->update_db_metadata();
 }
 

@@ -1887,11 +1887,11 @@ sub index_workspace {
     # Rather than call index_workspace on the indexer object (which is
     # synchronous), we create jobs to trigger the appropriate
     # indexer activity.
-    require Socialtext::Job::PageIndex;
+    require Socialtext::JobCreator;
     for my $page_id ( $hub->pages->all_ids() ) {
         my $page = $hub->pages->new_page($page_id);
         next if $page->deleted;
-        Socialtext::Job::PageIndex->Record($page, $search_config);
+        Socialtext::JobCreator->index_page($page, $search_config);
     }
 
     $self->_success( 'The '
