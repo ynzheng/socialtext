@@ -19,7 +19,7 @@ around 'insert' => sub {
     croak 'Use Socialtext::JobCreator->insert to create jobs'
 };
 
-sub _build__client { Socialtext::TheSchwartz->new(verbose => 1) }
+sub _build__client { Socialtext::TheSchwartz->new() }
 
 memoize 'job_types';
 

@@ -12,7 +12,7 @@ has '_client' => (
     handles => qr/(?:list|find|get_server_time|func)/,
 );
 
-sub _build__client { Socialtext::TheSchwartz->new(verbose => 1) }
+sub _build__client { Socialtext::TheSchwartz->new() }
 
 sub insert {
     my $self = shift;
