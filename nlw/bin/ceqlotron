@@ -8,11 +8,12 @@ use Socialtext::Jobs;
 use Socialtext::File qw/get_contents/;
 use Socialtext::Log 'st_log', 'st_timed_log';
 use Socialtext::Paths;
-use Socialtext::SQL qw/get_dbh sql_execute/;
+use Socialtext::SQL qw/get_dbh sql_execute invalidate_dbh disconnect_dbh/;
 use Socialtext::Timer;
 use Getopt::Long;
 use Pod::Usage;
 use Parallel::ForkManager;
+use POSIX qw(setsid _exit);
 use Time::HiRes qw/sleep/;
 
 # don't run as root
@@ -21,6 +22,7 @@ if ($> == 0) {
 }
 
 my $PID_FILE = Socialtext::Paths::pid_file('ceqlotron');
+my $ProcManager;
 
 # Number of child processes we have running.
 my $RunningChildren = 0;
@@ -71,23 +73,15 @@ exit_if_already_running();
 redirect_output();
 maybe_fork();
 write_pid_file();
+
 st_log->notice("ceqlotron starting");
+
 install_signal_handlers();
+load_jobs();
 
-# Lets be explicit here about what jobs we want to process
-my $Jobs = Socialtext::Jobs->new;
-$Jobs->can_do('Test');
-$Jobs->can_do('PageIndex');
-$Jobs->can_do('AttachmentIndex');
+st_log->notice("ceqlotron loaded");
 
-my $max_concurrency = Socialtext::AppConfig->ceqlotron_max_concurrency;
-my $PM = Parallel::ForkManager->new($max_concurrency);
-$PM->run_on_finish( sub { $RunningChildren-- } );
-$PM->run_on_start(  sub { 
-        $RunningChildren++;
-        st_log->info("ceqlotron fork - concurrency $RunningChildren");
-    } );
-
+start_proc_manager();
 main_loop();
 wait_for_all_children();
 exit_gracefully();
@@ -95,25 +89,29 @@ exit_gracefully();
 
 
 sub install_signal_handlers {
+    my $parent = shift;
     $SIG{TERM} = sub {
-        st_log->notice("ceqlotron caught SIGTERM.  Will exit ASAP.");
+        kill HUP => -$$;
+        st_log->notice("Ceqlotron master: caught SIGTERM.");
         $ExitPlease = 1;
     };
     $SIG{INT} = \&exit_gracefully;
 }
 
 sub exit_gracefully {
+    $ExitPlease = 1;
+    kill HUP => -$$;
     unless ($OnlyOnce) {
         unlink $PID_FILE or die "Cannot unlink $PID_FILE: $!";
     }
-    st_log->notice("ceqlotron exiting");
+    st_log->notice("Ceqlotron master: exiting");
     exit 0;
 }
 
 sub wait_for_all_children {
     return unless $RunningChildren;
-    st_log->info("ceqlotron waiting for $RunningChildren children to exit");
-    $PM->wait_all_children;
+    st_log->notice("Ceqlotron master: waiting for $RunningChildren children to exit");
+    $ProcManager->wait_all_children;
 }
 
 sub write_pid_file {
@@ -125,32 +123,70 @@ sub write_pid_file {
 }
 
 sub main_loop {
-    LOOP: while (1) {
-        eval {
-            while (my $job = $Jobs->find_job_for_workers()) {
-                last LOOP if $ExitPlease;
-                $PM->start and next;
+    while (!$ExitPlease) {
+        if ($ProcManager->start) {
+            st_log->debug("Ceqlotron master: waiting after spawn");
+            sleep Socialtext::AppConfig->ceqlotron_period unless $OnlyOnce;
+        }
+        else {
+            start_worker();
+            st_log->notice("Ceqlotron worker: exiting");
+            $ProcManager->finish();
+        }
+        return if $OnlyOnce;
+    }
 
-                # Force disconnect the database handle, child will re-connect
-                get_dbh()->disconnect;
+    return;
+}
 
-                my $t = Socialtext::Timer->new;
-                $Jobs->work_once($job);
-                st_log->info(
-                    sprintf('Finished %s in %0.2fs',$job->funcname, $t->elapsed));
-                exit;
-            }
-        };
-        if ($@) {
-            st_log->info("Ceqltron error: $@");
+sub start_worker {
+    disconnect_dbh();
+
+    $SIG{HUP} = $SIG{INT} = $SIG{TERM} = sub {
+        $ExitPlease = 1;
+        st_log->debug("Ceqlotron worker: caught hangup");
+    };
+
+    eval {
+        do_work($OnlyOnce ? 1 : 10);
+    };
+    if ($@) {
+        st_log->error("Ceqltron worker: Error $@");
+    }
+}
+
+sub do_work {
+    my $jobs_remaining = shift;
+    $jobs_remaining = 1 unless ($jobs_remaining && $jobs_remaining > 0);
+
+    while ($jobs_remaining && !$ExitPlease) {
+
+        if (my $job = Socialtext::Jobs->find_job_for_workers()) {
+            my $t = Socialtext::Timer->new;
+            Socialtext::Jobs->work_once($job);
+            st_log->info(
+                sprintf(
+                    'Ceqlotron worker: finished %s in %0.2fs', $job->funcname,
+                    $t->elapsed
+                )
+            );
+            $jobs_remaining--;
+        }
+        else {
+            st_log->debug("Ceqlotron worker: no jobs");
         }
 
-        last LOOP if $ExitPlease || $OnlyOnce;
-        sleep Socialtext::AppConfig->ceqlotron_period;
+        # if we're going to loop again...
+        if ($jobs_remaining && !$ExitPlease) {
+            st_log->debug("Ceqlotron worker: sleeping");
+            invalidate_dbh();
+            sleep Socialtext::AppConfig->ceqlotron_period;
+        }
     }
 }
 
 sub redirect_output {
+    open STDIN, '<', '/dev/null';
     if ($OutputTo) {
         my $oldfh = select;
         open STDOUT, '>>', $OutputTo or die "STDOUT > $OutputTo: $!";
@@ -158,7 +194,10 @@ sub redirect_output {
         open STDERR, '>>', $OutputTo or die "STDERR > $OutputTo: $!";
         select STDERR; $| = 1;
         select $oldfh;
-        close STDIN;
+    }
+    elsif (!$RunInForeground) {
+#         open STDOUT, '>', '/dev/null';
+#         open STDERR, '>', '/dev/null';
     }
 }
 
@@ -170,9 +209,10 @@ sub maybe_fork {
     if (! defined $child_pid) {
         die "fork: $!";
     }
-    elsif ($child_pid != 0) { # in the parent
-        exit 0;
+    elsif ($child_pid != 0) { # in the terminal-attached parent
+        _exit(0);
     }
+    setsid();
 }
 
 sub exit_if_already_running {
@@ -180,6 +220,31 @@ sub exit_if_already_running {
     my $pid = get_contents($PID_FILE);
     my $alive = kill 0 => $pid;
     exit if $alive;
+}
+
+sub load_jobs {
+    require Socialtext::Search::AbstractFactory;
+    require Socialtext::Search::KinoSearch::Factory;
+    require Socialtext::User;
+    require Socialtext::Workspace;
+
+    Socialtext::Jobs->can_do_all(); # `requires` all Jobs, registers them
+}
+
+sub start_proc_manager {
+    my $max_concurrency = Socialtext::AppConfig->ceqlotron_max_concurrency;
+    $ProcManager = Parallel::ForkManager->new($max_concurrency);
+    $ProcManager->run_on_finish( sub { 
+        $RunningChildren--;
+        st_log->debug("Ceqlotron master: join, concurrency now $RunningChildren");
+    } );
+    $ProcManager->run_on_start( sub { 
+        $RunningChildren++;
+        st_log->debug("Ceqlotron master: fork, concurrency now $RunningChildren");
+    } );
+    $ProcManager->run_on_wait( sub { 
+        st_log->debug("Ceqlotron master: reached max concurrency $RunningChildren");
+    } );
 }
 
 =head1 NAME

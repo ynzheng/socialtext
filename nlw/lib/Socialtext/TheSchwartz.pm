@@ -19,5 +19,9 @@ around 'list_jobs' => sub {
     return $self->$orig($args);
 };
 
+# TheSchwartz will remove one job type for each job it fetches b/c of some
+# mySQL limitation.  Since we're Pg only, disable this.
+override 'temporarily_remove_ability' => sub {};
+
 __PACKAGE__->meta->make_immutable;
 1;
