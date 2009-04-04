@@ -115,6 +115,9 @@ sub info_param {
     if ($info->{$name}) {
         return $info->{$name};
     }
+    elsif ($name =~ /^desktop_(.+)/ and $info->{desktop}{$1}) {
+        return $info->{desktop}{$1};
+    }
     elsif ($self->parent) {
         return $self->parent->info_param($name);
     }

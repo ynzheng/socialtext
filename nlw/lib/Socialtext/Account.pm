@@ -152,9 +152,17 @@ sub custom_workspace_skins {
 }
 
 sub reset_skin {
-    my ($self, $skin) = @_;
+    my ($self, $skin_name) = @_;
     
-    $self->update(skin_name => $skin);
+    $self->update(skin_name => $skin_name);
+
+    my $skin = Socialtext::Skin->new(name => $skin_name);
+    $self->update(
+        map {
+            $_ => $skin->info_param($_)
+        } grep { /^desktop_/ } @ACCT_COLS,
+    );
+
     my $workspaces = $self->workspaces;
 
     while (my $workspace = $workspaces->next) {
