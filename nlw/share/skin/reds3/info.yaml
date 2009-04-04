@@ -8,3 +8,10 @@ license: CPAL
 parent: s3
 depends:
   - s3
+desktop:
+  logo_uri: /static/skin/reds3/images/sd-logo-red.png
+  header_gradient_top: #9C4C4C
+  header_gradient_bottom: #825151
+  bg_color: #FFEBEB
+  2nd_bg_color: #FFB2B2
+  highlight_color: #FFD4D4

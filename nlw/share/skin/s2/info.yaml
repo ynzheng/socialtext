@@ -12,3 +12,12 @@ license: CPAL
 depends:
   - common
   - wikiwyg
+desktop:
+  logo_uri: /static/desktop/images/sd-logo.png
+  header_gradient_top: #4C739B
+  header_gradient_bottom: #506481
+  bg_color: #FFFFFF
+  2nd_bg_color: #F2F2F2
+  text_color: #000000
+  link_color: #0081F8
+  highlight_color: #FFFDD3
