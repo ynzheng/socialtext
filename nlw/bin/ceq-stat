@@ -14,12 +14,14 @@ GetOptions(
     'H|man'         => sub {pod2usage({-verbose => 2, -input => $0}); exit},
 ) or die;
 
-$TheSchwartz::FIND_JOB_BATCH_SIZE = 50000;
+{
+    no warnings 'once';
+    $TheSchwartz::Moosified::FIND_JOB_BATCH_SIZE = 50000;
+}
 
 my %count;
-my $jobs = Socialtext::Jobs->new;
-for my $type ($jobs->job_types) {
-    my @jobs = $jobs->list_jobs(funcname => $type);
+for my $type (Socialtext::Jobs->job_types) {
+    my @jobs = Socialtext::Jobs->list_jobs(funcname => $type);
     (my $name = $type) =~ s/.+:://;
     
     my $grabbed = 0;
