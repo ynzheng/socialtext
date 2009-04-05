@@ -116,8 +116,6 @@
 | *Comment* | Test Case: Console Setup. mail server and test email |  |
 | type_ok | smarthost |  |
 | click_and_wait | config_email |  |
-| value_is | timeserver | ntp.ubuntu.org |
-
 | type_ok | recipient_email | %%workspace%%@%%wikiemail%% |
 | click_and_wait | test_email |  |
 | is_text_present_ok | Sent test email to %%workspace%%@%%wikiemail%% |  |
