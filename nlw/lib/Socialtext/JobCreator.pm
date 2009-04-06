@@ -44,8 +44,6 @@ sub index_page {
 
     my @job_ids;
 
-    $self->_log_page_action($page);
-
     my $main_job_id = $self->insert(
         'Socialtext::Job::PageIndex' => {
             workspace_id => $page->hub->current_workspace->workspace_id,
@@ -63,33 +61,6 @@ sub index_page {
     }
 
     return @job_ids;
-}
-
-sub _log_page_action {
-    my $self = shift;
-    my $page = shift;
-
-    my $action = $page->hub->action || '';
-    my $clobber = eval { $page->hub->rest->query->param('clobber') };
-
-    return if $clobber
-        || $action eq 'submit_comment'
-        || $action eq 'attachments_upload';
-
-    if ($action eq 'edit_content' || $action eq 'rename_page') {
-         return unless ($page->restored || $page->revision_count == 1);
-    }
-
-    my $log_action = ($action eq 'delete_page') ? 'DELETE' : 'CREATE';
-    my $ws         = $page->hub->current_workspace;
-    my $user       = $page->hub->current_user;
-
-    st_log()->info("$log_action,PAGE,"
-                   . 'workspace:' . $ws->name . '(' . $ws->workspace_id . '),'
-                   . 'page:' . $page->id . ','
-                   . 'user:' . $user->username . '(' . $user->user_id . '),'
-                   . '[NA]'
-    );
 }
 
 __PACKAGE__->meta->make_immutable;

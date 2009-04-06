@@ -827,8 +827,35 @@ sub _log_edit_summary {
 sub _perform_store_actions {
     my $self = shift;
     $self->hub->backlinks->update($self);
-    Socialtext::JobCreator->index_page($self);
     $self->update_db_metadata();
+    Socialtext::JobCreator->index_page($self);
+    $self->_log_page_action();
+}
+
+sub _log_page_action {
+    my $self = shift;
+
+    my $action = $self->hub->action || '';
+    my $clobber = eval { $self->hub->rest->query->param('clobber') };
+
+    return if $clobber
+        || $action eq 'submit_comment'
+        || $action eq 'attachments_upload';
+
+    if ($action eq 'edit_content' || $action eq 'rename_page') {
+         return unless ($self->restored || $self->revision_count == 1);
+    }
+
+    my $log_action = ($action eq 'delete_page') ? 'DELETE' : 'CREATE';
+    my $ws         = $self->hub->current_workspace;
+    my $user       = $self->hub->current_user;
+
+    st_log()->info("$log_action,PAGE,"
+                   . 'workspace:' . $ws->name . '(' . $ws->workspace_id . '),'
+                   . 'page:' . $self->id . ','
+                   . 'user:' . $user->username . '(' . $user->user_id . '),'
+                   . '[NA]'
+    );
 }
 
 sub update_db_metadata {
