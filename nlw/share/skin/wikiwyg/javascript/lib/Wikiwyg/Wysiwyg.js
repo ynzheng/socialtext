@@ -995,19 +995,7 @@ proto.add_web_link = function() {
 
 proto.insert_link_wafl_widget = function(wafl, widget_element) {
     var widget_text = this.getWidgetImageText(wafl);
-    var self = this;
-    jQuery.ajax({
-        type: 'post',
-        url: this.wikiwyg.config.postUrl || location.pathname,
-        data: {
-            action: "wikiwyg_generate_widget_image",
-            widget: widget_text,
-            widget_string: wafl
-        },
-        success: function() {
-            self.insert_widget(wafl, widget_element);
-        }
-    });
+    this.insert_widget(wafl, widget_element);
 }
 
 proto.make_wiki_link = function(page_name, link_text) {
@@ -2375,8 +2363,7 @@ proto.replace_widget = function(elem) {
         if (orig.src) src = orig.src;
     }
 
-    if (!src)
-        src = this.getWidgetImageUrl(widget);
+    if (!src) src = this.getWidgetImageUrl(widget);
 
     widget_image = Wikiwyg.createElementWithAttrs('img',
         {
@@ -2389,22 +2376,11 @@ proto.replace_widget = function(elem) {
 }
 
 proto.insert_generated_image = function (widget_string, elem, cb) {
-    var self = this;
-    var widget_text = self.getWidgetImageText(widget_string);
-    jQuery.post(
-        this.wikiwyg.config.postUrl || location.pathname,
-        { action: 'wikiwyg_generate_widget_image'
-        , widget: widget_text
-        , widget_string: widget_string
-        },
-        function() {
-            self.insert_image(
-                self.getWidgetImageUrl(widget_string),
-                widget_string,
-                elem,
-                cb
-            );
-        }
+    this.insert_image(
+        this.getWidgetImageUrl(widget_string),
+        widget_string,
+        elem,
+        cb
     );
 }
 
@@ -2421,7 +2397,7 @@ proto.insert_real_image = function(widget, elem, cb) {
                 self.insert_image(src, widget, elem, cb);
             }
             else {
-                self.insert_generated_image(widget,elem, cb);
+                self.insert_generated_image(widget, elem, cb);
             }
         },
         'xml'
@@ -2535,10 +2511,9 @@ proto.getWidgetImageLocalizeText = function(widget, text) {
     return newtext;
 }
 
-proto.getWidgetImageUrl = function(widget_text) {
-    var md5 = MD5(this.getWidgetImageText(widget_text));
-    var url = nlw_make_static_path('/widgets/' + md5 + '.png');
-    return url;
+proto.getWidgetImageUrl = function(widget_string) {
+    var widget_text = this.getWidgetImageText(widget_string);
+    return '/data/wafl/' + widget_text;
 }
 
 proto.create_wafl_string = function(widget, form) {

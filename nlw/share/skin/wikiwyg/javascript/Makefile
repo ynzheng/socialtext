@@ -7,7 +7,6 @@ S3_JAVASCRIPT=../../s3/javascript
 EDITOR_FILE=socialtext-editor.js
 EDITOR_SOURCE_FILES= \
 		$(S2_JAVASCRIPT)/main.js \
-		$(S2_JAVASCRIPT)/md5.js \
 		$(JEMPLATE_WIKIWYG_MODULE) \
 		$(JEMPLATE_MODULE) \
 		lib/Wikiwyg.js \
@@ -31,7 +30,6 @@ MINI_EDITOR_SOURCE_FILES= \
 		$(S3_JAVASCRIPT)/Class.js \
 		$(S3_JAVASCRIPT)/loc.js \
 		$(S2_JAVASCRIPT)/main.js \
-		$(S2_JAVASCRIPT)/md5.js \
 		lib/Wikiwyg.js \
 		Widgets.js \
 		lib/Wikiwyg/Widgets.js \
