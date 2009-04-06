@@ -894,17 +894,26 @@ Default: 0
 =head2 ceqlotron_max_concurrency
 
 The maximum number of child processes the Ceqlotron will run in
-parallel.
+parallel (pre-forked).
+
+Default: 5
+
+=for code type => NONNEGATIVE_INT_TYPE
+
+=head2 ceqlotron_period
+
+The time, in seconds, between working on jobs in ceqlotron child processes.
 
 Default: 5
 
 =for code type => POSITIVE_FLOAT_TYPE
 
-=head2 ceqlotron_period
+=head2 ceqlotron_worker_loops
 
-The time, in seconds, betweens runs of the change event queue.
+The number of jobs that a ceqlotron child process will work on before exiting.
+This is used to combat memory leaks.
 
-Default: 5
+Default: 25
 
 =for code type => NONNEGATIVE_INT_TYPE
 

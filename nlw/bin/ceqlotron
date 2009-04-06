@@ -147,8 +147,9 @@ sub start_worker {
         st_log->debug("Ceqlotron worker: caught hangup");
     };
 
+    my $loops = eval { Socialtext::AppConfig->ceqlotron_worker_loops } || 10;
     eval {
-        do_work($OnlyOnce ? 1 : 10);
+        do_work($OnlyOnce ? 1 : $loops);
     };
     if ($@) {
         st_log->error("Ceqltron worker: Error $@");
