@@ -994,7 +994,6 @@ proto.add_web_link = function() {
 }
 
 proto.insert_link_wafl_widget = function(wafl, widget_element) {
-    var widget_text = this.getWidgetImageText(wafl);
     this.insert_widget(wafl, widget_element);
 }
 
@@ -2365,12 +2364,10 @@ proto.replace_widget = function(elem) {
 
     if (!src) src = this.getWidgetImageUrl(widget);
 
-    widget_image = Wikiwyg.createElementWithAttrs('img',
-        {
-            'src': src,
-            'widget': Wikiwyg.is_ie? Wikiwyg.htmlEscape(widget) : widget
-        }
-    );
+    widget_image = Wikiwyg.createElementWithAttrs('img', {
+        'src': src,
+        'widget': Wikiwyg.is_ie? Wikiwyg.htmlEscape(widget) : widget
+    });
     elem.parentNode.replaceChild(widget_image, elem);
     return widget_image;
 }
@@ -2454,33 +2451,25 @@ proto.insert_widget = function(widget, widget_element, cb) {
     changer();
 }
 
-proto.getWidgetImageText = function(widget_text) {
+proto.getWidgetImageText = function(widget_text, widget) {
     var text = widget_text;
-    try {
-        var widget = this.parseWidget(widget_text);
-
-        // XXX Hack for html block. Should key off of 'uneditable' flag.
-        if (widget_text.match(/^\.html/))
-            text = widget_data.html.title;
-        else if (widget.id && widget_data[widget.id].image_text) {
-            for (var i=0; i < widget_data[widget.id].image_text.length; i++) {
-                if (widget_data[widget.id].image_text[i].field == 'default') {
-                    text = widget_data[widget.id].image_text[i].text;
-                    break;
-                }
-                else if (widget[widget_data[widget.id].image_text[i].field]) {
-                    text = widget_data[widget.id].image_text[i].text;
-                    break;
-                }
+    // XXX Hack for html block. Should key off of 'uneditable' flag.
+    if (widget.id == 'html') {
+        text = widget_data.html.title;
+    }
+    else if (widget.id && widget_data[widget.id].image_text) {
+        for (var i=0; i < widget_data[widget.id].image_text.length; i++) {
+            if (widget_data[widget.id].image_text[i].field == 'default') {
+                text = widget_data[widget.id].image_text[i].text;
+                break;
+            }
+            else if (widget[widget_data[widget.id].image_text[i].field]) {
+                text = widget_data[widget.id].image_text[i].text;
+                break;
             }
         }
-        text = this.getWidgetImageLocalizeText(widget, text);
     }
-    catch (E) {
-        // parseWidget can throw an error
-        // Just ignore and set the text to be the widget text
-    }
-
+    text = this.getWidgetImageLocalizeText(widget, text);
     return text;
 }
 
@@ -2511,9 +2500,19 @@ proto.getWidgetImageLocalizeText = function(widget, text) {
     return newtext;
 }
 
-proto.getWidgetImageUrl = function(widget_string) {
-    var widget_text = this.getWidgetImageText(widget_string);
-    return '/data/wafl/' + widget_text;
+proto.getWidgetImageUrl = function(widget_text) {
+    var uneditable = false;
+    try {
+        var widget = this.parseWidget(widget_text);
+        uneditable = widget_data[widget.id].uneditable;
+        widget_text = this.getWidgetImageText(widget_text, widget);
+    }
+    catch (e) {
+        // parseWidget can throw an error
+        // Just ignore and set the text to be the widget text
+    }
+
+    return '/data/wafl/' + widget_text + (uneditable ? '?uneditable=1' : '');
 }
 
 proto.create_wafl_string = function(widget, form) {

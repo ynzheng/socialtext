@@ -30,7 +30,7 @@ my $ellipsis = '...';
 
 sub GET_image {
     my $self = shift;
-    my $uneditable = 0;
+    my $uneditable = $self->rest->query->param('uneditable');
     my $current = 0;
 
     my $cache_dir = Socialtext::Paths::cache_directory('wafl');
