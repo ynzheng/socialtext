@@ -71,12 +71,12 @@ if ($Kick) {
 
 exit_if_already_running();
 redirect_output();
-maybe_fork();
+maybe_run_in_background();
 write_pid_file();
 
 st_log->notice("ceqlotron starting");
 
-install_signal_handlers();
+install_parent_signal_handlers();
 load_jobs();
 
 st_log->notice("ceqlotron loaded");
@@ -88,14 +88,14 @@ exit_gracefully();
 
 
 
-sub install_signal_handlers {
-    my $parent = shift;
+sub install_parent_signal_handlers {
     $SIG{TERM} = sub {
         kill HUP => -$$;
         st_log->notice("Ceqlotron master: caught SIGTERM.");
         $ExitPlease = 1;
     };
     $SIG{INT} = \&exit_gracefully;
+    $SIG{HUP} = 'IGNORE';
 }
 
 sub exit_gracefully {
@@ -110,6 +110,7 @@ sub exit_gracefully {
 
 sub wait_for_all_children {
     return unless $RunningChildren;
+    kill HUP => -$$;
     st_log->notice("Ceqlotron master: waiting for $RunningChildren children to exit");
     $ProcManager->wait_all_children;
 }
@@ -125,12 +126,15 @@ sub write_pid_file {
 sub main_loop {
     while (!$ExitPlease) {
         if ($ProcManager->start) {
+            last if $ExitPlease;
             st_log->debug("Ceqlotron master: waiting after spawn");
-            sleep Socialtext::AppConfig->ceqlotron_period unless $OnlyOnce;
+            sleep (Socialtext::AppConfig->ceqlotron_period / 4) unless $OnlyOnce;
         }
         else {
-            start_worker();
-            st_log->notice("Ceqlotron worker: exiting");
+            if (!$ExitPlease) {
+                start_worker();
+                st_log->notice("Ceqlotron worker: exiting");
+            }
             $ProcManager->finish();
         }
         return if $OnlyOnce;
@@ -202,7 +206,7 @@ sub redirect_output {
     }
 }
 
-sub maybe_fork {
+sub maybe_run_in_background {
     return if $RunInForeground;
 
     my $child_pid = fork;
@@ -210,8 +214,8 @@ sub maybe_fork {
     if (! defined $child_pid) {
         die "fork: $!";
     }
-    elsif ($child_pid != 0) { # in the terminal-attached parent
-        _exit(0);
+    elsif ($child_pid != 0) {
+        _exit(0); # ... the terminal-attached parent
     }
     setsid();
 }
@@ -235,7 +239,7 @@ sub load_jobs {
 sub start_proc_manager {
     my $max_concurrency = Socialtext::AppConfig->ceqlotron_max_concurrency;
     $ProcManager = Parallel::ForkManager->new($max_concurrency);
-    $ProcManager->run_on_finish( sub { 
+    $ProcManager->run_on_finish( sub {
         $RunningChildren--;
         st_log->debug("Ceqlotron master: join, concurrency now $RunningChildren");
     } );
