@@ -9,6 +9,9 @@ use Imager;
 use Socialtext::Paths;
 use Socialtext::File qw(get_contents ensure_directory);
 use Socialtext::AppConfig;
+use File::Basename qw(dirname);
+use Cwd qw(abs_path);
+use namespace::clean;
 
 my @font_table = grep {
     -f Socialtext::AppConfig->code_base . '/fonts/' . $_->{font}
@@ -22,7 +25,6 @@ unshift @font_table, 'dummy first entry';
 my $font_path = Socialtext::AppConfig->code_base .  '/fonts';
 my $widgets_path = Socialtext::AppConfig->code_base . '/widgets';
 my $max = 300;
-#my $height = 18;
 my $height = 19;
 my $ellipsis = '...';
 
@@ -32,11 +34,13 @@ sub GET_image {
     my $current = 0;
 
     my $cache_dir = Socialtext::Paths::cache_directory('wafl');
+    $cache_dir = abs_path($cache_dir);
     ensure_directory($cache_dir);
 
     my $text = decode_utf8($self->text);
+    my $image_file = abs_path("$cache_dir/$text.png");
 
-    my $image_file = "$cache_dir/$text.png";
+    die 'Bad Text' unless dirname($image_file) eq $cache_dir;
     return $self->return_file($image_file) if -f $image_file;
 
     my @texts;
