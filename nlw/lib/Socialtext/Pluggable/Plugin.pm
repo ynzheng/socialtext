@@ -350,8 +350,6 @@ sub template_paths {
 sub template_render {
     my ($self, $template, %args) = @_;
 
-    my %template_vars = $self->hub->helpers->global_template_vars;
-
     $self->header_out('Content-Type' => 'text/html; charset=utf-8');
 
     my $name = $self->name;
@@ -364,22 +362,30 @@ sub template_render {
             @{$self->hub->skin->template_paths},
             @{$self->template_paths},
         ],
-        vars     => {
-            share => $self->share,
-            workspaces => [$self->hub->current_user->workspaces->all],
-            as_json => sub {
-                my $json = encode_json(@_);
-
-                # hack so that json can be included in other <script> 
-                # sections without breaking stuff
-                $json =~ s!</script>!</scr" + "ipt>!g;
-
-                return $json;
-            },
-            %template_vars,
+        vars => {
+            %{$self->template_vars},
             %args,
         },
     );
+}
+
+sub template_vars {
+    my $self = shift;
+    my %template_vars = $self->hub->helpers->global_template_vars;
+    return {
+        share => $self->share,
+        workspaces => [$self->hub->current_user->workspaces->all],
+        as_json => sub {
+            my $json = encode_json(@_);
+
+            # hack so that json can be included in other <script> 
+            # sections without breaking stuff
+            $json =~ s!</script>!</scr" + "ipt>!g;
+
+            return $json;
+        },
+        %template_vars,
+    }
 }
 
 sub created_at {

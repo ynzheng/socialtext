@@ -18,9 +18,12 @@ use Apache::Cookie;
 use Email::Address;
 use Email::Valid;
 
+my $PROD_VERSION = Socialtext->product_version;
+my $CODE_BASE = Socialtext::AppConfig->code_base;
+
 sub class_id { 'helpers' }
 
-sub static_path { '/static/' . Socialtext->product_version() }
+sub static_path { "/static/$PROD_VERSION" }
 
 my $supported_format = {
     'en' => '%B %Y',
@@ -253,8 +256,18 @@ sub global_template_vars {
         ui_is_expanded     => defined($cookies->{"ui_is_expanded"}),
         plugins_enabled    => $plugins_enabled,
         self_registration  => Socialtext::AppConfig->self_registration(),
+        static_path_for_file => sub { "/static/$PROD_VERSION/$_[0]" },
         $self->hub->pluggable->hooked_template_vars,
     );
+
+    if ($ENV{NLW_DEV_MODE}) {
+        $result{static_path_for_file} = sub {
+            my $file = "$CODE_BASE/$_[0]";
+            my $stat = (stat $file)[9];
+            return "/static/$PROD_VERSION.$stat/$_[0]";
+        };
+    }
+
     if ($self->hub->current_user->can_use_plugin('people')) {
         if (Socialtext::AppConfig->allow_network_invitation()) {
             $result{invite_url} = '/?action=invite';
