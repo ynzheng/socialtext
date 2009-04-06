@@ -256,24 +256,9 @@ sub global_template_vars {
         ui_is_expanded     => defined($cookies->{"ui_is_expanded"}),
         plugins_enabled    => $plugins_enabled,
         self_registration  => Socialtext::AppConfig->self_registration(),
-        static_file => sub { "/static/$PROD_VERSION/$_[0]" },
-        plugin_file => sub { "/nlw/plugin/$PROD_VERSION/$_[0]/$_[1]" },
+        time               => time,
         $self->hub->pluggable->hooked_template_vars,
     );
-
-    if ($ENV{NLW_DEV_MODE}) {
-        $result{static_file} = sub {
-            my $file = "$CODE_BASE/$_[0]";
-            my $stat = (stat $file)[9];
-            return "/static/$PROD_VERSION.$stat/$_[0]";
-        };
-        $result{plugin_file} = sub {
-            my ($plugin, $path) = @_;
-            my $file = "$CODE_BASE/plugin/$plugin/share/$path";
-            my $stat = (stat $file)[9];
-            return "/nlw/plugin/$PROD_VERSION.$stat/$plugin/$path";
-        };
-    }
 
     if ($self->hub->current_user->can_use_plugin('people')) {
         if (Socialtext::AppConfig->allow_network_invitation()) {
