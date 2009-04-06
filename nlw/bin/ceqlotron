@@ -93,6 +93,7 @@ sub install_parent_signal_handlers {
         kill HUP => -$$;
         st_log->notice("Ceqlotron master: caught SIGTERM.");
         $ExitPlease = 1;
+        $ProcManager->set_max_procs(0);
     };
     $SIG{INT} = \&exit_gracefully;
     $SIG{HUP} = 'IGNORE';
@@ -101,6 +102,7 @@ sub install_parent_signal_handlers {
 sub exit_gracefully {
     $ExitPlease = 1;
     kill HUP => -$$;
+    $ProcManager->set_max_procs(0);
     unless ($OnlyOnce) {
         unlink $PID_FILE or die "Cannot unlink $PID_FILE: $!";
     }
@@ -125,13 +127,25 @@ sub write_pid_file {
 
 sub main_loop {
     while (!$ExitPlease) {
-        if ($ProcManager->start) {
+
+        # If "max_procs" in P::FM is zero, start() will pretend that the
+        # parent is actually a child.  This should only ever happen when we
+        # enter the ExitPlease state.
+        #
+        # This call otherwise blocks until a child-slot is available.
+        my $started = $ProcManager->start;
+
+        if ($started) {
             last if $ExitPlease;
             st_log->debug("Ceqlotron master: waiting after spawn");
             sleep (Socialtext::AppConfig->ceqlotron_period / 4) unless $OnlyOnce;
+
+            # Re-evaluate how many children to run.
+            $ProcManager->set_max_procs(get_max_procs()) unless $ExitPlease;
         }
         else {
             if (!$ExitPlease) {
+                st_log->debug("Ceqlotron worker: starting");
                 start_worker();
                 st_log->notice("Ceqlotron worker: exiting");
             }
@@ -236,19 +250,30 @@ sub load_jobs {
     Socialtext::Jobs->can_do_all(); # `requires` all Jobs, registers them
 }
 
+sub get_max_procs {
+    my $max = Socialtext::AppConfig->ceqlotron_max_concurrency;
+    $max = 1 if (!$max || $max <= 0);
+    return $max;
+}
+
 sub start_proc_manager {
-    my $max_concurrency = Socialtext::AppConfig->ceqlotron_max_concurrency;
-    $ProcManager = Parallel::ForkManager->new($max_concurrency);
+    $ProcManager = Parallel::ForkManager->new(
+        get_max_procs()
+    );
+
     $ProcManager->run_on_finish( sub {
         $RunningChildren--;
+        return if $ExitPlease;
         st_log->debug("Ceqlotron master: join, concurrency now $RunningChildren");
     } );
     $ProcManager->run_on_start( sub { 
         $RunningChildren++;
+        return if $ExitPlease;
         st_log->debug("Ceqlotron master: fork, concurrency now $RunningChildren");
     } );
     $ProcManager->run_on_wait( sub { 
-        st_log->debug("Ceqlotron master: reached max concurrency $RunningChildren");
+        return if $ExitPlease;
+        st_log->debug("Ceqlotron master: waiting, concurrency is $RunningChildren");
     } );
 }
 
