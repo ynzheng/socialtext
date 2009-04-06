@@ -85,6 +85,7 @@ CREATE TABLE "Account" (
     is_system_created boolean DEFAULT false NOT NULL,
     skin_name varchar(30) DEFAULT 's3'::varchar NOT NULL,
     email_addresses_are_hidden boolean,
+<<<<<<< HEAD:nlw/etc/socialtext/db/socialtext-schema.sql
     is_exportable boolean DEFAULT false NOT NULL,
     desktop_logo_uri varchar(250) DEFAULT '/static/desktop/images/sd-logo.png'::varchar,
     desktop_header_gradient_top varchar(7) DEFAULT '#4C739B'::varchar,
@@ -94,6 +95,9 @@ CREATE TABLE "Account" (
     desktop_text_color varchar(7) DEFAULT '#000000'::varchar,
     desktop_link_color varchar(7) DEFAULT '#0081F8'::varchar,
     desktop_highlight_color varchar(7) DEFAULT '#FFFDD3'::varchar
+=======
+    is_exportable boolean DEFAULT false NOT NULL
+>>>>>>> Migrations for direct messages signals story:nlw/etc/socialtext/db/socialtext-schema.sql
 );
 
 CREATE SEQUENCE "Account___account_id"
@@ -530,7 +534,8 @@ CREATE TABLE signal (
     "at" timestamptz DEFAULT now(),
     user_id bigint NOT NULL,
     body text NOT NULL,
-    in_reply_to_id bigint
+    in_reply_to_id bigint,
+    recipient_id bigint
 );
 
 CREATE TABLE signal_account (
@@ -958,6 +963,9 @@ CREATE INDEX ix_rollup_user_signal_user
 CREATE INDEX ix_session_last_updated
 	    ON sessions (last_updated);
 
+CREATE INDEX ix_signal__recipient_id
+	    ON signal (recipient_id);
+
 CREATE INDEX ix_signal_account
 	    ON signal_account (signal_id);
 
@@ -1329,6 +1337,11 @@ ALTER TABLE ONLY signal_account
     ADD CONSTRAINT signal_account_signal_fk
             FOREIGN KEY (account_id)
             REFERENCES "Account"(account_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY signal
+    ADD CONSTRAINT signal_recipient_fk
+            FOREIGN KEY (recipient_id)
+            REFERENCES users(user_id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY signal
     ADD CONSTRAINT signal_user_id_fk
