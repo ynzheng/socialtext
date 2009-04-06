@@ -660,7 +660,7 @@
 			
 			this.isDigit = function(s,config) {
 				var DECIMAL = '\\' + config.decimal;
-				var exp = '/(^[+]?0(' + DECIMAL +'0+)?$)|(^([-+]?[1-9][0-9]*)$)|(^([-+]?((0?|[1-9][0-9]*)' + DECIMAL +'(0*[1-9][0-9]*)))$)|(^[-+]?[1-9]+[0-9]*' + DECIMAL +'0+$)/';
+				var exp = '(^[+]?0(' + DECIMAL +'0+)?$)|(^([-+]?[1-9][0-9]*)$)|(^([-+]?((0?|[1-9][0-9]*)' + DECIMAL +'(0*[1-9][0-9]*)))$)|(^[-+]?[1-9]+[0-9]*' + DECIMAL +'0+$)';
 				return RegExp(exp).test($.trim(s));
 			};
 			
@@ -701,12 +701,12 @@
 		is: function(s,table) {
 			var c = table.config;
 			return $.tablesorter.isDigit(
-				s.replace(/(\d)\s*[,\.]\s*(\d)/g, '$1$2'),
+				s.replace(/(\d)\s*[,\.]\s*(\d)/g, '$1$2').replace(/^([-+])?0+(\d)/, '$1$2'),
 			c);
 		},
 		format: function(s) {
 			return $.tablesorter.formatFloat(
-				s.replace(/[^0-9\.\-]/g, '')
+				s.replace(/[^0-9\.\-]/g, '').replace(/^([-+])?0+(\d)/, '$1$2')
 			);
 		},
 		type: "numeric"
