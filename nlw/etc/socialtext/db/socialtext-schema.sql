@@ -85,7 +85,6 @@ CREATE TABLE "Account" (
     is_system_created boolean DEFAULT false NOT NULL,
     skin_name varchar(30) DEFAULT 's3'::varchar NOT NULL,
     email_addresses_are_hidden boolean,
-<<<<<<< HEAD:nlw/etc/socialtext/db/socialtext-schema.sql
     is_exportable boolean DEFAULT false NOT NULL,
     desktop_logo_uri varchar(250) DEFAULT '/static/desktop/images/sd-logo.png'::varchar,
     desktop_header_gradient_top varchar(7) DEFAULT '#4C739B'::varchar,
@@ -95,9 +94,6 @@ CREATE TABLE "Account" (
     desktop_text_color varchar(7) DEFAULT '#000000'::varchar,
     desktop_link_color varchar(7) DEFAULT '#0081F8'::varchar,
     desktop_highlight_color varchar(7) DEFAULT '#FFFDD3'::varchar
-=======
-    is_exportable boolean DEFAULT false NOT NULL
->>>>>>> Migrations for direct messages signals story:nlw/etc/socialtext/db/socialtext-schema.sql
 );
 
 CREATE SEQUENCE "Account___account_id"
