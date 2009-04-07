@@ -6,6 +6,9 @@ use Socialtext::JobCreator;
 use Socialtext::Workspace;
 use Socialtext::User;
 use Socialtext;
+use Socialtext::Migration::Utils qw/ensure_socialtext_schema/;
+
+ensure_socialtext_schema(47);
 
 my $ceq_dir = Socialtext::AppConfig->change_event_queue_dir;
 my $data_dir = Socialtext::AppConfig->data_root_dir;
