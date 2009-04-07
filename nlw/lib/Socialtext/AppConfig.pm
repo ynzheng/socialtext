@@ -902,9 +902,22 @@ Default: 5
 
 =head2 ceqlotron_period
 
-The time, in seconds, between working on jobs in ceqlotron child processes.
+The time, in seconds, that a ceqlotron child process will wait after
+processing a job.  Setting this lower will cause ceqlotron to process jobs
+more frequently and may increase system load.  Setting this higher will cause
+ceqlotron to process jobs less frequently and may decrease system load.
 
 Default: 5
+
+=for code type => POSITIVE_FLOAT_TYPE
+
+=head2 ceqlotron_polling_period
+
+The time, in seconds, that ceqlotron child processes will wait to check for
+new jobs after they find that there's no more work to do (no work polling
+interval).  Set this lower to have ceqlotron be more responsive to new jobs.
+
+Default: 10
 
 =for code type => POSITIVE_FLOAT_TYPE
 

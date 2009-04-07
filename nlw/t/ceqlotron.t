@@ -24,6 +24,7 @@ ok -x $Ceq_bin;
 Socialtext::Jobs->clear_jobs();
 
 system("st-config set ceqlotron_period 0.1 > /dev/null") and die 'unable to set period';
+system("st-config set ceqlotron_polling_period 0.1 > /dev/null") and die 'unable to set period';
 system("st-config set ceqlotron_max_concurrency 2 > /dev/null") and die 'unable to set concurrency';
 
 Start_and_stop: {
