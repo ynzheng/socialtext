@@ -15,11 +15,10 @@ use Pod::Usage;
 use Parallel::ForkManager;
 use POSIX qw(setsid _exit);
 use Time::HiRes qw/sleep/;
+use Socialtext::CLI;
 
 # don't run as root
-if ($> == 0) {
-    exec(qw/sudo -u www-data/, $0, @ARGV);
-}
+Socialtext::CLI->Check_and_drop_privs();
 
 my $PID_FILE = Socialtext::Paths::pid_file('ceqlotron');
 my $ProcManager;
