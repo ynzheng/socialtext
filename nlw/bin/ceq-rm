@@ -31,11 +31,17 @@ my $jobs = Socialtext::Jobs->new;
 my @job_types = $jobs->job_types;
 my @jobs_to_check;
 if ($opts{class}) {
-    push @jobs_to_check, $jobs->list_jobs(funcname => $opts{class});
+    push @jobs_to_check, $jobs->list_jobs(
+        funcname => $opts{class},
+        want_handle => 1,
+    );
 }
 else {
     for my $type (@job_types) {
-        push @jobs_to_check, $jobs->list_jobs(funcname => $type);
+        push @jobs_to_check, $jobs->list_jobs(
+            funcname => $type,
+            want_handle => 1,
+        );
     }
 }
 
@@ -61,7 +67,6 @@ sub remove_if_match {
             $job->completed;
         }
     }
-
 }
 
 =head1 NAME
