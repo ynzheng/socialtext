@@ -265,8 +265,10 @@ proto.insert_widget = function (widget_string) {
     /* This is currently only used for post-file-upload insertion of {file:}
      * and {image:} wafls; other widgets call insert_text_at_cursor directly.
      * Also see {bz: 1116}: For file uploads, Wafl is inserted on its own line.
+     *
+     * Changed use spaces mainly for signals, but it shouldn't break {bz: 1116}.
      */
-    this.insert_text_at_cursor('\n' + widget_string + '\n');
+    this.insert_text_at_cursor(' ' + widget_string + ' ');
 }
 
 proto.insert_text_at_cursor = function(text) {
@@ -295,6 +297,10 @@ proto.insert_text_at_cursor = function(text) {
     var before = t.value.substr(0, selection_start);
     var after = t.value.substr(selection_end, t.value.length);
     t.value = before + text + after;
+
+    this.area.focus();
+    var end = selection_end + text.length;
+    this.area.setSelectionRange(end, end);
 }
 
 proto.insert_text = function (text) {
