@@ -2,7 +2,7 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::Socialtext tests => 12;
+use Test::Socialtext tests => 13;
 use Test::Socialtext::Ceqlotron;
 
 BEGIN {
@@ -28,25 +28,38 @@ ceq_config(
 touch_a_file: {
     ceq_fast_forward();
 
+    my $touchfile = "t/tmp/job-cmd.$$";
+    my $touch_handle = Socialtext::JobCreator->insert(
+        'Socialtext::Job::Cmd',
+        { 
+            cmd => '/usr/bin/touch',
+            args => [$touchfile],
+        },
+    );
+    ok $touch_handle, 'inserted job';
+
+    my $false_handle = Socialtext::JobCreator->insert(
+        'Socialtext::Job::Cmd',
+        { 
+            cmd => '/bin/false',
+        },
+    );
+    ok $false_handle, 'inserted job';
+
     my $ceq_pid = ceq_start();
     my @startup = ceq_get_log_until(
-        qr/Ceqlotron master: fork, concurrency now 2/);
+        qr/Ceqlotron master: fork, concurrency now/);
 
-    my $touchfile = "t/tmp/job-cmd.$$";
-    for my $n (1 .. 2) {
-        ok(Socialtext::JobCreator->insert(
-            'Socialtext::Job::Cmd',
-            { 
-                cmd => '/usr/bin/touch',
-                args => ["$touchfile.$n"],
-            },
-        ), 'inserted job');
-    }
     sleep 1; # wait for kids to pick up the job
     kill(INT => $ceq_pid); # ask ceq to exit
     my @shutdown = ceq_get_log_until(qr/master: exiting/);
     
-    ok -f "$touchfile.$_", "$touchfile.$_ exists" for (1 .. 2);
+    is $touch_handle->exit_status, 0, 'touch job completed';
+    ok -f $touchfile, "$touchfile exists";
+
+    is $false_handle->exit_status, 1, 'false job failed';
+    my $false_job = $false_handle->job;
+    ok !$false_job, 'false job failed permanently';
 }
 
 exit;
