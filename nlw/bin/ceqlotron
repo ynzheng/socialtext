@@ -88,20 +88,16 @@ exit_gracefully();
 
 
 sub install_parent_signal_handlers {
-    $SIG{TERM} = sub {
+    $SIG{INT} = $SIG{TERM} = sub {
+        st_log->notice("Ceqlotron master: caught SIGTERM or SIGINT.");
         kill HUP => -$$;
-        st_log->notice("Ceqlotron master: caught SIGTERM.");
         $ExitPlease = 1;
         $ProcManager->set_max_procs(0);
     };
-    $SIG{INT} = \&exit_gracefully;
     $SIG{HUP} = 'IGNORE';
 }
 
 sub exit_gracefully {
-    $ExitPlease = 1;
-    kill HUP => -$$;
-    $ProcManager->set_max_procs(0);
     unless ($OnlyOnce) {
         unlink $PID_FILE or die "Cannot unlink $PID_FILE: $!";
     }
