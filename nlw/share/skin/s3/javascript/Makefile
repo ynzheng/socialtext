@@ -16,7 +16,19 @@ EDITOR_FILE=socialtext-editor.js
 EDITOR_FILE_MINI=socialtext-editor-mini.js
 EDITOR_FILE_GZIP=socialtext-editor.js.gz
 
-ALL_EDITOR_FILES:=$(shell find $(WIKIWYG_ST) $(COMMON_JAVASCRIPT) -type f | grep -v .svn | grep -v editor.js)
+ST_EDITOR_LIGHT_FILE=$(WIKIWYG_ST)/socialtext-editor-light.js
+EDITOR_LIGHT_FILE=socialtext-editor-light.js
+EDITOR_LIGHT_FILE_MINI=socialtext-editor-light-mini.js
+EDITOR_LIGHT_FILE_GZIP=socialtext-editor-light.js.gz
+
+EDITOR_LIGHT_FILES= \
+		jquery-plugin.js \
+		lookahead.js \
+		Class.js \
+		loc.js \
+		$(ST_EDITOR_LIGHT_FILE) \
+
+ALL_EDITOR_FILES:=$(shell find $(WIKIWYG_ST) $(COMMON_JAVASCRIPT) -type f | grep -v .svn | grep -v editor.js | grep -v editor-light.js)
 ALL_JEMPLATE_PLUGINS:=$(shell find JemplatePlugin -name \*.js)
 
 S3_SOURCE_FILES= \
@@ -49,6 +61,7 @@ all: \
     timestamp.js \
     $(S3_FILE_GZIP) \
     $(EDITOR_FILE_GZIP) \
+    $(EDITOR_LIGHT_FILE_GZIP) \
     Selection.htc \
 
 clean:
@@ -64,6 +77,9 @@ clean:
 	    $(EDITOR_FILE) \
 	    $(EDITOR_FILE_MINI) \
 	    $(EDITOR_FILE_GZIP) \
+	    $(EDITOR_LIGHT_FILE) \
+	    $(EDITOR_LIGHT_FILE_MINI) \
+	    $(EDITOR_LIGHT_FILE_GZIP) \
 	    build-semaphore \
 	    Selection.htc \
 
@@ -86,7 +102,16 @@ $(EDITOR_FILE): lightbox-attachment.js $(ST_EDITOR_FILE)
 	rm -f $@;
 	cat lightbox-attachment.js $(ST_EDITOR_FILE) >> $@
 
+$(EDITOR_LIGHT_FILE): $(EDITOR_LIGHT_FILES)
+	rm -f $@;
+	for js in $(EDITOR_LIGHT_FILES) ; do \
+	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
+	done
+
 $(EDITOR_FILE_MINI): $(EDITOR_FILE)
+	$(MINIFY) $< > $@
+
+$(EDITOR_LIGHT_FILE_MINI): $(EDITOR_LIGHT_FILE)
 	$(MINIFY) $< > $@
 
 -mini.js.js.gz:
@@ -102,6 +127,9 @@ $(S3_FILE): $(S3_SOURCE_FILES) Makefile
 	done
 
 $(ST_EDITOR_FILE): $(ALL_EDITOR_FILES)
+	make -C $(WIKIWYG_ST) all
+
+$(ST_EDITOR_LIGHT_FILE): $(ALL_EDITOR_FILES)
 	make -C $(WIKIWYG_ST) all
 
 info.js: ../info.yaml

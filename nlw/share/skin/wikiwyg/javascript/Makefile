@@ -23,12 +23,8 @@ EDITOR_SOURCE_FILES= \
 #		lib/Wikiwyg/Console.js \
 
 # Small version of wikiwyg
-MINI_EDITOR_FILE=socialtext-mini-editor.js
-MINI_EDITOR_SOURCE_FILES= \
-		$(S3_JAVASCRIPT)/jquery-plugin.js \
-		$(S3_JAVASCRIPT)/lookahead.js \
-		$(S3_JAVASCRIPT)/Class.js \
-		$(S3_JAVASCRIPT)/loc.js \
+EDITOR_LIGHT_FILE=socialtext-editor-light.js
+EDITOR_LIGHT_SOURCE_FILES= \
 		$(S2_JAVASCRIPT)/main.js \
 		lib/Wikiwyg.js \
 		Widgets.js \
@@ -46,12 +42,12 @@ JEMPLATE_GENERATOR=bin/generate-widget-jemplate.pl
 JEMPLATE_MODULE=WikiwygJemplate.js
 
 #-------------------------------------------------------------------------------
-all: $(EDITOR_FILE) $(MINI_EDITOR_FILE)
+all: $(EDITOR_FILE) $(EDITOR_LIGHT_FILE)
 
 clean:
 	rm -f \
 	    $(EDITOR_FILE) \
-	    $(MINI_EDITOR_FILE) \
+	    $(EDITOR_LIGHT_FILE) \
 	    Widgets.js \
 	    $(JEMPLATE_MODULE) \
 	    $(JEMPLATE_WIKIWYG_MODULE) \
@@ -63,9 +59,9 @@ $(EDITOR_FILE): $(EDITOR_SOURCE_FILES) Makefile
 	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
 	done
 
-$(MINI_EDITOR_FILE): $(MINI_EDITOR_SOURCE_FILES) Makefile
+$(EDITOR_LIGHT_FILE): $(EDITOR_LIGHT_SOURCE_FILES) Makefile
 	rm -f $@;
-	for js in $(MINI_EDITOR_SOURCE_FILES); do \
+	for js in $(EDITOR_LIGHT_SOURCE_FILES); do \
 	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
 	done
 

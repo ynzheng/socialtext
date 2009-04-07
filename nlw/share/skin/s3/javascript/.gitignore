@@ -4,7 +4,7 @@ Selection.htc
 build-semaphore
 info.js
 jemplateLightboxes.js
-socialtext-editor-mini.js
+socialtext-editor-light*.js
 socialtext-editor.js
 socialtext-lightbox.js
 socialtext-s3.js
