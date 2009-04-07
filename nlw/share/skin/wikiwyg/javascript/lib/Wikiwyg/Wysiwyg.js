@@ -2458,6 +2458,9 @@ proto.getWidgetImageText = function(widget_text, widget) {
     if (widget.id == 'html') {
         text = widget_data.html.title;
     }
+    else if (widget_text.match(/^"([^"]+)"{/)) {
+        text = RegExp.$1;
+    }
     else if (widget.id && widget_data[widget.id].image_text) {
         for (var i=0; i < widget_data[widget.id].image_text.length; i++) {
             if (widget_data[widget.id].image_text[i].field == 'default') {
