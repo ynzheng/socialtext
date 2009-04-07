@@ -370,11 +370,6 @@
             val = this.opts.filterValue(val);
         params[this.opts.filterName] = '\\b' + val;
 
-        var params = { order: 'alpha', count: FETCH_COUNT };
-        if (opts.filterValue) val = opts.filterValue(val);
-        var filterName = opts.filterName || 'filter';
-        params[filterName] = val;
-        
         this._loading_lookahead = true;
         $.ajax({
             url: url,
