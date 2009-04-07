@@ -1,0 +1,92 @@
+#!/usr/bin/env perl
+# @COPYRIGHT@
+use warnings;
+use strict;
+
+use Getopt::Long;
+use Pod::Usage 1.12;
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+use Socialtext::Jobs;
+use Socialtext::CLI;
+use POSIX qw(strftime);
+
+# don't run as root
+Socialtext::CLI->Check_and_drop_privs();
+
+my %opts;
+GetOptions(
+    'h|help|?' => sub { pod2usage( { -verbose => 1, -input => $0 } ); exit },
+    'H|man'    => sub { pod2usage( { -verbose => 2, -input => $0 } ); exit },
+    'class'    => \$opts{class},
+) or die;
+
+{
+    no warnings 'once';
+    $TheSchwartz::Moosified::FIND_JOB_BATCH_SIZE = 50000;
+}
+
+
+my $jobs = Socialtext::Jobs->new;
+my @job_types = $jobs->job_types;
+my @all_jobs;
+if ($opts{class}) {
+    push @all_jobs, $jobs->list_jobs(
+        funcname => $opts{class},
+    );
+}
+else {
+    for my $type (@job_types) {
+        push @all_jobs, $jobs->list_jobs(
+            funcname => $type,
+        );
+    }
+}
+
+my %ws_name;
+for my $j (@all_jobs) {
+    my $args = $j->arg;
+    return unless ref($args) eq 'HASH';
+    my $string = strftime "%Y-%m-%d.%H:%M:%S", localtime($j->insert_time);
+    $string .= " id=" . $j->jobid;
+    (my $shortname = $j->funcname) =~ s/^Socialtext::Job:://;
+    $string .= ";type=$shortname";
+
+    if (my $ws_id = $args->{workspace_id}) {
+        eval {
+            $ws_name{$ws_id} ||= Socialtext::Workspace->new( workspace_id => $ws_id )->name;
+            $string .= ";ws=$ws_name{$ws_id}";
+        };
+        if ($@) {
+            $string .= ";ws=$ws_id";
+        }
+    }
+    $string .= ";page=$args->{page_id}" if $args->{page_id};
+
+    $string .= " (*)" if $j->grabbed_until;
+
+    print "$string\n";
+}
+exit;
+
+
+=head1 NAME
+
+ceq-read - Show the jobs in the queue.
+
+=head1 SYNOPSIS
+
+B<ceq-read>
+
+=head1 OPTIONS
+
+    --class     Only look at events of a certain class.
+    --help      This help page
+    --man       Manual page
+
+
+=head1 SEE ALSO
+
+L<ceq-stat(1)>, L<ceq-rm(1)>, L<ceqlotron(1)>
+
+=cut
