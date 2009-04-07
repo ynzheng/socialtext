@@ -329,7 +329,8 @@ CREATE TABLE gadget (
     thumbnail text,
     scrolling boolean DEFAULT false,
     height integer,
-    description text
+    description text,
+    extra_files text
 );
 
 CREATE SEQUENCE gadget_id
