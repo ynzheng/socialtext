@@ -896,7 +896,7 @@ Default: 0
 The maximum number of child processes the Ceqlotron will run in
 parallel (pre-forked).
 
-Default: 5
+Default: 2
 
 =for code type => NONNEGATIVE_INT_TYPE
 
@@ -907,7 +907,7 @@ processing a job.  Setting this lower will cause ceqlotron to process jobs
 more frequently and may increase system load.  Setting this higher will cause
 ceqlotron to process jobs less frequently and may decrease system load.
 
-Default: 5
+Default: 0
 
 =for code type => POSITIVE_FLOAT_TYPE
 
@@ -917,7 +917,7 @@ The time, in seconds, that ceqlotron child processes will wait to check for
 new jobs after they find that there's no more work to do (no work polling
 interval).  Set this lower to have ceqlotron be more responsive to new jobs.
 
-Default: 10
+Default: 5
 
 =for code type => POSITIVE_FLOAT_TYPE
 
