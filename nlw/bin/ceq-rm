@@ -18,7 +18,11 @@ GetOptions(
     'dryrun'  => \$opts{dryrun},
 ) or die;
 
-$TheSchwartz::FIND_JOB_BATCH_SIZE = 50000;
+{
+    no warnings 'once';
+    $TheSchwartz::Moosified::FIND_JOB_BATCH_SIZE = 50000;
+}
+
 
 my $Pattern = $ARGV[0]
     || sub { pod2usage( { -verbose => 1, -input => $0 } ); exit };
