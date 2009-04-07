@@ -310,9 +310,8 @@ The child process will run the job, and then exit.
 
 =head1 SIGNALS
 
-    TERM        stop forking; exit gracefully as soon as all children
+    TERM, INT   exit gracefully as soon as all children
                 have exited
-    INT         exit gracefully immediately
 
 =head1 EXIT CODES
 
