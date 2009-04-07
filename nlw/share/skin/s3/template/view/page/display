@@ -3,6 +3,18 @@
 [% USE Number.Format %]
 [%- USE decorate -%]
 
+[%- MACRO ago_text(minutes) BLOCK -%]
+    [%- IF minutes < 1 -%][% loc('less than a minute ago') -%]
+    [%- ELSIF minutes == 1 -%][% loc('one minute ago') -%]
+    [%- ELSIF minutes < 50 -%][% loc('[_1] minutes ago', minutes) -%]
+    [%- ELSIF minutes < 90 -%][% loc('about one hour ago') -%]
+    [%- ELSIF minutes < 1080 -%][% loc('[_1] hours ago', round(minutes / 60)) -%]
+    [%- ELSIF minutes < 1440 -%][% loc('one day ago') -%]
+    [%- ELSIF minutes < 2880 -%][% loc('about one day ago') -%]
+    [%- ELSE %][% loc('[_1] days ago', round(minutes / 1440)) -%]
+    [%- END -%]
+[%- END -%]
+
 [% WRAPPER layout/html id="contentPage" %]
 <div id="controls">
   <div id="st-editing-tools-edit">
@@ -86,7 +98,12 @@
 
   <div id="contentColumns" class="[% IF st_page_accessories == 'show'%]showbox[% ELSE %]hidebox[% END %]">
     [% IF page.edit_in_progress %]
-    <div id="contentWarning">Please Note: [% page.edit_in_progress.user_name %] opened this page for editing [% page.edit_in_progress.time_ago %]</div>
+    <div id="contentWarning">
+      [% page.edit_in_progress.user_email | decorate('open_user_link') %]
+      [% loc('opened this page for editing') %]
+      [% ago_text(page.edit_in_progress.minutes_ago) %].
+      <a href="#" id="edit-warning-help">(?)</a>
+    </div>
     [% END %]
     <div id="contentLeft">
       <div id="st-page-content">[% page.content %]</div>

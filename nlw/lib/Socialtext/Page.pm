@@ -37,6 +37,7 @@ use Carp ();
 use Class::Field qw( field const );
 use Cwd ();
 use DateTime::Format::Strptime;
+use Date::Parse qw/str2time/;
 use Email::Valid;
 use File::Path;
 use Readonly;
@@ -1917,13 +1918,10 @@ sub edit_in_progress {
                     map { @{$open_edits{$_}} }
                     keys %open_edits;
         for my $evt (@edits) {
-            (my $at = $evt->{at}) =~ s/Z$//;
-            my $epoch = sql_parse_timestamptz($at)->epoch;
             my $user = Socialtext::User->new(user_id => $evt->{actor}{id});
             return {
-                user_name => $user->best_full_name,
-                user_avatar => $self->hub->pluggable->hook('template.user_avatar.content', $user->user_id),
-                time_ago => Time::Duration::Object->new( time - $epoch )->ago . "",
+                user_email => $user->email_address,
+                minutes_ago   => int((time - str2time($evt->{at})) / 60 ),
             };
         }
     }

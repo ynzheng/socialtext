@@ -4287,8 +4287,18 @@ body#contentPage div#controls div#controlsRight ul li a#st-edit-pagetools-expand
 }
 
 div#contentWarning {
+    text-align: center;
     padding: 3px;
     background: #ffff80;
+    color: #000;
+}
+
+div#contentWarning a {
+    text-decoration: underline;
+}
+
+div#contentWarning .emphasis {
+    font-style: italic;
 }
 
 .loginButtons {
