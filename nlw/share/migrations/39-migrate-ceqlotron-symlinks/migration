@@ -28,6 +28,13 @@ for my $link (@links) {
     }
 }
 
+# Try to clean up the old ceq stuff, but don't worry if cruft causes it to
+# fail.
+eval {
+    unlink "$ceq_dir/lock";
+    rmdir $ceq_dir;
+};
+
 exit 0;
 
 
