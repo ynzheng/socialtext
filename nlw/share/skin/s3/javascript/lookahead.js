@@ -94,8 +94,8 @@
             .keydown(function(e) {
                 if (self.lookahead && self.lookahead.is(':visible')) {
                     if (e.keyCode == KEYCODES.TAB) {
-                        if (self._firstItem) {
-                            self.accept(self._firstItem);
+                        if (self._items.length) {
+                            self.accept(self._items[0]);
                         }
                         return false;
                     }
@@ -203,7 +203,7 @@
         var self = this;
 
         if (data.length) {
-            this._firstItem = data[0];
+            this._items = data;
             $.each(data, function (i) {
                 var item = this || {};
                 var li = $('<li></li>')
@@ -211,9 +211,9 @@
                     .appendTo(lookahead);
                 $('<a href="#"></a>')
                     .html(item.bolded_title)
-                    .attr('value', item.value)
+                    .attr('value', i)
                     .click(function () {
-                        self.accept(item);
+                        self.accept(i);
                         return false;
                     })
                     .appendTo(li);
@@ -239,34 +239,55 @@
         }
     };
 
-    Lookahead.prototype.accept = function (item) {
-        this.clearLookahead();
+    Lookahead.prototype.accept = function (i) {
+        var item;
+        if (arguments.length) {
+            item = this._items[i];
+        }
+        else if (this._selected) {
+            // Check if we are displaying the last selected value
+            if (this.displayAs(this._selected) == $(this.input).val()) {
+                item = this._selected;
+            }
+        }
 
         var value = item ? item.value : $(this.input).val();
 
-        if (item) {
-            if ($.isFunction(this.opts.displayAs))
-                $(this.input).val(this.opts.displayAs(item));
-            else
-                $(this.input).val(item.value);
-        }
+        this.clearLookahead();
 
         if (this.opts.onAccept) {
             this.opts.onAccept.call(this.input, value, item);
         }
     }
 
-    Lookahead.prototype.select = function (el) {
+    Lookahead.prototype.displayAs = function (item) {
+        if ($.isFunction(this.opts.displayAs)) {
+            return this.opts.displayAs(item);
+        }
+        else {
+            return item.value;
+        }
+    }
+
+    Lookahead.prototype.select = function (item) {
+        this._selected = item;
+        $(this.input).val(this.displayAs(item));
+    }
+
+    Lookahead.prototype.select_element = function (el) {
         jQuery('li.selected', this.lookahead)
             .removeClass('selected')
             .css({ background: '' });
         el.addClass('selected').css({ background: '#7DBFDB' });
-        $(this.input).val(el.children('a').attr('value'));
+        var value = el.children('a').attr('value');
+
+        var item = this._items[value];
+        this.select(item);
     }
 
     Lookahead.prototype.selectDown = function () {
         if (!this.lookahead) return;
-        this.select(
+        this.select_element(
             jQuery('li.selected', this.lookahead).length
             ? jQuery('li.selected', this.lookahead).next('li')
             : jQuery('li:first', this.lookahead)
@@ -275,7 +296,7 @@
 
     Lookahead.prototype.selectUp = function () {
         if (!this.lookahead) return;
-        this.select(
+        this.select_element(
             jQuery('li.selected', this.lookahead).length
             ? jQuery('li.selected', this.lookahead).prev('li')
             : jQuery('li:last', this.lookahead)
