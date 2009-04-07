@@ -92,6 +92,11 @@ proto.get_inner_html = function() {
     return this.get_edit_document().body.innerHTML;
 }
 
+proto.getInnerText = function() {
+    var body = this.get_edit_document().body;
+    return body.innerText || body.textContent;
+}
+
 proto.set_inner_html = function(html) {
     if (this.get_edit_document().body)
         this.get_edit_document().body.innerHTML = html;
@@ -586,14 +591,14 @@ proto.on_key_enter = function(e) {
     }
 }
 
-proto.set_key_interception_handler = function() {
+proto.enable_pastebin = function () {
     var self = this;
     self.pastebin = jQuery('#pastebin').attr('contentWindow');
 
     if (self.pastebin) {
         if (!self.pastebin.document.body) {
             setTimeout(function() {
-                self.set_key_interception_handler();
+                self.rebindHandlers();
             }, 500);
             return;
         }
@@ -607,7 +612,7 @@ proto.set_key_interception_handler = function() {
         event_name = "keypress";
     }
 
-    jQuery( self.get_edit_document() ).unbind(event_name).bind(event_name, function(e) {
+    this.bind(event_name, function(e) {
         if ((e.ctrlKey || e.metaKey) && (e.which == 86 || e.which == 118)) {
             if (self.pastebin) {
                 self.pastebin.focus();
@@ -627,6 +632,40 @@ proto.set_key_interception_handler = function() {
             self.on_key_enter(e);
         }
     });
+
+    this.rebindHandlers();
+}
+
+proto.bind = function (event_name, callback) {
+    var $edit_doc = jQuery(this.get_edit_document());
+
+    this._bindings = this._bindings || {};
+    this._bindings[event_name] = this._bindings[event_name] || [];
+
+    /* ONLY add the callback to this._bindings if it isn't already
+     * there! This means we need to do a string compare of callbacks
+     * so we catch identical anonymous functions.
+     */
+    var matches = jQuery.grep(
+        this._bindings[event_name],
+        function(i,n) { return String(callback) == String(i) }
+    );
+    if (!matches.length) {
+        this._bindings[event_name].push(callback);
+        $edit_doc.bind(event_name, callback);
+    }
+}
+
+proto.rebindHandlers = function() {
+    var $edit_doc = jQuery(this.get_edit_document());
+    if (this._bindings) {
+        for (var event_name in this._bindings) {
+            $edit_doc.unbind(event_name);
+            for (var i=0; i<this._bindings[event_name].length; i++) {
+                $edit_doc.bind(event_name, this._bindings[event_name][i]);
+            }
+        }
+    }
 }
 
 proto.enableThis = function() {
@@ -671,10 +710,12 @@ proto.enableThis = function() {
         }
 
         self.enable_keybindings();
+        self.enable_pastebin();
 
         if (self.is_ready) {
             self.set_focus();
-            self.set_key_interception_handler();
+            self.enable_keybindings();
+            self.rebindHandlers();
             self.set_clear_handler();
         }
 
@@ -885,7 +926,7 @@ proto.set_clear_handler = function () {
         jQuery(editor).unbind();
 
         /* We've just unbound the paste handler, so re-enable it here */
-        self.set_key_interception_handler();
+        self.rebindHandlers();
     };
 
     try {
@@ -1106,7 +1147,7 @@ proto.closeTableDialog = function() {
     var doc = this.get_edit_document();
     jQuery(doc).unbind("keypress");
     jQuery.hideLightbox();
-    this.set_key_interception_handler();
+    this.rebindHandlers();
 }
 
 proto.do_new_table = function() {

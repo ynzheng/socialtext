@@ -79,6 +79,12 @@ proto.getTextArea = function() {
     return this.textarea.value;
 }
 
+proto.getInnerText = proto.getTextArea;
+
+proto.bind = function (event_name, callback) {
+    jQuery(this.textarea).bind(event_name, callback);
+}
+
 proto.setTextArea = function(text) {
     this.textarea.value = text;
 }
