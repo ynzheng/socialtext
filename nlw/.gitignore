@@ -259,3 +259,4 @@ lib/Socialtext/Gadgets.pm
 lib/Socialtext/Rest/Gadgets.pm
 lib/Socialtext/Gadgets/Gadget/XML.pm
 t/account.yaml
+lib/Socialtext/Gadgets/GadgetInstance.pm
