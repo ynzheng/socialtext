@@ -3,8 +3,8 @@ package Socialtext::User::Find;
 use Moose;
 use Socialtext::SQL qw/get_dbh sql_execute/;
 use Socialtext::String;
-use namespace::clean -except => 'meta';
 use Socialtext::User;
+use namespace::clean -except => 'meta';
 
 has viewer => (is => 'rw', isa => 'Socialtext::User', required => 1);
 has limit => (is => 'rw', isa => 'Maybe[Int]');
@@ -56,7 +56,7 @@ sub typeahead_find {
 
     for my $row (@$results) {
         my $user = Socialtext::User->new(user_id => $row->{user_id});
-        $row->{best_full_name} = $user->best_full_name;
+        $row->{best_full_name} = $user->guess_real_name;
     }
     return $results;
 }
