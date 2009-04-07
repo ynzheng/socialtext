@@ -58,3 +58,15 @@ table .current-cell {
     background: red;
 }
 
+body.signals {
+    background-color: white;
+}
+
+body.signals .wiki {
+    padding: 0;
+    font-size: 100%;
+}
+
+body.signals img {
+    vertical-align: middle;
+}
