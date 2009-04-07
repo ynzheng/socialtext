@@ -8,6 +8,10 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use Socialtext::Jobs;
 use Socialtext::l10n qw/loc/;
+use Socialtext::CLI;
+
+# don't run as root
+Socialtext::CLI->Check_and_drop_privs();
 
 GetOptions(
     'h|help|?'      => sub {pod2usage({-verbose => 1, -input => $0}); exit},
