@@ -104,7 +104,7 @@
                 if (self.lookahead && self.lookahead.is(':visible')) {
                     if (e.keyCode == KEYCODES.TAB) {
                         if (self._items.length) {
-                            self.accept(self._items[0]);
+                            self.accept(0); // accept the first item
                         }
                         return false;
                     }
@@ -134,6 +134,8 @@
         if ($.isFunction(this.opts.onBlur)) {
             this.opts.onBlur();
         }
+        if (this.opts.clearOnHide)
+            $(this.input).val('');
     };
 
     Lookahead.prototype.getLookahead = function () {
@@ -248,9 +250,11 @@
     };
 
     Lookahead.prototype.accept = function (i) {
+        if (!i) i = 0; // treat undefined as 0
         var item;
         if (arguments.length) {
             item = this._items[i];
+            this.select(item);
         }
         else if (this._selected) {
             // Check if we are displaying the last selected value
@@ -272,8 +276,11 @@
         if ($.isFunction(this.opts.displayAs)) {
             return this.opts.displayAs(item);
         }
-        else {
+        else if (item) {
             return item.value;
+        }
+        else {
+            return $(this.input).val();
         }
     }
 
