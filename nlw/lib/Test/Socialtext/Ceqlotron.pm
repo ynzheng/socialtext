@@ -1,4 +1,7 @@
 package Test::Socialtext::Ceqlotron;
+# @COPYRIGHT@
+use strict;
+use warnings;
 use Test::Builder ();
 use File::LogReader;
 use Socialtext::AppConfig;
