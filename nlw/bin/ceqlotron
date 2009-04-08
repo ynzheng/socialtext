@@ -179,12 +179,18 @@ sub do_work {
         if (my $job = Socialtext::Jobs->find_job_for_workers()) {
             my $t = Socialtext::Timer->new;
             Socialtext::Jobs->work_once($job);
-            st_log->info(
-                sprintf(
-                    'Ceqlotron worker: finished %s in %0.2fs', $job->funcname,
-                    $t->elapsed
-                )
+
+            my $log_line = sprintf(
+                'Ceqlotron worker: finished %s in %0.2fs', $job->funcname,
+                $t->elapsed
             );
+
+            if (my $args = $job->arg) {
+                my $arg_str = join ',', map { "$_=$args->{$_}" } keys %$args;
+                $log_line .= "($arg_str)";
+            }
+            st_log->info($log_line);
+
             $jobs_remaining--;
             $sleep_for = Socialtext::AppConfig->ceqlotron_period;
         }
