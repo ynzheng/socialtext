@@ -37,8 +37,9 @@ foreach my $maybe (
         $ENV{ST_CURRENT} ? "$ENV{ST_CURRENT}/nlw" : (),
         $ENV{ST_SRC_BASE} ? "$ENV{ST_SRC_BASE}/current/nlw" : (),
         $CWD
+        '/tmp',
         ) {
-    if (-d $maybe) {
+    if (-d $maybe and -w $maybe) {
         $nlw_dir = $maybe;
         last;
     }
