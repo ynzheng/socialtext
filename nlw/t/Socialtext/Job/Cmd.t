@@ -2,7 +2,7 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::Socialtext tests => 13;
+use Test::Socialtext tests => 14;
 use Test::Socialtext::Ceqlotron;
 
 BEGIN {
