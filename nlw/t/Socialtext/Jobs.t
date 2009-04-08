@@ -11,13 +11,21 @@ fixtures 'db';
 BEGIN {
     use_ok 'Socialtext::Jobs';
     use_ok 'Socialtext::JobCreator';
-    use_ok 'Socialtext::Job::Test';
 }
 
 my $jobs = Socialtext::Jobs->instance;
 lives_ok {
      $jobs->clear_jobs();
 } "can clear jobs";
+
+Load_jobs: {
+    my @job_types = $jobs->job_types;
+    ok (grep { $_ eq 'Socialtext::Job::Test' } @job_types) == 1,
+        "Test job available";
+    ok !$INC{"Socialtext/Job/Test.pm"}, 'test module is *not* loaded';
+    use_ok 'Socialtext::Job::Test';
+    ok $INC{"Socialtext/Job/Test.pm"}, 'test module now loaded';
+}
 
 Queue_job: {
 

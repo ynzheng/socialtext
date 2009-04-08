@@ -18,40 +18,47 @@ GetOptions(
     'H|man'    => sub {pod2usage({-verbose => 2, -input => $0}); exit},
 ) or die;
 
-{
-    no warnings 'once';
-    $TheSchwartz::Moosified::FIND_JOB_BATCH_SIZE = 50000;
+my $Interval = shift;
+
+Socialtext::Jobs->Unlimit_list_jobs();
+
+while (1) {
+    show_total();
+    last unless $Interval;
+    select(undef, undef, undef, $Interval);
+    print "\n";
 }
 
-my %count;
-for my $type (Socialtext::Jobs->job_types) {
-    my @jobs = Socialtext::Jobs->list_jobs(funcname => $type);
-    (my $name = $type) =~ s/.+:://;
-    
-    my $grabbed = 0;
-    $grabbed++ for grep { $_->grabbed_until } @jobs;
-    $count{$name} = {
-        queued => scalar(@jobs),
-        grabbed => $grabbed,
-    };
-}
-
-my $sum = 0;
-print "Jobs in the queue:\n";
-for my $name (sort keys %count) {
-    next if $name eq 'Test';
-    my $c = $count{$name};
-
-    if ($c->{grabbed}) {
-        printf "  %15s %5d (\%d grabbed)\n", $name, $c->{queued},
-            $c->{grabbed};
+sub show_total {
+    my %count;
+    for my $type (Socialtext::Jobs->job_types) {
+        my @jobs = Socialtext::Jobs->list_jobs(funcname => $type);
+        (my $name = $type) =~ s/.+:://;
+        
+        my $grabbed = 0;
+        $grabbed++ for grep { $_->grabbed_until } @jobs;
+        $count{$name} = {
+            queued => scalar(@jobs),
+            grabbed => $grabbed,
+        };
     }
-    else {
-        printf "  %15s %5d\n", $name, $c->{queued};
+
+    my $sum = 0;
+    print loc("Jobs in the queue:"),"\n";
+    for my $name (sort keys %count) {
+        next if $name eq 'Test';
+        my $c = $count{$name};
+
+        printf "  %15s %5d", $name, $c->{queued};
+        if ($c->{grabbed}) {
+            my $grabbed = loc('[_1] grabbed jobs', $c->{grabbed});
+            print " ($grabbed)", $name, $c->{queued};
+        }
+        print "\n";
+        $sum += $c->{queued};
     }
-    $sum += $c->{queued};
+    printf "  %15s %5d\n", loc("Total"), $sum;
 }
-printf "  %15s %5d\n", loc("Total"), $sum;
 
 =head1 NAME
 
@@ -62,29 +69,25 @@ ceqlotron's queue.
 
 B<ceq-stat>
 
+B<ceq-stat> 1.5
+
 =head1 OPTIONS
 
     --help      This help page
     --man       Manual page
 
+An optional delay interval can be provided to repeat the output.
+
 =head1 SAMPLE OUTPUT
 
- Changes in queue:
-   Attachment  1
-   Page        5
-   Workspace   0
-
-   TOTAL       6
+ Jobs in the queue:
+   AttachmentIndex  1
+               Cmd  5 (1 grabbed)
+         PageIndex  0
+             Total  6
 
 =head1 SEE ALSO
 
 L<celqlotron(1)>, L<ceq-read(1)>
-
-=head1 BUGS
-
-ceq-stat does not lock the job queue directory when scanning for jobs, so occasionally, it
-will try and report on a job that disappears out from underneath as it completes processing.
-This is known and is done to keep looking at the queue from impacting performance of 
-processing the queue.
 
 =cut

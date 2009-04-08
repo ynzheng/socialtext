@@ -22,5 +22,10 @@ around 'list_jobs' => sub {
 # mySQL limitation.  Since we're Pg only, disable this.
 override 'temporarily_remove_ability' => sub {};
 
+sub Unlimit_list_jobs {
+    no warnings 'once';
+    $TheSchwartz::Moosified::FIND_JOB_BATCH_SIZE = 0xFFFFFFFF;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

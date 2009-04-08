@@ -21,11 +21,7 @@ GetOptions(
     'class'    => \$opts{class},
 ) or die;
 
-{
-    no warnings 'once';
-    $TheSchwartz::Moosified::FIND_JOB_BATCH_SIZE = 50000;
-}
-
+Socialtext::Jobs->Unlimit_list_jobs();
 
 my $jobs = Socialtext::Jobs->new;
 my @job_types = $jobs->job_types;
