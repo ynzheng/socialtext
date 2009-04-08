@@ -13,7 +13,9 @@ BEGIN {
 # Delete the per-hostname account to make the ordering of these
 # tests much simpler.  Otherwise they would depend on the hostname.
 my $hostname = hostname();
-Socialtext::Account->new(name => $hostname)->delete;
+eval {
+    Socialtext::Account->new(name => $hostname)->delete;
+};
 
 my $accounts = Socialtext::Account->All();
 is_deeply(

@@ -647,7 +647,15 @@ sub _AllByWorkspaceCount {
         . ' GROUP BY "Account".account_id, "Account".name,'
         . '       "Account".is_system_created, "Account".skin_name,'
         . '       "Account".email_addresses_are_hidden,'
-        . '       "Account".is_exportable'
+        . '       "Account".is_exportable,'
+        . '       "Account".desktop_logo_uri,'
+        . '       "Account".desktop_header_gradient_top,'
+        . '       "Account".desktop_header_gradient_bottom,'
+        . '       "Account".desktop_bg_color,'
+        . '       "Account".desktop_2nd_bg_color,'
+        . '       "Account".desktop_text_color,'
+        . '       "Account".desktop_link_color,'
+        . '       "Account".desktop_highlight_color'
         . " ORDER BY workspace_count $p{sort_order}, \"Account\".name ASC"
         . ' LIMIT ? OFFSET ?' ,
         @args );
@@ -680,7 +688,15 @@ sub _AllByUserCount {
         . ' GROUP BY "Account".account_id, "Account".name,'
         . '       "Account".is_system_created, "Account".skin_name,'
         . '       "Account".email_addresses_are_hidden,'
-        . '       "Account".is_exportable'
+        . '       "Account".is_exportable,'
+        . '       "Account".desktop_logo_uri,'
+        . '       "Account".desktop_header_gradient_top,'
+        . '       "Account".desktop_header_gradient_bottom,'
+        . '       "Account".desktop_bg_color,'
+        . '       "Account".desktop_2nd_bg_color,'
+        . '       "Account".desktop_text_color,'
+        . '       "Account".desktop_link_color,'
+        . '       "Account".desktop_highlight_color'
         . " ORDER BY user_count $p{sort_order}, \"Account\".name ASC"
         . ' LIMIT ? OFFSET ?',
         @args );
