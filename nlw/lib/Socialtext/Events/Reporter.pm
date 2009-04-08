@@ -656,4 +656,23 @@ EOSQL
     return $result;
 }
 
+sub get_page_contention_events {
+    my $self = shift;
+    my $opts = (@_==1) ? shift : {@_};
+    
+    local $self->{_skip_standard_opts} = 1;
+    local $self->{_skip_visibility} = 1;
+    $opts->{event_class} = 'page';
+    $opts->{action} = [qw(edit_start edit_cancel)];
+    my ($sql, $args) = $self->_build_standard_sql($opts);
+
+    Socialtext::Timer->Continue('get_page_contention_events');
+    #$Socialtext::SQL::PROFILE_SQL = 1;
+    my $sth = sql_execute($sql, @$args);
+    #$Socialtext::SQL::PROFILE_SQL = 0;
+    Socialtext::Timer->Pause('get_page_contention_events');
+    my $result = $self->decorate_event_set($sth);
+    return $result;
+}
+
 1;

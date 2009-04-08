@@ -1874,20 +1874,19 @@ for this page.
 
 sub edit_in_progress {
     my $self = shift;
-    return undef;
 
-    # This is incredislow!
-    my $events = Socialtext::Events->Get( $self->hub->current_user,
-        event_class => 'page',
+    my $reporter = Socialtext::Events::Reporter->new(
+        viewer => $self->hub->current_user
+    );
+    my $events = $reporter->get_page_contention_events({
         page_workspace_id => $self->hub->current_workspace->workspace_id,
         page_id => $self->id,
-    ) || [];
+    }) || [];
 
     my $cur_rev = $self->revision_id;
     my @relevant_events;
     for my $evt (@$events) {
         last if $evt->{context}{revision_id} < $cur_rev;
-
         unshift @relevant_events, $evt;
     }
 
