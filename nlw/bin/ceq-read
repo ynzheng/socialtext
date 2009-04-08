@@ -63,6 +63,11 @@ for my $j (@all_jobs) {
     }
     $string .= ";page=$args->{page_id}" if $args->{page_id};
 
+    if ($shortname eq 'Cmd' && $args->{cmd}) {
+        $string .= ";cmd=$args->{cmd}";
+        $string .= ";args=".join(',',@{$args->{args} || []});
+    }
+
     $string .= " (*)" if $j->grabbed_until;
 
     print "$string\n";
