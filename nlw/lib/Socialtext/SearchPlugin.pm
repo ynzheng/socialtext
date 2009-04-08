@@ -355,10 +355,10 @@ sub _store_preferences {
     $opts{show_summaries} = $self->preferences->show_summaries->value
         unless defined $opts{show_summaries};
 
-    $self->preferences->store(
-        $self->hub->current_user->email_address,
-        $self->class_id,
-        \%opts,
+    my $email = $self->hub->current_user->email_address;
+    $self->preferences->store( $email, $self->class_id, \%opts );
+    $self->hub->preferences_object(
+        $self->preferences->new_for_user( $email ),
     );
 }
 
