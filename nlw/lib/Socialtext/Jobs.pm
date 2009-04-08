@@ -39,9 +39,5 @@ sub can_do_all {
 
 sub clear_jobs { sql_execute('DELETE FROM job') }
 
-sub Unlimit_list_jobs {
-    Socialtext::TheSchwartz->Unlimit_list_jobs();
-}
-
 __PACKAGE__->meta->make_immutable;
 1;
