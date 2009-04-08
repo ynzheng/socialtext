@@ -171,7 +171,7 @@ sub formatted_unlike() {
 }
 
 sub ceqlotron_run_synchronously() {
-    shell_run("$ENV{NLW_CURRENT}nlw/bin/ceqlotron -f -o");
+    shell_run("$ENV{ST_CURRENT}/nlw/bin/ceqlotron -f -o");
 }
 
 # Create a temp directory and setup an AppConfig using that directory.
