@@ -81,6 +81,7 @@ sub fork_and_exec_daemon_as_user {
         croak("fork: $!");
     }
     elsif ( $pid == 0 ) {
+        local $!;
 
         # Start the daemon, first setting our real and effective UID and GID,
         # and also our groups list.
