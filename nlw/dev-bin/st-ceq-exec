@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+use Socialtext::JobCreator;
+
+my $cmd = shift;
+my @args = @ARGV;
+
+my $job_h = Socialtext::JobCreator->insert(
+    'Socialtext::Job::Cmd' => {
+        cmd => $cmd,
+        args => \@args,
+    }
+);
+if ($job_h) {
+    print "job id ".$job_h->jobid."\n";
+    exit 0;
+}
+else {
+    warn "failed\n";
+    exit 1;
+}
