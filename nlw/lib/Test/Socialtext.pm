@@ -14,6 +14,7 @@ use Test::Socialtext::User;
 use YAML;
 use File::Temp qw/tempdir/;
 use File::Spec;
+use Socialtext::System qw/shell_run/;
 
 # Set this to 1 to get rid of that stupid "but matched them out of order"
 # warning.
