@@ -243,6 +243,8 @@ sub exit_if_already_running {
 }
 
 sub load_jobs {
+    require DBD::Pg;
+    require Socialtext::SQL;
     require Socialtext::Search::AbstractFactory;
     require Socialtext::Search::KinoSearch::Factory;
     require Socialtext::User;
