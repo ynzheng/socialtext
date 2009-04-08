@@ -31,6 +31,10 @@ GetOptions(
 my $Pattern = $ARGV[0]
     || sub { pod2usage( { -verbose => 1, -input => $0 } ); exit };
 
+# prevent an error-prone common usage
+$Pattern = qr/^$1;/
+    if $Pattern =~ /^(?:id=)(\d+)$/;
+
 my $jobs = Socialtext::Jobs->new;
 my @job_types = $jobs->job_types;
 my @jobs_to_check;
@@ -58,18 +62,18 @@ sub remove_if_match {
     my $job = shift;
     my $args = $job->arg;
     return unless ref($args) eq 'HASH';
-    my $target = $job->jobid;
     (my $shortname = $job->funcname) =~ s/^Socialtext::Job:://;
+    my $target = $job->jobid;
     $target .= ";type=$shortname";
     $target .= ";ws=$args->{workspace_id}" if $args->{workspace_id};
     $target .= ";page=$args->{page_id}" if $args->{page_id};
 
     if ($target =~ /$Pattern/) {
         if ($opts{dryrun}) {
-            warn "would unlink event for $target\n";
+            warn "would de-schedule event for $target\n";
         }
         else {
-            warn "unlinking event for $target\n" if $opts{verbose};
+            warn "de-scheduling event for $target\n" if $opts{verbose};
             $job->completed;
         }
     }
