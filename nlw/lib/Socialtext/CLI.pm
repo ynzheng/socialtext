@@ -1896,7 +1896,7 @@ sub index_workspace {
 
     $self->_success( 'The '
             . $hub->current_workspace()->name()
-            . ' workspace has been indexed.' );
+            . ' workspace is being indexed.' );
 }
 
 sub delete_search_index {

@@ -1070,7 +1070,7 @@ INDEX_PAGE: {
             Socialtext::CLI->new( argv => ['--workspace', $NEW_WORKSPACE] )
                 ->index_workspace();
         },
-        qr/\QThe $NEW_WORKSPACE workspace has been indexed.\E/,
+        qr/\QThe $NEW_WORKSPACE workspace is being indexed.\E/,
         'index-page success'
     );
 
