@@ -52,6 +52,10 @@ proto.initialize_object = function() {
     this.clear_inner_text();
 }
 
+proto.set_focus = function() {
+    this.textarea.focus();
+}
+
 proto.clear_inner_text = function() {
     var self = this;
     this.area.onclick = function() {
