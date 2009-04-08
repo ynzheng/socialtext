@@ -9,6 +9,7 @@ use lib "$FindBin::Bin/../lib";
 use Socialtext::Jobs;
 use Socialtext::l10n qw/loc/;
 use Socialtext::DaemonUtil;
+use List::Util qw/max/;
 
 # don't run as root
 Socialtext::DaemonUtil->Check_and_drop_privs();
@@ -20,44 +21,70 @@ GetOptions(
 
 my $Interval = shift;
 
-Socialtext::Jobs->Unlimit_list_jobs();
+my %header = (
+    queued => loc('Queued'),
+    grabbed => loc('Grabbed'),
+    delayed => loc('Delayed'),
+);
+my @stat_order = (qw(queued grabbed delayed));
+my $name_header = loc('Job Type');
+my $total = loc('Total');
 
 while (1) {
-    show_total();
+    print show_total();
     last unless $Interval;
     select(undef, undef, undef, $Interval);
     print "\n";
 }
 
 sub show_total {
-    my %count;
-    for my $type (Socialtext::Jobs->job_types) {
-        my @jobs = Socialtext::Jobs->list_jobs(funcname => $type);
-        (my $name = $type) =~ s/.+:://;
-        
-        my $grabbed = 0;
-        $grabbed++ for grep { $_->grabbed_until } @jobs;
-        $count{$name} = {
-            queued => scalar(@jobs),
-            grabbed => $grabbed,
-        };
+    my $stats = Socialtext::Jobs->stat_jobs();
+
+    my %display_name =
+        map { /Socialtext::Job::(.+)/; $_ => ($1 || $_) }
+        keys %$stats;
+
+    my @table;
+    my %total;
+    while (my ($job_name, $job_stats) = each %$stats) {
+        next if $job_name eq 'Socialtext::Job::Test';
+
+        my @row;
+        push @row, $display_name{$job_name};
+        push @row, $job_stats->{$_} for @stat_order;
+        push @table, \@row;
+
+        $total{$_} += $job_stats->{$_} for @stat_order;
     }
 
-    my $sum = 0;
-    print loc("Jobs in the queue:"),"\n";
-    for my $name (sort keys %count) {
-        next if $name eq 'Test';
-        my $c = $count{$name};
+    @table = sort { $a->[0] cmp $b->[0] } @table;
 
-        printf "  %15s %5d", $name, $c->{queued};
-        if ($c->{grabbed}) {
-            my $grabbed = loc('[_1] grabbed jobs', $c->{grabbed});
-            print " ($grabbed)", $name, $c->{queued};
-        }
-        print "\n";
-        $sum += $c->{queued};
+    unshift @table, [$name_header, map { $header{$_} } @stat_order];
+    push    @table, [$total,       map { $total{$_} }  @stat_order];
+
+    my @width = _column_widths(\@table);
+
+    # underline the header and data segments
+    my $lines = [ map { '-' x $_ } @width ];
+    splice @table, 1, 0, $lines;
+    splice @table, -1, 0, $lines;
+
+    my $format = '%' . $width[0] . 's  ';
+    $format .= " %-$width[$_]s" for (1 .. $#{$table[0]});
+    $format .= "\n";
+
+    my $output = '';
+    $output .= sprintf $format, @$_ for @table;
+    return $output;
+}
+
+sub _column_widths {
+    my $table = shift;
+    my @widths;
+    for my $col (0 .. $#$table) {
+        push @widths, max map {length($_->[$col]||'')} @$table;
     }
-    printf "  %15s %5d\n", loc("Total"), $sum;
+    return @widths;
 }
 
 =head1 NAME
