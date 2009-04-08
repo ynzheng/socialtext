@@ -63,6 +63,10 @@
     margin-left: 10px;
 }
 
+.lightbox .emphasis {
+    font-weight: bold;
+}
+
 .lightbox .editlabel {
     width: 10em;
     float: left;

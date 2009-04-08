@@ -363,7 +363,7 @@ $(function() {
             },
             dataType: 'json',
             success: function(data) {
-                if (data.user_name) {
+                if (data.user_link) {
                     get_lightbox("edit_check", function() {
 
                         $("body").append( Jemplate.process("edit_check.tt2", data) );

@@ -99,7 +99,7 @@
   <div id="contentColumns" class="[% IF st_page_accessories == 'show'%]showbox[% ELSE %]hidebox[% END %]">
     [% IF page.edit_in_progress %]
     <div id="contentWarning">
-      [% page.edit_in_progress.user_email | decorate('open_user_link') %]
+      [% page.edit_in_progress.user_link %]
       [% loc('opened this page for editing') %]
       [% ago_text(page.edit_in_progress.minutes_ago) %].
       <a href="#" id="edit-warning-help">(?)</a>

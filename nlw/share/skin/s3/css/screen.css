@@ -4301,6 +4301,25 @@ div#contentWarning .emphasis {
     font-style: italic;
 }
 
+.person-business-card {
+    padding: 0px 5px;
+    height: 61px;
+}
+
+.person-business-card .avatar {
+    float: left;
+    padding: 0px 10px;
+}
+
+.person-business-card .realName {
+    display: block;
+    font-weight: bold;
+}
+
+.person-business-card .person-email {
+    display: block;
+}
+
 .loginButtons {
     margin: 10px 0;
     clear: none;
