@@ -7,14 +7,14 @@ use Socialtext::Workspace;
 use Socialtext::User;
 use Socialtext::Hub;
 use Socialtext::Page;
-use Socialtext::CLI;
+use Socialtext::DaemonUtil;
 use Socialtext::Migration::Utils qw/ensure_socialtext_schema/;
 
 # 26 has a recent change to the page table.
 ensure_socialtext_schema(26);
 
 # Need to run as www-data when modifying files on the system.
-Socialtext::CLI->Check_and_drop_privs();
+Socialtext::DaemonUtil->Check_and_drop_privs();
 
 Remove_duplicate_tags: {
     my $sth = sql_execute(<<EOT);

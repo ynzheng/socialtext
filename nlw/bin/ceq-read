@@ -8,11 +8,11 @@ use Pod::Usage 1.12;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 use Socialtext::Jobs;
-use Socialtext::CLI;
+use Socialtext::DaemonUtil;
 use POSIX qw(strftime);
 
 # don't run as root
-Socialtext::CLI->Check_and_drop_privs();
+Socialtext::DaemonUtil->Check_and_drop_privs();
 
 my %opts;
 GetOptions(
