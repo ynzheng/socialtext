@@ -228,7 +228,9 @@ sub global_template_vars {
         } Socialtext::Pluggable::Adapter->plugins
     ];
 
-    my $cookies = Apache::Cookie->fetch();
+    my $cookies = {};
+    eval { $cookies = Apache::Cookie->fetch() };
+
     my $locale = $self->hub->display->preferences->locale;
     my %result = (
         action            => $self->hub->cgi->action,
