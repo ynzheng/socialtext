@@ -1,4 +1,5 @@
 package Socialtext::Job::Test;
+# @COPYRIGHT@
 use Moose;
 use Socialtext::Log qw/st_log/;
 use Time::HiRes qw/sleep/;
