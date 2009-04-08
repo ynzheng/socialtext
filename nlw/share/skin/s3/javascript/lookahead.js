@@ -114,7 +114,12 @@
                 }
             })
             .blur(function() {
-                self.clearLookahead();
+                if (!self._accepting) {
+                    self.clearLookahead();
+                    if ($.isFunction(self.opts.onBlur)) {
+                        self.opts.onBlur(action);
+                    }
+                }
             });
     }
 
@@ -131,11 +136,6 @@
     Lookahead.prototype.clearLookahead = function () {
         this._cache = {};
         this.hide();
-        if ($.isFunction(this.opts.onBlur)) {
-            this.opts.onBlur();
-        }
-        if (this.opts.clearOnHide)
-            $(this.input).val('');
     };
 
     Lookahead.prototype.getLookahead = function () {
@@ -224,7 +224,13 @@
                     .attr('value', i)
                     .click(function () {
                         self.accept(i);
+                        self._accepting = false;
+                        $(self.input).focus();
                         return false;
+                    })
+                    .mousedown(function () {
+                        // Catch mouse down events so that we don't blur
+                        self._accepting = true;
                     })
                     .appendTo(li);
             });
