@@ -346,14 +346,7 @@ $(function() {
         $('#st-create-content-link').click();
     }
 
-    Socialtext._setup_editor = function () {
-        var button = this;
-        $('#bootstrap-loader')
-            .css('position', 'absolute')
-            .css('float', 'none')
-            .css('left', $('#st-editing-tools-edit li:last').offset().left + 120 + 'px')
-            .show();
-
+    Socialtext._check_for_edit = function () {
         jQuery.ajax({
             type: 'GET',
             url: location.pathname,
@@ -366,7 +359,9 @@ $(function() {
                 if (data.user_link) {
                     get_lightbox("edit_check", function() {
 
-                        $("body").append( Jemplate.process("edit_check.tt2", data) );
+                        $("body").append(
+                            Jemplate.process("edit_check.tt2", data)
+                        );
 
                         jQuery.showLightbox({
                             speed: 0,
@@ -376,7 +371,9 @@ $(function() {
                                 $('#bootstrap-loader').hide();
 
                                 var bootstrap = false;
-                                $("#st-edit-check .continue").one("click", function() {
+                                $("#st-edit-check .continue")
+                                    .one("click", function() {
+
                                     bootstrap = true;
                                     Socialtext._bootstrap_editor();
                                     $.hideLightbox();
@@ -385,7 +382,8 @@ $(function() {
                                 $("#lightbox").one("lightbox-unload", function() {
                                     if (bootstrap) return;
 
-                                    $(button).one("click", Socialtext._setup_editor);
+                                    $('#st-edit-button-link')
+                                        .one("click", Socialtext._setup_editor);
                                 });
                             }
                         });
@@ -398,16 +396,28 @@ $(function() {
             }
         });
 
+
+    }
+
+    Socialtext._show_bootstrap_loader = function () {
+        $('#bootstrap-loader')
+            .css('position', 'absolute')
+            .css('float', 'none')
+            .css('left', 
+                $('#st-editing-tools-edit li:last').offset().left + 120 + 'px')
+            .show();
+    }
+    
+    Socialtext._setup_editor = function () {
+        Socialtext._show_bootstrap_loader();
+        Socialtext._check_for_edit();
+
         return false;
 
     };
 
     Socialtext._bootstrap_editor = function () {
-        $('#bootstrap-loader')
-            .css('position', 'absolute')
-            .css('float', 'none')
-            .css('left', $('#st-editing-tools-edit li:last').offset().left + 120 + 'px')
-            .show();
+        Socialtext._show_bootstrap_loader();
 
         $.ajaxSettings.cache = true;
         if (Socialtext.page_type == 'spreadsheet' && Socialtext.wikiwyg_variables.hub.current_workspace.enable_spreadsheet) {
