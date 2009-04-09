@@ -101,4 +101,4 @@ __DATA__
 
 === ppt
 --- filename: indext.ppt
---- term: "some extremely special"
+--- term: "Indexing Things"
