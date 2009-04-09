@@ -78,6 +78,9 @@ Class('Wikiwyg', function() {
 
 var proto = this.prototype;
 
+// Fix {bz: 2339} 'this.init is not a function'
+proto.init = function() {}
+
 Wikiwyg.VERSION = '3.00';
 
 this.addGlobal().WW_SIMPLE_MODE = 'Wikiwyg.Wysiwyg';
@@ -1527,6 +1530,9 @@ Class('Wikiwyg.Base', function() {
 
 var proto = this.prototype;
 
+// Fix {bz: 2339} 'this.init is not a function'
+proto.init = function () {}
+
 proto.set_config = function(user_config) {
     if (Wikiwyg.Widgets && this.setup_widgets)
         this.setup_widgets();
@@ -1569,6 +1575,9 @@ Base class for Wikiwyg Mode classes
 Class('Wikiwyg.Mode(Wikiwyg.Base)', function() {
 
 var proto = this.prototype;
+
+// Fix {bz: 2339} 'this.init is not a function'
+proto.init = function() {}
 
 proto.enableThis = function() {
     this.div.style.display = 'block';
