@@ -29,8 +29,11 @@ my $RunningChildren = 0;
 # Whether or not an exit has been requested.
 my $ExitPlease = 0;
 
+# Run through the whole queue once, only fork one worker.
+my $OnceMode = 0;
+
 # Initialize and parse command-line switches.
-my ( $WantHelp, $RunInForeground, $OnlyOnce, $OutputTo ) = ( 0, 0, 0, '' );
+my ( $WantHelp, $RunInForeground, $OutputTo ) = ( 0, 0, '' );
 my $PrintPid;
 my $Kick;
 Getopt::Long::Configure('bundling');
@@ -38,7 +41,7 @@ GetOptions(
     'help|h'       => \$WantHelp,
     'foreground|f' => \$RunInForeground,
     'output|O=s'   => \$OutputTo,
-    'once|o'       => \$OnlyOnce,
+    'once|o'       => \$OnceMode,
     'pid'          => \$PrintPid,
     'kick'         => \$Kick,
 ) or exit 1;
@@ -98,7 +101,7 @@ sub install_parent_signal_handlers {
 }
 
 sub exit_gracefully {
-    unless ($OnlyOnce) {
+    unless ($OnceMode) {
         unlink $PID_FILE or die "Cannot unlink $PID_FILE: $!";
     }
     st_log->notice("Ceqlotron master: exiting");
@@ -113,7 +116,7 @@ sub wait_for_all_children {
 }
 
 sub write_pid_file {
-    return if $OnlyOnce;
+    return if $OnceMode;
 
     open my $pid_fh, '>', $PID_FILE or die "$PID_FILE: $!";
     $pid_fh->print("$$\n") or die "write $PID_FILE: $!";
@@ -132,8 +135,9 @@ sub main_loop {
 
         if ($started) {
             last if $ExitPlease;
+            return if $OnceMode;
             st_log->debug("Ceqlotron master: waiting after spawn");
-            sleep (Socialtext::AppConfig->ceqlotron_period / 4) unless $OnlyOnce;
+            sleep (Socialtext::AppConfig->ceqlotron_period / 4);
 
             # Re-evaluate how many children to run.
             $ProcManager->set_max_procs(get_max_procs()) unless $ExitPlease;
@@ -146,10 +150,7 @@ sub main_loop {
             }
             $ProcManager->finish();
         }
-        return if $OnlyOnce;
     }
-
-    return;
 }
 
 sub start_worker {
@@ -162,7 +163,7 @@ sub start_worker {
 
     my $loops = eval { Socialtext::AppConfig->ceqlotron_worker_loops } || 10;
     eval {
-        do_work($OnlyOnce ? 1 : $loops);
+        do_work($loops);
     };
     if ($@) {
         st_log->error("Ceqltron worker: Error $@");
@@ -188,10 +189,12 @@ sub do_work {
                 Socialtext::Timer->Report()
             );
 
+            next if $OnceMode;
             $jobs_remaining--;
             $sleep_for = Socialtext::AppConfig->ceqlotron_period;
         }
         else {
+            return if $OnceMode;
             st_log->debug("Ceqlotron worker: no jobs");
             $sleep_for = Socialtext::AppConfig->ceqlotron_polling_period;
         }
@@ -239,7 +242,7 @@ sub exit_if_already_running {
     return unless -e $PID_FILE;
     my $pid = get_contents($PID_FILE);
     my $alive = kill 0 => $pid;
-    exit if $alive;
+    exit 1 if $alive;
 }
 
 sub load_jobs {

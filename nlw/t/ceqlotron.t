@@ -2,7 +2,8 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::Socialtext tests => 27;
+use Test::Socialtext tests => 35;
+use Test::Exception;
 use Test::Socialtext::Ceqlotron;
 
 BEGIN {
@@ -39,7 +40,8 @@ Start_and_stop: {
     ok kill(0 => $ceq_pid), "ceq pid $ceq_pid is alive";
 
     Start_another_ceq: {
-        system($Ceq_bin); # should start & daemonize
+        system($Ceq_bin);
+        ok $?, 'exited with an error';
         my $new_pid = qx($Ceq_bin --pid); chomp $new_pid;
         is $new_pid, $ceq_pid, 'ceq pid did not change';
     }
@@ -109,6 +111,40 @@ Workers_are_limited: {
 
     is scalar(@started), 2, 'just two jobs got to start';
     is scalar(@ended), 2, 'just two jobs got to end';
+    is_deeply \@started, \@ended, "same jobs got started and ran to completion";
+}
+
+Once_mode: {
+    Socialtext::Jobs->clear_jobs();
+    Socialtext::JobCreator->insert(
+        'Socialtext::Job::Test',
+        { 
+            message => "start-$_",
+            sleep => 0,
+            post_message => "end-$_",
+        },
+    ) for (0 .. 9);
+    my @start_with = Socialtext::Jobs->list_jobs(
+        funcname => 'Socialtext::Job::Test'
+    );
+    is scalar(@start_with), 10, 'start with a bunch of jobs';
+
+    ceq_fast_forward();
+    lives_ok {
+        ceq_start('--foreground --once');
+    } 'ran ceqlotron in foreground in once mode';
+
+    my @lines = ceq_get_log_until(qr/master: exiting/);
+
+    my @leftovers = Socialtext::Jobs->list_jobs(
+        funcname => 'Socialtext::Job::Test'
+    );
+    is scalar(@leftovers), 0, "no leftovers";
+
+    my @started = sort {$a<=>$b} map { /[^"]start-(\d)/ ? $1 : () } @lines;
+    my @ended =   sort {$a<=>$b} map { /[^"]end-(\d)/   ? $1 : () } @lines;
+    is scalar(@started), 10, '10 started';
+    is scalar(@ended), 10, '10 ended';
     is_deeply \@started, \@ended, "same jobs got started and ran to completion";
 }
 
