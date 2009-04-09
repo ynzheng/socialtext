@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Email::Send::Test;
 use Socialtext::EmailNotifier;
-use Test::Socialtext tests => 10;
+use Test::Socialtext tests => 13;
 
 ###############################################################################
 # Fixtures: db
@@ -29,6 +29,9 @@ email_notifications_send_emails: {
     my $ws       = $hub->current_workspace();
     my $ws_title = $ws->title();
 
+    my $prefs = $hub->user_preferences->preferences;
+    $prefs->timezone->value('-0500');
+    $prefs->date_display_format->value('yyyy_mm_dd');
     # create a notifier, and modify some pages
     my $notify   = $hub->email_notify;
     my $notifier = Socialtext::EmailNotifier->new(
@@ -90,7 +93,17 @@ email_notifications_send_emails: {
     like $parts[0]->body, qr{\n$page_title_two\n  http},
         'Second page title correct';
 
-    # XXX shouldn't the user get things in their own timezone
+    warn $parts[0]->body;
+
+    like $parts[0]->body, qr{\d\d[a|p]m},
+        'Email uses user time format';
+
+    like $parts[0]->body, qr{on \d\d\d\d-\d\d-\d\d},
+        'Email uses user date setting';
+
+    unlike $parts[0]->body, qr{GMT},
+        'Email uses user time zone setting';
+
     #    like(
     #        $parts[0]->body,
     #        qr{GMT\)\n\n$page_title_two\n},

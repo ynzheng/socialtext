@@ -28,7 +28,7 @@
   [%- IF include_editor %]
      <br />
      [% SET escaped_str3 = page.last_edited_by.best_full_name( workspace => workspace ) | html %]
-     [% SET escaped_str4 = page.metadata.Date | html %]
+     [% SET escaped_str4 = page.datetime_for_user | html %]
      [% loc('(by [_1] on [_2])', escaped_str3, escaped_str4) %]
   [%- END %]
  </li>

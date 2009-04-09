@@ -12,7 +12,7 @@
 [% page.metadata.Subject %]
   [%+ workspace.uri %]?[% page.uri %]
  [%- IF include_editor %]
-  [% loc("(by [_1] on [_2])", page.last_edited_by.best_full_name( workspace => workspace ), page.metadata.Date) %]
+  [% loc("(by [_1] on [_2])", page.last_edited_by.best_full_name( workspace => workspace ), page.datetime_for_user) %]
  [%- END %]
 
 [%- END %]
