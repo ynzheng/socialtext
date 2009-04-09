@@ -94,7 +94,7 @@ proto.get_inner_html = function() {
 
 proto.getInnerText = function() {
     var body = this.get_edit_document().body;
-    return body.innerText || body.textContent;
+    return body.innerText || body.textContent || '';
 }
 
 proto.set_inner_html = function(html) {
