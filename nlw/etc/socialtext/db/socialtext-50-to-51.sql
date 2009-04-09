@@ -7,7 +7,7 @@ ALTER TABLE gadget
 
 UPDATE gadget
   SET src = regexp_replace(src, '^file:([^/]*).*?([^/]*).xml$', 'local:\\1:\\2')
-WHERE src LIKE 'file:%' AND src NOT LIKE '%oneimage%';
+WHERE src LIKE 'file:%';
 
 UPDATE "System"
    SET value = '51'
