@@ -113,13 +113,20 @@
                     }
                 }
             })
-            .blur(function() {
-                if (!self._accepting) {
-                    self.clearLookahead();
-                    if ($.isFunction(self.opts.onBlur)) {
-                        self.opts.onBlur(action);
+            .unbind('blur')
+            .blur(function(e) {
+                setTimeout(function() {
+                    if (self._accepting) {
+                        self._accepting = false;
+                        $(self.input).focus();
                     }
-                }
+                    else {
+                        self.clearLookahead();
+                        if ($.isFunction(self.opts.onBlur)) {
+                            self.opts.onBlur(action);
+                        }
+                    }
+                }, 50);
             });
     }
 
@@ -132,6 +139,24 @@
     };
 
     Lookahead.prototype = {};
+
+    Lookahead.prototype.allowMouseClicks = function() { 
+        var self = this;
+
+        var elements = [ this.lookahead ];
+        if (this.opts.allowMouseClicks)
+            elements.push(this.opts.allowMouseClicks);
+
+        $.each(elements, function () {
+            $(this).unbind('mousedown').mousedown(function() {
+                // IE: Use _accepting to prevent onBlur
+                if ($.browser.msie) self._accepting = true;
+                $(self.input).focus();
+                // Firefox: This works because this is called before blur
+                return false;
+            });
+        });
+    };
 
     Lookahead.prototype.clearLookahead = function () {
         this._cache = {};
@@ -222,15 +247,9 @@
                 $('<a href="#"></a>')
                     .html(item.bolded_title)
                     .attr('value', i)
-                    .click(function () {
+                    .click(function() {
                         self.accept(i);
-                        self._accepting = false;
-                        $(self.input).focus();
                         return false;
-                    })
-                    .mousedown(function () {
-                        // Catch mouse down events so that we don't blur
-                        self._accepting = true;
                     })
                     .appendTo(li);
             });
@@ -242,9 +261,12 @@
     };
 
     Lookahead.prototype.show = function () {
+        var self = this;
         var lookahead = this.getLookahead();
         if (!lookahead.is(':visible')) {
-            lookahead.fadeIn();
+            lookahead.fadeIn(function() {
+                self.allowMouseClicks();
+            });
         }
     };
 
