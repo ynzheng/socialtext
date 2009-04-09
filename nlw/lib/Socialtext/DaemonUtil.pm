@@ -44,4 +44,7 @@ sub _drop_privs {
     POSIX::setuid($uid);
 }
 
+# This exists so it can be overridden by tests and from_input.
+sub _exit { exit shift; }
+
 1;

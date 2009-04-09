@@ -23,10 +23,12 @@ plan tests => 3;
 use File::Temp ();
 use Socialtext::AppConfig;
 use Socialtext::CLI;
+use Socialtext::DaemonUtil;
 
 our $LastExitVal;
 no warnings 'redefine';
 local *Socialtext::CLI::_exit = sub { $LastExitVal = shift; die 'exited'; };
+local *Socialtext::DaemonUtil::_exit = sub { $LastExitVal = shift; die 'exited'; };
 
 our $HelpWasCalled;
 local *Socialtext::CLI::help = sub { $HelpWasCalled = 1 };
