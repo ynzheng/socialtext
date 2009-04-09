@@ -83,6 +83,12 @@ sub dont_use_cached_result_set {
     unlink $result_set_path;
 }
 
+sub _direction {
+    my $self = shift;
+    return $self->cgi->direction
+        || $self->preferences->direction->value;
+}
+
 # XXX when we send a result set to the template
 # perhaps it could be just a list of pages. This
 # presents difficulties with the attachments that
@@ -90,9 +96,7 @@ sub dont_use_cached_result_set {
 sub display_results {
     my $self = shift;
     my $sortdir = shift;
-
     my $sortby = $self->sortby || $self->cgi->sortby || 'Date';
-    my $direction = $self->cgi->direction || $sortdir->{ $sortby };
 
     $self->screen_template('view/listview');
 
@@ -103,7 +107,7 @@ sub display_results {
         summaries              => $self->show_summaries,
         sortby                 => $sortby,
         sortdir                => $sortdir,
-        direction              => $direction,
+        direction              => $self->_direction || $sortdir->{$sortby},
         error_message          => $self->error_message,
         listview_extra_columns => $self->listview_extra_columns,
         @_,
@@ -122,9 +126,8 @@ sub sorted_result_set {
     my $limit = shift;
 
     my $sortby = $self->sortby || $self->cgi->sortby || 'Date';
-    my $direction = $self->cgi->direction || $sortdir_map->{$sortby};
-    my $sortsub
-        = $self->_gen_sort_closure( $sortby, $direction );
+    my $sortsub = $self->_gen_sort_closure($sortby,
+        $self->_direction || $sortdir_map->{$sortby});
 
     my $row_num = 1;
     my $result_set = $self->result_set;

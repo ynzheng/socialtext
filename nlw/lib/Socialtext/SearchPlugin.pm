@@ -50,6 +50,7 @@ sub register {
     $registry->add( wafl => search_full => 'Socialtext::Search::Wafl' );
     $registry->add( preference => $self->default_search_order_pref );
     $registry->add( preference => $self->show_summaries_pref );
+    $registry->add( preference => $self->direction_pref );
 }
 
 # These preference is updated whenever you change your sorting. It does not
@@ -74,14 +75,25 @@ sub show_summaries_pref {
     return $p;
 }
 
+sub direction_pref {
+    my $self = shift;
+    my $p = $self->new_preference('direction');
+    $p->type('pulldown');
+    $p->choices( [qw/asc desc/] );
+    $p->default('desc');
+    return $p;
+}
+
 sub search {
     my $self = shift;
     my $timer = Socialtext::Timer->new;
 
     if (my $cgi_sortby = $self->cgi->sortby) {
-        if ($self->sortdir->{$cgi_sortby}) {
+        if (my $default_dir = $self->sortdir->{$cgi_sortby}) {
+            my $direction = $self->cgi->direction || $default_dir;
             $self->_store_preferences(
                 default_search_order => $cgi_sortby,
+                direction => $direction,
             );
             $self->sortby($cgi_sortby);
         }
@@ -351,6 +363,8 @@ sub _store_preferences {
         show_summaries => $p{show_summaries},
         default_search_order => $p{default_search_order}
                 || $self->preferences->default_search_order->value,
+        direction => $p{direction} || $self->cgi->direction
+                || $self->preferences->direction->value,
     );
     $opts{show_summaries} = $self->preferences->show_summaries->value
         unless defined $opts{show_summaries};
