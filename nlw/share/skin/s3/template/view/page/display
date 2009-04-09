@@ -102,7 +102,7 @@
       [% page.edit_in_progress.user_link %]
       [% loc('opened this page for editing') %]
       [% ago_text(page.edit_in_progress.minutes_ago) %].
-      <a href="#" id="edit-warning-help">(?)</a>
+      <a href="#" id="st-edit-warning-help">(?)</a>
     </div>
     [% END %]
     <div id="contentLeft">

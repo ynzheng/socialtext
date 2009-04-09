@@ -276,6 +276,21 @@ $(function() {
         return false;
     });
 
+    $('#st-edit-warning-help').click(function() {
+        get_lightbox('edit_warning_help', function() {
+            $("body").append(Jemplate.process("edit_warning_help.tt2", {}));
+            jQuery.showLightbox({
+                speed: 0,
+                content: "#st-edit-warning-help-inline",
+                close: "#st-edit-warning-help-inline .close",
+                callback: function() {
+                    //$.hideLightbox();
+                }
+            });
+        });
+        return false;
+    });
+
     //index.cgi?action=duplicate_popup;page_name=[% page.id %]
     $("#st-pagetools-duplicate").click(function () {
         get_lightbox('duplicate', function () {

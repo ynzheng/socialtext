@@ -4336,31 +4336,38 @@ div.hidesubmit {
     overflow: hidden;
 }
 
+#st-edit-warning-help-inline,
 #st-edit-check {
     text-align: left;
     margin-top: 0;
 }
+
+#st-edit-warning-help-inline h3,
 #st-edit-check h3 {
     font-size: 1.8em;
     line-height: 1.8em;
     border-bottom: 2px solid;
 }
 
+#st-edit-warning-help-inline p,
 #st-edit-check p {
     margin: 1.2em 0;
 }
 
+#st-edit-warning-help-inline .buttons,
 #st-edit-check .buttons {
     float: right;
     margin-bottom: 20px;
 }
 
+#st-edit-warning-help-inline .buttons:after,
 #st-edit-check .buttons:after  {
     content: '.';
     visibility: 'hidden';
     clear: both;
 }
 
+#st-edit-warning-help-inline .buttons .flexButton,
 #st-edit-check .buttons .flexButton {
     height: 22px;
     line-height: 22px;
@@ -4369,6 +4376,7 @@ div.hidesubmit {
     margin-right: 15px;
 }
 
+#st-edit-warning-help-inline .buttons .flexButton a,
 #st-edit-check .buttons .flexButton a {
     color: #fff;
     text-indent: 15px;
