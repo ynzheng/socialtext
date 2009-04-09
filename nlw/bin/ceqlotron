@@ -293,27 +293,38 @@ B<ceqlotron> [ OPTIONS ]
 
 =head1 DESCRIPTION
 
+C<ceqlotron> processes all "asynchronous" jobs on a Socialtext system.
+
 Unless given the C<-f> or C<--foreground> options, C<ceqlotron> forks and runs
-as a daemon.  Unless given the C<-o> or C<--once> options, it runs until
-killed and writes its PID in C</var/run/socialtext/ceqlotron.pid>.
+as a daemon.  C<ceqlotron> runs until sent a signal and writes its PID in
+C</var/run/socialtext/ceqlotron.pid>.
 
-Periodically, the daemon runs through the loop described below.  The default
-period for the loop is 5 seconds, but this can be overridden with the
-L<Socialtext::AppConfig> variable C<ceqlotron_period>.
+C<ceqlotron> has several tuning varialbes in L<Socialtext::AppConfig>.  These
+can be changed while C<ceqlotron> is running and will take effect immediately.
 
-=head1 MAIN LOOP
+C<ceqlotron> operates by pre-forking a number of worker processes.  Each
+worker will scan for available jobs, process a job and then sleep until
+there's more work to do.  After a configurable number of jobs, the worker will
+exit (to prevent run-away memory leaks) and the main C<ceqlotron> process will
+fork another worker to take its place.
 
-If jobs are available to be run, C<ceqlotron> will fork a child process
-(up to C<ceqlotron_max_concurrency> as defined in L<Socialtext::AppConfig>.
+=head1 Once Mode
 
-The child process will run the job, and then exit.
+The C<--once> option will run C<ceqlotron> in "Once Mode".  This is most useful when combined with the C<--foreground> option.
+
+In Once Mode C<ceqlotron> will run through the entire queue once and will only
+pre-fork one worker.  The worker will not sleep or exit until all the work is
+done.
+
+C<ceqlotron> will not write a PID file in this mode.
+
+This mode is useful for testing and potentially harmful in production.  Use
+with caution.
 
 =head1 OPTIONS
 
-    -f,--foreground         If this option is given, ceqlotron stays
-                            in the foreground.
-    -o,--once               This causes ceqlotron to run through
-                            the MAIN LOOP only once.
+    -f,--foreground         Run in the foreground; do not daemonize.
+    -o,--once               This causes ceqlotron to run in L<Once Mode>.
     --kick                  Reset the grabbed time for all jobs.
     --pid                   Print the current daemon pid (if running).
     -O,--output=FILE        Redirect stdout and stderr to FILE.
@@ -323,14 +334,6 @@ The child process will run the job, and then exit.
 
     TERM, INT   exit gracefully as soon as all children
                 have exited
-
-=head1 EXIT CODES
-
-    0       normal exit
-    2       ceqlotron received an INT or TERM signal and exited
-            gracefully
-    255     exceptional error condition (there should be a diagnostic
-            message)
 
 =head1 SEE ALSO
 
