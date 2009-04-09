@@ -1,12 +1,12 @@
 <div class="lightbox" id="st-edit-check">
   <h3>Edit Warning</h3>
 
-  <p>[% user_link %]</a> has opened this page for editing [% time_ago %]. To edit anyway, click <span class="emphasis">Continue</span> below.</p>
+  <p>[% user_link %]</a> has opened this page for editing [% time_ago %]. To edit anyway, click <span class="emphasis">Edit Anyway</span> below.</p>
 
   [% user_business_card %]
 
   <p>If you want to return to viewing the page, click
-     <span class="emphasis">Cancel</span></p>
+     <span class="emphasis">Return to Page View</span></p>
 
   <ul class="buttons">
     <li class="flexButton"><a href="#" class="continue">Edit Anyway</a></li>
