@@ -960,9 +960,6 @@ CREATE INDEX ix_rollup_user_signal_user
 CREATE INDEX ix_session_last_updated
 	    ON sessions (last_updated);
 
-CREATE INDEX ix_signal__recipient_id
-	    ON signal (recipient_id);
-
 CREATE INDEX ix_signal_account
 	    ON signal_account (signal_id);
 
@@ -974,6 +971,9 @@ CREATE INDEX ix_signal_at
 
 CREATE INDEX ix_signal_at_user
 	    ON signal ("at", user_id);
+
+CREATE INDEX ix_signal_recipient_at
+	    ON signal (recipient_id, "at");
 
 CREATE INDEX ix_signal_reply
 	    ON signal (in_reply_to_id);

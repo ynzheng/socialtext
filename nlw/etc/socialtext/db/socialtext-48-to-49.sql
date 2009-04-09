@@ -6,8 +6,9 @@ ALTER TABLE ONLY signal
         FOREIGN KEY (recipient_id)
         REFERENCES users(user_id)
         ON DELETE CASCADE;
-CREATE INDEX ix_signal__recipient_id
-    ON signal (recipient_id);
+
+CREATE INDEX ix_signal_recipient_at
+    ON signal (recipient_id, "at");
 
 UPDATE "System"
    SET value = '49'
