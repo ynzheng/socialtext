@@ -12,17 +12,20 @@ use Socialtext::SQL;
 
 use utf8;
 
+my $Eddie_email = "eddie$$\@devnull.socialtext.net";
 my $Eddie = Socialtext::User->create(
     username => "eddie$$",
-    email_address => "eddie$$\@devnull.socialtext.net",
+    email_address => $Eddie_email,
 );
+my $Alice_email = "alice$$\@devnull.socialtext.net";
 my $Alice = Socialtext::User->create(
     username => "alice$$",
-    email_address => "alice$$\@devnull.socialtext.net",
+    email_address => $Alice_email,
 );
+my $Bob_email = "bob$$\@devnull.socialtext.net";
 my $Bob = Socialtext::User->create(
     username => "bob$$",
-    email_address => "bob$$\@devnull.socialtext.net",
+    email_address => $Bob_email,
 );
 my $Hub = new_hub('admin');
 $Hub->current_user($Eddie);
@@ -55,8 +58,8 @@ Two_user_edit_cancel: {
 
     my $edit = $page->edit_in_progress;
     ok $edit, "An edit is started!";
-    is $edit->{user}->username, $Eddie->username, 'editor username';
-    ok $edit->{timestamp}, 'has a timestamp';
+    like $edit->{user_business_card}, qr/$Eddie_email/;
+    ok defined $edit->{minutes_ago}, 'has a minutes_ago';
 
     Socialtext::Events->Record({
         event_class => 'page',
@@ -66,8 +69,8 @@ Two_user_edit_cancel: {
 
     $edit = $page->edit_in_progress;
     ok $edit, "An edit is started!";
-    is $edit->{user}->username, $Alice->username, 'editor username';
-    ok $edit->{timestamp}, 'has a timestamp';
+    like $edit->{user_business_card}, qr/$Alice_email/;
+    ok defined $edit->{minutes_ago}, 'has a minutes_ago';
 
     $Hub->current_user($Alice);
     Socialtext::Events->Record({
@@ -109,8 +112,8 @@ More_complex: {
     $Hub->current_user($Eddie);
     my $edit = $page->edit_in_progress;
     ok $edit, "An edit is started!";
-    is $edit->{user}->username, $Alice->username, 'editor username';
-    ok $edit->{timestamp}, 'has a timestamp';
+    like $edit->{user_business_card}, qr/$Alice_email/;
+    ok defined $edit->{minutes_ago}, 'has a minutes_ago';
 
     # Now create a new page revision, blowing away alice's edit
     $page->append("New paragraph");
@@ -142,8 +145,8 @@ More_complex: {
 
     $edit = $page->edit_in_progress;
     ok $edit, "An edit is started!";
-    is $edit->{user}->username, $Bob->username, 'editor username';
-    ok $edit->{timestamp}, 'has a timestamp';
+    like $edit->{user_business_card}, qr/$Bob_email/;
+    ok defined $edit->{minutes_ago}, 'has a minutes_ago';
 
     # Now cancel Alice's old edit
     $Hub->current_user($Alice);
@@ -156,8 +159,8 @@ More_complex: {
     # Now we should just see Bob's edit he started a while ago
     $edit = $page->edit_in_progress;
     ok $edit, "An edit is started!";
-    is $edit->{user}->username, $Bob->username, 'editor username';
-    ok $edit->{timestamp}, 'has a timestamp';
+    like $edit->{user_business_card}, qr/$Bob_email/;
+    ok defined $edit->{minutes_ago}, 'has a minutes_ago';
 }
 
 
@@ -185,8 +188,8 @@ Same_user_start_cancel_several_times: {
     $Hub->current_user($Eddie);
     my $edit = $page->edit_in_progress;
     ok $edit, "An edit is started!";
-    is $edit->{user}->username, $Alice->username, 'editor username';
-    ok $edit->{timestamp}, 'has a timestamp';
+    like $edit->{user_business_card}, qr/$Alice_email/;
+    ok defined $edit->{minutes_ago}, 'has a minutes_ago';
 
     $Hub->current_user($Alice);
     Socialtext::Events->Record({
@@ -198,8 +201,8 @@ Same_user_start_cancel_several_times: {
     $Hub->current_user($Eddie);
     $edit = $page->edit_in_progress;
     ok $edit, "An edit is started!";
-    is $edit->{user}->username, $Alice->username, 'editor username';
-    ok $edit->{timestamp}, 'has a timestamp';
+    like $edit->{user_business_card}, qr/$Alice_email/;
+    ok defined $edit->{minutes_ago}, 'has a minutes_ago';
 
     $Hub->current_user($Alice);
     Socialtext::Events->Record({
