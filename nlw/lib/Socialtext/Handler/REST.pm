@@ -319,7 +319,7 @@ sub postHandler {
             exists $headers{'-Etag'} ) {
         %headers = (
             %headers,
-            -cache_control => 'no-cache,private',
+            -cache_control => 'no-cache,no-store,private',
             -pragma => 'no-cache',
             -expires => 'now',
         );
