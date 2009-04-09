@@ -104,8 +104,8 @@ Workers_are_limited: {
 
     my @lines = ceq_get_log_until(qr/master: exiting/);
 
-    my @started = sort {$a<=>$b} map { /start-(\d)/ ? $1 : () } @lines;
-    my @ended =   sort {$a<=>$b} map { /end-(\d)/   ? $1 : () } @lines;
+    my @started = sort {$a<=>$b} map { /[^"]start-(\d)/ ? $1 : () } @lines;
+    my @ended =   sort {$a<=>$b} map { /[^"]end-(\d)/   ? $1 : () } @lines;
 
     is scalar(@started), 2, 'just two jobs got to start';
     is scalar(@ended), 2, 'just two jobs got to end';
