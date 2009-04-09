@@ -22,18 +22,24 @@ my $now = time;
 my $hub = new_hub('foobar', 'system-user');
 my $pages = $hub->pages;
 
+Delete_all_existing_pages: {
+    for my $p ($pages->all_active) {
+        $p->delete(user => $hub->current_user);
+    }
+}
+
 ok $hub->current_user, "some user is set";
 is $hub->current_workspace->name, "foobar", "current ws is foobar";
 
 my @p;
-$p[1] = "page one";
+$p[1] = "page one $$";
 my $page_one = Socialtext::Page->new( hub => $hub )->create(
     title   => $p[1],
     content => "bbb this is page one, crazy",
     creator => $hub->current_user,
 );
 
-$p[2] = "page two";
+$p[2] = "page two $$";
 my $page_two = Socialtext::Page->new( hub => $hub )->create(
     title   => $p[2],
     content => "ccc this is page two, crazy",
@@ -42,7 +48,7 @@ my $page_two = Socialtext::Page->new( hub => $hub )->create(
 my $two_days_ago = DateTime->now() - DateTime::Duration->new(days => 2);
 $page_two->hard_set_date($two_days_ago, $hub->current_user);
 
-$p[3] = "page three";
+$p[3] = "page three $$";
 my $page_three = Socialtext::Page->new( hub => $hub )->create(
     title   => $p[3],
     content => "aaa this is page three, wow!",
@@ -51,7 +57,7 @@ my $page_three = Socialtext::Page->new( hub => $hub )->create(
 my $yesterday = DateTime->now() - DateTime::Duration->new(days => 1);
 $page_three->hard_set_date($yesterday, $hub->current_user);
 
-$p[4] = "page four";
+$p[4] = "page four $$";
 my $page_four = Socialtext::Page->new( hub => $hub )->create(
     title   => $p[4],
     content => "zzz this is page four, nifty!",
@@ -146,10 +152,11 @@ sort_by_title: {
         result => [@title_desc],
         name => 'by title, desc'
     );
+    # Direction is sticky
     changes_ok(
         cgi => {sortby => 'Subject'},
-        result => [@title_asc],
-        name => 'by title, default (asc)'
+        result => [@title_desc],
+        name => 'by title, default (sticky desc)'
     );
 }
 
@@ -166,8 +173,8 @@ sort_by_summary: {
     );
     changes_ok(
         cgi => {sortby => 'Summary'},
-        result => [@p[3,1,2]],
-        name => 'by summary, default (asc)'
+        result => [@p[2,1,3]],
+        name => 'by summary, default (sticky desc)'
     );
 }
 
@@ -188,8 +195,8 @@ sort_by_username: {
     );
     changes_ok(
         cgi => {sortby => 'username'},
-        result => [@p[2,1,3]],
-        name => 'by username, default (asc)'
+        result => [@p[3,1,2]],
+        name => 'by username, default (sticky desc)'
     );
 }
 
