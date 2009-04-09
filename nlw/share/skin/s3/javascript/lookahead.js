@@ -128,6 +128,8 @@
                     }
                 }, 50);
             });
+        
+        this.allowMouseClicks();
     }
 
     $.fn.lookahead = function(opts) {
