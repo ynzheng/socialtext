@@ -38,7 +38,7 @@ Test /data/users via the REST API
 | get        | /data/users/%%user_a%% | application/json |
 | code-is    | 200                    |                  |
 | comment | we should see signals enabled in both acct_a and acct_b, but should not see the test plugin |
-| body-like | qr/"accounts":\[(\{"plugins_enabled":\["signals"."people","widgets"\].*?"account_name":"%%acct_a%%".*?\})*\]/ |
+| body-like | qr/"account_name":"%%acct_a%%".+"plugins_enabled":\["signals"."people","widgets"\]/ |
 | body-unlike | qr/csskit/ |
 
 | comment | we can't see the /data/users for other users unless we're an admin |
@@ -57,5 +57,5 @@ Test /data/users via the REST API
 | http-user-pass | %%user_b%%             | password         |
 | get            | /data/users/%%user_b%% | application/json |
 | code-is        | 200                    |                  |
-| body-like | qr/"accounts":\[(\{"plugins_enabled":\["signals","people","widgets"\].*?"account_name":"%%acct_b%%".*?\})*\]/ |
-| body-like | qr/"accounts":\[.*?\{.*?\["csskit"\].*?"account_name":"%%acct_c%%".*?\}\]/ |
+| body-like | qr/"account_name":"%%acct_b%%".+"plugins_enabled":\["signals"."people","widgets"\]/ |
+| body-like | qr/"accounts":\[.*?\{.*?"account_name":"%%acct_c%%".+\["csskit"\]/ |
