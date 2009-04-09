@@ -1,4 +1,5 @@
 package Socialtext::TheSchwartz;
+# @COPYRIGHT@
 use Moose;
 use Socialtext::SQL qw/sql_execute get_dbh/;
 use TheSchwartz::Moosified;

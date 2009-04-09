@@ -1,4 +1,5 @@
 package Socialtext::DaemonUtil;
+# @COPYRIGHT@
 use warnings;
 use strict;
 

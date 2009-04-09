@@ -1,4 +1,5 @@
 package Socialtext::Rest::Wafl;
+# @COPYRIGHT@
 use strict;
 use warnings;
 

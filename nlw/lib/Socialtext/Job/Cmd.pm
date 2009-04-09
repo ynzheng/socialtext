@@ -1,4 +1,5 @@
 package Socialtext::Job::Cmd;
+# @COPYRIGHT@
 use Moose;
 use IPC::Run ();
 use namespace::clean -except => 'meta';
