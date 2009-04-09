@@ -16,6 +16,12 @@ use File::Temp qw/tempdir/;
 use File::Spec;
 use Socialtext::System qw/shell_run/;
 
+BEGIN {
+    use Socialtext::Pluggable::Adapter;
+    use Memoize qw/unmemoize/;
+    unmemoize( \&Socialtext::Pluggable::Adapter::plugins );
+}
+
 # Set this to 1 to get rid of that stupid "but matched them out of order"
 # warning.
 our $Order_doesnt_matter = 0;
