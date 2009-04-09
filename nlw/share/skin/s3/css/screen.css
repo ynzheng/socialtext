@@ -1807,6 +1807,10 @@ dl.form dd label {
 	margin-right: 10px;
 }
 
+dl.form em {
+	font-style: italic;
+}
+
 /* forms End */
 
 
