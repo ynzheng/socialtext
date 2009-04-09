@@ -30,9 +30,13 @@ sub ceq_bin { $Ceq_bin }
 
 sub ceq_start {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
-    system($Ceq_bin);
+    my $args = shift || '';
+    system("$Ceq_bin $args");
+    return if ($args =~ /(?:--foreground|-f)/);
+
     sleep 1;
-    my $ceq_pid = qx($Ceq_bin --pid);
+
+    my $ceq_pid = `$Ceq_bin --pid`;
     chomp $ceq_pid;
     Test::Builder->new->ok($ceq_pid, 'ceqlotron started up');
     return $ceq_pid;
