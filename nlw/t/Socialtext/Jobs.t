@@ -2,7 +2,7 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::Socialtext tests => 19;
+use Test::Socialtext tests => 22;
 use Test::Exception;
 use Socialtext::SQL qw/:exec get_dbh/;
 
@@ -20,8 +20,8 @@ lives_ok {
 
 Load_jobs: {
     my @job_types = $jobs->job_types;
-    ok (grep { $_ eq 'Socialtext::Job::Test' } @job_types) == 1,
-        "Test job available";
+    my @test_jobs = grep { $_ eq 'Socialtext::Job::Test' } @job_types;
+    ok @test_jobs == 1, "Test job available";
     ok !$INC{"Socialtext/Job/Test.pm"}, 'test module is *not* loaded';
     use_ok 'Socialtext::Job::Test';
     ok $INC{"Socialtext/Job/Test.pm"}, 'test module now loaded';
@@ -69,7 +69,9 @@ Process_a_job: {
 Process_a_failing_job: {
     $jobs->clear_jobs();
     $Socialtext::Job::Test::Work_count = 0;
-    $Socialtext::Job::Test::Retries = 1;
+    {
+        no warnings 'once'; $Socialtext::Job::Test::Retries = 1;
+    }
 
     Socialtext::JobCreator->insert('Socialtext::Job::Test', fail => 1);
     is scalar($jobs->list_jobs( funcname => 'Socialtext::Job::Test' )), 1;
