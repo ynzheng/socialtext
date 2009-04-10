@@ -39,6 +39,12 @@ sub work {
     return $self->do_work();
 }
 
+sub page {
+    my $self = shift;
+    my $hub = $self->hub or return;
+    return $hub->pages->new_page($self->arg->{page_id});
+}
+
 sub _build_workspace {
     my $self = shift;
     my $ws_id = $self->arg->{workspace_id} || 0;
