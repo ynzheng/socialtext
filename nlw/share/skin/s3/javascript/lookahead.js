@@ -128,7 +128,7 @@
                     }
                 }, 50);
             });
-        
+
         this.allowMouseClicks();
     }
 
@@ -145,7 +145,7 @@
     Lookahead.prototype.allowMouseClicks = function() { 
         var self = this;
 
-        var elements = [ this.lookahead ];
+        var elements = [ this.getLookahead() ];
         if (this.opts.allowMouseClicks)
             elements.push(this.opts.allowMouseClicks);
 
