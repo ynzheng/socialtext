@@ -41,6 +41,12 @@
  *       onAccept: function (val, item) {
  *       },
  *
+ *       // OPTIONAL: handler run when a user first types into the input
+ *       onFirstType: function(input) {
+ *            input.val("");
+ *            input.removeClass("prompt");
+ *       },
+ *
  *       // NOT IMPLEMENTED: additional args to pass to the server
  *       args: { pageType: 'spreadsheet' }
  *
@@ -49,6 +55,8 @@
 
 (function($){
     var lookaheads = [];
+
+    var hastyped = false;
 
     var DEFAULTS = {
         count: 10,
@@ -101,6 +109,12 @@
             })
             .unbind('keydown')
             .keydown(function(e) {
+                if (!self.hastyped) {
+                    self.hastyped=true;
+                    if (self.opts.onFirstType) {
+                        self.opts.onFirstType($(self.input));
+                    }
+                }
                 if (self.lookahead && self.lookahead.is(':visible')) {
                     if (e.keyCode == KEYCODES.TAB) {
                         if (self._items.length) {
