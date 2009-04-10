@@ -94,7 +94,7 @@
                     self.clearLookahead();
                 }
                 else if (e.keyCode == KEYCODES.ENTER) {
-                    self.accept();
+                    self.clickCurrent();
                 }
                 else if (e.keyCode == KEYCODES.DOWN) {
                     self.selectDown();
@@ -117,12 +117,7 @@
                 }
                 if (self.lookahead && self.lookahead.is(':visible')) {
                     if (e.keyCode == KEYCODES.TAB) {
-                        if (self._items.length) {
-                            var selitem = jQuery('li.selected a', self.lookahead);
-                            if (selitem.length) {
-                                selitem.triggerHandler("click"); 
-                           }
-                        }
+                        self.clickCurrent();
                         return false;
                     }
                     else if (e.keyCode == KEYCODES.ENTER) {
@@ -377,6 +372,15 @@
             : jQuery('li:last', this.lookahead),
             false
         );
+    };
+
+    Lookahead.prototype.clickCurrent = function () {
+        if (this._items.length) {
+            var selitem = jQuery('li.selected a', this.lookahead);
+            if (selitem.length) {
+                selitem.triggerHandler("click"); 
+            }
+        }
     };
 
     Lookahead.prototype.storeCache = function (val, data) {
