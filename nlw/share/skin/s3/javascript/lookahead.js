@@ -268,11 +268,18 @@
                         return false;
                     })
                     .appendTo(li);
+                if (i==0) {
+                    self.select_element(li, true);
+                }
             });
             this.show();
         }
         else {
-            this.hide();
+            lookahead.append(
+                jQuery("<li></li>")
+                    .append("No matches for '"+$(this.input).val()+"'")
+                    .css({padding: '3px 5px'}));
+            this.show();
         }
     };
 
@@ -328,20 +335,25 @@
         }
     }
 
-    Lookahead.prototype.select = function (item) {
+    Lookahead.prototype.select = function (item, provisional) {
         this._selected = item;
-        $(this.input).val(this.displayAs(item));
+        if (!provisional) {
+            $(this.input).val(this.displayAs(item));
+        }
     }
-
-    Lookahead.prototype.select_element = function (el) {
+    
+    Lookahead.prototype._highlight_element = function (el) {
         jQuery('li.selected', this.lookahead)
             .removeClass('selected')
             .css({ background: '' });
         el.addClass('selected').css({ background: '#7DBFDB' });
-        var value = el.children('a').attr('value');
+    }
 
+    Lookahead.prototype.select_element = function (el, provisional) {
+        this._highlight_element(el);
+        var value = el.children('a').attr('value');
         var item = this._items[value];
-        this.select(item);
+        this.select(item, provisional);
     }
 
     Lookahead.prototype.selectDown = function () {
@@ -349,7 +361,8 @@
         this.select_element(
             jQuery('li.selected', this.lookahead).length
             ? jQuery('li.selected', this.lookahead).next('li')
-            : jQuery('li:first', this.lookahead)
+            : jQuery('li:first', this.lookahead),
+            false
         );
     };
 
@@ -358,7 +371,8 @@
         this.select_element(
             jQuery('li.selected', this.lookahead).length
             ? jQuery('li.selected', this.lookahead).prev('li')
-            : jQuery('li:last', this.lookahead)
+            : jQuery('li:last', this.lookahead),
+            false
         );
     };
 
