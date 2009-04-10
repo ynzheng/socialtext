@@ -118,7 +118,10 @@
                 if (self.lookahead && self.lookahead.is(':visible')) {
                     if (e.keyCode == KEYCODES.TAB) {
                         if (self._items.length) {
-                            self.accept(0); // accept the first item
+                            var selitem = jQuery('li.selected a', self.lookahead);
+                            if (selitem.length) {
+                                selitem.triggerHandler("click"); 
+                           }
                         }
                         return false;
                     }
