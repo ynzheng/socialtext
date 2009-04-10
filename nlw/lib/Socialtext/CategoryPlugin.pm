@@ -255,7 +255,7 @@ sub _gen_sort_closure {
     my $self        = shift;
     my $sortdir_map = shift; # the default mapping of sortby to a direction
     my $sortby      = shift; # the attribute being sorted on
-    my $direction   = shift; # the direction ('asc' or 'desc')
+    my $direction   = shift || ''; # the direction ('asc' or 'desc')
 
     if ( $sortby eq 'revision_count' ) { # The only integral attribute, so use numeric sort
         if ( $direction eq 'asc' ) {

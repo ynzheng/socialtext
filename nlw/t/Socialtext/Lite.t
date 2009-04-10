@@ -76,12 +76,15 @@ like( $html, qr{<textarea.*we are the children.*except that we're not}sm,
 
 # request edit screen for non-existent page
 my $incipient_page = $hub->pages->new_from_name('Stronger Than Dust?');
+if ($incipient_page->active) {
+    $incipient_page->delete(user => $hub->current_user);
+}
 isa_ok( $incipient_page, 'Socialtext::Page' );
 $html = $lite->edit_action($incipient_page);
 
 like( $html, qr{\Q<title>Admin Wiki : Edit Stronger Than Dust?</title>},
     'edit form has correct title for incipient page' );
-like( $html, qr{\Qaction="/lite/page/admin/Stronger%20Than%20Dust%3F"},
+like( $html, qr{\Qaction="/lite/page/admin/stronger_than_dust"},
     'edit form action goes to correct page' );
 like( $html, qr{<textarea[^>]+></textarea>},
     'edit form contains no content' );

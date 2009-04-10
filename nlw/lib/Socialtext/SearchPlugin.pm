@@ -316,10 +316,11 @@ sub read_result_set {
     my $result_set = $self->SUPER::read_result_set(@_);
 
     # if we get one, make sure it's for the right search
-    if ($result_set && 
-        defined($result_set->{search_term}) && 
-        $result_set->{search_term} eq $self->{_current_search_term} &&
-        defined($result_set->{scope}) &&
+    if ($result_set and
+        defined($result_set->{search_term}) and
+        $result_set->{search_term} eq $self->{_current_search_term} and
+        defined($result_set->{scope}) and
+        defined($self->{_current_scope}) and
         $result_set->{scope} eq $self->{_current_scope})
     {
         return $result_set;
