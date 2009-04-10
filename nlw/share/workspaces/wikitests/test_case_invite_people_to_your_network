@@ -58,7 +58,7 @@ TODO: verify cannot actually issue invitations via URL
 | *Comment* | Test Case: Invite people. Verify the invitations |  |
 | text_like | Invite people to %%acct%% |  |
 | text_like | qr/The following users were already members of this Network\s+%%eacct_user%%/ |  |
-| text_like | qr/The following users were invited into this Network\s+%%eto_ws_user%%/ |  |
+| text_like | qr/The following users were successfully invited into this Network:\s+%%eto_ws_user%%/ |  |
 | text_like | qr/The following users were already members of another Network\s+%%eguest%%/ |  |
 | text_like | qr/The following email addresses were invalid\s+foo2bar.com/ |  |
 | click_and_wait | link=Invite more people |  |
