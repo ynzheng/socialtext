@@ -63,5 +63,22 @@ sub index_page {
     return @job_ids;
 }
 
+sub send_page_notifications {
+    my $self = shift;
+    my $page = shift;
+
+    my @job_ids;
+
+    for my $task (qw/WeblogPing EmailNotify WatchlistNotify/) {
+        push @job_ids, $self->insert(
+            "Socialtext::Job::$task" => {
+                workspace_id => $page->hub->current_workspace->workspace_id,
+                page_id => $page->id,
+            }
+        );
+    }
+    return @job_ids;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

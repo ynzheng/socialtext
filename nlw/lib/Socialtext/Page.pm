@@ -830,6 +830,7 @@ sub _perform_store_actions {
     $self->hub->backlinks->update($self);
     $self->update_db_metadata();
     Socialtext::JobCreator->index_page($self);
+    Socialtext::JobCreator->send_page_notifications($self);
     $self->_log_page_action();
 }
 
