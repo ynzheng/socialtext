@@ -9,9 +9,9 @@ TODO: restore this test when comment form notes is reimplemented
 | st-admin | set_workspace_config --workspace %%workspace%% comment_form_note_top "All Hands Topside" |  |
 | open_ok | /%%workspace%%/?Announcements and Links |  |
 
- click_ok | link=Comment | |
- text_like | st-commentui-notebottom | bottoms up |
- text_like | st-commentui-notetop | All Hands Topside |
+click_ok | link=Comment | |
+text_like | st-commentui-notebottom | bottoms up |
+text_like | st-commentui-notetop | All Hands Topside |
 
 | st-admin | set_workspace_config --workspace %%workspace%% comment_form_note_bottom "" |  |
 | st-admin | set_workspace_config --workspace %%workspace%% comment_form_note_top "" |  |
@@ -45,12 +45,12 @@ TODO: restore this test when comment form notes is reimplemented
 
 TODO: change to new central page scheme
 
- *Comment* | Test Case: Workspace Configuration Central Page Setting | |
+*Comment* | Test Case: Workspace Configuration Central Page Setting | |
 
- st-admin | set_workspace_config --workspace %%workspace%% homepage_is_dashboard 0 | |
- open_ok | /%%workspace%%/ | |
- text_like | contentContainer | This is the home page for |
- st-admin | set_workspace_config --workspace %%workspace%% homepage_is_dashboard 1 | |
+st-admin | set_workspace_config --workspace %%workspace%% homepage_is_dashboard 0 | |
+open_ok | /%%workspace%%/ | |
+text_like | contentContainer | This is the home page for |
+st-admin | set_workspace_config --workspace %%workspace%% homepage_is_dashboard 1 | |
 
 | *Comment* | Test Case: Workspace Configuration Weblog Sort Order |  |
 | st-admin | set_workspace_config --workspace %%workspace%% sort_weblogs_by_create 1 |  |
@@ -90,23 +90,23 @@ TODO: change to new central page scheme
 
 TODO: we no longer display email addresses unless Profiles are disabled
 
- text_like | pageAttribution | gmail.com |
+text_like | pageAttribution | gmail.com |
 
 | st-admin | set_workspace_config --workspace %%workspace%% unmasked_email_domain "" |  |
 | open_ok | /%%workspace%%/?email %%start_time%% |  |
 
- text_unlike | pageAttribution | gmail.com |
+text_unlike | pageAttribution | gmail.com |
 
 TODO: restore this test when comment form fields is reimplemented
 
 | *Comment* | Test Case: Workspace Configuration Comment Custom Fields |  |
 | st-admin | set-comment-form-custom-fields --workspace %%workspace%% "Field A" "Bee Field" "Red Field" |  |
 
- open_ok | /%%workspace%%/?Announcements and Links | |
- click_ok | link=Comment | |
- text_like | comment_form | Field A |
- text_like | comment_form | Bee Field |
- text_like | comment_form | Red Field |
+open_ok | /%%workspace%%/?Announcements and Links | |
+click_ok | link=Comment | |
+text_like | comment_form | Field A |
+text_like | comment_form | Bee Field |
+text_like | comment_form | Red Field |
 
 | st-admin | set-comment-form-custom-fields --workspace %%workspace%% |  |
 
@@ -126,16 +126,12 @@ TODO: restore this test when comment form fields is reimplemented
 | st-admin | set_workspace_config --workspace %%workspace%% restrict_invitation_to_search 1 |  |
 | click_and_wait | link=Settings |  |
 | click_and_wait | link=Invite New Users |  |
-| text_like | contentRight | match this pattern: %%username%% |
-| text_like | contentRight | Search for Users |
-
+| text_like | contentRight | All candidate email addresses must match this pattern |
 | *Comment* | Test Case: Workspace Configuration Invitation search and invite user {bz: 547} |  |
 | type_ok | user_search | %%username%% |
 | click_and_wait | link=Search |  |
-| text_like | Select/Deselect All |  |
-| text_like | contentRight | %%username%% |
-| check_ok | all |  |
-| click_and_wait | link=Invite |  |
+| text_like | Default Search Order? |  |
+| click_and_wait | link=Invite New Users |  |
 | text_like | contentRight | %%username%% |
 | st-admin | set_workspace_config --workspace %%workspace%% restrict_invitation_to_search 0 |  |
 | st-admin | set_workspace_config --workspace %%workspace%% invitation_filter "" |  |
@@ -161,6 +157,6 @@ TODO: restore this test when comment form fields is reimplemented
 | st-admin | set-comment-form-custom-fields --workspace %%workspace%% |  |
 | st-admin | set_workspace_config --workspace %%workspace%% allows_skin_upload 0 |
 
- st-admin | set_workspace_config --workspace %%workspace%% homepage_is_dashboard 1 | |
+st-admin | set_workspace_config --workspace %%workspace%% homepage_is_dashboard 1 | |
 
 | *Comment* | Test Case: Workspace Configuration COMPLETED |
