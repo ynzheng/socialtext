@@ -1071,14 +1071,24 @@ this.addGlobal().setup_wikiwyg = function() {
 
     Wikiwyg.setup_newpage();
 
-    // XXX start_nlw_wikiwyg goes in the object because display_edit.js
-    // wants it there.
     ww.starting_edit = false;
     ww.start_nlw_wikiwyg = function() {
         if (ww.starting_edit) {
             return;
         }
 
+        // Check for any pre edit hooks. If we have 'em, let them decide
+        // whether or not we launch wikiwyg. Do this so that we can make any
+        // async web calls we need to in order to make that determination.
+        if ( Socialtext.pre_edit_hook ) {
+            Socialtext.pre_edit_hook( ww._really_start_nlw_wikiwyg );
+        }
+        else {
+            ww._really_start_nlw_wikiwyg();
+        }
+    }
+
+    ww._really_start_nlw_wikiwyg = function() {
         ww.starting_edit = true;
 
         jQuery.ajax({
