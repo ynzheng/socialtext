@@ -361,7 +361,8 @@ $(function() {
         $('#st-create-content-link').click();
     }
 
-    Socialtext._check_for_edit = function () {
+    // Currently, the pre edit hook will check for an edit contention.
+    Socialtext.pre_edit_hook = function (wikiwyg_launcher) {
         jQuery.ajax({
             type: 'GET',
             url: location.pathname,
@@ -373,7 +374,6 @@ $(function() {
             success: function(data) {
                 if (data.user_link) {
                     get_lightbox("edit_check", function() {
-
                         $("body").append(
                             Jemplate.process("edit_check.tt2", data)
                         );
@@ -389,24 +389,19 @@ $(function() {
                                 $("#st-edit-check .continue")
                                     .one("click", function() {
 
-                                    bootstrap = true;
-                                    Socialtext._bootstrap_editor();
                                     $.hideLightbox();
+                                    wikiwyg_launcher();
                                 });
 
-                                $("#lightbox").one("lightbox-unload", function() {
-                                    if (bootstrap) return;
-
-                                    $('#st-edit-button-link')
-                                        .one("click", Socialtext._setup_editor);
-                                });
+                                $("#lightbox")
+                                    .one("lightbox-unload", function() { });
                             }
                         });
 
                     });
                 }
                 else {
-                    Socialtext._bootstrap_editor();
+                    wikiwyg_launcher();
                 }
             }
         });
@@ -414,7 +409,7 @@ $(function() {
 
     }
 
-    Socialtext._show_bootstrap_loader = function () {
+    Socialtext._show_loading_animation = function () {
         $('#bootstrap-loader')
             .css('position', 'absolute')
             .css('float', 'none')
@@ -422,17 +417,9 @@ $(function() {
                 $('#st-editing-tools-edit li:last').offset().left + 120 + 'px')
             .show();
     }
-    
-    Socialtext._setup_editor = function () {
-        Socialtext._show_bootstrap_loader();
-        Socialtext._check_for_edit();
 
-        return false;
-
-    };
-
-    Socialtext._bootstrap_editor = function () {
-        Socialtext._show_bootstrap_loader();
+    Socialtext.load_editor = function () {
+        Socialtext._show_loading_animation();
 
         $.ajaxSettings.cache = true;
         if (Socialtext.page_type == 'spreadsheet' && Socialtext.wikiwyg_variables.hub.current_workspace.enable_spreadsheet) {
@@ -459,7 +446,7 @@ $(function() {
     }
 
     $("#st-edit-button-link,#st-edit-actions-below-fold-edit, #bottomButtons .editButton")
-        .one("click", Socialtext._setup_editor);
+        .one("click", Socialtext.load_editor);
 
     if (Socialtext.double_click_to_edit) {
         var double_clicker = function() {
