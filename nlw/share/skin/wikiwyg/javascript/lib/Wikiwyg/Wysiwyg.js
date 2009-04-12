@@ -844,6 +844,10 @@ proto.toolbarStyling = function() {
             }
             if (cursor_state.first_row) {
                 jQuery("#wikiwyg_button_move-row-up").addClass("disabled");
+
+                if (cursor_state.sortable_table) {
+                    jQuery("#wikiwyg_button_del-row").addClass("disabled");
+                }
             }
             if (cursor_state.last_row) {
                 jQuery("#wikiwyg_button_move-row-down").addClass("disabled");
