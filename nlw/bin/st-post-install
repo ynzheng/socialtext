@@ -5,22 +5,33 @@ use warnings;
 
 use FindBin;
 use lib "$FindBin::Bin/../lib";
-
 use Socialtext::Build qw(get_build_setting);
+use Socialtext::Log qw/st_timed_log/;
+use Socialtext::User;
 use Socialtext::System qw(shell_run);
+use Socialtext::Timer;
 use File::Spec::Functions qw(catfile);
 
 my $script_dir = get_build_setting("sharedir") . "/post-install";
 die "Could not find directory: $script_dir\n" unless -d $script_dir;
 
 run_scripts($script_dir);
+exit;
 
 sub run_scripts {
     my $dir = shift;
     $Socialtext::System::SILENT_RUN = 1;
     for my $script ( get_scripts($dir) ) {
+        (my $name = $script) =~ s#.+/##;
+        Socialtext::Timer->Continue($name);
         shell_run($script);
+        Socialtext::Timer->Pause($name);
     }
+    st_timed_log('info', 'POSTINST', 'st-post-install',
+        Socialtext::User->SystemUser(),
+        undef,
+        Socialtext::Timer->Report(),
+    );
 }
 
 sub get_scripts {
