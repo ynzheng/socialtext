@@ -1,8 +1,8 @@
 package Socialtext::Job::WeblogPing;
 # @COPYRIGHT@
 use Moose;
-use namespace::clean -except => 'meta';
 use Socialtext::WeblogUpdates;
+use namespace::clean -except => 'meta';
 
 extends 'Socialtext::Job';
 
