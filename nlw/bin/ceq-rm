@@ -7,6 +7,7 @@ use Getopt::Long;
 use Pod::Usage 1.12;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
+use Class::MOP;
 use Socialtext::Jobs;
 use Socialtext::DaemonUtil;
 
@@ -28,22 +29,25 @@ my $Pattern = $ARGV[0]
 Socialtext::Jobs->Unlimit_list_jobs();
 Socialtext::Jobs->load_all_jobs();
 
-# prevent an error-prone common usage
-$Pattern = qr/^$1;/
-    if $Pattern =~ /^(?:id=)(\d+)$/;
+if ($Pattern =~ /^(?:id=)?(\d+)$/) {
+    # prevent an error-prone common usage
+    $Pattern = qr/ id=$1;/;
+}
+else {
+    $Pattern = qr/$Pattern/;
+}
 
-my $jobs = Socialtext::Jobs->new;
-my @job_types = $jobs->job_types;
 my @jobs_to_check;
 if ($opts{class}) {
-    push @jobs_to_check, $jobs->list_jobs(
+    push @jobs_to_check, Socialtext::Jobs->list_jobs(
         funcname => $opts{class},
         want_handle => 1,
     );
 }
 else {
+    my @job_types = Socialtext::Jobs->job_types;
     for my $type (@job_types) {
-        push @jobs_to_check, $jobs->list_jobs(
+        push @jobs_to_check, Socialtext::Jobs->list_jobs(
             funcname => $type,
             want_handle => 1,
         );
@@ -67,6 +71,8 @@ sub remove_if_match {
     }
     else {
         warn "de-scheduling event for $string\n" if $opts{verbose};
+        eval "require ".$job->funcname
+            unless Class::MOP::is_class_loaded($job->funcname);
         $job->completed;
     }
 }
@@ -84,7 +90,7 @@ B<ceq-rm number>
 =head1 OPTIONS
 
     --dryrun    Report on what would be removed, but don't actually remove
-    --verbose   Report on each file unlinked
+    --verbose   Report on each job removed
     --class     Only look at events of a certain class.
     --help      This help page
     --man       Manual page
