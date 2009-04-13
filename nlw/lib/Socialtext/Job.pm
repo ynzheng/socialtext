@@ -30,6 +30,11 @@ has indexer => (
     lazy_build => 1,
 );
 
+has page => (
+    is => 'ro', isa => 'Maybe[Socialtext::Page]',
+    lazy_build => 1,
+);
+
 sub work {
     my $class = shift;
     my $job = shift;
@@ -37,12 +42,6 @@ sub work {
         job => $job
     );
     return $self->do_work();
-}
-
-sub page {
-    my $self = shift;
-    my $hub = $self->hub or return;
-    return $hub->pages->new_page($self->arg->{page_id});
 }
 
 sub _build_workspace {
@@ -94,6 +93,12 @@ sub _build_indexer {
         die "Couldn't create an indexer: $@";
     }
     return $indexer;
+}
+
+sub _build_page {
+    my $self = shift;
+    my $hub = $self->hub or return;
+    return $hub->pages->new_page($self->arg->{page_id});
 }
 
 __PACKAGE__->meta->make_immutable;
