@@ -25,7 +25,7 @@ override 'temporarily_remove_ability' => sub {};
 
 sub Unlimit_list_jobs {
     no warnings 'once';
-    $TheSchwartz::Moosified::FIND_JOB_BATCH_SIZE = 0xFFFFFFFF;
+    $TheSchwartz::Moosified::FIND_JOB_BATCH_SIZE = 0x7FFFFFFF;
 }
 
 sub stat_jobs {
