@@ -53,36 +53,33 @@ else {
 for my $j (@jobs_to_check) {
     remove_if_match($j);
 }
-exit;
 
+my %ws_name;
 sub remove_if_match {
     my $job = shift;
-    my $args = $job->arg;
-    return unless ref($args) eq 'HASH';
-    (my $shortname = $job->funcname) =~ s/^Socialtext::Job:://;
-    my $target = $job->jobid;
-    $target .= ";type=$shortname";
-    $target .= ";ws=$args->{workspace_id}" if $args->{workspace_id};
-    $target .= ";page=$args->{page_id}" if $args->{page_id};
+    my ($string, $shortname)
+        = Socialtext::Jobs->job_to_string($job, {ws_names => \%ws_name});
 
-    if ($target =~ /$Pattern/) {
-        if ($opts{dryrun}) {
-            warn "would de-schedule event for $target\n";
-        }
-        else {
-            warn "de-scheduling event for $target\n" if $opts{verbose};
-            $job->completed;
-        }
+    return unless $string =~ $Pattern;
+
+    if ($opts{dryrun}) {
+        warn "would de-schedule event for $string\n";
+    }
+    else {
+        warn "de-scheduling event for $string\n" if $opts{verbose};
+        $job->completed;
     }
 }
 
 =head1 NAME
 
-ceq-rm - Remove change events in the ceqlotron queue according to perl regexp
+ceq-rm - Remove jobs in the ceqlotron queue according to perl regexp or ID
 
 =head1 SYNOPSIS
 
 B<ceq-rm 'perl regexp'>
+
+B<ceq-rm number>
 
 =head1 OPTIONS
 
@@ -91,7 +88,6 @@ B<ceq-rm 'perl regexp'>
     --class     Only look at events of a certain class.
     --help      This help page
     --man       Manual page
-
 
 =head1 SEE ALSO
 
