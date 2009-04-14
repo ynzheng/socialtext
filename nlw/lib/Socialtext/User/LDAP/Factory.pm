@@ -257,15 +257,12 @@ sub ResolveId {
 sub _vivify {
     my ($self, $proto_user) = @_;
 
+    # set some defaults into the proto user
     $proto_user->{driver_key} ||= $self->driver_key;
-
-    # NOTE: *always* use the driver_unique_id to update LDAP user records
-
     $proto_user->{cached_at} = 'now';           # auto-set to 'now'
     $proto_user->{password}  = '*no-password*'; # placeholder password
 
-    my $user_id = $self->ResolveId($proto_user);
-
+    # separate out "core" fields from "profile" fields
     my ($user_keys, $extra_keys) = 
         part { $Socialtext::User::Base::all_fields{$_} ? 0 : 1 }
         keys %$proto_user;
@@ -282,33 +279,39 @@ sub _vivify {
     # don't encrypt the placeholder password; just store it as-is
     $user_attrs{no_crypt} = 1;
 
-    # depending on whether or not we've got a User Id, we're either updating
-    # an existing User record in the DB or creating a new one.
+    # depending on whether or not this User exists in the DB already, we're
+    # either updating an existing User or creating a new one.
+    my $user_id = $self->ResolveId($proto_user);
     if ($user_id) {
-        # validate/clean the data we got from LDAP
-        $user_attrs{user_id} = $user_id;
-        # ... grab proto-user from the DB; the last known state for this User
+        ### Update existing User record
+
+        # Pull existing User record out of DB
         my @user_drivers = Socialtext::User->_drivers();
         my $cached_homey = $self->GetHomunculus('user_id', $user_id, \@user_drivers, 1);
-        # ... validate the data against the previously cached homunculus
+
+        # Validate data from LDAP as changes to cached User record
+        $user_attrs{user_id} = $user_id;
         $self->ValidateAndCleanData($cached_homey, \%user_attrs);
 
-        # update cached data for User
-        $user_attrs{driver_username} = delete $user_attrs{username};
+        # Update cached User record in DB
+        $user_attrs{driver_username} = delete $user_attrs{username};    # map "object -> DB"
         $self->UpdateUserRecord(\%user_attrs);
     }
     else {
+        ### Create new User record
+
         # validate/clean the data we got from LDAP
         $self->ValidateAndCleanData(undef, \%user_attrs);
 
         # create User record, and update cached data
-        $user_attrs{driver_username} = delete $user_attrs{username};
+        $user_attrs{driver_username} = delete $user_attrs{username};    # map "object -> DB"
         $self->NewUserRecord(\%user_attrs);
     }
 
-    $user_attrs{username} = delete $user_attrs{driver_username};
+    $user_attrs{username} = delete $user_attrs{driver_username};        # map "DB -> object"
     $user_attrs{extra_attrs} = \%extra_attrs;
     %$proto_user = %user_attrs;
+    return;
 }
 
 sub Search {
