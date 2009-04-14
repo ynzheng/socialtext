@@ -86,38 +86,39 @@ sub GetUser {
     # SANITY CHECK: get user term is acceptable
     return unless ($valid_get_user_terms{$key});
 
+    # If we have a fresly cached copy of the User, use that
     local $self->{_cache_lookup}; # temporary cache-lookup storage
     if ($CacheEnabled) {
         my $cached = $self->_check_cache($key => $val);
         return $cached if $cached;
     }
 
+    # Look the User up in LDAP
     local $self->{_user_not_found};
     my $proto_user = $self->lookup($key => $val);
 
+    # If we found the User in LDAP, cache the data in the DB and return that
+    # back to the caller as the homunculus.
     if ($proto_user) {
         $self->_vivify($proto_user);
         return $self->new_homunculus($proto_user);
     }
 
+    # Didn't find User in LDAP, but they *do* exist in the DB
     if ($self->{_cache_lookup}) {
         if ($self->{_user_not_found}) {
-            # The cache found the user, but the LDAP server cannot find them.
-            # This means the user existed in our system at some point but is
-            # no longer on the server.  Convert the cached homunculus to a
-            # Deleted user:
-            return Socialtext::User::Deleted->new(
-                $self->{_cache_lookup}
-            );
+            # User was previously cached, so they existed at some point but
+            # can't be found in LDAP any longer.  Must be a Deleted User.
+            return Socialtext::User::Deleted->new($self->{_cache_lookup});
         }
         else {
-            # Some other LDAP error caused us to not find the user (e.g. a
-            # connection problem).  Return what we found in the cache (which
-            # is expired) as it's better than nothing.
+            # Something else caused LDAP lookup to fail; return previously
+            # cached data (its better than nothing).
             return $self->{_cache_lookup};
         }
     }
 
+    # Didn't find User in LDAP, don't exist in DB; unknown User.
     return;
 }
 
@@ -202,23 +203,24 @@ sub lookup {
 sub _check_cache {
     my ($self, $key, $val) = @_;
 
-    # get cached user data, returning that if the cache is fresh
-    my $cached = $self->GetHomunculus(
+    # get cached User data, exiting early if we don't know about this User (or
+    # the User has *never* had their LDAP data cached)
+    my $cached_homey = $self->GetHomunculus(
         $key, $val, $self->driver_key
     );
-    return unless $cached;
-    return unless $cached->cached_at;
+    return unless $cached_homey;
+    return unless $cached_homey->cached_at;
 
     # We might need to use an expired cached copy if the LDAP query fails.
-    $self->{_cache_lookup} = $cached;
+    $self->{_cache_lookup} = $cached_homey;
 
+    # If the cached copy is stale, return empty handed
     my $ttl    = $self->cache_ttl;
     my $cutoff = $self->Now() - $ttl;
+    return unless ($cached_homey->cached_at > $cutoff);
 
-    return unless ($cached->cached_at > $cutoff);
-
-    #warn "Cached LDAP user is fresh";
-    return $cached;
+    # Cached copy still good
+    return $cached_homey;
 }
 
 sub cache_ttl {
@@ -337,7 +339,9 @@ sub Search {
         return;
     }
     if ($mesg->code()) {
-        st_log->error( "ST::User::LDAP; LDAP error while performing search; " . $mesg->error() );
+        my $err = "ST::User::LDAP; LDAP error while performing search; "
+                . $mesg->error();
+        st_log->error($err);
         return;
     }
 
@@ -360,10 +364,10 @@ sub Search {
 
 sub _find_user {
     my ($self, $key, $val) = @_;
-
     my $attr_map = $self->attr_map();
 
-    # map the ST::User key to an LDAP attribute
+    # map the ST::User key to an LDAP attribute, aborting if it isn't a mapped
+    # attribute
     my $search_attr = $attr_map->{$key};
     return unless $search_attr;
 
