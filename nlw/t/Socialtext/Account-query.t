@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Test::Socialtext tests => 18;
 use Sys::Hostname;
-fixtures( 'populated_rdbms' );
+fixtures( 'clean', 'populated_rdbms' );
 
 BEGIN {
     use_ok( 'Socialtext::Account' );
