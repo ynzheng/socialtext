@@ -609,7 +609,7 @@ CREATE TABLE workspace_plugin (
     plugin text NOT NULL
 );
 
-CREATE TABLE workspace_plugin_prefs (
+CREATE TABLE workspace_plugin_pref (
     workspace_id bigint NOT NULL,
     plugin text NOT NULL,
     "key" text NOT NULL,
@@ -1077,11 +1077,11 @@ CREATE UNIQUE INDEX users_lower_username_driver_key
 CREATE INDEX watchlist_user_workspace
 	    ON "Watchlist" (user_id, workspace_id);
 
-CREATE INDEX workspace_plugin_prefs_idx
-	    ON workspace_plugin_prefs (workspace_id, plugin);
+CREATE INDEX workspace_plugin_pref_idx
+	    ON workspace_plugin_pref (workspace_id, plugin);
 
-CREATE INDEX workspace_plugin_prefs_key_idx
-	    ON workspace_plugin_prefs (workspace_id, plugin, "key");
+CREATE INDEX workspace_plugin_pref_key_idx
+	    ON workspace_plugin_pref (workspace_id, plugin, "key");
 
 CREATE TRIGGER sessions_insert
     AFTER INSERT ON sessions
@@ -1408,8 +1408,8 @@ ALTER TABLE ONLY "Workspace"
             FOREIGN KEY (created_by_user_id)
             REFERENCES users(user_id) ON DELETE RESTRICT;
 
-ALTER TABLE ONLY workspace_plugin_prefs
-    ADD CONSTRAINT workspace_plugin_prefs_fk
+ALTER TABLE ONLY workspace_plugin_pref
+    ADD CONSTRAINT workspace_plugin_pref_fk
             FOREIGN KEY (workspace_id, plugin)
             REFERENCES workspace_plugin(workspace_id, plugin) ON DELETE CASCADE;
 
