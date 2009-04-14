@@ -1,11 +1,22 @@
 #!/usr/bin/perl
 # @COPYRIGHT@
 
-# Many of our customers experience this problem right now. 
+###############################################################################
+#
+# ISSUE: if the LDAP entry is missing some of the data, it would throw an
+# exception.  Default Users were allowed to have some fields blank (e.g. first
+# name, last name), but LDAP Users were not.
+#
+# SCOPE: Many of our customers experience this problem right now.
 #  * Pointroll
 #  * ATSU ( will in the future. )
 #  * ABC
 # Making sure this use case is covered in tests so we can fix it some day.
+
+# RESOLUTION: LDAP Users should be allowed to have the same set of blank
+# fields that Default Users do
+#
+###############################################################################
 
 use strict;
 use warnings;
@@ -14,7 +25,7 @@ use Socialtext::User;
 use Socialtext::User::Default::Factory;
 use Test::Socialtext::Bootstrap::OpenLDAP;
 use Test::Warn;
-use Test::Socialtext tests => 5;
+use Test::Socialtext tests => 7;
 
 fixtures( 'db' );
 
@@ -47,7 +58,9 @@ $ldap->add(
 # This is our 'happy path'.
 my $user = Socialtext::User->new( email_address => 'no.name@example.com' );
 isa_ok $user, 'Socialtext::User';
+isnt $user->last_name, '', '... and has a last_name';
 
 # This tests a null last_name field.
 my $other_user = Socialtext::User->new( email_address => 'john.doe@example.com' );
-isa_ok $user, 'Socialtext::User';
+isa_ok $other_user, 'Socialtext::User';
+is $other_user->last_name, '', '... and has a blank last_name';
