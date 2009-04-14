@@ -4,7 +4,7 @@ use strict;
 use warnings FATAL => 'all';
 use mocked 'Net::LDAP';
 use mocked 'Socialtext::Log', qw(:tests);
-use Test::Socialtext tests => 133;
+use Test::Socialtext tests => 132;
 use Socialtext::SQL qw(sql_execute sql_singlevalue);
 
 fixtures( 'ldap_anonymous' );
@@ -228,15 +228,6 @@ expired_user_can_change_identity: {
 
         user_fields_ok(2 => $fresh_user);
         db_cache_ok(2);
-    }
-}
-
-###############################################################################
-# TODO: authentication bypasses the cache and goes directly to LDAP
-TODO: {
-    local $TODO = "haven't built this test yet";
-    authentication_does_not_use_cache: {
-        ok 0;
     }
 }
 
