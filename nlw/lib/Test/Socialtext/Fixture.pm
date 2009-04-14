@@ -23,6 +23,7 @@ use Socialtext::Pages;
 use Socialtext::User;
 use Socialtext::AppConfig;
 use Test::Socialtext::User;
+use Socialtext::System qw(shell_run);
 
 sub new {
     my $class = shift;
@@ -68,9 +69,11 @@ sub _built_in_clean {
     my $env      = $self->env;
     my @to_clean = (
         $env->base_dir,
-        File::Spec->catdir( $env->root_dir, 'ceq' ),
         $self->buildstamp_dir(),
     );
+    local $Socialtext::System::SILENT_RUN
+        = $self->env->verbose ? 0 : 1;
+    shell_run '-ceq-rm .';
     rmtree( \@to_clean );
 }
 
