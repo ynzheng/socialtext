@@ -1,5 +1,7 @@
 #!perl
 # @COPYRIGHT@
+use strict;
+use warnings;
 use Test::Socialtext tests => 24;
 
 fixtures('db');
