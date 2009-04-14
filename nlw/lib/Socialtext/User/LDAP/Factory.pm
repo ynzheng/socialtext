@@ -418,7 +418,10 @@ Socialtext::User::LDAP::Factory - A Socialtext LDAP User Factory
 =head1 DESCRIPTION
 
 C<Socialtext::User::LDAP::Factory> provides a User factory for user records
-that happen to exist in an LDAP data store.  Copies of retrieved users are stored in the "users" table, creating a "long-term cache" of LDAP user information (with the exception of passwords and authentication).  See L<GetUser($key, $val)> for details.
+that happen to exist in an LDAP data store.  Copies of retrieved users are
+stored in the "users" table, creating a "long-term cache" of LDAP user
+information (with the exception of passwords and authentication).  See
+L<GetUser($key, $val)> for details.
 
 =head1 METHODS
 
@@ -511,9 +514,11 @@ user is not found in the cache, or the cached copy has expired, the user is
 retrieved from the LDAP server.  If the retrieval is successful, the details
 of that user are stored in the long-term cache.
 
-If the cached copy has expired, and the LDAP server is unreachable, the cached copy is used.
+If the cached copy has expired, and the LDAP server is unreachable, the cached
+copy is used.
 
-If a user has been used on this system, but is no longer present in the LDAP directory, a C<Socialtext::User::Deleted> Homunculus is returned.
+If a user has been used on this system, but is no longer present in the LDAP
+directory, a C<Socialtext::User::Deleted> Homunculus is returned.
 
 User lookups can be performed by I<one> of:
 
