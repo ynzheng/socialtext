@@ -343,7 +343,7 @@ text_like | qr/0-sort-2-workspace1-%%start_time%%.+0-sort-3-workspace1-%%start_t
 
 | *Comment* | TC: BCP check all the Profile Fields info |  |
 | click_and_wait | link=Profile Fields |  |
-| text_like | qr/Field Title.+Field Name.+Field Type.+Hidden.+Source.+Actions/ |  |
+| text_like | qr/Field Title.*Field Name.*Field Type.*Hidden.*Source.*Actions/ |  |
 | text_like | qr/AIM™.+(Edit).+aol_sn/ |  |
 | text_like | qr/Assistant.+(Edit).+assistant/ |  |
 | text_like | qr/Blog.+(Edit).+blog/ |  |

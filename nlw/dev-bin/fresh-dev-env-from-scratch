@@ -58,6 +58,7 @@ rm -rf $HOME/.nlw/
 dev-bin/make-test-fixture --home_dir $HOME --fixture clean
 dev-bin/make-test-fixture --home_dir $HOME --preserve --fixture base_config
 dev-bin/make-test-fixture --home_dir $HOME --preserve --fixture ALL
+bin/st-admin enable-plugin --all-accounts --plugin dashboard
 
 # Setup robots.txt file to prevent dev-env heat death
 perl -le 'print "User-agent: *\nDisallow: /"' > ~/.nlw/root/docroot/robots.txt

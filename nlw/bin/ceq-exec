@@ -24,3 +24,18 @@ else {
     warn "failed\n";
     exit 1;
 }
+
+
+=head1 NAME
+
+ceq-exec - Queue a command to be run by the ceqlotron
+
+=head1 SYNOPSIS
+
+B<ceq-exec command arg1 arg2>
+
+=head1 SEE ALSO
+
+L<ceq-stat(1)>, L<ceq-rm(1)>, L<ceqlotron(1)>, L<ceq-read(1)>
+
+=cut

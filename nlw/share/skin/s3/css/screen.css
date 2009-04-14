@@ -2719,6 +2719,24 @@ div#bootstrap-loader {
 .wikiwyg_button:active {
     border: 1px inset;
 }
+.wikiwyg_button.disabled {
+    cursor: default;
+}
+.wikiwyg_button.disabled:hover {
+    border: 1px solid #F3F3F3;
+}
+.wikiwyg_button.disabled:active {
+    border: 1px solid #F3F3F3;
+}
+.disabled .wikiwyg_button {
+    cursor: default;
+}
+.disabled .wikiwyg_button:hover {
+    border: 1px solid #F3F3F3;
+}
+.disabled .wikiwyg_button:active {
+    border: 1px solid #F3F3F3;
+}
 
 #st-page-editing-uploadbutton {
     font-size: 9pt;

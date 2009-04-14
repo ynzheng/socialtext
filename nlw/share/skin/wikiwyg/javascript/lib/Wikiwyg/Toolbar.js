@@ -35,6 +35,7 @@ proto.initializeObject = function() {
 
     var self = this;
     $("img.wikiwyg_button", this.div).bind("click", function(e) {
+        if ( $(this).hasClass('disabled') ) return;
         var action = $(this).attr("id").replace(/^wikiwyg_button_/, '');
         self.wikiwyg.current_mode.process_command(action);
     });
@@ -63,7 +64,7 @@ proto.setup_widgets_menu = function(title) {
     if (jQuery.browser.msie) {
         jQuery("#st-editing-insert-menu li")
             .hover(
-                function () { jQuery(this).addClass('sfhover') }, 
+                function () { if (!jQuery(this).hasClass('disabled')) jQuery(this).addClass('sfhover') },
                 function () { jQuery(this).removeClass('sfhover') }
             );
     }

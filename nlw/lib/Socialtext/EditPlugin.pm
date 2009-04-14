@@ -296,6 +296,7 @@ sub _add_edit_event {
 
     my $page = $self->hub->pages->new_from_name($page_name);
     return '' unless $self->hub->checker->check_permission('edit');
+    return unless $page->active;
 
     eval {
         Socialtext::Events->Record({

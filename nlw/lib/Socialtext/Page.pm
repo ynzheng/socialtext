@@ -1125,7 +1125,8 @@ sub size {
 sub _index_path {
     my $self = shift;
     my $filename = readlink $self->_get_index_file;
-    -f $filename or return;
+    return unless defined $filename;
+    return unless -f $filename;
     return $filename;
 }
 

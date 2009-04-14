@@ -405,6 +405,8 @@ sub generate_app_config {
     if ( $config{is_dev} ) {
         $appconfig->set( ceqlotron_max_concurrency => 1 );
         $appconfig->set( ceqlotron_synchronous     => 0 );
+        # Help find memory leaks in dev-envs
+        $appconfig->set( ceqlotron_worker_loops    => 1000 );
     }
 
     File::Path::mkpath(

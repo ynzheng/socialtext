@@ -9,7 +9,6 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use Socialtext::Jobs;
 use Socialtext::DaemonUtil;
-use POSIX qw(strftime);
 
 # don't run as root
 Socialtext::DaemonUtil->Check_and_drop_privs();
@@ -41,31 +40,7 @@ else {
 
 my %ws_name;
 for my $j (@all_jobs) {
-    my $args = $j->arg;
-    return unless ref($args) eq 'HASH';
-    my $string = strftime "%Y-%m-%d.%H:%M:%S", localtime($j->insert_time);
-    $string .= " id=" . $j->jobid;
-    (my $shortname = $j->funcname) =~ s/^Socialtext::Job:://;
-    $string .= ";type=$shortname";
-
-    if (my $ws_id = $args->{workspace_id}) {
-        eval {
-            $ws_name{$ws_id} ||= Socialtext::Workspace->new( workspace_id => $ws_id )->name;
-            $string .= ";ws=$ws_name{$ws_id}";
-        };
-        if ($@) {
-            $string .= ";ws=$ws_id";
-        }
-    }
-    $string .= ";page=$args->{page_id}" if $args->{page_id};
-
-    if ($shortname eq 'Cmd' && $args->{cmd}) {
-        $string .= ";cmd=$args->{cmd}";
-        $string .= ";args=".join(',',@{$args->{args} || []});
-    }
-
-    $string .= " (*)" if $j->grabbed_until;
-
+    my $string = Socialtext::Jobs->job_to_string($j, {ws_names => \%ws_name});
     print "$string\n";
 }
 exit;
