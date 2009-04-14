@@ -198,10 +198,7 @@ expired_ldap_user_is_Deleted_if_missing: {
         my $cached_user = Socialtext::User->new($key => $val);
         ok $cached_user,
             "found user by $key, even when expired and not in LDAP any longer";
-
-        my $cached_homey = $cached_user->homunculus;
-        isa_ok $cached_homey, 'Socialtext::User::Deleted',
-            '... cached homunculus is Deleted';
+        ok $cached_user->is_deleted(), '... and User is deleted';
     }
 }
 
