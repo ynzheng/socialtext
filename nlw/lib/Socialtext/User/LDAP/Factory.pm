@@ -287,9 +287,9 @@ sub _vivify {
         $user_attrs{user_id} = $user_id;
         # ... grab proto-user from the DB; the last known state for this User
         my @user_drivers = Socialtext::User->_drivers();
-        my $proto_user = $self->GetHomunculus('user_id', $user_id, \@user_drivers, 1);
-        # ... validate the data against the proto-user
-        $self->ValidateAndCleanData($proto_user, \%user_attrs);
+        my $cached_homey = $self->GetHomunculus('user_id', $user_id, \@user_drivers, 1);
+        # ... validate the data against the previously cached homunculus
+        $self->ValidateAndCleanData($cached_homey, \%user_attrs);
 
         # update cached data for User
         $user_attrs{driver_username} = delete $user_attrs{username};
