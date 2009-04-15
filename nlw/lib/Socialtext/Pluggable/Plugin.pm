@@ -612,29 +612,37 @@ sub request {
 
 # Workspace Plugin Prefs
 
-sub set_workspace_pref {
-    my ($self, $key, $val) = @_;
+sub set_workspace_prefs {
+    my ($self, %prefs) = @_;
     my $workspace_id = $self->current_workspace_id || die "No workspace";
     my $plugin = $self->name;
 
-    die "Can't store references" if ref $val;
+    my $qs = join ', ', ('?') x keys %prefs;
 
     sql_begin_work;
 
     eval {
-        sql_execute('
+        sql_execute("
             DELETE
               FROM workspace_plugin_pref
              WHERE workspace_id = ?
                AND plugin = ?
-               AND key = ?
-        ', $workspace_id, $plugin, $key);
+               AND key IN ($qs)
+        ", $workspace_id, $plugin, keys %prefs);
 
-        sql_execute('
+        my @columns;
+        for my $key (keys %prefs) {
+            push @{$columns[0]}, $workspace_id;
+            push @{$columns[1]}, $plugin;
+            push @{$columns[2]}, $key;
+            push @{$columns[3]}, $prefs{$key};
+        }
+
+        sql_execute_array('
             INSERT INTO workspace_plugin_pref (
                 workspace_id, plugin, key, value
             ) VALUES (?, ?, ?, ?)
-        ', $workspace_id, $plugin, $key, $val);
+        ', {}, @columns);
     };
     if ($@) {
         sql_rollback;
@@ -643,16 +651,20 @@ sub set_workspace_pref {
     sql_commit;
 }
 
-sub get_workspace_pref {
-    my ($self, $key) = @_;
+sub get_workspace_prefs {
+    my $self = shift;
     my $workspace_id = $self->current_workspace_id || die "No workspace";
-    return sql_singlevalue('
-        SELECT value
+    my $sth = sql_execute('
+        SELECT key, value
           FROM workspace_plugin_pref
          WHERE workspace_id = ?
            AND plugin = ?
-           AND key = ?
-    ', $workspace_id, $self->name, $key);
+    ', $workspace_id, $self->name);
+    my %res;
+    while (my $row = $sth->fetchrow_hashref) {
+        $res{$row->{key}} = $row->{value};
+    }
+    return \%res;
 }
 
 1;
