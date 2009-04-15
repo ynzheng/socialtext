@@ -290,8 +290,33 @@ sub _vivify {
         my $cached_homey = $self->GetHomunculus('user_id', $user_id, \@user_drivers, 1);
 
         # Validate data from LDAP as changes to cached User record
-        $user_attrs{user_id} = $user_id;
-        $self->ValidateAndCleanData($cached_homey, \%user_attrs);
+        #
+        # If this fails, use the "last known good" cached data for the User;
+        # we know *that* data was good at some point.
+        eval {
+            $user_attrs{user_id} = $user_id;
+            $self->ValidateAndCleanData($cached_homey, \%user_attrs);
+        };
+        if (my $e = Exception::Class->caught("Socialtext::Exception::DataValidation")) {
+            # record error(s)
+            st_log->warning("Unable to refresh LDAP user '$cached_homey->{username}':");
+            foreach my $err ($e->messages) {
+                st_log->warning(" * $err");
+            }
+            # mark User as cached, so we don't refetch constantly
+            $cached_homey->{cached_at} = $self->Now();
+            $self->UpdateUserRecord( {
+                user_id   => $cached_homey->{user_id},
+                cached_at => $cached_homey->{cached_at},
+            } );
+            # return "last known good" cached data for the User
+            %{$proto_user} = %{$cached_homey};
+            return;
+        }
+        elsif ($@) {
+            # some other kind of error; re-throw it.
+            die $@;
+        }
 
         # Update cached User record in DB
         $user_attrs{driver_username} = delete $user_attrs{username};    # map "object -> DB"

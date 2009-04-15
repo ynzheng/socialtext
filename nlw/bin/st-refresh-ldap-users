@@ -67,12 +67,7 @@ while (my $row = $sth->fetchrow_arrayref()) {
     my $homunculus = eval {
         $factory->GetUser( driver_unique_id => $driver_unique_id )
     };
-    if (my $e = Exception::Class->caught('Socialtext::Exception::DataValidation')) {
-        my $msg = "Unable to refresh LDAP user '$driver_username':\n";
-        map { $msg .= " * $_\n" } $e->messages;
-        st_log->error( $msg );
-    }
-    elsif ($@) {
+    if ($@) {
         st_log->error(@_);
     }
 }

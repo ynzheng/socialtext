@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 use Test::Socialtext::Bootstrap::OpenLDAP;
-use Test::Socialtext tests => 65;
+use Test::Socialtext tests => 64;
 use Test::Socialtext::User;
 use File::Slurp qw(write_file);
 use Benchmark qw(timeit timestr);
@@ -378,12 +378,6 @@ test_ldap_missing_email_address: {
     like $results, qr/found 1 LDAP users/, 'one LDAP user present';
     like $results, qr/Unable to refresh LDAP user '$username'/, '... unable to refresh the LDAP user';
     like $results, qr/Email address is a required field/, '... LDAP user is missing e-mail address';
-
-    # make sure that the User was *NOT* refreshed by st-refresh-ldap-users
-    my $cached_at = sql_singlevalue( qq{
-        SELECT cached_at FROM users WHERE user_id=?
-        }, $ldap_homey->user_id );
-    is $cached_at, '-infinity', 'user record *not* refreshed, but left as-is';
 
     # cleanup; don't want to pollute other tests
     Test::Socialtext::User->delete_recklessly($ldap_user);
