@@ -20,6 +20,7 @@ use Socialtext::Authz::SimpleChecker;
 use Socialtext::Pluggable::Adapter;
 use Socialtext::String ();
 use Socialtext::SQL qw(:txn :exec);
+use Socialtext::Log qw/st_log/;
 my $prod_ver = Socialtext->product_version;
 
 # Class Methods
@@ -649,6 +650,10 @@ sub set_workspace_prefs {
         die $@;
     }
     sql_commit;
+
+    my $username  = $self->hub->current_user->username;
+    my $wksp_name = $self->hub->current_workspace->name;
+    st_log()->info("$username changed $plugin preferences for $wksp_name");
 }
 
 sub get_workspace_prefs {
@@ -665,6 +670,22 @@ sub get_workspace_prefs {
         $res{$row->{key}} = $row->{value};
     }
     return \%res;
+}
+
+sub clear_workspace_prefs {
+    my $self = shift;
+    my $workspace_id = $self->current_workspace_id || die "No workspace";
+    my $plugin = $self->name;
+
+    sql_execute('
+        DELETE FROM workspace_plugin_pref
+         WHERE workspace_id = ?
+           AND plugin = ?
+    ', $workspace_id, $plugin);
+
+    my $username  = $self->hub->current_user->username;
+    my $wksp_name = $self->hub->current_workspace->name;
+    st_log()->info("$username cleared $plugin preferences for $wksp_name");
 }
 
 1;

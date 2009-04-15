@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 8;
+use Test::More tests => 10;
 use Test::Socialtext;
 use Test::Exception;
 fixtures(qw(plugin));
@@ -44,6 +44,13 @@ $plugin->hub($hub);
     is_deeply $plugin->get_workspace_prefs,
               { number => 44, string => 'hi', other => 'ho' },
               'get_workspace_prefs';
+
+    lives_ok {
+        $plugin->clear_workspace_prefs();
+    } "clear_workspace_prefs()";
+
+    is_deeply $plugin->get_workspace_prefs, { },
+              'clear_workspace_prefs';
 }
 
 # settings are workspace scoped
