@@ -260,3 +260,7 @@ lib/Socialtext/Rest/Gadgets.pm
 lib/Socialtext/Gadgets/Gadget/XML.pm
 t/account.yaml
 lib/Socialtext/Gadgets/GadgetInstance.pm
+lib/Socialtext/Pluggable/Plugin/Socialpoint.pm
+lib/Socialtext/Socialpoint/Rest.pm
+t/wikitests/socialpoint/ws_plugin_rest.wiki
+etc/socialtext/uri_map.d/socialpoint.yaml

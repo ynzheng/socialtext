@@ -13,6 +13,7 @@ use Socialtext::File;
 use Time::HiRes qw/gettimeofday tv_interval time/;
 use Socialtext::System qw/shell_run/;
 use Socialtext::HTTP::Ports;
+use Socialtext::Role;
 
 =head1 NAME
 
@@ -258,6 +259,47 @@ sub add_member {
 
     $ws->add_user( user => $user );
     diag "Added user $email to $workspace";
+}
+
+sub add_workspace_admin {
+    my $self = shift;
+    my $email = shift;
+    my $workspace = shift;
+
+    my $ws = Socialtext::Workspace->new(name => $workspace);
+    die "No such workspace $workspace" unless $ws;
+    my $user = Socialtext::User->Resolve($email);
+    die "No such user $email" unless $user;
+
+    $ws->add_user( 
+        user => $user,
+        role => Socialtext::Role->WorkspaceAdmin(),
+    );
+    diag "Added user $email to $workspace as admin";
+}
+
+sub set_business_admin {
+    my $self = shift;
+    my $email = shift;
+    my $value = shift;
+
+    my $user = Socialtext::User->Resolve($email);
+    die "No such user $email" unless $user;
+
+    $user->set_business_admin($value);
+    diag "Set user $email is_business_admin to '$value'";
+}
+
+sub set_technical_admin {
+    my $self = shift;
+    my $email = shift;
+    my $value = shift;
+
+    my $user = Socialtext::User->Resolve($email);
+    die "No such user $email" unless $user;
+
+    $user->set_technical_admin($value);
+    diag "Set user $email is_technical_admin to '$value'";
 }
 
 sub set_json_from_perl {
