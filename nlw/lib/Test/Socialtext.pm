@@ -217,8 +217,7 @@ sub setup_test_appconfig_dir {
 sub _store_initial_state {
     _store_initial_appconfig();
     if ($DB_AVAILABLE) {
-        _store_initial_userids();
-        _store_initial_workspaceids();
+        _store_initial_objects();
     }
 }
 
@@ -227,8 +226,7 @@ END { _teardown_cleanup() }
 sub _teardown_cleanup {
     _reset_initial_appconfig();
     if ($DB_AVAILABLE) {
-        _remove_all_but_initial_userids();
-        _remove_all_but_initial_workspaceids();
+        _remove_all_but_initial_objects();
     }
 }
 
@@ -257,58 +255,68 @@ sub _teardown_cleanup {
 }
 
 {
-    my %InitialUserIds;
-    sub _store_initial_userids {
-        my $iterator = Socialtext::User->All();
-        while (my $user = $iterator->next()) {
-            my $userid = $user->user_id();
-            $InitialUserIds{$userid} ++;
-        }
-    }
-    sub _remove_all_but_initial_userids {
-        # remove all but the initial set of users that were created and
-        # available at startup.
-        my $iterator = Socialtext::User->All();
-        while (my $user = $iterator->next()) {
-            my $userid = $user->user_id();
-            unless ($InitialUserIds{$userid}) {
-                my $driver   = $user->driver_name();
-                my $user_id  = $user->user_id();
-                my $username = $user->username();
-                if (Test::Socialtext::Environment->instance()->verbose) {
-                    Test::More::diag("CLEANUP: removing user "
-                                    ."'$driver:$user_id ($username)'; "
-                                    ."your test left it behind");
-                }
-                Test::Socialtext::User->delete_recklessly($user);
+    my %Initial;
+    my %Objects = (
+        user => {
+            get_iterator => sub { Socialtext::User->All() },
+            get_id       => sub { $_[0]->user_id },
+            identifier   => sub {
+                my $u = shift;
+                return $u->driver_name . ':' . $u->user_id
+                     . ' (' . $u->username . ')';
+            },
+            delete_item => sub {
+                Test::Socialtext::User->delete_recklessly($_[0]);
+            }
+        },
+        workspace => {
+            get_iterator => sub { Socialtext::Workspace->All() },
+            get_id       => sub { $_[0]->workspace_id },
+            identifier   => sub {
+                my $w = shift;
+                return $w->workspace_id . ' (' . $w->name . ')';
+            },
+            delete_item => sub { $_[0]->delete },
+        },
+        account => {
+            get_iterator => sub { Socialtext::Account->All() },
+            get_id => sub { $_[0]->account_id },
+            identifier => sub {
+                my $a = shift;
+                return $a->account_id . ' (' . $a->name . ')';
+            },
+            delete_item => sub { $_[0]->delete },
+        },
+    );
+
+    sub _store_initial_objects {
+        while (my ($key,$obj) = each %Objects) {
+            my $iterator = $obj->{get_iterator}->();
+            while (my $item = $iterator->next()) {
+                my $id = $obj->{get_id}->($item);
+                $Initial{$key}{$id} ++;
             }
         }
     }
-}
 
-{
-    my %InitialWorkspaceIds;
-    sub _store_initial_workspaceids {
-        my $iterator = Socialtext::Workspace->All();
-        while (my $ws = $iterator->next()) {
-            my $ws_id = $ws->workspace_id();
-            $InitialWorkspaceIds{$ws_id} ++;
-        }
-    }
-    sub _remove_all_but_initial_workspaceids {
-        # remove all but the initial set of workspaces that were created and
-        # available at startup.
-        my $iterator = Socialtext::Workspace->All();
-        while (my $ws = $iterator->next()) {
-            my $ws_id = $ws->workspace_id();
-            unless ($InitialWorkspaceIds{$ws_id}) {
-                my $ws_name = $ws->name();
+    sub _remove_all_but_initial_objects {
+        while (my ($key,$obj) = each %Objects) {
+            my $iterator = $obj->{get_iterator}->();
+            while (my $item = $iterator->next()) {
+                # remove all but the initial set of objects that were
+                # created and available at startup.
+                my $id = $obj->{get_id}->($item);
+                next if $Initial{$key}{$id};
+
+                # Delete it
                 if (Test::Socialtext::Environment->instance()->verbose) {
-                    Test::More::diag("CLEANUP: removing workspace "
-                                    ."'$ws_id ($ws_name)'; your test "
-                                    ."left it behind");
+                    my $identifier = $obj->{identifier}->($item);
+                    Test::More::diag(
+                        "CLEANUP: removing $key '$identifier'; " .
+                        "your test left it behind"
+                    );
                 }
-                $ws->delete();
+                $obj->{delete_item}->($item);
             }
         }
     }
