@@ -226,14 +226,26 @@ sub plugin_class {
     return $match;
 }
 
+sub plugin_object {
+    my ($self, $class) = @_;
+    $class = $self->plugin_class($class) unless $class =~ m{::};
+    my $plugin = $self->{_plugins}{$class} ||= $class->new;
+    $plugin->rest( $self->{_rest_handler} ) if $self->{_rest_handler};
+
+    unless ($plugin->hub) {
+        $self->make_hub($self->rest->user) unless $self->hub;
+        $plugin->hub($self->hub);
+    }
+
+    return $plugin;
+}
+
 sub registered {
     my ($self, $name) = @_;
     if ( my $hooks = $hooks{$name} ) {
         return 0 unless ref $hooks eq 'ARRAY';
         for my $hook (@$hooks) {
-            my $plugin = $hook->{obj} ||= $hook->{class}->new();
-            my $hub = $self->hub || $self->{made_hub};
-            $plugin->hub($hub);
+            my $plugin = $self->plugin_object($hook->{class});
             return 1 if $plugin->is_hook_enabled($name);
         }
     }
@@ -244,12 +256,8 @@ sub content_types {
     my $self = shift;
     my %ct;
     for my $plug_class ($self->plugins) {
+        my $plugin = $self->plugin_object($plug_class);
         if (my $types = $plug_class->content_types) {
-            my $plugin = $self->{_plugins}{$plug_class} || $plug_class->new;
-            unless ($self->hub) {
-                $self->make_hub($self->rest->user);
-            }
-            $plugin->hub($self->hub);
             if ($plugin->is_hook_enabled) {
                 $ct{$_} = $types->{$_} for keys %$types;
             }
@@ -282,11 +290,7 @@ sub hook {
         return unless ref $hooks eq 'ARRAY';
         for my $hook (@$hooks) {
             my $method = $hook->{method};
-            my $plug_class = $hook->{class};
-            my $plugin = $self->{_plugins}{$plug_class} || $plug_class->new;
-            my $hub = $self->hub || $self->{made_hub};
-            $plugin->hub($hub);
-            $plugin->rest( $self->{_rest_handler} );
+            my $plugin = $self->plugin_object($hook->{class});
 
             my $enabled = $plugin->is_hook_enabled($name);
             next unless $enabled;
