@@ -11,6 +11,7 @@ use Socialtext::Base;
 use Test::Builder;
 use Test::Socialtext::Environment;
 use Test::Socialtext::User;
+use Test::Socialtext::Account;
 use YAML;
 use File::Temp qw/tempdir/;
 use File::Spec;
@@ -285,7 +286,9 @@ sub _teardown_cleanup {
                 my $a = shift;
                 return $a->account_id . ' (' . $a->name . ')';
             },
-            delete_item => sub { $_[0]->delete },
+            delete_item => sub {
+                Test::Socialtext::Account->delete_recklessly($_[0]);
+            },
         },
     );
 
