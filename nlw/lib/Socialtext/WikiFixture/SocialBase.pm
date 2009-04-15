@@ -14,6 +14,7 @@ use Time::HiRes qw/gettimeofday tv_interval time/;
 use Socialtext::System qw/shell_run/;
 use Socialtext::HTTP::Ports;
 use Socialtext::Role;
+use File::LogReader;
 
 =head1 NAME
 
@@ -549,6 +550,45 @@ sub st_clear_events {
     sql_execute('DELETE FROM event');
 }
 
+=head2 st-clear-log
+
+Clear any log lines.
+
+=cut
+
+sub st_clear_log {
+    my $self = shift;
+    my $lr = $self->_logreader;
+    while ($lr->read_line) {}
+}
+
+sub _logreader {
+    my $self = shift;
+    return $self->{_logreader} ||= File::LogReader->new(
+        filename  => "$ENV{HOME}/.nlw/log/nlw.log",
+        state_dir => 't/tmp/wikitest-logreader.state',
+    );
+}
+
+
+=head2 log-like
+
+Checks that the nlw.log matches your expected output.
+
+=cut
+
+sub log_like {
+    my $self = shift;
+    my $expected = shift;
+
+    my $log = '';
+    my $lr = $self->_logreader;
+    while(my $line = $lr->read_line) {
+        $log .= "$line\n";
+    }
+
+    like $log, qr/$expected/, 'log-like';
+}
 
 =head2 st-clear-signals
 
