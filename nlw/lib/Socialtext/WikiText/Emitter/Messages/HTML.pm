@@ -33,16 +33,13 @@ sub msg_format_user {
         return loc("Unknown Person");
     }
 
-    unless ($viewer) {
+    unless ($viewer && $user->profile_is_visible_to($viewer)) {
         return $user->guess_real_name;
     }
-
-    unless ($user->profile_is_visible_to($viewer)) {
-        return loc("Unknown Person");
+    else {
+        return '<a href="/?profile/' . $user->user_id 
+            . '">' . $user->guess_real_name . '</a>';
     }
-
-    return '<a href="/?profile/' . $user->user_id
-        . '">' . $user->guess_real_name . '</a>';
 }
 
 sub text_node {

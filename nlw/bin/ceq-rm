@@ -27,7 +27,6 @@ my $Pattern = $ARGV[0]
     || sub { pod2usage( { -verbose => 1, -input => $0 } ); exit };
 
 Socialtext::Jobs->Unlimit_list_jobs();
-Socialtext::Jobs->load_all_jobs();
 
 if ($Pattern =~ /^(?:id=)?(\d+)$/) {
     # prevent an error-prone common usage

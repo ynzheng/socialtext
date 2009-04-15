@@ -55,7 +55,7 @@ disappearing_ldap_user_store: {
     is scalar @ldap_users, 1, '... one of which is an LDAP user';
     is $ldap_users[0]->user_id, $user->user_id, '... ... our test user';
 
-    my @deleted_users = grep { ref($_->homunculus) eq 'Socialtext::User::Deleted' } @entries;
+    my @deleted_users = grep { $_->is_deleted } @entries;
     ok !@deleted_users, '... none of which are Deleted users';
 
     # shut down OpenLDAP, which automatically removes *ALL* of the config that
@@ -71,20 +71,20 @@ disappearing_ldap_user_store: {
     @ldap_users = grep { ref($_->homunculus) eq 'Socialtext::User::LDAP' } @entries;
     ok !@ldap_users, '... none of which are LDAP users';
 
-    @deleted_users = grep { ref($_->homunculus) eq 'Socialtext::User::Deleted' } @entries;
+    @deleted_users = grep { $_->is_deleted() } @entries;
     is scalar @deleted_users, 1, '... one of which is a Deleted user';
     is $deleted_users[0]->user_id, $user->user_id, '... ... our test user';
 
     # lookup the user by other means
     my $maybe_deleted = Socialtext::User->new(username => $user->username);
     ok $maybe_deleted, "got the user by username";
-    isa_ok $maybe_deleted->homunculus, 'Socialtext::User::Deleted', "... but it's deleted";
+    ok $maybe_deleted->is_deleted, "... and it's deleted";
 
     $maybe_deleted = Socialtext::User->new(email_address => $user->email_address);
     ok $maybe_deleted, "got the user by email_address";
-    isa_ok $maybe_deleted->homunculus, 'Socialtext::User::Deleted', "... but it's deleted";
+    ok $maybe_deleted->is_deleted, "... and it's deleted";
 
     $maybe_deleted = Socialtext::User->new(driver_unique_id => $dn);
     ok $maybe_deleted, "got the user by driver_unique_id";
-    isa_ok $maybe_deleted->homunculus, 'Socialtext::User::Deleted', "... but it's deleted";
+    ok $maybe_deleted->is_deleted, "... and it's deleted";
 }

@@ -408,18 +408,15 @@ bad_driver_key_means_deleted: {
 
     my $found = Socialtext::User->new(user_id => $user->user_id);
     ok $found, "was still able to find the user...";
-    isa_ok $found->homunculus, 'Socialtext::User::Deleted',
-        "... but it's 'Deleted'";
+    ok $found->is_deleted(), "... and its a deleted user";
 
     my $found2 = Socialtext::User->new(username => $user->username);
     ok $found2, "was still able to find the user...";
-    isa_ok $found2->homunculus, 'Socialtext::User::Deleted',
-        "... but it's 'Deleted'";
+    ok $found2->is_deleted(), "... and its a deleted user";
 
     my $found3 = Socialtext::User->new(email_address => $user->email_address);
     ok $found3, "was still able to find the user...";
-    isa_ok $found3->homunculus, 'Socialtext::User::Deleted',
-        "... but it's 'Deleted'";
+    ok $found3->is_deleted(), "... and its a deleted user";
 
     sql_execute(q{
         UPDATE users

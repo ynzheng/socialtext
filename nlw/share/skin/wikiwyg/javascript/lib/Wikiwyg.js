@@ -690,9 +690,9 @@ proto.saveChanges = function() {
     );
 }
 
-proto.confirmCancellation = function() {
+proto.confirmCancellation = function(msg) {
     return confirm(
-        loc("Are you sure you want to navigate away from this page?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay on the current page.")
+        loc("[_1]\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay on the current page.", msg)
     );
 
 }
@@ -700,7 +700,8 @@ proto.confirmCancellation = function() {
 proto.confirmLinkFromEdit = function() {
     ww.signal_edit_cancel();
     if (wikiwyg.contentIsModified()) {
-        var response =  wikiwyg.confirmCancellation();
+        var msg = loc("Are you sure you want to navigate away from this page?");
+        var response =  wikiwyg.confirmCancellation(msg);
 
         // wikiwyg.confirmed is for the situations when multiple confirmations
         // are considered. It store the value of this confirmation for
@@ -1232,7 +1233,7 @@ this.addGlobal().setup_wikiwyg = function() {
         try {
             if (ww.contentIsModified()) {
                 // If it's not confirmed somewhere else, do it right here.
-                if (ww.confirmed != true && !ww.confirmCancellation())
+                if (ww.confirmed != true && !ww.confirmCancellation(loc("Are you sure you want to Cancel?") ))
                     return false;
                 else
                     ww.confirmed = true;

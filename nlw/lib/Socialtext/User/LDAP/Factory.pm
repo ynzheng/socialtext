@@ -86,38 +86,39 @@ sub GetUser {
     # SANITY CHECK: get user term is acceptable
     return unless ($valid_get_user_terms{$key});
 
+    # If we have a fresly cached copy of the User, use that
     local $self->{_cache_lookup}; # temporary cache-lookup storage
     if ($CacheEnabled) {
         my $cached = $self->_check_cache($key => $val);
         return $cached if $cached;
     }
 
+    # Look the User up in LDAP
     local $self->{_user_not_found};
     my $proto_user = $self->lookup($key => $val);
 
+    # If we found the User in LDAP, cache the data in the DB and return that
+    # back to the caller as the homunculus.
     if ($proto_user) {
         $self->_vivify($proto_user);
         return $self->new_homunculus($proto_user);
     }
 
+    # Didn't find User in LDAP, but they *do* exist in the DB
     if ($self->{_cache_lookup}) {
         if ($self->{_user_not_found}) {
-            # The cache found the user, but the LDAP server cannot find them.
-            # This means the user existed in our system at some point but is
-            # no longer on the server.  Convert the cached homunculus to a
-            # Deleted user:
-            return Socialtext::User::Deleted->new(
-                $self->{_cache_lookup}
-            );
+            # User was previously cached, so they existed at some point but
+            # can't be found in LDAP any longer.  Must be a Deleted User.
+            return Socialtext::User::Deleted->new($self->{_cache_lookup});
         }
         else {
-            # Some other LDAP error caused us to not find the user (e.g. a
-            # connection problem).  Return what we found in the cache (which
-            # is expired) as it's better than nothing.
+            # Something else caused LDAP lookup to fail; return previously
+            # cached data (its better than nothing).
             return $self->{_cache_lookup};
         }
     }
 
+    # Didn't find User in LDAP, don't exist in DB; unknown User.
     return;
 }
 
@@ -202,23 +203,24 @@ sub lookup {
 sub _check_cache {
     my ($self, $key, $val) = @_;
 
-    # get cached user data, returning that if the cache is fresh
-    my $cached = $self->GetHomunculus(
+    # get cached User data, exiting early if we don't know about this User (or
+    # the User has *never* had their LDAP data cached)
+    my $cached_homey = $self->GetHomunculus(
         $key, $val, $self->driver_key
     );
-    return unless $cached;
-    return unless $cached->cached_at;
+    return unless $cached_homey;
+    return unless $cached_homey->cached_at;
 
     # We might need to use an expired cached copy if the LDAP query fails.
-    $self->{_cache_lookup} = $cached;
+    $self->{_cache_lookup} = $cached_homey;
 
+    # If the cached copy is stale, return empty handed
     my $ttl    = $self->cache_ttl;
     my $cutoff = $self->Now() - $ttl;
+    return unless ($cached_homey->cached_at > $cutoff);
 
-    return unless ($cached->cached_at > $cutoff);
-
-    #warn "Cached LDAP user is fresh";
-    return $cached;
+    # Cached copy still good
+    return $cached_homey;
 }
 
 sub cache_ttl {
@@ -255,15 +257,12 @@ sub ResolveId {
 sub _vivify {
     my ($self, $proto_user) = @_;
 
+    # set some defaults into the proto user
     $proto_user->{driver_key} ||= $self->driver_key;
-
-    # NOTE: *always* use the driver_unique_id to update LDAP user records
-
     $proto_user->{cached_at} = 'now';           # auto-set to 'now'
     $proto_user->{password}  = '*no-password*'; # placeholder password
 
-    my $user_id = $self->ResolveId($proto_user);
-
+    # separate out "core" fields from "profile" fields
     my ($user_keys, $extra_keys) = 
         part { $Socialtext::User::Base::all_fields{$_} ? 0 : 1 }
         keys %$proto_user;
@@ -280,33 +279,64 @@ sub _vivify {
     # don't encrypt the placeholder password; just store it as-is
     $user_attrs{no_crypt} = 1;
 
-    # depending on whether or not we've got a User Id, we're either updating
-    # an existing User record in the DB or creating a new one.
+    # depending on whether or not this User exists in the DB already, we're
+    # either updating an existing User or creating a new one.
+    my $user_id = $self->ResolveId($proto_user);
     if ($user_id) {
-        # validate/clean the data we got from LDAP
-        $user_attrs{user_id} = $user_id;
-        # ... grab proto-user from the DB; the last known state for this User
-        my @user_drivers = Socialtext::User->_drivers();
-        my $proto_user = $self->GetHomunculus('user_id', $user_id, \@user_drivers, 1);
-        # ... validate the data against the proto-user
-        $self->ValidateAndCleanData($proto_user, \%user_attrs);
+        ### Update existing User record
 
-        # update cached data for User
-        $user_attrs{driver_username} = delete $user_attrs{username};
+        # Pull existing User record out of DB
+        my @user_drivers = Socialtext::User->_drivers();
+        my $cached_homey = $self->GetHomunculus('user_id', $user_id, \@user_drivers, 1);
+
+        # Validate data from LDAP as changes to cached User record
+        #
+        # If this fails, use the "last known good" cached data for the User;
+        # we know *that* data was good at some point.
+        eval {
+            $user_attrs{user_id} = $user_id;
+            $self->ValidateAndCleanData($cached_homey, \%user_attrs);
+        };
+        if (my $e = Exception::Class->caught("Socialtext::Exception::DataValidation")) {
+            # record error(s)
+            st_log->warning("Unable to refresh LDAP user '$cached_homey->{username}':");
+            foreach my $err ($e->messages) {
+                st_log->warning(" * $err");
+            }
+            # mark User as cached, so we don't refetch constantly
+            $cached_homey->{cached_at} = $self->Now();
+            $self->UpdateUserRecord( {
+                user_id   => $cached_homey->{user_id},
+                cached_at => $cached_homey->{cached_at},
+            } );
+            # return "last known good" cached data for the User
+            %{$proto_user} = %{$cached_homey};
+            return;
+        }
+        elsif ($@) {
+            # some other kind of error; re-throw it.
+            die $@;
+        }
+
+        # Update cached User record in DB
+        $user_attrs{driver_username} = delete $user_attrs{username};    # map "object -> DB"
         $self->UpdateUserRecord(\%user_attrs);
     }
     else {
+        ### Create new User record
+
         # validate/clean the data we got from LDAP
         $self->ValidateAndCleanData(undef, \%user_attrs);
 
         # create User record, and update cached data
-        $user_attrs{driver_username} = delete $user_attrs{username};
+        $user_attrs{driver_username} = delete $user_attrs{username};    # map "object -> DB"
         $self->NewUserRecord(\%user_attrs);
     }
 
-    $user_attrs{username} = delete $user_attrs{driver_username};
+    $user_attrs{username} = delete $user_attrs{driver_username};        # map "DB -> object"
     $user_attrs{extra_attrs} = \%extra_attrs;
     %$proto_user = %user_attrs;
+    return;
 }
 
 sub Search {
@@ -337,7 +367,9 @@ sub Search {
         return;
     }
     if ($mesg->code()) {
-        st_log->error( "ST::User::LDAP; LDAP error while performing search; " . $mesg->error() );
+        my $err = "ST::User::LDAP; LDAP error while performing search; "
+                . $mesg->error();
+        st_log->error($err);
         return;
     }
 
@@ -360,10 +392,10 @@ sub Search {
 
 sub _find_user {
     my ($self, $key, $val) = @_;
-
     my $attr_map = $self->attr_map();
 
-    # map the ST::User key to an LDAP attribute
+    # map the ST::User key to an LDAP attribute, aborting if it isn't a mapped
+    # attribute
     my $search_attr = $attr_map->{$key};
     return unless $search_attr;
 
@@ -418,7 +450,10 @@ Socialtext::User::LDAP::Factory - A Socialtext LDAP User Factory
 =head1 DESCRIPTION
 
 C<Socialtext::User::LDAP::Factory> provides a User factory for user records
-that happen to exist in an LDAP data store.  Copies of retrieved users are stored in the "users" table, creating a "long-term cache" of LDAP user information (with the exception of passwords and authentication).  See L<GetUser($key, $val)> for details.
+that happen to exist in an LDAP data store.  Copies of retrieved users are
+stored in the "users" table, creating a "long-term cache" of LDAP user
+information (with the exception of passwords and authentication).  See
+L<GetUser($key, $val)> for details.
 
 =head1 METHODS
 
@@ -511,9 +546,11 @@ user is not found in the cache, or the cached copy has expired, the user is
 retrieved from the LDAP server.  If the retrieval is successful, the details
 of that user are stored in the long-term cache.
 
-If the cached copy has expired, and the LDAP server is unreachable, the cached copy is used.
+If the cached copy has expired, and the LDAP server is unreachable, the cached
+copy is used.
 
-If a user has been used on this system, but is no longer present in the LDAP directory, a C<Socialtext::User::Deleted> Homunculus is returned.
+If a user has been used on this system, but is no longer present in the LDAP
+directory, a C<Socialtext::User::Deleted> Homunculus is returned.
 
 User lookups can be performed by I<one> of:
 

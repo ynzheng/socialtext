@@ -76,8 +76,7 @@ deleted_ldap_user_shouldnt_prevent_workspace_import: {
     );
     my $deleted = Socialtext::User->new( username => 'John Doe' );
     isa_ok $deleted, 'Socialtext::User', 'found user to test with';
-    isa_ok $deleted->homunculus(), 'Socialtext::User::Deleted',
-        '... which now appears as Deleted';
+    ok $deleted->is_deleted(), '... which now appears as deleted';
 
     ###########################################################################
     # export/delete the workspace+user, and verify that the LDAP user was
