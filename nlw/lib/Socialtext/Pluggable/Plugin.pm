@@ -19,6 +19,7 @@ use Socialtext::Cache;
 use Socialtext::Authz::SimpleChecker;
 use Socialtext::Pluggable::Adapter;
 use Socialtext::String ();
+use Socialtext::SQL qw(:txn :exec);
 my $prod_ver = Socialtext->product_version;
 
 # Class Methods
@@ -153,10 +154,8 @@ sub current_page {
   return $self->hub->pages->current;
 }
 
-sub current_workspace {
-    my $self = shift;
-    return $self->hub->current_workspace;
-}
+sub current_workspace { $_[0]->hub->current_workspace }
+sub current_workspace_id { $_[0]->current_workspace->workspace_id }
 
 sub add_rest {
     my ($self,$path,$sub) = @_;
@@ -609,6 +608,51 @@ sub request {
     my $self = shift;
     my $rest = $self->rest || $self->hub->rest;
     return $rest->request;
+}
+
+# Workspace Plugin Prefs
+
+sub set_workspace_pref {
+    my ($self, $key, $val) = @_;
+    my $workspace_id = $self->current_workspace_id || die "No workspace";
+    my $plugin = $self->name;
+
+    die "Can't store references" if ref $val;
+
+    sql_begin_work;
+
+    eval {
+        sql_execute('
+            DELETE
+              FROM workspace_plugin_pref
+             WHERE workspace_id = ?
+               AND plugin = ?
+               AND key = ?
+        ', $workspace_id, $plugin, $key);
+
+        sql_execute('
+            INSERT INTO workspace_plugin_pref (
+                workspace_id, plugin, key, value
+            ) VALUES (?, ?, ?, ?)
+        ', $workspace_id, $plugin, $key, $val);
+    };
+    if ($@) {
+        sql_rollback;
+        die $@;
+    }
+    sql_commit;
+}
+
+sub get_workspace_pref {
+    my ($self, $key) = @_;
+    my $workspace_id = $self->current_workspace_id || die "No workspace";
+    return sql_singlevalue('
+        SELECT value
+          FROM workspace_plugin_pref
+         WHERE workspace_id = ?
+           AND plugin = ?
+           AND key = ?
+    ', $workspace_id, $self->name, $key);
 }
 
 1;
