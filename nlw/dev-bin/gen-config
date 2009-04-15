@@ -691,7 +691,7 @@ sub detect_server_settings {
         }
         : { # Typical prod/appliance 4G of ram configuration
             min_spare              => 10,
-            max_spare              => 18,
+            max_spare              => 15,
             start                  => 15,
             max_clients            => 22,
             max_requests_per_child => 1000,
