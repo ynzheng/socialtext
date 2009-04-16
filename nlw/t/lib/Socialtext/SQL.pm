@@ -15,7 +15,7 @@ our @EXPORT_OK = qw(
     sql_convert_to_boolean sql_convert_from_boolean
     sql_parse_timestamptz sql_format_timestamptz sql_timestamptz_now
 
-    sql_ok sql_mock_result ok_no_more_sql
+    sql_ok sql_mock_result sql_mock_row_count ok_no_more_sql
 );
 our %EXPORT_TAGS = (
     'exec' => [qw(sql_execute sql_execute_array sql_selectrow sql_singlevalue)],
@@ -24,7 +24,7 @@ our %EXPORT_TAGS = (
     'txn'  => [qw(sql_commit sql_begin_work
                   sql_rollback sql_in_transaction)],
 
-    'test' => [qw(sql_ok sql_mock_result ok_no_more_sql)],
+    'test' => [qw(sql_ok sql_mock_result sql_mock_row_count ok_no_more_sql)],
 );
 
 our @SQL;
@@ -33,6 +33,9 @@ our $Level = 0;
 
 sub sql_mock_result {
     push @RETURN_VALUES, {'return'=>[@_]};
+}
+sub sql_mock_row_count {
+    push @RETURN_VALUES, {rows => shift, 'return' => []};
 }
 
 sub sql_execute_array { sql_execute(@_) }
@@ -53,11 +56,11 @@ sub sql_execute {
 
 sub disconnect_dbh { }
 sub invalidate_dbh { }
-my $in_transaction = 0;
-sub sql_in_transaction { $in_transaction }
-sub sql_begin_work { $in_transaction = 1 }
-sub sql_commit { $in_transaction = 0 }
-sub sql_rollback { $in_transaction = 0 }
+my $Mock_in_transaction = 0;
+sub sql_in_transaction { $Mock_in_transaction }
+sub sql_begin_work { $Mock_in_transaction = 1 }
+sub sql_commit { $Mock_in_transaction = 0 }
+sub sql_rollback { $Mock_in_transaction = 0 }
 
 sub sql_selectrow { 
     my $sth = sql_execute(@_);
@@ -152,8 +155,19 @@ sub get_dbh {
 sub prepare {
     my $dbh = shift;
     my $sql = shift;
-    push @SQL, { sql => $sql };
-    return mock_sth->new;
+    push @Socialtext::SQL::SQL, { sql => $sql, args => [] };
+
+    my $sth_args = shift @RETURN_VALUES || {};
+    return mock_sth->new(%$sth_args);
+}
+
+sub selectrow_array {
+    my $dbh = shift;
+    my $sql = shift;
+    my $attr = shift;
+    my $sth = $dbh->prepare($sql);
+    $sth->execute(@_);
+    return $sth->fetchrow_array();
 }
 
 package mock_sth;
@@ -186,12 +200,25 @@ sub fetchrow_hashref {
 
 sub rows {
     my $self = shift;
+    return $self->{rows} if exists $self->{rows};
     return scalar(@{$self->{return}});
 }
 
 sub execute {
     my $self = shift;
-    push @{ $Socialtext::SQL::SQL[-1]->{args} }, \@_;
+    $Socialtext::SQL::SQL[-1]{args} ||= [];
+    push @{ $Socialtext::SQL::SQL[-1]{args} }, \@_;
+}
+
+sub bind_param {
+    my $self = shift;
+    my $p_num = shift;
+    my $bind_value = shift;
+    my $attr = shift;
+
+    $Socialtext::SQL::SQL[-1]{args} ||= [];
+    $Socialtext::SQL::SQL[-1]{args}[$p_num-1] = [$bind_value, $attr];
+    return 1;
 }
 
 1;
