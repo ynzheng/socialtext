@@ -344,15 +344,30 @@
 </div>
 
 <div id="st-table-settings" class="lightbox">
-    <form action="#">
-        <div> 
-            <input type="checkbox" name="sort"> Table is Sortable
-        </div>
-        <div> 
-            <input type="submit" value="Save">
-            <input type="reset" value="Cancel">
-        </div>
-    </form>
+    <input type="checkbox" name="sort" />
+    <label for="sort">Table is Sortable</label>
+
+    <br/>
+
+    <input type="checkbox" name="border" />
+    <label for="border">Show Cell Borders</label>
+
+    <div>
+        <ul class="widgetButton" style="float:left; padding:10px">
+            <li class="flexButton">
+                <a class="submit genericOrangeButton" href="#">
+                    [% loc('Save') %]
+                </a>
+            </li>
+        </ul>
+        <ul class="widgetButton" style="float:left; padding:10px">
+            <li class="flexButton">
+                <a class="close genericOrangeButton" href="#">
+                    [% loc('Cancel') %]
+                </a>
+            </li>
+        </ul>
+    </div>
 </div>
 
 <iframe style="height: 1px; position: absolute; top: -2px;" frameborder="0" id="pastebin" src="[% wiki.skin_uri() %]/html/wikiwyg.html"></iframe>

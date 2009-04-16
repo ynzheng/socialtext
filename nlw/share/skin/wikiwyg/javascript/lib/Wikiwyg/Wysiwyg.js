@@ -1286,6 +1286,24 @@ proto._do_table_manip = function(callback) {
     }, 100);
 }
 
+// This is the same as in Socialtext::Formatter::Unit
+proto.parseTableOptions = function (opt_string) {
+    if (!opt_string) opt_string = '';
+    var options = { border: 1 };
+    jQuery.each(opt_string.split(' '), function (i, key){
+        if (key.match(/^([^:=]+)[:=](.*)$/)) {
+            key = RegExp.$1;
+            val = RegExp.$2;
+            val = val == 'off' || val == 'false' ? false : true;
+        }
+        else {
+            val = true;
+        }
+        options[key] = val;
+    });
+    return options;
+}
+
 proto.do_table_settings = function() {
     var self = this;
 
@@ -1293,37 +1311,52 @@ proto.do_table_settings = function() {
         if ($cell.parents('table:eq(0)').find('tr').size() < 2) {
             return;
         }
+
+        var $table = $cell.parents("table:eq(0)");
+        var $lb = $('#st-table-settings');
+
+        var options = this.parseTableOptions($table.attr('options'));
+
+        jQuery.each(options, function(key,val) {
+            var $el = $lb.find("input[name="+key+"]")
+            if (val)
+                $el.attr("checked", "checked");
+            else
+                $el.removeAttr("checked");
+        });
+
+        jQuery("#st-table-settings .submit").one("click", function() {
+            var opt_array = [];
+            jQuery.each(options, function(key){
+                var $el = $lb.find("input[name="+key+"]")
+                opt_array.push(key + ($el.is(':checked') ? ':on' : ':off'));
+            });
+            options = self.parseTableOptions(opt_array.join(' '));
+            $table.attr('options', opt_array.join(' '));
+
+            if (options.border) {
+                $table.removeClass('borderless');
+            }
+            else {
+                $table.addClass('borderless');
+            }
+
+            if (options.sort) {
+                setTimeout(function() {
+                    Socialtext.make_table_sortable($table.get(0));
+                }, 100);
+            }
+            else {
+                Socialtext.make_table_unsortable( $table.get(0) );
+            }
+
+            jQuery.hideLightbox();
+            return false;
+        });
+
         jQuery.showLightbox({
             content: '#st-table-settings',
-            callback: function() {
-                var $table = $cell.parents("table:eq(0)");
-                var $form = jQuery("#st-table-settings form");
-
-                if ($table.is(".sort") ){
-                    $form.find("input[name=sort]").attr("checked", "checked");
-                }
-                else {
-                    $form.find("input[name=sort]").removeAttr("checked");
-                }
-
-                jQuery("#st-table-settings form").one("reset", function() {
-                    jQuery.hideLightbox();
-                });
-
-                jQuery("#st-table-settings form").one("submit", function() {
-                    if ( $("input[name=sort]", this).is(":checked") ) {
-                        setTimeout(function() {
-                            Socialtext.make_table_sortable($table.get(0));
-                        }, 100);
-                    }
-                    else {
-                        Socialtext.make_table_unsortable( $table.get(0) );
-                    }
-
-                    jQuery.hideLightbox();
-                    return false;
-                });
-            }
+            close: '#st-table-settings .close'
         });
     });
 }
