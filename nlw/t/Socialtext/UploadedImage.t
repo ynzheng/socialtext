@@ -5,6 +5,7 @@ use strict;
 
 use Test::More qw/no_plan/;
 use Test::Exception;
+use File::Temp q/tempdir/;
 use mocked 'Socialtext::SQL', ':test';
 
 BEGIN {
@@ -113,3 +114,45 @@ loading: {
     ok_no_more_sql();
 }
 
+caching: {
+    my $dir = tempdir( CLEANUP => 1 );
+    ok -d $dir && -r _ && -w _, 'made tempdir';
+
+    my $ui = Socialtext::UploadedImage->new(
+        table => 'm_table',
+        column => 'm_logo',
+        id => [four_id => 444],
+        image_ref => \'how witty',
+    );
+
+    my $filename;
+    lives_ok { $filename = $ui->cache_to_dir($dir) } 'cached';
+    is $filename, "$dir/444.png", 'returned the correct filename';
+    ok -f $filename && -r _, 'file exists, readable';
+    my $file_contents = do { local (@ARGV,$/) = ($filename); <> };
+    is $file_contents, 'how witty';
+
+    overwrite_is_ok: {
+        my $filename2;
+        lives_ok { $filename2 = $ui->cache_to_dir($dir) } 'overwrote';
+        is $filename2, $filename, 'same filename';
+    }
+
+    read_only_file: {
+        ok system("chmod -w $filename") == 0;
+        lives_ok { $ui->cache_to_dir($dir) } 'overwrite read-only';
+    }
+
+    read_only_dir: {
+        ok unlink $filename;
+        ok system("chmod -w $dir") == 0;
+        dies_ok { $ui->cache_to_dir($dir) } 'read-only dir';
+        ok system("chmod +w $dir") == 0;
+    }
+
+    # TODO:
+    # given that we supply a set of "alternate" ids
+    # when we cache it to a directory
+    # files with the alternate ids are hard-linked to the original
+
+}

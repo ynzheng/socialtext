@@ -2,6 +2,7 @@ package Socialtext::UploadedImage;
 use Moose;
 use Socialtext::SQL qw/get_dbh :exec :txn/;
 use DBD::Pg qw/:pg_types/;
+use Fatal qw/open close rename/;
 use namespace::clean -except => 'meta';
 
 use constant BINARY_TYPE => {pg_type => PG_BYTEA};
@@ -102,6 +103,25 @@ sub save {
     }
 
     return;
+}
+
+sub cache_to_dir {
+    my $self = shift;
+    my $dir = shift;
+
+    die 'no image_ref set' unless $self->has_image_ref;
+
+    my ($val) = $self->_vals;
+    my $filename = "$dir/$val.png";
+    my $tempname = "$filename.tmp";
+
+    open my $fh, '>', $tempname;
+    print $fh ${$self->image_ref} or die "can't write to file $tempname: $!";
+    close $fh;
+
+    rename $tempname => $filename;
+
+    return $filename;
 }
 
 __PACKAGE__->meta->make_immutable;
