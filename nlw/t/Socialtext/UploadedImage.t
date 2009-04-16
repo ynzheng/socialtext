@@ -3,9 +3,10 @@
 use warnings;
 use strict;
 
-use Test::More qw/no_plan/;
+use Test::More tests => 50;
 use Test::Exception;
-use File::Temp q/tempdir/;
+use File::Temp qw/tempdir/;
+use File::Slurp qw/slurp/;
 use mocked 'Socialtext::SQL', ':test';
 
 BEGIN {
@@ -129,7 +130,7 @@ caching: {
     lives_ok { $filename = $ui->cache_to_dir($dir) } 'cached';
     is $filename, "$dir/444.png", 'returned the correct filename';
     ok -f $filename && -r _, 'file exists, readable';
-    my $file_contents = do { local (@ARGV,$/) = ($filename); <> };
+    my $file_contents = slurp($filename);
     is $file_contents, 'how witty';
 
     overwrite_is_ok: {
