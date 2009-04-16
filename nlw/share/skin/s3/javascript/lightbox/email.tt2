@@ -21,11 +21,12 @@
     </tr>
     <tr>
       <th style="vertical-align: top" rowspan="2">[% loc('Recipients') %]</th>
-      <td><label>
-        [% loc('Workspace Address Book') %] <br />
+      <td>
+        <label>[% loc('Workspace Address Book') %]</label>
+        <br />
         <select class="email_input" id="email_source" multiple="1" name="email_page_user_source" size="9">
         </select>
-      </label></td>
+      </td>
       <td width="140" valign="middle" style="vertical-align: middle">
         <input class="email_input_button" type="button" id="email_add" value="[% loc('Add') %] &gt;&gt;" /><br />
         <input class="email_input_button" type="button" id="email_remove" value="&lt;&lt; [% loc('Remove') %]" /><br />
@@ -40,11 +41,11 @@
       </td>
     </tr>
     <tr>
-      <td><label>
-        [% loc('Additional Recipient') %]
+      <td>
+        <label>[% loc('Additional Recipient') %]</label>
         <br />
         <input id="email_page_add_one" class="email_input" type="text" name="email_page_add_one" value="[% loc('type email address here') %]" />
-      </label></td>
+      </td>
 
       <td style="vertical-align: middle">
         <input class="email_input_button" type="button" id="email_addone" value="Add &gt;&gt;" />
@@ -55,10 +56,12 @@
     <tr>
       <th>[% loc('Message') %]</th>
       <td colspan="3">
-        <label><input class="email_input_checkbox" name="email_page_add_note_check" type="checkbox"  value="1" checked="checked" />[% loc('Add this note at the front of the email?') %] <i>[% loc('(You can customize the note below.)') %]</i></label>
+        <input class="email_input_checkbox" name="email_page_add_note_check" type="checkbox"  value="1" checked="checked" />
+        <label>[% loc('Add this note at the front of the email?') %] <i>[% loc('(You can customize the note below.)') %]</i></label>
         <textarea class="email_input_textarea" name="email_page_add_note" rows="5" cols="60">[% loc("Hello, this is a page from the workspace that I wanted you to see. This page is also available for viewing or editing on the web at:\n\n[_1]", full_uri) %]</textarea>
         <br />
-        <label><input name="email_page_keep_attachments" class="email_input_checkbox" type="checkbox" value="1" />[% loc('Keep attachments?') %]</label>
+        <input name="email_page_keep_attachments" class="email_input_checkbox" type="checkbox" value="1" />
+        <label>[% loc('Keep attachments?') %]</label>
       </td>
     </tr>
   </table>

@@ -30,6 +30,12 @@
 
 .lightbox input {
     margin: 4px;
+    vertical-align: middle;
+}
+
+.lightbox label {
+    padding-top: 3px;
+    vertical-align: middle;
 }
 
 .lightbox .label {

@@ -10,19 +10,16 @@
     </div>
     <p id="st-duplicate-error" class="error"></p>
 
-    <label for="new_title" class="duplicate-page-form-element">New page name:
+    <label for="new_title" class="duplicate-page-form-element">New page name:</label>
       <input id="st-duplicate-newname" type="text" name="new_title" value="" size="34" />
-    </label>
     </p>
     <p class="input">
-    <label for="keep_categories" class="duplicate-page-form-element">[% loc('Keep categories') %]:
+    <label for="keep_categories" class="duplicate-page-form-element">[% loc('Keep categories') %]:</label>
       <input type="checkbox" name="keep_categories" value="1" checked="true" />
-    </label>
     </p>
     <p class="input">
-    <label for="keep_attachments" class="duplicate-page-form-element">[% loc('Keep attachments') %]:
-      <input type="checkbox" name="keep_attachments" value="1" checked="true" />
-    </label>
+    <label for="keep_attachments" class="duplicate-page-form-element">[% loc('Keep attachments') %]:</label>
+    <input type="checkbox" name="keep_attachments" value="1" checked="true" />
 
     <div class="hint">([% loc('The main window will navigate to the new page name after you click "Duplicate".') %])</div>
 
