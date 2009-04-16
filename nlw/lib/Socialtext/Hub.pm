@@ -332,7 +332,7 @@ my @PluginClasses;
 sub plugin_classes { @PluginClasses }
 
 BEGIN {
-    for my $class (
+    my @classes = (
         Socialtext::Plugin->plugins(),
         qw(
             Socialtext::Attachments
@@ -392,11 +392,13 @@ BEGIN {
             Socialtext::WorkspaceListPlugin
             Socialtext::ProvisionPlugin
             Socialtext::PageActivityPlugin
-            ),
-            # keep this last if you want pluggable plugins
-            # to be able to override wafls, etc!
-            'Socialtext::Pluggable::Adapter',
-        ) {
+        ),
+        # keep this last if you want pluggable plugins
+        # to be able to override wafls, etc!
+        'Socialtext::Pluggable::Adapter',
+    );
+    for my $class (@classes) {
+        next if $class =~ m{::SUPER$};
         eval "use $class ()";
         die $@ if $@;
 
