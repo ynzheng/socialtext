@@ -7,7 +7,7 @@
     <dd>
       <label>[% loc('Email') %]</label>
       <a href="mailto:[% user.email_address %]">[% user.email_address %]</a>
-    </dt>
+    </dd>
     [% IF loc_lang == 'ja' %]
       <dd>
         <label>[% loc('Last name:') %]</label>
