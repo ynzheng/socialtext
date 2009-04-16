@@ -74,6 +74,12 @@ $SendClass                       = 'Sendmail';
     }
 
     sub get_send_class {
+        if (my $file = $ENV{ST_EMAIL_TO_FILE}) {
+            require Email::Send::IO;
+            @Email::Send::IO::IO = ($file);
+            return 'IO';
+        }
+
         return $SendClass;
     }
 
