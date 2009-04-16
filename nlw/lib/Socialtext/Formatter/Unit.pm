@@ -338,10 +338,7 @@ const table_single_line_blocks => [qw(hx ol ul indent)];
 field contains_blocks => [];
 field contains_phrases => [];
 
-# XXX placing CSS here is sort of nasty but it gets rss and printer friendly
-# link to style in rss is hard while we are using <link>, should consider
-# switching to import?
-const html_start => '<td style="border: 1px solid black;padding: .2em;">';
+const html_start => '<td>';
 const html_end   => "</td>\n";
 
 sub table_phrases { Socialtext::Formatter->all_phrases }

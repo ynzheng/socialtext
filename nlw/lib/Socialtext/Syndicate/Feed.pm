@@ -6,6 +6,7 @@ use warnings;
 use DateTime;
 use DateTime::Format::W3CDTF;
 use Socialtext::Timer;
+use Socialtext::URI;
 
 our $VERSION = 0.01;
 
@@ -112,6 +113,14 @@ sub _item_as_html {
        push @html_headers, "<div>Tags: " . join( ", ", @tags ) . "</div>";
     }
     Socialtext::Timer->Pause('_item_as_html_tags');
+
+    Socialtext::Timer->Continue('_item_as_html_css');
+    my $css_uri = Socialtext::URI::uri(
+        path => Socialtext::Skin->new('s3')->skin_uri('css','wiki.css'),
+    );
+    push @html_headers,
+        qq{<link ref="stylesheet" type="text/css" href="$css_uri"/>};
+    Socialtext::Timer->Pause('_item_as_html_css');
 
     Socialtext::Timer->Continue('_item_as_html_attach');
     my @attachments = $page->attachments;
