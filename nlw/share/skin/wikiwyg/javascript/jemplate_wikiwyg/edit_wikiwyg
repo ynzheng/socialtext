@@ -345,12 +345,12 @@
 
 <div id="st-table-settings" class="lightbox">
     <input type="checkbox" name="sort" />
-    <label for="sort">Table is Sortable</label>
+    <label for="sort">[% loc('Table is Sortable') %]</label>
 
     <br/>
 
     <input type="checkbox" name="border" />
-    <label for="border">Show Cell Borders</label>
+    <label for="border">[% loc('Show Cell Borders') %]</label>
 
     <div>
         <ul class="widgetButton" style="float:left; padding:10px">
