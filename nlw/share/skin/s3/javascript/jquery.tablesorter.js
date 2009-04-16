@@ -215,6 +215,7 @@
 						cache.row.push($(c));
 						
 						for(var j=0; j < totalCells; ++j) {
+							if (!parsers[j]) continue;
 							cols.push(parsers[j].format(
 								$.trim(getElementText(table.config,c.cells[j])
 									.replace(/(<br>|&nbsp;)/g, '')),
@@ -472,6 +473,7 @@
 			};
 			
 			function getCachedSortType(parsers,i) {
+				if (!parsers[i]) return 'text';
 				return parsers[i].type;
 			};
 			
