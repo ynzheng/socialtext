@@ -19,6 +19,7 @@ use Socialtext::Log qw(st_log);
 use Socialtext::Timer;
 use Socialtext::System qw/shell_run/;
 use Socialtext::Page::TablePopulator;
+use Socialtext::User;
 use YAML ();
 
 # This should stay in sync with $EXPORT_VERSION in ST::Workspace.
@@ -162,6 +163,13 @@ sub _create_workspace {
     elsif ( $info->{logo_uri} ) {
         $ws->set_logo_from_uri( uri => $info->{logo_uri} );
     }
+
+    my $adapter = Socialtext::Pluggable::Adapter->new;
+    $adapter->make_hub(Socialtext::User->SystemUser(), $ws);
+    for my $plugin (keys %{ $info->{plugins}}) {
+        eval { $ws->enable_plugin($plugin) };
+    }
+    $adapter->hook('nlw.import_workspace', $ws, $info->{plugins});
 
     $self->{workspace} = $ws;
 }
