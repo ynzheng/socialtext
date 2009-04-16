@@ -124,11 +124,12 @@ caching: {
         column => 'm_logo',
         id => [four_id => 444],
         image_ref => \'how witty',
+        file_suffix => '-foo.png',
     );
 
     my $filename;
     lives_ok { $filename = $ui->cache_to_dir($dir) } 'cached';
-    is $filename, "$dir/444.png", 'returned the correct filename';
+    is $filename, "$dir/444-foo.png", 'returned the correct filename';
     ok -f $filename && -r _, 'file exists, readable';
     my $file_contents = slurp($filename);
     is $file_contents, 'how witty';
@@ -161,7 +162,7 @@ caching: {
 
     my @files = slurp_dir($dir);
 
-    is_deeply \@files, ['444.png', 'f@ex%2f..%2fample.com.png', 'four.png'],
+    is_deeply \@files, ['444-foo.png', 'f@ex%2f..%2fample.com-foo.png', 'four-foo.png'],
         'directory contents look good';
 
     hard_links: {
@@ -177,7 +178,7 @@ caching: {
     $ui->link_alternate_ids($dir);
 
     @files = slurp_dir($dir);
-    is_deeply \@files, ['444.png', 'f@ex%2f..%2fample.com.png', 'four.png'],
+    is_deeply \@files, ['444-foo.png', 'f@ex%2f..%2fample.com-foo.png', 'four-foo.png'],
         'directory contents look good after unlinking alts';
 }
 

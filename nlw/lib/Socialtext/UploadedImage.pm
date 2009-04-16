@@ -10,9 +10,11 @@ use constant BINARY_TYPE => {pg_type => PG_BYTEA};
 has 'table' => (is => 'ro', isa => 'Str', required => 1);
 has 'column' => (is => 'ro', isa => 'Str', required => 1);
 has 'id' => (is => 'ro', isa => 'ArrayRef[Str]', required => 1);
-has 'alternate_ids' => (is => 'rw', isa => 'HashRef[ArrayRef]', predicate => 'has_alternate_ids');
 
 has 'image_ref' => (is => 'rw', isa => 'ScalarRef', lazy_build => 1);
+
+has 'alternate_ids' => (is => 'rw', isa => 'HashRef[ArrayRef]', predicate => 'has_alternate_ids');
+has 'file_suffix' => (is => 'rw', isa => 'Str', default => '.png');
 
 for (qw(_keys _vals)) {
     has $_ => (
@@ -114,7 +116,7 @@ sub cache_to_dir {
 
     # TODO: need to support multi-keyd images
     my ($val) = $self->_vals;
-    my $filename = "$dir/$val.png";
+    my $filename = "$dir/$val".$self->file_suffix;
     my $tempname = "$filename.tmp";
 
     open my $fh, '>', $tempname;
@@ -136,12 +138,12 @@ sub link_alternate_ids {
     # TODO: need to support multi-keyd images
     my ($key) = $self->_keys;
     my ($val) = $self->_vals;
-    my $filename = "$dir/$val.png";
+    my $filename = "$dir/$val".$self->file_suffix;
 
     my $alt_ids = $self->alternate_ids->{$key} || [];
     for my $alt_id (@$alt_ids) {
         $alt_id =~ s#/#\%2f#g;
-        my $alt_filename = "$dir/$alt_id.png";
+        my $alt_filename = "$dir/$alt_id".$self->file_suffix;
         unlink $alt_filename; # fail = ok
         link $filename => $alt_filename;
     }
