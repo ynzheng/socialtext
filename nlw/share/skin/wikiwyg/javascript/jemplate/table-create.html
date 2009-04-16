@@ -1,4 +1,4 @@
-<span class="title">[% loc('Table Create') %]</span>
+<span class="title">[% loc('Create Table') %]</span>
 <form action="#" onsubmit="return false">
 <table class="table-create">
     <tr>
@@ -20,10 +20,37 @@
     </tr>
 
     <tr>
+        <td></td>
+        <td>
+            <input type="checkbox" name="sort" />
+            <label for="sort">[% loc('Table is Sortable') %]</label>
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>
+            <input type="checkbox" name="border" checked="checked" />
+            <label for="border">[% loc('Show Cell Borders') %]</label>
+        </td>
+    </tr>
+
+    <tr>
         <td colspan="2">
-            <div class="buttons">
-                <input name="save" type="submit" value="[% loc('Save') %]" />
-                <input name="cancel" type="button" value="[% loc('Cancel') %]" />
+            <div>
+                <ul class="widgetButton" style="float:left; padding:10px">
+                    <li class="flexButton">
+                        <a class="save genericOrangeButton" href="#">
+                            [% loc('Save') %]
+                        </a>
+                    </li>
+                </ul>
+                <ul class="widgetButton" style="float:left; padding:10px">
+                    <li class="flexButton">
+                        <a class="close genericOrangeButton" href="#">
+                            [% loc('Cancel') %]
+                        </a>
+                    </li>
+                </ul>
             </div>
         </td>
     </tr>

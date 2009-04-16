@@ -1135,16 +1135,35 @@ proto.advanced_link_html = function() {
     return '<a onclick="wikiwyg.wikitext_link.onclick(); return false" href="#">' + loc('Advanced Mode') + '</a>';
 }
 
-proto.make_table_html = function(rows, columns) {
+proto.insert_table_html = function(rows, columns, options) {
+    var self = this;
     var innards = '';
-    var cell = '<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>';
+    var cell = '<td><span style="padding:.5em">&nbsp;</span></td>';
     for (var i = 0; i < rows; i++) {
         var row = '';
         for (var j = 0; j < columns; j++)
             row += cell;
         innards += '<tr>' + row + '</tr>';
     }
-    return '<table style="border-collapse: collapse;" class="formatter_table">' + innards + '</table>';
+
+    var id = 'table-' + (new Date).getTime();
+    var $table = jQuery('<table></table>')
+        .attr('id', id)
+        .addClass("formatter_table")
+        .html(innards);
+    this.insert_html($table.parent().html());
+
+    jQuery.poll(
+        function() {
+            return jQuery('#'+id, self.get_edit_document()).size() > 0
+        },
+        function() {
+            var $table = jQuery('#'+id, self.get_edit_document());
+            $table.removeAttr('id');
+            self.applyTableOptions($table, options);
+        },
+        500, 10000
+    );
 }
 
 proto.closeTableDialog = function() {
@@ -1174,18 +1193,19 @@ proto.do_new_table = function() {
         if (cols > 35)
             return $error.text(loc('Columns is too big. 35 maximum.'));
         self.set_focus(); // Need this before .insert_html
-        self.insert_html(self.make_table_html(rows, cols));
+        var options = self.tableOptionsFromNode(jQuery('.table-create'));
+        self.insert_table_html(rows, cols, options);
         self.closeTableDialog();
     }
     var setup = function() {
         jQuery('.table-create input[name=columns]').focus();
         jQuery('.table-create input[name=columns]').select();
-        jQuery('.table-create input[name=save]')
+        jQuery('.table-create .save')
             .unbind("click")
             .bind("click", function() {
                 do_table();
             });
-        jQuery('.table-create input[name=cancel]')
+        jQuery('.table-create .close')
             .unbind("click")
             .bind("click", function() {
                 self.closeTableDialog();
@@ -1304,6 +1324,37 @@ proto.parseTableOptions = function (opt_string) {
     return options;
 }
 
+proto.applyTableOptions = function($table, opt_string) {
+    if (!opt_string) return;
+    $table.attr('options', opt_string);
+    var options = this.parseTableOptions(opt_string);
+
+    if (options.border) {
+        $table.removeClass('borderless');
+    }
+    else {
+        $table.addClass('borderless');
+    }
+
+    if (options.sort) {
+        setTimeout(function() {
+            Socialtext.make_table_sortable($table.get(0));
+        }, 100);
+    }
+    else {
+        Socialtext.make_table_unsortable( $table.get(0) );
+    }
+}
+
+proto.tableOptionsFromNode = function ($node) {
+    var opt_array = [];
+    jQuery('input', $node).each(function(i, el) {
+        var key = $(el).attr('name');
+        opt_array.push(key + ($(el).is(':checked') ? ':on' : ':off'));
+    });
+    return opt_array.join(' ');
+}
+
 proto.do_table_settings = function() {
     var self = this;
 
@@ -1316,29 +1367,8 @@ proto.do_table_settings = function() {
         var $lb = $('#st-table-settings');
 
         jQuery("#st-table-settings .submit").one("click", function() {
-            var opt_array = [];
-            jQuery('input', $lb).each(function(i, el) {
-                var key = $(el).attr('name');
-                opt_array.push(key + ($(el).is(':checked') ? ':on' : ':off'));
-            });
-            $table.attr('options', opt_array.join(' '));
-            var options = self.parseTableOptions($table.attr('options'));
-
-            if (options.border) {
-                $table.removeClass('borderless');
-            }
-            else {
-                $table.addClass('borderless');
-            }
-
-            if (options.sort) {
-                setTimeout(function() {
-                    Socialtext.make_table_sortable($table.get(0));
-                }, 100);
-            }
-            else {
-                Socialtext.make_table_unsortable( $table.get(0) );
-            }
+            var opt_string = self.tableOptionsFromNode($lb);
+            self.applyTableOptions($table, opt_string);
 
             jQuery.hideLightbox();
             return false;
