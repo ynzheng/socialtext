@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 65;
+use Test::More tests => 66;
 use Test::Exception;
 use File::Temp qw/tempdir/;
 use File::Slurp qw/slurp/;
@@ -227,12 +227,15 @@ removal: {
     );
     ok_no_more_sql();
 
+    my @new_contents = slurp_dir($dir);
+    is_deeply \@new_contents, \@contents, 'cached files not removed yet';
+
     lives_ok {
         $ui->remove_cache($dir);
     } 'remove cached files';
 
-    my @new_contents = slurp_dir($dir);
-    is_deeply \@new_contents, [], 'cached files got removed too';
+    my @hopefully_empty = slurp_dir($dir);
+    is_deeply \@hopefully_empty, [], 'cached files got removed too';
 }
 
 sub slurp_dir {
