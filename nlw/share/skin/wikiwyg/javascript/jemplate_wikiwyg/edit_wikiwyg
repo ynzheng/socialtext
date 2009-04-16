@@ -344,6 +344,7 @@
 </div>
 
 <div id="st-table-settings" class="lightbox">
+    <span class="title">[% loc('Edit Table') %]</span>
     <input type="checkbox" name="sort" />
     <label for="sort">[% loc('Table is Sortable') %]</label>
 

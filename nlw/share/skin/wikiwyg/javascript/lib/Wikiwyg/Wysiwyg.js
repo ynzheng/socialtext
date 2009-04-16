@@ -1377,6 +1377,7 @@ proto.do_table_settings = function() {
         jQuery.showLightbox({
             content: '#st-table-settings',
             close: '#st-table-settings .close',
+            width: 300,
             callback: function() {
                 var options = self.parseTableOptions($table.attr('options'));
                 jQuery.each(options, function(key,val) {
