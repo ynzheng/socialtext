@@ -757,7 +757,7 @@ sub _call_method {
 
 sub _get {
     my ($self, $uri, $opts) = @_;
-    warn "GET: $self->{browser_url}$uri"; # intentional warn
+    warn "GET: $self->{browser_url}$uri\n"; # intentional warn
     my $start = time();
     $self->{http}->get( $self->{browser_url} . $uri, $opts );
     $self->{_last_http_time} = time() - $start;
