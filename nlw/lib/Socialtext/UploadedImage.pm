@@ -2,7 +2,7 @@ package Socialtext::UploadedImage;
 use Moose;
 use Socialtext::SQL qw/get_dbh :exec :txn/;
 use DBD::Pg qw/:pg_types/;
-use Fatal qw/open close rename/;
+use Fatal qw/open close rename link/;
 use namespace::clean -except => 'meta';
 
 use constant BINARY_TYPE => {pg_type => PG_BYTEA};
@@ -10,6 +10,7 @@ use constant BINARY_TYPE => {pg_type => PG_BYTEA};
 has 'table' => (is => 'ro', isa => 'Str', required => 1);
 has 'column' => (is => 'ro', isa => 'Str', required => 1);
 has 'id' => (is => 'ro', isa => 'ArrayRef[Str]', required => 1);
+has 'alternate_ids' => (is => 'rw', isa => 'HashRef[ArrayRef]', predicate => 'has_alternate_ids');
 
 has 'image_ref' => (is => 'rw', isa => 'ScalarRef', lazy_build => 1);
 
@@ -111,6 +112,7 @@ sub cache_to_dir {
 
     die 'no image_ref set' unless $self->has_image_ref;
 
+    # TODO: need to support multi-keyd images
     my ($val) = $self->_vals;
     my $filename = "$dir/$val.png";
     my $tempname = "$filename.tmp";
@@ -121,7 +123,28 @@ sub cache_to_dir {
 
     rename $tempname => $filename;
 
+    $self->link_alternate_ids($dir);
     return $filename;
+}
+
+sub link_alternate_ids {
+    my $self = shift;
+    my $dir = shift;
+
+    return unless $self->has_alternate_ids;
+
+    # TODO: need to support multi-keyd images
+    my ($key) = $self->_keys;
+    my ($val) = $self->_vals;
+    my $filename = "$dir/$val.png";
+
+    my $alt_ids = $self->alternate_ids->{$key} || [];
+    for my $alt_id (@$alt_ids) {
+        $alt_id =~ s#/#\%2f#g;
+        my $alt_filename = "$dir/$alt_id.png";
+        unlink $alt_filename; # fail = ok
+        link $filename => $alt_filename;
+    }
 }
 
 __PACKAGE__->meta->make_immutable;

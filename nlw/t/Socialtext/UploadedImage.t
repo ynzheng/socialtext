@@ -155,4 +155,36 @@ caching: {
     # when we cache it to a directory
     # files with the alternate ids are hard-linked to the original
 
+    $ui->alternate_ids({four_id => ['four','f@ex/../ample.com']});
+    lives_ok { $ui->cache_to_dir($dir) } 'overwrite read-only';
+
+    my @files = slurp_dir($dir);
+
+    is_deeply \@files, ['444.png', 'f@ex%2f..%2fample.com.png', 'four.png'],
+        'directory contents look good';
+
+    hard_links: {
+        my @expect = (stat $filename)[0,1];
+        for my $file (@files) {
+            my @actual = (stat "$dir/$file")[0,1];
+            is_deeply \@actual, \@expect, "file $file is hard-linked";
+        }
+    }
+
+    shift @files;
+    unlink @files;
+    $ui->link_alternate_ids($dir);
+
+    @files = slurp_dir($dir);
+    is_deeply \@files, ['444.png', 'f@ex%2f..%2fample.com.png', 'four.png'],
+        'directory contents look good after unlinking alts';
+}
+
+sub slurp_dir {
+    my $dir = shift;
+    my $dh;
+    opendir $dh, $dir;
+    my @files = sort grep !/^\./, readdir $dh;
+    closedir $dh;
+    return @files;
 }
