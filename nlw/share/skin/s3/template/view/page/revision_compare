@@ -31,19 +31,20 @@
   </div><!-- controlsRight END -->
 </div><!-- controls END -->
 <div id="contentContainer">
-  <div id="st-revision-tags">
-  [% FOREACH tag = tags %]
-    <span class="st-[% IF tag.status == 'deleted' %]deleted[% ELSIF tag.status == 'added' %]added[% ELSE %]unchanged[% END %]tag">
-      [% tag.name | html %]</span>
-  [% END %]
-  </div> <!-- END st-revision-tags -->
   <div id="st-revision-display">
   <table id="revision-compare-table" style="table-layout: fixed; width: 100%">
+    <tr>
+      <td colspan="2">
+      <div class="st-page-title">
+        <h2 class="tableTitle">[% display_title %] : <span class="st-page-title-decorator">[% loc('Revision Compare') %]</span></h2>
+      </div>
+      </td>
+    </tr>
     <tr>
     [% FOR col IN header %]
       <td class="revision-compare-table-header">
       <div class="st-revision-view-link">
-        <h2 class="tableTitle" title="[% page_uri %]">[% col.link %]</h2>
+        <h2 class="tableTitle" title="[% display_title %]">[% col.link %]</h2>
       </div>
       <div class="st-revision-tags">
         [% loc('Tags:') %][% col.tags %]
