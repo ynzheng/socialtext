@@ -93,9 +93,9 @@ sub create {
     $p{is_technical_admin} ||= 'f';
     $p{is_system_created}  ||= 'f';
     if (defined($p{dm_sends_email}) && (!$p{dm_sends_email})) {
-        $p{dm_sends_email} = 'f';
+        $p{dm_sends_email} = '0';
     } else {
-        $p{dm_sends_email} = 't';
+        $p{dm_sends_email} = '1';
     }
     sql_execute(
         'INSERT INTO "UserMetadata"'
@@ -131,7 +131,9 @@ sub set_business_admin {
 
 sub set_dm_sends_email {
     my ( $self, $value ) = @_;
-
+    
+    $value ||= "0";
+    warn "Setting dm_sends_email to $value";
     $self->_update_field('dm_sends_email=?', $value);
     $self->dm_sends_email( $value );
     return $self;
