@@ -15,6 +15,12 @@ table {
     border: 1px solid black;
 }
 
+table.borderless,
+table.borderless th,
+table.borderless td {
+    border: 1px dotted #555 !important;
+}
+
 ol, ul {
     padding-left: 25px;
 }

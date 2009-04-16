@@ -226,6 +226,11 @@ html .wiki a:hover {
     border: 1px solid black;
     padding: 0.2em;
 }
+.wiki table.borderless th,
+.wiki table.borderless td {
+    border: none;
+    padding: 0.2em;
+}
 .wiki tr.even td {
     background: #E5ECF9;
 }
