@@ -108,15 +108,33 @@ sub save {
     return;
 }
 
+sub remove {
+    my $self = shift;
+    
+    my $table = $self->table;
+    my @keys = $self->_keys;
+    my @vals = $self->_vals;
+    my $where_keys = join(' AND ', map { "$_ = ?" } @keys);
+    my $sth = sql_execute(qq{DELETE FROM $table WHERE $where_keys}, @vals);
+    return $sth->rows;
+}
+
+sub _filename {
+    my $self = shift;
+    my $dir = shift;
+
+    # TODO: need to support multi-keyd images
+    my ($val) = $self->_vals;
+    return "$dir/$val".$self->file_suffix;
+}
+
 sub cache_to_dir {
     my $self = shift;
     my $dir = shift;
 
     die 'no image_ref set' unless $self->has_image_ref;
 
-    # TODO: need to support multi-keyd images
-    my ($val) = $self->_vals;
-    my $filename = "$dir/$val".$self->file_suffix;
+    my $filename = $self->_filename($dir);
     my $tempname = "$filename.tmp";
 
     open my $fh, '>', $tempname;
@@ -129,25 +147,38 @@ sub cache_to_dir {
     return $filename;
 }
 
-sub link_alternate_ids {
+sub remove_cache {
     my $self = shift;
     my $dir = shift;
 
+    my $filename = $self->_filename($dir);
+    
+    unlink $filename;
+    $self->link_alternate_ids($dir, 'unlink only');
+    return $filename;
+}
+
+sub link_alternate_ids {
+    my $self = shift;
+    my $dir = shift;
+    my $unlink_only = shift || 0;
+
     return unless $self->has_alternate_ids;
+
+    my $filename = $self->_filename($dir);
 
     # TODO: need to support multi-keyd images
     my ($key) = $self->_keys;
-    my ($val) = $self->_vals;
-    my $filename = "$dir/$val".$self->file_suffix;
 
     my $alt_ids = $self->alternate_ids->{$key} || [];
     for my $alt_id (@$alt_ids) {
         $alt_id =~ s#/#\%2f#g;
         my $alt_filename = "$dir/$alt_id".$self->file_suffix;
         unlink $alt_filename; # fail = ok
-        link $filename => $alt_filename;
+        link $filename => $alt_filename unless $unlink_only;
     }
 }
+
 
 __PACKAGE__->meta->make_immutable;
 1;

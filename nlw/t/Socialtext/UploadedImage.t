@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 50;
+use Test::More tests => 65;
 use Test::Exception;
 use File::Temp qw/tempdir/;
 use File::Slurp qw/slurp/;
@@ -126,6 +126,7 @@ caching: {
         image_ref => \'how witty',
         file_suffix => '-foo.png',
     );
+    isa_ok $ui, 'Socialtext::UploadedImage', 'got img object';
 
     my $filename;
     lives_ok { $filename = $ui->cache_to_dir($dir) } 'cached';
@@ -166,7 +167,7 @@ caching: {
         'directory contents look good';
 
     hard_links: {
-        my @expect = (stat $filename)[0,1];
+        my @expect = (stat $filename)[0,1]; # device and inode
         for my $file (@files) {
             my @actual = (stat "$dir/$file")[0,1];
             is_deeply \@actual, \@expect, "file $file is hard-linked";
@@ -180,6 +181,58 @@ caching: {
     @files = slurp_dir($dir);
     is_deeply \@files, ['444-foo.png', 'f@ex%2f..%2fample.com-foo.png', 'four-foo.png'],
         'directory contents look good after unlinking alts';
+}
+
+removal: {
+    my $dir = tempdir( CLEANUP => 1 );
+    ok -d $dir && -r _ && -w _, 'made tempdir';
+    sql_mock_result([undef]); # SELECT FOR UPDATE: no rows
+    sql_mock_row_count(1); # INSERT
+    sql_mock_row_count(1); # DELETE
+
+    my $ui = Socialtext::UploadedImage->new(
+        table => 'x_table',
+        column => 'x_logo',
+        id => [five_id => 555],
+        image_ref => \'woot witty',
+        file_suffix => '-woot.png',
+    );
+    isa_ok $ui, 'Socialtext::UploadedImage', 'got img object';
+
+    lives_ok { $ui->save() } 'save';
+    $ui->alternate_ids({five_id => ['five']});
+
+    lives_ok { $ui->cache_to_dir($dir) } 'cache files';
+
+    my @contents = slurp_dir($dir);
+    is_deeply \@contents, [qw(555-woot.png five-woot.png)];
+
+    lives_ok {
+        $ui->remove();
+    } 'removal';
+
+    sql_ok(
+        name => 'locks rows for update',
+        sql => qr/SELECT .+ FOR UPDATE/,
+    );
+    sql_ok(
+        name => 'inserts the image',
+        sql => qr/INSERT/,
+        args => [['woot witty',{pg_type=>17}], [555,undef],[]],
+    );
+    sql_ok(
+        name => 'inserts the image',
+        sql => 'DELETE FROM x_table WHERE five_id = ?',
+        args => [555],
+    );
+    ok_no_more_sql();
+
+    lives_ok {
+        $ui->remove_cache($dir);
+    } 'remove cached files';
+
+    my @new_contents = slurp_dir($dir);
+    is_deeply \@new_contents, [], 'cached files got removed too';
 }
 
 sub slurp_dir {
