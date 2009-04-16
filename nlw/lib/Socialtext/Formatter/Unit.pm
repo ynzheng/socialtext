@@ -272,28 +272,46 @@ const formatter_id    => 'table';
 const contains_blocks => [qw(tr)];
 const pattern_block   => qr/(((^\|.*\| \n(?=\|))|(^\|.*\|  +\n)|(?s:^\|.*?\|\n))+)/m;
 
-# XXX placing CSS here is sort of nasty but it gets rss and printer friendly
-# link to style in rss is hard while we are using <link>, should consider
-# switching to import?
-const html_start =>
-    qq{<table style="border-collapse: collapse;" class="formatter_table">\n};
 const html_end => "</table>\n";
 
 sub match {
     my $self = shift;
     $self->SUPER::match(@_) or return;
+    $self->{options} = '';
     if ($self->{text} =~ s/^\|\| *([^\|\n]+?) *\n//) {
         $self->{options} = $1;
     }
     return 1;
 }
 
+sub options {
+    my $self = shift;
+    return $self->{option_hash} if $self->{option_hash};
+
+    my %options = (
+        border => 1,
+    );
+    for my $opt (split ' ', $self->{options}) {
+        if ($opt =~ /^([^:=]+)[:=](.*)$/) {
+            my ($key, $val) = ($1, $2);
+            $val = 0 if $val eq 'off' or $val eq 'false';
+            $options{$key} = $val;
+        }
+        else {
+            $options{$opt} = 1;
+        }
+    }
+
+    return $self->{option_hash} = \%options;
+}
+
 sub html_start {
     my $self = shift;
-    my $sort = (defined($self->{options}) and $self->{options} =~ /\bsort\b/)
-        ? ' sort' : '';
-    qq{<table style="border-collapse: collapse;" class="formatter_table$sort">\n};
-
+    my $opts = $self->options;
+    my $class = 'formatter_table';
+    $class .= ' sort' if $opts->{sort};
+    $class .= ' borderless' unless $opts->{border};
+    qq{<table options="$self->{options}" class="$class">\n};
 }
 
 ################################################################################

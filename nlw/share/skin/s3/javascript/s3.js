@@ -53,6 +53,13 @@ Socialtext.make_table_sortable = function(table) {
         $(table).addClass("sort");
         $(table).tablesorter();
 
+        $(table).attr(
+            'options',
+            $(table).attr('options')
+                .replace(/(?:sort(?:[:=])?|$)/, ' sort:on')
+                .replace(/^ /,'')
+        );
+
         // Because the tables inside wysiwyg editing area are expected to be
         // changed, we forcibly update it on every sort.
         if (window.wikiwyg &&
@@ -73,6 +80,12 @@ Socialtext.make_table_unsortable = function(table) {
         catch (e) { table.config = null; }
     }
     $(table).removeClass("sort").find("tr:eq(0) td").unbind("click").unbind("mousedown");
+    $(table).attr(
+        'options',
+        $(table).attr('options')
+            .replace(/(?:sort(?:[:=])?|$)/, ' sort:off')
+            .replace(/^ /,'')
+    );
 }
 
 $(function() {

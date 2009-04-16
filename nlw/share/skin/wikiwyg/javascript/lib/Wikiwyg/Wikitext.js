@@ -1977,7 +1977,8 @@ proto.format_ol = function(elem) {
 
 proto.format_table = function(elem) {
     elem.top_level_block = true;
-    return (jQuery(elem).hasClass('sort') ? '|| sort\n' : '') + elem.wikitext;
+    var options = jQuery(elem).attr('options');
+    return (options ? '|| ' + options + '\n' : '') + elem.wikitext;
 }
 
 proto.format_tr = function(elem) {
