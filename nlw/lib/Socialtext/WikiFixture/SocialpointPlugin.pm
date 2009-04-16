@@ -20,7 +20,8 @@ SELECT value FROM workspace_plugin_pref
       AND key = 'password'
 EOT
 
-    my $got_pw = Socialtext::Pluggable::Plugin::Socialpoint::decrypt($crypted_pw);
+    my $plugin = Socialtext::Pluggable::Plugin::Socialpoint->new;
+    my $got_pw = $plugin->decrypt_hex($crypted_pw);
     is $got_pw, $expected_pw, 'socialpoint password';
 }
 
