@@ -147,7 +147,8 @@ CREATE TABLE "UserMetadata" (
     is_business_admin boolean DEFAULT false NOT NULL,
     is_technical_admin boolean DEFAULT false NOT NULL,
     is_system_created boolean DEFAULT false NOT NULL,
-    primary_account_id bigint
+    primary_account_id bigint,
+    dm_sends_email boolean DEFAULT true NOT NULL
 );
 
 CREATE TABLE "UserWorkspaceRole" (
@@ -1419,4 +1420,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '53');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '54');
