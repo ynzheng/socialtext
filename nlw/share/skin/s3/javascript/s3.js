@@ -56,7 +56,7 @@ Socialtext.make_table_sortable = function(table) {
         $(table).attr(
             'options',
             $(table).attr('options')
-                .replace(/(?:sort(?:[:=])?|$)/, ' sort:on')
+                .replace(/(\bsort([:=]\S+|\b)?|$)/, 'sort:on')
                 .replace(/^ /,'')
         );
 
@@ -83,7 +83,7 @@ Socialtext.make_table_unsortable = function(table) {
     $(table).attr(
         'options',
         $(table).attr('options')
-            .replace(/(?:sort(?:[:=])?|$)/, ' sort:off')
+            .replace(/(\bsort([:=]\S+|\b)?|$)/, 'sort:off')
             .replace(/^ /,'')
     );
 }
