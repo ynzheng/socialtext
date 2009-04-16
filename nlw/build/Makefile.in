@@ -394,9 +394,6 @@ QUICK_TESTS = \
 	t/Socialtext/Cache.t \
 	t/Socialtext/CategoryPlugin-email-address-encoding.t \
 	t/Socialtext/CategoryPlugin-html-escape.t \
-	t/Socialtext/ChangeEvent/Attachment.t \
-	t/Socialtext/ChangeEvent/Page.t \
-	t/Socialtext/ChangeEvent/Workspace.t \
 	t/Socialtext/CLI-fs-perm-check.t \
 	t/Socialtext/Config/Base.t \
 	t/Socialtext/CredentialsExtractor/Apache.t \
@@ -479,6 +476,7 @@ QUICK_TESTS = \
 	t/Socialtext/User/LDAP.t \
 	t/Socialtext/UserPreferencesPlugin.t \
 	t/Socialtext/UserSettingsPlugin-email-address-parse.t \
+	t/Socialtext/UploadedImage.t \
 	t/Socialtext/Validate.t \
 	t/Socialtext/WebApp.t \
 	t/Socialtext/WikiFixture/Socialtext.t \
