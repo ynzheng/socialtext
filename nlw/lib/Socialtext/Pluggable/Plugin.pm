@@ -645,9 +645,9 @@ sub set_workspace_prefs {
             ) VALUES (?, ?, ?, ?)
         ', {}, @columns);
     };
-    if ($@) {
+    if (my $error = $@) {
         sql_rollback;
-        die $@;
+        die $error;
     }
     sql_commit;
 
