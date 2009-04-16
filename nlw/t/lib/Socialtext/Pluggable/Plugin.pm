@@ -28,20 +28,6 @@ field 'hub';
 # perldoc Socialtext::URI for arguments
 #    path = '' & query => {}
 
-my @users;
-sub TestUser {
-    my ($self, $name) = @_;
-    my $email = "user.$^T.$name\@ken.socialtext.net";
-    my $user = Socialtext::User->new( username => $email );
-    return $user if $user;
-    $user = Socialtext::User->create(
-       email_address => $email,
-       username => $email,
-    );
-    push @{$self->{_test_users}}, $user;
-    return $user;
-}
-
 sub rest_hooks {}
 sub add_content_type {}
 

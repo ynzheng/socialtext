@@ -137,6 +137,7 @@ like( $html, qr{\Qtitle="weblog link" href="/lite/changes/admin/help">help</a>},
 
 # exercise contention handling
 eval {
+    sleep 1;
     $html = $lite->edit_save(
         page        => $new_page,
         content     => "collide with me\n\n.html\n<h1>Ho</h1>\n.html\n\n",

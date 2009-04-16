@@ -56,7 +56,7 @@ Full_memory: {
         . "--apache-proxy=1 --socialtext-open=0 --dev=0");
     check_apache_config(
         MinSpareServers     => 10,
-        MaxSpareServers     => 18,
+        MaxSpareServers     => 15,
         StartServers        => 15,
         MaxClients          => 22,
         MaxRequestsPerChild => 1000,

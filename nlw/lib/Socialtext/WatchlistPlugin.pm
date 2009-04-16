@@ -321,7 +321,9 @@ sub maybe_send_notifications {
     my ( $from, $subject, $text_template, $html_template )
         = $self->get_notification_vars;
 
+    my $calling_user = $self->hub->current_user;
     foreach my $user (@$ready_users) {
+        $self->hub->current_user($user);
         my $prefs
             = $self->hub->preferences->new_for_user( $user->email_address );
         my $pages
@@ -339,10 +341,9 @@ sub maybe_send_notifications {
 
         my %vars = (
             user                     => $user,
-            workspace                => $self->hub()->current_workspace(),
+            workspace                => $self->hub->current_workspace(),
             pages                    => $watched_pages,
             include_editor           => $include_editor,
-            watchlist_preference_uri => $self->watchlist_preference_uri(),
             watchlist_preference_uri => $self->watchlist_preference_uri(),
         );
 
@@ -360,6 +361,7 @@ sub maybe_send_notifications {
             if $ready_users;
     }
     $notifier->release_lock;
+    $self->hub->current_user($calling_user);
 
     # make this testable
     return 1;

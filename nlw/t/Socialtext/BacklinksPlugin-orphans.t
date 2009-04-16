@@ -7,7 +7,7 @@ use strict;
 use Socialtext::User;
 use Socialtext::Page;
 use Test::Socialtext tests => 6;
-fixtures( 'admin' );
+fixtures( 'clean', 'admin' );
 
 =head1 DESCRIPTION
 

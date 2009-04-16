@@ -1233,7 +1233,7 @@ this.addGlobal().setup_wikiwyg = function() {
         try {
             if (ww.contentIsModified()) {
                 // If it's not confirmed somewhere else, do it right here.
-                if (ww.confirmed != true && !ww.confirmCancellation(loc("Are you sure you want to Cancel?") ))
+                if (ww.confirmed != true && !ww.confirmCancellation(loc("Are you sure you want to cancel?") ))
                     return false;
                 else
                     ww.confirmed = true;
