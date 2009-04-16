@@ -8,21 +8,34 @@ use constant BINARY_TYPE => {pg_type => PG_BYTEA};
 
 has 'table' => (is => 'ro', isa => 'Str', required => 1);
 has 'column' => (is => 'ro', isa => 'Str', required => 1);
-has 'keys' => (is => 'rw', isa => 'HashRef[Str]', required => 1);
-
-has 'transform_params' => (is => 'rw', isa => 'HashRef[Str]');
+has 'id' => (is => 'ro', isa => 'ArrayRef[Str]', required => 1);
 
 has 'image_ref' => (is => 'rw', isa => 'ScalarRef', lazy_build => 1);
+
+for (qw(_keys _vals)) {
+    has $_ => (
+        is => 'ro', isa => 'ArrayRef', auto_deref => 1,
+        lazy_build => 1,
+    );
+}
+
+sub _build__keys {
+    my $id = $_[0]->id;
+    return [map { $id->[$_] } grep {$_%2==0} (0..$#$id)];
+}
+sub _build__vals {
+    my $id = $_[0]->id;
+    return [map { $id->[$_] } grep {$_%2==1} (0..$#$id)];
+}
 
 sub _build_image_ref {
     my $self = shift;
     my $table = $self->table;
     my $col = $self->column;
-    my $id = $self->keys;
-    my $ph = join(' AND ', map { "$_ = ?" } keys %$id);
+    my $ph = join(' AND ', map { "$_ = ?" } $self->_keys);
     my $blob = sql_singlevalue(qq{
         SELECT $col FROM $table WHERE $ph
-    }, values %$id);
+    }, $self->_vals);
     confess "no such image" unless $blob;
     return \$blob;
 }
@@ -43,10 +56,9 @@ sub save {
 
     my $table = $self->table;
     my $col = $self->column;
-    my $id = $self->keys;
-    my $ref = $self->image_ref;
 
-    my @keys = sort keys %$id;
+    my @keys = $self->_keys;
+    my @vals = $self->_vals;
     my $where_keys = join(' AND ', map { "$_ = ?" } @keys);
 
     my $dbh = get_dbh();
@@ -59,7 +71,7 @@ sub save {
 
         my ($exists) = $dbh->selectrow_array(qq{
             SELECT 1 FROM $table WHERE $where_keys FOR UPDATE
-        }, undef, map {$id->{$_}} @keys );
+        }, undef, @vals );
 
         my $put_sth;
         if ($exists) {
@@ -77,7 +89,7 @@ sub save {
 
         my $n = 1;
         $put_sth->bind_param($n++, ${$self->image_ref}, BINARY_TYPE);
-        $put_sth->bind_param($n++, $id->{$_}) for @keys;
+        $put_sth->bind_param($n++, $_) for @vals;
 
         $put_sth->execute();
         die "unable to update image" unless ($put_sth->rows == 1);

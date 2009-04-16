@@ -17,7 +17,7 @@ saving: {
     my $ui = Socialtext::UploadedImage->new(
         table => 'sometable',
         column => 'large_image',
-        keys => {one_id => 111, two_id => 222},
+        id => [one_id => 111, two_id => 222],
     );
     isa_ok $ui, 'Socialtext::UploadedImage', 'got img object';
     ok !$ui->has_image_ref;
@@ -52,7 +52,7 @@ update_image: {
     my $ui = Socialtext::UploadedImage->new(
         table => 'sometable',
         column => 'small_image',
-        keys => {one_id => 111, two_id => 222},
+        id => [two_id => 222, one_id => 111],
         image_ref => \"small dummy image",
     );
 
@@ -62,13 +62,13 @@ update_image: {
 
     sql_ok(
         name => 'locks rows for update',
-        sql => qr/SELECT 1 FROM sometable WHERE one_id = \? AND two_id = \? FOR UPDATE/,
-        args => [[111,222]],
+        sql => qr/SELECT 1 FROM sometable WHERE two_id = \? AND one_id = \? FOR UPDATE/,
+        args => [[222,111]],
     );
     sql_ok(
         name => 'update the image',
-        sql => qr/UPDATE sometable SET small_image = \? WHERE one_id = \? AND two_id = \?/,
-        args => [['small dummy image',{pg_type=>17}], [111,undef], [222,undef],[]],
+        sql => qr/UPDATE sometable SET small_image = \? WHERE two_id = \? AND one_id = \?/,
+        args => [['small dummy image',{pg_type=>17}], [222,undef], [111,undef],[]],
     );
     ok_no_more_sql();
 
@@ -79,13 +79,13 @@ update_image: {
 
         sql_ok(
             name => 'locks rows for update',
-            sql => qr/SELECT 1 FROM sometable WHERE one_id = \? AND two_id = \? FOR UPDATE/,
-            args => [[111,222]],
+            sql => qr/SELECT 1 FROM sometable WHERE two_id = \? AND one_id = \? FOR UPDATE/,
+            args => [[222,111]],
         );
         sql_ok(
             name => 'update the image',
-            sql => qr/UPDATE sometable SET small_image = \? WHERE one_id = \? AND two_id = \?/,
-            args => [['small dummy image',{pg_type=>17}], [111,undef], [222,undef],[]],
+            sql => qr/UPDATE sometable SET small_image = \? WHERE two_id = \? AND one_id = \?/,
+            args => [['small dummy image',{pg_type=>17}], [222,undef], [111,undef],[]],
         );
         ok_no_more_sql();
     }
@@ -98,7 +98,7 @@ loading: {
     my $ui = Socialtext::UploadedImage->new(
         table => 'my_table',
         column => 'my_logo',
-        keys => {three_id => 333},
+        id => [three_id => 333],
     );
     isa_ok $ui, 'Socialtext::UploadedImage', 'got img object';
 
