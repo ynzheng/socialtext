@@ -1372,6 +1372,10 @@ sub _dump_to_yaml_file {
         if $self->logo_filename();
     $dump{name} = $name;
 
+    my $adapter = Socialtext::Pluggable::Adapter->new;
+    $adapter->make_hub(Socialtext::User->SystemUser(), $self);
+    $adapter->hook('nlw.export_workspace', $self, \%dump);
+
     _dump_yaml( $file, \%dump );
 }
 
