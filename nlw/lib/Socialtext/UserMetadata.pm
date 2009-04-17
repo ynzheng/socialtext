@@ -133,7 +133,6 @@ sub set_dm_sends_email {
     my ( $self, $value ) = @_;
     
     $value ||= "0";
-    warn "Setting dm_sends_email to $value";
     $self->_update_field('dm_sends_email=?', $value);
     $self->dm_sends_email( $value );
     return $self;
