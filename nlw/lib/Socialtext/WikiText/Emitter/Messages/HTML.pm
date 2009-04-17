@@ -14,12 +14,15 @@ Readonly my %markup => (
     a    => [ '<a href="HREF">', '</a>' ],
 );
 
+
 sub msg_markup_table { return \%markup }
 
 sub msg_format_link {
     my $self = shift;
     my $ast = shift;
-    return qq{<a href="/$ast->{workspace_id}/index.cgi?$ast->{page_id}">$ast->{text}</a>};
+    my $baseurl = $self->{callbacks}{baseurl} || "";
+
+    return qq{<a href="$baseurl/$ast->{workspace_id}/index.cgi?$ast->{page_id}">$ast->{text}</a>};
 }
 
 sub msg_format_user {
@@ -27,6 +30,7 @@ sub msg_format_user {
     my $ast = shift;
     my $userid = $ast->{user_string};
     my $viewer = $self->{callbacks}{viewer};
+    my $baseurl = $self->{callbacks}{baseurl} || "";
 
     my $user = eval { Socialtext::User->Resolve($userid) };
     unless ($user) {
@@ -37,7 +41,7 @@ sub msg_format_user {
         return $user->guess_real_name;
     }
     else {
-        return '<a href="/?profile/' . $user->user_id 
+        return '<a href="'.$baseurl.'/?profile/' . $user->user_id 
             . '">' . $user->guess_real_name . '</a>';
     }
 }
