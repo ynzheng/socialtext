@@ -3,7 +3,11 @@ package Socialtext::File;
 use strict;
 use warnings;
 use base 'Exporter';
-our @EXPORT_OK = qw(set_contents get_contents ensure_directory);
+our @EXPORT_OK = qw(
+    set_contents set_contents_utf8
+    get_contents get_contents_utf8
+    ensure_directory
+);
 
 =head1 NAME
 
