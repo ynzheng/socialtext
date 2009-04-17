@@ -265,3 +265,5 @@ lib/Socialtext/Socialpoint/Rest.pm
 t/wikitests/socialpoint/ws_plugin_rest.wiki
 etc/socialtext/uri_map.d/socialpoint.yaml
 t/Socialtext/Signal/dm_email.t
+lib/Socialtext/Job/SignalDMNotify.pm
+t/wikitests/signals/dm-email.wiki
