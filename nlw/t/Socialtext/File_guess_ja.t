@@ -19,10 +19,10 @@ my %target_files = (
     'test_dbl_match.txt' => 'euc-jp' );
 my $locale = 'ja';
 
-Get_guss_encoding: {
+Get_guess_encoding: {
     foreach( keys %target_files ) {
         my $file_full_path = 't/attachments/l10n/' . $_;
-        my $encoding = Socialtext::File->get_guess_encoding( $locale,  $file_full_path );
+        my $encoding = Socialtext::File::get_guess_encoding( $locale,  $file_full_path );
         is $encoding, $target_files{$_}, "(" . $_ . ") " . $encoding . " = " . $target_files{$_};
     }
 }

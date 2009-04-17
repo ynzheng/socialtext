@@ -6,6 +6,7 @@ use Class::Field qw( field );
 use Email::Valid;
 use MIME::Types;
 use Socialtext::Encode;
+use Socialtext::File;
 use Socialtext::File::Stringify;
 use Socialtext::JobCreator;
 
@@ -504,7 +505,7 @@ sub charset {
     my $self = shift;
     my $locale = shift;
 
-    my $encoding = Socialtext::File->get_guess_encoding( $locale, $self->full_path );
+    my $encoding = Socialtext::File::get_guess_encoding( $locale, $self->full_path );
     my $charset = $encoding_charset_map->{$encoding};
     if (! defined $charset ) {
         $charset = 'UTF-8';

@@ -440,7 +440,7 @@ sub _guess_charset {
 
     unless ($charset) {
         my $locale = system_locale();
-        $charset = Socialtext::File->_guess_string_encoding( $locale, $body );
+        $charset = Socialtext::File::_guess_string_encoding( $locale, $body );
     }
     return $charset;
 }
@@ -520,7 +520,7 @@ sub _get_html_body {
     return unless @lines;
 
     my $html = join '', @lines;
-    my $encode_type = Socialtext::File->_guess_string_encoding( 'ja', $html );
+    my $encode_type = Socialtext::File::_guess_string_encoding( 'ja', $html );
     Encode::_utf8_off($html) if Encode::is_utf8($html);
 
     my $converter = HTML::WikiConverter->new(
