@@ -17,16 +17,31 @@ sub clear_email {
     unlink $self->email_file;
 }
 
-sub email_like {
+sub _get_email_contents {
     my $self = shift;
-    my $expected = shift;
-
     my $contents = '__NO CONTENT!__';
     if (-f $self->email_file) {
         $contents = get_contents_utf8($self->email_file);
     }
+    return $contents;
+}
+
+sub email_like {
+    my $self = shift;
+    my $expected = shift;
+
+    my $contents = $self->_get_email_contents;
     like $contents, qr/$expected/, 'email contents';
 }
+
+sub email_unlike {
+    my $self = shift;
+    my $expected = shift;
+
+    my $contents = $self->_get_email_contents;
+    unlike $contents, qr/$expected/, 'email contents';
+}
+
 
 around 'st_process_jobs' => sub {
     my $orig = shift;
