@@ -3,6 +3,7 @@ use Moose;
 use Socialtext::SQL qw/get_dbh :exec :txn/;
 use DBD::Pg qw/:pg_types/;
 use Fatal qw/open close rename link/;
+use Socialtext::File ();
 use namespace::clean -except => 'meta';
 
 use constant BINARY_TYPE => {pg_type => PG_BYTEA};
@@ -116,6 +117,7 @@ sub remove {
     my @vals = $self->_vals;
     my $where_keys = join(' AND ', map { "$_ = ?" } @keys);
     my $sth = sql_execute(qq{DELETE FROM $table WHERE $where_keys}, @vals);
+    $self->clear_image_ref;
     return $sth->rows;
 }
 
@@ -137,9 +139,7 @@ sub cache_to_dir {
     my $filename = $self->_filename($dir);
     my $tempname = "$filename.tmp";
 
-    open my $fh, '>', $tempname;
-    print $fh ${$self->image_ref} or die "can't write to file $tempname: $!";
-    close $fh;
+    Socialtext::File::set_contents_binary($tempname, $self->image_ref);
 
     rename $tempname => $filename;
 

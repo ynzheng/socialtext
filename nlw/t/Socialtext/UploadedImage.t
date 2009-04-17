@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 66;
+use Test::More tests => 67;
 use Test::Exception;
 use File::Temp qw/tempdir/;
 use File::Slurp qw/slurp/;
@@ -210,6 +210,7 @@ removal: {
     lives_ok {
         $ui->remove();
     } 'removal';
+    ok !$ui->has_image_ref, 'local ref removed';
 
     sql_ok(
         name => 'locks rows for update',
