@@ -4,17 +4,17 @@ use strict;
 use warnings;
 use Socialtext::Account;
 use Socialtext::User;
-use Test::More;
-use Test::HTTP;
 use Socialtext::SQL qw/sql_execute/;
 use Socialtext::JSON qw/decode_json encode_json/;
-use URI::Escape qw(uri_unescape uri_escape);
 use Socialtext::File;
-use Time::HiRes qw/gettimeofday tv_interval time/;
 use Socialtext::System qw/shell_run/;
 use Socialtext::HTTP::Ports;
 use Socialtext::Role;
 use File::LogReader;
+use Test::More;
+use Test::HTTP;
+use Time::HiRes qw/gettimeofday tv_interval time/;
+use URI::Escape qw(uri_unescape uri_escape);
 
 =head1 NAME
 
@@ -921,6 +921,27 @@ Reset any global plugin enabled.
 sub reset_plugins {
     my $self = shift;
     sql_execute(q{DELETE FROM "System" WHERE field like '%-enabled-all'});
+}
+
+=head2 st-clear-jobs
+
+Clear out any queued jobs.
+
+=cut
+
+sub st_clear_jobs {
+    shell_run('ceq-rm .');
+    shell_run('ceqlotron -f -o');
+}
+
+=head2 st-process-jobs
+
+Run any queued jobs.
+
+=cut
+
+sub st_process_jobs {
+    shell_run('ceqlotron -f -o');
 }
 
 
