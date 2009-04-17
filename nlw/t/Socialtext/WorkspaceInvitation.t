@@ -40,12 +40,6 @@ Can_send_without_exception: {
     is( $e, '', "send without exception" );
 }
 
-# These test cases Ass-U-Me that the user_factories option in socialtext.conf
-# will be set to it's default value.  Other tests may have messed with this,
-# so we will explicitly set it to defaults.
-system($^X . q{ -pi -e 's/^user_factories.+$/# user_factories: Default/m' }
-       . "t/tmp/etc/socialtext/socialtext.conf");
-
 my @cases = ( { label        => 'non-appliance',
                 is_appliance => 0,
                 username     => 'devnull8@socialtext.com',
