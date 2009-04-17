@@ -11,7 +11,7 @@ use Socialtext::DaemonUtil;
 use Socialtext::Migration::Utils qw/ensure_socialtext_schema/;
 
 # 26 has a recent change to the page table.
-ensure_socialtext_schema(26);
+ensure_socialtext_schema(29);
 
 # Need to run as www-data when modifying files on the system.
 Socialtext::DaemonUtil->Check_and_drop_privs();
