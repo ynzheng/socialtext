@@ -47,8 +47,12 @@ A simple UTF8 wrapper around L<set_contents()>.
 
 =head2 set_contents_based_on_encoding( $filename, $content, $encoding )
 
-Set the contents of a file, using the requested $binmode (which will have
+Set the contents of a file, using the requested C<$binmode> (which will have
 C<:mmap> prepended to it.  See L<PerlIO>.
+
+=head2 set_contents_binary ( $filename )
+
+Set the contents of a binary file.
 
 =head2 set_contents_binmode( $filename, $content, $binmode )
 
@@ -109,15 +113,19 @@ A simple UTF8 wrapper around L<get_contents()>.
 
 Slurp the contents of C<$filename> using C<$encoding> to transcode the chars.
 
-=head2 get_contents_binmode( $filename, $binmode )
-
-Slurp the contents of a file, using the requested C<$binmode> (which will have
-C<:mmap> prepended to it).  See L<PerlIO>.
-
 =head2 get_contents_or_empty( $filename, ... )
 
 Slurp the contents of a file, returning C<''> if there was any trouble (will
 not raise an exception).  Parameters are passed to L<get_contents>.
+
+=head2 get_contents_binary ( $filename )
+
+Slurp a binary file.
+
+=head2 get_contents_binmode( $filename, $binmode )
+
+Slurp the contents of a file, using the requested C<$binmode> (which will have
+C<:mmap> prepended to it).  See L<PerlIO>.
 
 =cut
 
@@ -159,6 +167,11 @@ sub get_contents_or_empty {
 
 sub get_contents_utf8 {
     splice(@_,1,1, ':utf8');
+    goto &get_contents_binmode;
+}
+
+sub get_contents_binary {
+    splice(@_,1,1,':mmap');
     goto &get_contents_binmode;
 }
 
