@@ -235,6 +235,11 @@ CREATE SEQUENCE "Workspace___workspace_id"
     NO MINVALUE
     CACHE 1;
 
+CREATE TABLE account_logo (
+    account_id bigint NOT NULL,
+    logo bytea NOT NULL
+);
+
 CREATE TABLE account_plugin (
     account_id bigint NOT NULL,
     plugin text NOT NULL
@@ -670,6 +675,10 @@ ALTER TABLE ONLY "WorkspaceRolePermission"
 ALTER TABLE ONLY "Workspace"
     ADD CONSTRAINT "Workspace_pkey"
             PRIMARY KEY (workspace_id);
+
+ALTER TABLE ONLY account_logo
+    ADD CONSTRAINT account_logo_pkey
+            PRIMARY KEY (account_id);
 
 ALTER TABLE ONLY account_plugin
     ADD CONSTRAINT account_plugin_pkey
@@ -1111,6 +1120,11 @@ CREATE TRIGGER users_insert
     FOR EACH ROW
     EXECUTE PROCEDURE auto_vivify_user_rollups();
 
+ALTER TABLE ONLY account_logo
+    ADD CONSTRAINT account_logo_account_fk
+            FOREIGN KEY (account_id)
+            REFERENCES "Account"(account_id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY account_plugin
     ADD CONSTRAINT account_plugin_account_fk
             FOREIGN KEY (account_id)
@@ -1437,4 +1451,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '54');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '55');
