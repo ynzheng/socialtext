@@ -698,7 +698,7 @@ proto.confirmCancellation = function(msg) {
 }
 
 proto.confirmLinkFromEdit = function() {
-    ww.signal_edit_cancel();
+    this.signal_edit_cancel();
     if (wikiwyg.contentIsModified()) {
         var msg = loc("Are you sure you want to navigate away from this page?");
         var response =  wikiwyg.confirmCancellation(msg);
@@ -752,7 +752,9 @@ proto.enableLinkConfirmations = function() {
     /* Handle the Home link explicitly instead of relying on
      * window.onbeforeunload, so Selenium can test it.
      */
-    jQuery('#st-home-link').click(this.confirmLinkFromEdit);
+    jQuery('#st-home-link').click(function(){
+        self.confirmLinkFromEdit();
+    });
  
     return false;
 }
