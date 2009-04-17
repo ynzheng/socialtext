@@ -343,6 +343,24 @@ sub set_account_id {
     diag "Set variable $var_name to $self->{$var_name}";
 }
 
+=head2 set_regex_escape( $varname, $value )
+
+Takes a value and places a regex-escaped value in a variable that should be used 
+for the value of a *like command.
+
+This is convenient when you are constructing a string with / that needs escaping 
+(the / needs escaping inside or outside of a qr//) for use with *like commands
+
+=cut
+sub set_regex_escaped {
+    my $self = shift;
+    my $var_name = shift;
+    my $value = shift;
+
+    #$value =~ s/\//\\\//;
+    $self->{$var_name} = "\Q$value\E";
+}
+
 sub sleep {
     my $self = shift;
     my $secs = shift;
