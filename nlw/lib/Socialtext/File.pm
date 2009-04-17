@@ -15,7 +15,7 @@ Socialtext::File - Assorted file and I/O utility routines.
 
 =cut
 
-use Carp ();
+use Carp qw(confess);
 use Fcntl qw(:flock);
 use File::Path;
 use File::Spec;
@@ -28,12 +28,16 @@ use List::Util qw/reduce/;
 # should be able to be used by any other socialtext code without
 # worrying about what dependencies are getting pulled in.
 
+use namespace::clean;
+
 =head1 SUBROUTINES
 
-=head2 set_contents( $filename, $context [, $is_utf8 ] )
+=head2 set_contents( $filename, $content [, $is_utf8 ] )
 
-Creates file at I<$filename>, dumps I<$content> into the file, and
-closes it.  If I<$is_utf8> is set, sets the C<:utf8> binmode on the file.
+Creates file at C<$filename>, dumps C<$content> into the file, and
+closes it.  If C<$is_utf8> is set, sets the C<:utf8> binmode on the file.
+
+I<$content> may be a scalar reference.
 
 Returns I<$filename>.
 
@@ -41,21 +45,31 @@ Returns I<$filename>.
 
 A simple UTF8 wrapper around L<set_contents()>.
 
+=head2 set_contents_based_on_encoding( $filename, $content, $encoding )
+
+Set the contents of a file, using the requested $binmode (which will have
+C<:mmap> prepended to it.  See L<PerlIO>.
+
+=head2 set_contents_binmode( $filename, $content, $binmode )
+
+Set the contents of a file, using the requested C<$binmode> (which will have
+C<:mmap> prepended to it).  See L<PerlIO>.
+
 =cut
 
 sub set_contents_binmode {
-    my $file    = shift;
-    my $content = shift;
-    my $binmode = shift || '';
+    my $filename = shift;
+    my $content  = shift;
+    my $binmode  = shift || '';
     $binmode = ":mmap$binmode";
 
     my $fh;
-    open $fh, ">$binmode", $file
-        or Carp::confess( "unable to open $file for writing: $!" );
+    open $fh, ">$binmode", $filename
+        or confess( "unable to open $filename for writing: $!" );
     print $fh ref($content) ? $$content : $content
-        or Carp::confess "Can't write $file: $!";
-    close $fh or Carp::confess "Can't write $file: $!";
-    return $file;
+        or confess "Can't write $filename: $!";
+    close $fh or confess "Can't write $filename: $!";
+    return $filename;
 }
 
 sub set_contents {
@@ -80,38 +94,49 @@ sub set_contents_based_on_encoding {
 
 =head2 get_contents( $filename, [, $is_utf8 ] )
 
-Slurps the file at I<$filename> and returns the content.  In list context,
+Slurps the file at C<$filename> and returns the content.  In list context,
 returns a list of the lines in the file.  In scalar context, returns a
 big string.
 
-In either case, if I<$is_utf8> is set, sets the C<:utf8> binmode on
+In either case, if C<$is_utf8> is set, sets the C<:utf8> binmode on
 the file.
-
-Returns I<$filename>.
 
 =head2 get_contents_utf8( $filename )
 
 A simple UTF8 wrapper around L<get_contents()>.
 
+=head2 get_contents_based_on_encoding( $filename, $encoding )
+
+Slurp the contents of C<$filename> using C<$encoding> to transcode the chars.
+
+=head2 get_contents_binmode( $filename, $binmode )
+
+Slurp the contents of a file, using the requested C<$binmode> (which will have
+C<:mmap> prepended to it).  See L<PerlIO>.
+
+=head2 get_contents_or_empty( $filename, ... )
+
+Slurp the contents of a file, returning C<''> if there was any trouble (will
+not raise an exception).  Parameters are passed to L<get_contents>.
+
 =cut
 
 sub get_contents_binmode {
-    my $file    = shift;
-    my $binmode = shift || '';
+    my $filename = shift;
+    my $binmode  = shift || '';
     $binmode = ":mmap$binmode";
 
     my $fh;
-    open $fh, "<$binmode", $file or Carp::confess( "unable to open $file: $!" );
+    open $fh, "<$binmode", $filename
+        or confess( "unable to open $filename: $!" );
 
     if (wantarray) {
         my @contents = <$fh>;
-        close $fh;
         return @contents;
     }
     else {
         local $/;
         my $contents = <$fh>;
-        close $fh;
         return $contents;
     }
 }
@@ -122,7 +147,6 @@ sub get_contents {
 }
 
 sub get_contents_based_on_encoding {
-    my $class = shift;
     splice(@_,1,1, ":encoding($_[1])");
     goto &get_contents_binmode;
 }
@@ -143,8 +167,14 @@ my $locale_encoding_names = {
     'en' => 'utf8',
 };
 
+
+=head2 get_guess_encoding ( $locale, $file_full_path )
+
+Guess the encoding of a file.  Suitable for use with L<get_contents_based_on_encoding>.
+
+=cut
+
 sub get_guess_encoding {
-    my $self = shift;
     my $locale = shift;
     my $file_full_path = shift;
 
@@ -178,7 +208,6 @@ sub get_guess_encoding {
 }
 
 sub _guess_string_encoding {
-    my $class = shift;
     my $locale = shift;
     my $data = shift;
     my $encoding_names = $locale_encoding_names->{$locale};
@@ -199,12 +228,19 @@ sub _guess_string_encoding {
     }
 }
 
+=head2 ensure_directory ( $path, [ $mode ] )
+
+Make sure that the directory exists.  If C<$mode> is not specified it defaults
+to C<0755>.
+
+=cut
+
 sub ensure_directory {
     my $directory = shift;
     my $mode = shift || 0755;
     return if -e $directory;
     eval { File::Path::mkpath $directory, 0, $mode };
-    Carp::confess( "unable to create directory path $directory: $@" ) if $@;
+    confess( "unable to create directory path $directory: $@" ) if $@;
 }
 
 =head2 ensure_empty_file($path, $tmp_path)
@@ -230,26 +266,26 @@ sub ensure_empty_file {
     unless (unlink $tmp_path) {
         # The only acceptable error here is that the file didn't exist to
         # begin with.
-        Carp::confess( "unlink '$tmp_path': $!" ) unless $!{ENOENT};
+        confess( "unlink '$tmp_path': $!" ) unless $!{ENOENT};
     }
 
     # XXX fix the perms here
-    open my $l, '>', $tmp_path or Carp::confess( "create '$tmp_path': $!" );
-    close $l or Carp::confess( "create '$tmp_path': $!" );
+    open my $l, '>', $tmp_path or confess( "create '$tmp_path': $!" );
+    close $l or confess( "create '$tmp_path': $!" );
     unless (link $tmp_path, $path) {
         # The only acceptable error here is that the target ($path) already
         # existed.
-        Carp::confess( "link '$tmp_path' -> '$path': $!" ) unless $!{EEXIST};
+        confess( "link '$tmp_path' -> '$path': $!" ) unless $!{EEXIST};
     }
 
     # REVIEW: This isn't really fatal, but I don't like to warn() in library
     # code.  How should we warn the caller?
-    Carp::confess( "unlink '$tmp_path': $!" ) unless unlink $tmp_path;
+    confess( "unlink '$tmp_path': $!" ) unless unlink $tmp_path;
 }
 
 sub directory_is_empty {
     my $directory = shift;
-    opendir my $dh, $directory or Carp::confess( "unable to open directory: $!\n" );
+    opendir my $dh, $directory or confess( "unable to open directory: $!\n" );
     for my $e ( readdir $dh ) {
         return 0 unless $e =~ /^\.\.?$/;
     }
@@ -258,14 +294,14 @@ sub directory_is_empty {
 
 sub all_directory_files {
     my $directory = shift;
-    opendir my $dh, $directory or Carp::confess( "unable to open directory: $!\n" );
+    opendir my $dh, $directory or confess( "unable to open directory: $!\n" );
     return grep { !/^(?:\.|\.\.)$/ && -f catfile( $directory, $_ ) }
         readdir $dh;
 }
 
 sub all_directory_directories {
     my $directory = shift;
-    opendir my $dh, $directory or Carp::confess( "unable to open directory: $!\n" );
+    opendir my $dh, $directory or confess( "unable to open directory: $!\n" );
     return grep { !/^(?:\.|\.\.)$/ && -d catfile( $directory, $_ ) }
         readdir $dh;
 }
@@ -303,12 +339,12 @@ sub update_mtime {
     # Socialtext::EmailNotifyPlugin)
     unless ( -f $file ) {
         open my $fh, '>', $file
-            or Carp::confess( "Cannot write to $file: $!" );
+            or confess( "Cannot write to $file: $!" );
         close $fh;
     }
 
     utime $time, $time, $file
-        or Carp::confess( "Cannot call utime on $file: $!" );
+        or confess( "Cannot call utime on $file: $!" );
 }
 
 =head2 write_lock($file)
@@ -322,9 +358,9 @@ sub write_lock {
     my $file = shift;
 
     open my $fh, '>', $file
-        or Carp::confess( "Cannot write to $file: $!" );
+        or confess( "Cannot write to $file: $!" );
     flock $fh, LOCK_EX
-        or Carp::confess( "Cannot lock $file for writing: $!" );
+        or confess( "Cannot lock $file for writing: $!" );
 
     return $fh;
 }
@@ -392,7 +428,7 @@ sub remove_directory {
     my $directory = shift;
 
     eval { rmtree($directory) };
-    Carp::confess( "unable to remove directory path $directory: $@" ) if $@;
+    confess( "unable to remove directory path $directory: $@" ) if $@;
 }
 
 =head2 safe_symlink($filename, $symlink)
