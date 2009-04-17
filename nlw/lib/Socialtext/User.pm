@@ -38,7 +38,7 @@ my @user_store_interface =
 my @user_metadata_interface =
     qw( creation_datetime last_login_datetime email_address_at_import
         created_by_user_id is_business_admin is_technical_admin
-        is_system_created primary_account_id dm_sends_email set_dm_sends_email);
+        is_system_created primary_account_id dm_sends_email );
 my @minimal_interface
     = ( 'user_id', @user_store_interface, @user_metadata_interface );
 
