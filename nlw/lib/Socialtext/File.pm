@@ -43,21 +43,39 @@ A simple UTF8 wrapper around L<set_contents()>.
 
 =cut
 
-sub set_contents {
-    my $file = shift;
+sub set_contents_binmode {
+    my $file    = shift;
     my $content = shift;
-    my $utf8  = shift;
+    my $binmode = shift || '';
+    $binmode = ":mmap$binmode";
 
     my $fh;
-    open $fh, ">", $file or Carp::confess( "unable to open $file for writing: $!" );
-    binmode($fh, ':utf8') if $utf8;
-    print $fh $content;
-    close $fh or die "Can't write $file: $!";
+    open $fh, ">$binmode", $file
+        or Carp::confess( "unable to open $file for writing: $!" );
+    print $fh ref($content) ? $$content : $content
+        or Carp::confess "Can't write $file: $!";
+    close $fh or Carp::confess "Can't write $file: $!";
     return $file;
 }
 
+sub set_contents {
+    splice(@_,2,1, ($_[2]) ? ':utf8' : '');
+    goto &set_contents_binmode;
+}
+
 sub set_contents_utf8 {
-    return set_contents(shift, shift, 1);
+    splice(@_,2,1,':utf8');
+    goto &set_contents_binmode;
+}
+
+sub set_contents_binary {
+    splice(@_,2,1,':mmap');
+    goto &set_contents_binmode;
+}
+
+sub set_contents_based_on_encoding {
+    splice(@_,2,1,":mmap:encoding($_[2])");
+    goto &set_contents_binmode;
 }
 
 =head2 get_contents( $filename, [, $is_utf8 ] )
@@ -77,56 +95,47 @@ A simple UTF8 wrapper around L<get_contents()>.
 
 =cut
 
-sub get_contents {
-    my $file = shift;
-    my $utf8  = shift;
+sub get_contents_binmode {
+    my $file    = shift;
+    my $binmode = shift || '';
+    $binmode = ":mmap$binmode";
 
     my $fh;
-    open $fh, '<', $file or Carp::confess( "unable to open $file: $!" );
-    binmode($fh, ':utf8') if $utf8;
+    open $fh, "<$binmode", $file or Carp::confess( "unable to open $file: $!" );
 
     if (wantarray) {
         my @contents = <$fh>;
         close $fh;
         return @contents;
     }
+    else {
+        local $/;
+        my $contents = <$fh>;
+        close $fh;
+        return $contents;
+    }
+}
 
-    my $contents = do { local $/; <$fh> };
-    close $fh;
-    return $contents;
+sub get_contents {
+    splice(@_,1,1, ($_[1]) ? ':utf8' : '');
+    goto &get_contents_binmode;
 }
 
 sub get_contents_based_on_encoding {
     my $class = shift;
-    my $file = shift;
-    my $encoding  = shift;
-
-    my $fh;
-    open $fh, '<', $file or Carp::confess( "unable to open $file: $!" );
-    binmode($fh, ':encoding('. $encoding . ')');
-
-    if (wantarray) {
-        my @contents = <$fh>;
-        close $fh;
-        return @contents;
-    }
-
-    my $contents = '';
-    eval { local $/; $contents = <$fh> };
-    warn $@ if $@;
-    close $fh;
-    return $contents;
+    splice(@_,1,1, ":encoding($_[1])");
+    goto &get_contents_binmode;
 }
 
 sub get_contents_or_empty {
-    my $contents;
-    eval { $contents = get_contents(@_) };
+    my $contents = eval { get_contents(@_) };
     $contents = '' if ($@);
     return $contents;
 }
 
 sub get_contents_utf8 {
-    return get_contents(shift, 1);
+    splice(@_,1,1, ':utf8');
+    goto &get_contents_binmode;
 }
 
 my $locale_encoding_names = {
