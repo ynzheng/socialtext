@@ -222,7 +222,8 @@ SEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSE
 | *Comment* | Test Case: Tagged Page Sorting. Sorting search results. Do the SEARCH again. |  |
 | st-search | simple | Pages containing 'simple' |
 | st-result | 5 total |  |
-
+| open_ok | /%%sorting_workspace%%/index.cgi?action=search;scope=_;orig_search_term=simple;sortby=Relevance;direction=desc;summaries=1;limit=20;offset=0 |
+| st-result | 5 total |  |
 | *Comment* | Test Case: Tagged Page Sorting. Sorting search results. Verify Relevance sort |
 | text_like | contentContainer | qr/simple simple more simple most simple.+This is a simple text file/ |
 | click_and_wait | link=Titles |  |
