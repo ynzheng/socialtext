@@ -36,6 +36,8 @@ use Socialtext::SQL::Builder qw/sql_insert_many/;
 use Carp ();
 use Class::Field qw( field const );
 use Cwd ();
+use DateTime;
+use DateTime::Duration;
 use DateTime::Format::Strptime;
 use Date::Parse qw/str2time/;
 use Email::Valid;
@@ -1877,8 +1879,10 @@ for this page.
 sub edit_in_progress {
     my $self = shift;
 
+    my $yesterday = DateTime->now() - DateTime::Duration->new( days => 1 );
     my $reporter = Socialtext::Events::Reporter->new(
-        viewer => $self->hub->current_user
+        viewer => $self->hub->current_user,
+        after  => $yesterday,
     );
     my $events = $reporter->get_page_contention_events({
         page_workspace_id => $self->hub->current_workspace->workspace_id,
