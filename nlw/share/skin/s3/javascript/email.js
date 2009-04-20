@@ -7,18 +7,22 @@
 
 Class('Email.Page', function() {
 
+var EMAIL_ADDRESS = "([a-zA-Z0-9_'+*$%\\^&!\\.\\-])+"
+                  + "@"
+                  + "(([a-zA-Z0-9\\-])+\\.)+"
+                  + "([a-zA-Z0-9:]{2,4})+";
+
 var EMAIL_ADDRESS_REGEX = new RegExp(
-    "^"
-    + "([a-zA-Z0-9_'+*$%\\^&!\\.\\-])+"
-    + "@"
-    + "(([a-zA-Z0-9\\-])+\\.)+"
-    + "([a-zA-Z0-9:]{2,4})+"
-    + "$"
-    , "i"
+    "^" + EMAIL_ADDRESS + "$", "i"
 );
 
+var EMAIL_WITH_NAME_REGEX = new RegExp(
+    "^[^<]+<" + EMAIL_ADDRESS + ">$", "i"
+)
+
 this.check_address = function(email_address) {
-    return EMAIL_ADDRESS_REGEX.test(email_address);
+    return EMAIL_ADDRESS_REGEX.test(email_address) ||
+           EMAIL_WITH_NAME_REGEX.test(email_address);
 };
 
 });

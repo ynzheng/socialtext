@@ -4,84 +4,89 @@ package Socialtext::Rest::WorkspaceUsers;
 use warnings;
 use strict;
 
-use base 'Socialtext::Rest::Collection';
+use base 'Socialtext::Rest::Users';
 use Socialtext::JSON;
 use Socialtext::HTTP ':codes';
 use Socialtext::WorkspaceInvitation;
+use Socialtext::User::Find::Workspace;
 
 # FIXME: POST is not yet implemented
 #sub allowed_methods {'GET, HEAD, POST'}
 sub allowed_methods {'GET, HEAD, POST'}
 sub collection_name { "Users in workspace " . $_[0]->ws }
 
-sub _user_representation {
-    my ( $self, $user_info ) = @_;
-    my $user  = $user_info->[0];
-    my $role  = $user_info->[1];
+sub _entity_hash {
+    my ( $self, $user ) = @_;
     my $name  = $user->username;
     my $email = $user->email_address;
     return +{
         name               => $name,
         email              => $email,
-        is_workspace_admin => ( $role->name eq 'workspace_admin' ),
-        role_name          => $role->name,
         uri                => "/data/users/$name",
     };
 }
 
-# REVIEW: Any need for a query language here yet?
-sub get_resource {
-    my ( $self, $rest ) = @_;
+sub create_user_find {
+    my $self = shift;
+    my $limit = $self->rest->query->param('count') ||
+                $self->rest->query->param('limit') ||
+                25;
+    my $offset = $self->rest->query->param('offset') || 0;
+
+    my $filter = $self->rest->query->param('filter');
+    my $workspace = Socialtext::Workspace->new( name => $self->ws );
+    return Socialtext::User::Find::Workspace->new(
+        viewer => $self->rest->user,
+        limit => $limit,
+        offset => $offset,
+        filter => $filter,
+        workspace => $workspace,
+    )
+}
+
+sub if_authorized {
+    my $self = shift;
+    my $method = shift;
+    my $call = shift;
 
     my $acting_user = $self->rest->user;
 
-    # REVIEW: A permissions issue at this stage will result in a 404
-    # which might not be the desired result. In a way it's kind of good,
-    # in an information hiding sort of way, but....
-    if (
-        $self->workspace->permissions->user_can(
+    if ($method eq 'POST') {
+        return $self->not_authorized 
+            unless $self->rest->user->is_business_admin()
+                || $self->rest->user->is_technical_admin()
+                || $self->hub->checker->check_permission('admin_workspace');
+    }
+    elsif ($method eq 'GET') {
+        my $can_admin = $self->workspace->permissions->user_can(
             user       => $acting_user,
             permission =>
                 Socialtext::Permission->new( name => 'admin_workspace' ),
-        )
+        );
         # REVIEW: {bz: 1265} requires everybody with "Email this Page"
         # permission to see the workspace user list.  Is this desired?
-            or 
-        $self->workspace->permissions->user_can(
+        my $can_email = $self->workspace->permissions->user_can(
             user       => $acting_user,
             permission =>
                 Socialtext::Permission->new( name => 'email_out' ),
-        )
-
-
-        ) {
-
-        return [
-            $self->_limit_collectable(
-                map { $self->_user_representation($_) }
-                    $self->workspace->users_with_roles->all
-            )
-        ];
+        );
+        return $self->not_authorized unless $can_admin or $can_email;
     }
-    return [];
-}
+    else {
+        return $self->bad_method;
+    }
 
-sub _user_may_subscribe {
-    my $self = shift;
-
-    return $self->rest->user->is_business_admin()
-        || $self->rest->user->is_technical_admin()
-        || $self->hub->checker->check_permission('admin_workspace');
+    return $self->$call(@_);
 }
 
 sub POST {
     my $self = shift;
-    my $rest = shift;
+    return $self->if_authorized('POST', '_POST', @_);
+}
 
-    unless ( $self->_user_may_subscribe() ) {
-        $rest->header( -status => HTTP_403_Forbidden );
-        return '';
-    }
+sub _POST {
+    my $self = shift;
+    my $rest = shift;
 
     my $create_request_hash = decode_json( $rest->getContent() );
 

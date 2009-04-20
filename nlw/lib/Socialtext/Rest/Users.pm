@@ -89,10 +89,8 @@ sub _POST_json {
     return '';
 }
 
-sub get_resource {
+sub create_user_find {
     my $self = shift;
-    my $rest = shift;
-
     my $limit = $self->rest->query->param('count') ||
                 $self->rest->query->param('limit') ||
                 25;
@@ -100,14 +98,19 @@ sub get_resource {
 
     my $filter = $self->rest->query->param('filter');
 
-    my $results = [];
-    my $f = eval { 
-        Socialtext::User::Find->new(
-            viewer => $self->rest->user,
-            limit => $limit,
-            offset => $offset,
-        )
-    };
+    return Socialtext::User::Find->new(
+        viewer => $self->rest->user,
+        limit => $limit,
+        offset => $offset,
+        filter => $filter,
+    )
+}
+
+sub get_resource {
+    my $self = shift;
+    my $rest = shift;
+
+    my $f = eval { $self->create_user_find };
     if ($@) {
         warn $@;
         $rest->header(
@@ -117,9 +120,7 @@ sub get_resource {
         return "Bad request or illegal filter options";
     }
 
-    $results = eval {
-        $f->typeahead_find($self->rest->query->param('filter'));
-    };
+    my $results = eval { $f->typeahead_find };
     if ($@) {
         warn $@;
         $rest->header(
@@ -129,7 +130,10 @@ sub get_resource {
         return "Illegal filter or query error";
     }
 
-    return $results;
+    return $results || [];
+}
+
+sub _entity_hash {
 }
 
 1;

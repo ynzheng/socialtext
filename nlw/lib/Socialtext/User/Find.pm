@@ -9,15 +9,12 @@ use namespace::clean -except => 'meta';
 has viewer => (is => 'rw', isa => 'Socialtext::User', required => 1);
 has limit => (is => 'rw', isa => 'Maybe[Int]');
 has offset => (is => 'rw', isa => 'Maybe[Int]');
+has filter => (is => 'rw', isa => 'Maybe[Str]');
 
-sub typeahead_find {
+sub cleanup_filter {
     my $self = shift;
-    my $filter = shift;
 
-    die 'Illegal Filter'
-        unless (defined $filter && length $filter);
-
-    $filter = lc Socialtext::String::trim($filter);
+    my $filter = lc Socialtext::String::trim($self->filter || '');
 
     # If we don't get rid of these wildcards, the LIKE operator slows down
     # significantly.  Matching on anything other than a prefix causes Pg to not
@@ -28,9 +25,14 @@ sub typeahead_find {
     $filter =~ s/\\b//g;
     $filter .= '%';
 
+    $self->filter($filter);
+}
+
+sub get_results {
+    my $self = shift;
+
     my $sql = q{
-        SELECT user_id, first_name, last_name,
-               email_address, driver_username AS username
+        SELECT user_id, first_name, last_name, email_address, driver_username
         FROM users
         WHERE (
             lower(first_name) LIKE $1 OR
@@ -50,13 +52,25 @@ sub typeahead_find {
 
     #local $Socialtext::SQL::PROFILE_SQL = 1;
     my $sth = sql_execute($sql, 
-        $filter, $self->viewer->user_id, $self->limit, $self->offset);
+        $self->filter, $self->viewer->user_id, $self->limit, $self->offset
+    );
 
-    my $results = $sth->fetchall_arrayref({}) || [];
+    return $sth->fetchall_arrayref({}) || [];
+}
 
+sub typeahead_find {
+    my $self = shift;
+    $self->cleanup_filter;
+    my $results = $self->get_results;
     for my $row (@$results) {
         my $user = Socialtext::User->new(user_id => $row->{user_id});
         $row->{best_full_name} = $user->guess_real_name;
+        $row->{name} = $row->{driver_username};
+        $row->{uri} = "/data/users/$row->{driver_username}";
+
+        # Backwards compatibility stuff
+        $row->{email} = $row->{email_address};
+        $row->{username} = $row->{driver_username};
     }
     return $results;
 }

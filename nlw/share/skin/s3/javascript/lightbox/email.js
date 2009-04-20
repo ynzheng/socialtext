@@ -27,7 +27,7 @@ proto.show = function () {
         });
 
         jQuery('#email_remove').click(function () {
-            jQuery('#email_dest option:selected').appendTo('#email_source');
+            jQuery('#email_dest option:selected').remove();
         });
 
         jQuery('#email_all').click(function () {
@@ -35,11 +35,33 @@ proto.show = function () {
         });
 
         jQuery('#email_none').click(function () {
-            jQuery('#email_dest option').appendTo('#email_source');
+            jQuery('#email_dest option').remove();
         });
 
-        jQuery('#email_addone').click(function () {
-            var val = jQuery('#email_page_add_one').val();
+        jQuery('#email_recipient')
+            .lookahead({
+                url: '/data/workspaces/' + Socialtext.wiki_id + '/users',
+                linkText: function (user) {
+                    return user.best_full_name
+                         + ' <' + user.email_address +'>';
+                },
+                displayAs: function (item) {
+                    return item.title;
+                },
+                onAccept: function(id, item) {
+                    jQuery('#email_recipient').blur();
+                    jQuery('#email_add').click();
+                }
+            })
+            .click(function() {
+                if ($(this).hasClass('lookahead-prompt')) {
+                    $(this).val("");
+                    $(this).removeClass("lookahead-prompt");
+                }
+            });
+
+        jQuery('#email_add').click(function () {
+            var val = jQuery('#email_recipient').val();
             if (!val) {
                 return false;
             }
@@ -49,12 +71,13 @@ proto.show = function () {
                 return false;
             }
             else {
-                jQuery('<option />').val(val).html(val).appendTo('#email_dest');
+                jQuery('<option />').val(val).text(val).appendTo('#email_dest');
+                jQuery('#email_recipient').val('').focus();
                 return false;
             }
         });
 
-        jQuery.getJSON(this.restURL + '/users', function (data) {
+/*        jQuery.getJSON(this.restURL + '/users', function (data) {
             for (var i=0; i<data.length; i++) {
                 jQuery('<option />')
                     .html(data[i].email)
@@ -62,7 +85,7 @@ proto.show = function () {
                     .appendTo('#email_source')
             }
         });
-
+*/
         jQuery('#st-email-lightbox-form').submit(function () {
             if (jQuery('#email_dest').get(0).length <= 0) {
                 alert(loc('Error: To send email, you must specify a recipient.'));
@@ -97,7 +120,7 @@ proto.show = function () {
     jQuery.showLightbox({
         content: '#st-email-lightbox',
         close: '#email_cancel',
-        width: '760px',
+        width: '580px',
         callback: function() {
             jQuery('input[name="email_page_subject"]').select().focus();
             jQuery('#email_send').attr('disabled', false);

@@ -2180,7 +2180,7 @@ ul.normal ul ul {
 
 #st-email-lightbox th {
     padding-right: 10px;
-    vertical-align: middle;
+    vertical-align: top;
 }
 
 #st-email-lightbox input {
@@ -2188,15 +2188,15 @@ ul.normal ul ul {
 }
 
 #st-email-lightbox .email_input {
-    width: 250px;
+    width: 280px;
 }
 
 #st-email-lightbox .email_input_button {
-    width: 120px;
+    width: 100px;
 }
 
 #st-email-lightbox .email_input_textarea {
-    width: 640px;
+    width: 440px;
 }
 
 #wikiwyg_wikitext_textarea {
@@ -4013,4 +4013,7 @@ div.hidesubmit {
     background: transparent url(../images/genericOrangeButton.png) no-repeat scroll left bottom;
 }
 
+.lookahead-prompt {
+    color: #808080;
+}
 
