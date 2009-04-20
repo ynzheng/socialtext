@@ -199,9 +199,12 @@ sub global_template_vars {
 
     Socialtext::Timer->Continue('global_tt2_vars');
 
+    my $cur_ws = $self->hub->current_workspace;
+    my $cur_user = $self->hub->current_user;
+
     my $show_search_set = (
-        ( $self->hub->current_user->is_authenticated )
-            || ( $self->hub->current_user->is_guest
+        ( $cur_user->is_authenticated )
+            || ( $cur_user->is_guest
             && Socialtext::AppConfig->interwiki_search_set )
     );
     my $snippet = Socialtext::Search::Config->new()->search_box_snippet;
@@ -212,10 +215,10 @@ sub global_template_vars {
         template => \$snippet,
         paths => $self->hub->skin->template_paths,
         vars => {
-            current_workspace => $self->hub->current_workspace,
+            current_workspace => $cur_ws,
             show_search_set   => $show_search_set,
             search_sets       => [Socialtext::Search::Set->AllForUser(
-                $self->hub->current_user
+                $cur_user
             )->all],
         }
     );
@@ -223,8 +226,8 @@ sub global_template_vars {
     my $plugins_enabled = [
         map { $_->name }
         grep {
-            $self->hub->current_workspace->is_plugin_enabled($_->name) ||
-            $self->hub->current_user->can_use_plugin($_->name)
+            $cur_ws->is_plugin_enabled($_->name) ||
+            $cur_user->can_use_plugin($_->name)
         } Socialtext::Pluggable::Adapter->plugins
     ];
 
@@ -241,13 +244,13 @@ sub global_template_vars {
         user              => $self->_get_user_info,
         wiki              => $self->_get_wiki_info,
         checker           => $self->hub->checker,
-        current_workspace => $self->hub->current_workspace,
+        current_workspace => $cur_ws,
         current_page      => $self->hub->pages->current,
         home_is_dashboard =>
-            $self->hub->current_workspace->homepage_is_dashboard,
+            $cur_ws->homepage_is_dashboard,
         homepage_weblog =>
-            $self->hub->current_workspace->homepage_weblog,
-        workspace_present  => $self->hub->current_workspace->real,
+            $cur_ws->homepage_weblog,
+        workspace_present  => $cur_ws->real,
         customjs           => $self->hub->skin->customjs,
         app_version        => Socialtext->product_version,
         skin_name          => $self->hub->skin->skin_name,
@@ -262,7 +265,7 @@ sub global_template_vars {
         $self->hub->pluggable->hooked_template_vars,
     );
 
-    if ($self->hub->current_user->can_use_plugin('people')) {
+    if ($cur_user->can_use_plugin('people')) {
         if (Socialtext::AppConfig->allow_network_invitation()) {
             $result{invite_url} = '/?action=invite';
         }
@@ -276,13 +279,13 @@ sub global_template_vars {
         };
     };
 
-    if ($self->hub->current_user->can_use_plugin('dashboard')) {
+    if ($cur_user->can_use_plugin('dashboard')) {
         $result{dashboard_available} = 1;
     }
     
     # We're disabling the history global nav functionality for now, until its
     # truly global (cross workspace)
-#     if ($self->hub->current_workspace->real) {
+#     if ($cur_ws->real) {
 #         $result{history} = $self->_get_history_list_for_template; 
 #     }
 
