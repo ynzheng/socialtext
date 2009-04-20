@@ -1,8 +1,8 @@
 | *Comment* | START Test Case: Orphans List |  |
 
-(↑) (↓)
+ (↑) (↓)
 
-Find or create several pages that have no incoming links. This creates orphan pages. | pages are created
+ Find or create several pages that have no incoming links. This creates orphan pages. | pages are created
 
 | st-admin | update-page --email %%email%% --workspace %%workspace%% --page "orphan %%start_time%% 0001" < %%wikitest_client_files%%wikitest.txt | The "orphan %%start_time%% 0001" page has been created. |
 | st-admin | update-page --email %%email%% --workspace %%workspace%% --page "orphan %%start_time%% 0002" < %%wikitest_client_files%%wikitest.txt | The "orphan %%start_time%% 0002" page has been created. |
@@ -26,8 +26,6 @@ Create a page by a different user
 
 | *Comment* | Test Case: Orphans List Sorting Title asc |  |
 | select_and_wait | sort-picker | label=Title |
-| open_ok | /%%workspace%%/index.cgi?action=orphans_list;scope=;orig_search_term=;summaries=0;sortby=Subject;direction=asc |  |
-| wait_for_element_visible_ok | link=orphan %%start_time%% 0002 | 30000 |
 | text_like | contentContainer | qr/orphan %%start_time%% 0001.+orphan %%start_time%% 0002.+orphan %%start_time%% 0003.+orphan %%start_time%% 0004/ |
 | *Comment* | Test Case: Orphans List Sorting Title desc |  |
 | select_and_wait | sort-picker | label=Title (↓) |
@@ -35,22 +33,16 @@ Create a page by a different user
 
 | *Comment* | Test Case: Orphans List Sorting Last Edited By asc |  |
 | select_and_wait | sort-picker | label=Last Edited By |
-| open_ok | /%%workspace%%/index.cgi?action=orphans_list;scope=;orig_search_term=;summaries=0;sortby=username;direction=asc |  |
 
-| wait_for_element_visible_ok | link=orphan %%start_time%% 0002 | 30000 |
-| text_like | contentContainer | qr/orphan %%start_time%% 0001.+orphan %%start_time%% 0004/ |
+| text_like | contentContainer | qr/orphan %%start_time%% 0004.+orphan %%start_time%% 0001.+orphan %%start_time%% 0002.+orphan %%start_time%% 0003/ |
 
 | *Comment* | Test Case: Orphans List Sorting Last Edited By desc |  |
 | select_and_wait | sort-picker | label=Last Edited By (↓) |
-| open_ok | /%%workspace%%/index.cgi?action=orphans_list;scope=;orig_search_term=;summaries=0;sortby=username;direction=desc |  |
-| wait_for_element_visible_ok | link=orphan %%start_time%% 0002 | 30000 |
 
-| text_like | contentContainer | qr/orphan %%start_time%% 0004.+orphan %%start_time%% 0001./ |
+| text_like | contentContainer | qr/orphan %%start_time%% 0003.+orphan %%start_time%% 0002.+orphan %%start_time%% 0001.+orphan %%start_time%% 0004/ |
 
 | *Comment* | Test Case: Orphans List Sorting Date desc |  |
 | select_and_wait | sort-picker | label=Date |
-| open_ok | /%%workspace%%/index.cgi?action=orphans_list;scope=;orig_search_term=;summaries=0;sortby=Date;direction=desc |  |
-| wait_for_element_visible_ok | link=orphan %%start_time%% 0002 | 30000 |
 | text_like | contentContainer | qr/orphan %%start_time%% 0004.+orphan %%start_time%% 0003.+orphan %%start_time%% 0002.+orphan %%start_time%% 0001/ |
 | select_and_wait | sort-picker | label=Date (↑) |
 | text_like | contentContainer | qr/orphan %%start_time%% 0001.+orphan %%start_time%% 0002.+orphan %%start_time%% 0003.+orphan %%start_time%% 0004/ |
@@ -63,16 +55,12 @@ Create a page by a different user
 
 | *Comment* | Test Case: Orphans List Sorting revisions desc |  |
 | select_and_wait | sort-picker | label=Revisions |
-| open_ok | /%%workspace%%/index.cgi?action=orphans_list;scope=;orig_search_term=;summaries=0;sortby=revision_count;direction=desc |  |
-| wait_for_element_visible_ok | link=orphan %%start_time%% 0002 | 30000 |
 | text_like | contentContainer | qr/orphan %%start_time%% 0002.+orphan %%start_time%% 0001.+orphan %%start_time%% 0003.+orphan %%start_time%% 0004/ |
 | *Comment* | Test Case: Orphans List Sorting revisions asc |  |
 | select_and_wait | sort-picker | label=Revisions (↑) |
-| open_ok | /%%workspace%%/index.cgi?action=orphans_list;scope=;orig_search_term=;summaries=0;sortby=revision_count;direction=asc |  |
-| wait_for_element_visible_ok | link=orphan %%start_time%% 0002 | 30000 |
 | text_like | contentContainer | qr/orphan %%start_time%% 0001.+orphan %%start_time%% 0003.+orphan %%start_time%% 0004.+orphan %%start_time%% 0002/ |
 
-click on several links | correct page appear
+ click on several links | correct page appear
 
 | *Comment* | Test Case: Orphans List. Orphan page links work |  |
 | click_and_wait | link=orphan %%start_time%% 0001 |  |
@@ -81,11 +69,11 @@ click on several links | correct page appear
 | click_and_wait | link=orphan %%start_time%% 0002 |  |
 | text_like | st-page-titletext | orphan %%start_time%% 0002 |
 
-observe Incoming Links in sidepanel | there are no Incoming Links for any orphan page
+ observe Incoming Links in sidepanel | there are no Incoming Links for any orphan page
 
 | *Comment* | Test Case: Orphans List. Orphan page has no incoming links |  |
 | text_like | contentRight | qr/There are no pages that link to this page yet/i |
-| open_ok | /%%workspace%%/index.cgi?orphan %%start_time%% 0001 |  |
+| open_ok | /%%workspace%%/?orphan %%start_time%% 0001 |  |
 | text_like | contentRight | qr/There are no pages that link to this page yet/i |
 
 edit a page to include a link to an orphan page | link appears in page
