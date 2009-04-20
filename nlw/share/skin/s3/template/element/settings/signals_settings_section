@@ -5,7 +5,7 @@
   <dl class="form">
     <dt><label>[% loc("Private Messages") %]</label></dt>
     <dd>
-      <div>[% loc("Send Socialtext Signals private messages as email") %]:<input name="dm_sends_email" type="checkbox" value="1" [% IF user.dm_sends_email  %]checked[% END %]" /></div>
+      <div>[% loc("Send Socialtext Signals private messages as email") %]:<input name="dm_sends_email" type="checkbox" value="1" [% IF user.dm_sends_email  %]checked[% END %] /></div>
       <div>[% loc("If checked, each time a user sends you a private message via Signals, we'll send you an email with the message.") %]</div>
     </dd>
   </dl>
