@@ -9,9 +9,7 @@
 | set | new_workspace | wksp-%%start_time%% |
 | set | cli_user | cli_%%start_time%%@ken.socialtext.net |
 
-| *Comment* | Test case: Business Control Panel force en locale by visiting EN workspace |  |
-| st-admin | set-locale --w %%workspace%% --l en --e %%email%% | Locale for %%username%% is now en |
-| open-ok | /%%workspace%% |  |
+| *Comment* | Test case: Business Control Panel should no longer be necessary to set-locale |  |
 
 | *Comment* | Test case: Business Control Panel Socialtext Account exists |  |
 | open_ok | /nlw/control/account |  |
@@ -26,8 +24,8 @@
 | type_ok | st-new-account-name | %%new_acct%% |
 | click_and_wait | st-submit-new-account-name |  |
 | text_like | The %%new_acct%% account has been created. |  |
-| st-admin | disable-plugin --p dashboard --acc "%%new_acct%%" | The dashboard plugin is now disabled for account %%new_acct%% |
-| st-admin | disable-plugin --p people --acc "%%new_acct%%" | The people plugin is now disabled for account %%new_acct%% |
+| st-admin | disable-plugin --p dashboard --acc "%%new_acct%%" |  |
+| st-admin | disable-plugin --p people --acc "%%new_acct%%" |  |
 | st-admin | disable-plugin --p signals --acc "%%new_acct%%" |  |
 
 | *Comment* | Test case: Business Control Panel validate plugins are disabled. |  |
@@ -38,7 +36,7 @@
 | text_like | Socialtext Signals (click to enable) |  |
 
 | *Comment* | added check for Dashboard once {bz: 1782} was fixed |  |
-| st-admin | enable-plugin --p dashboard --acc "%%new_acct%%" |  |
+| st-admin | enable-plugin --p dashboard --acc "%%new_acct%%" | is now enabled |
 | text_like | Socialtext Dashboard |  |
 
 | *Comment* | Test case: Business Control Panel plugin one at a time, click the confirmation, validate that plugin is enabled. |  |
@@ -397,6 +395,9 @@ text_like | qr/0-sort-2-workspace1-%%start_time%%.+0-sort-3-workspace1-%%start_t
 
 | *Comment* | TC: BCP. CHECK CANCEL AFTER TEARDOWN BECAUSE SAFARI BOMBS OUT ON CANCEL FOR SOME REASON, even though there are no error messages. |  |
 | open_ok | /nlw/control/account |  |
+
+| st-admin | enable-plugin --p dashboard --acc Socialtext |  |
+| st-admin | enable-plugin --p people --acc Socialtext |  |
 | wait_for_element_visible_ok | link=Socialtext | 60000 |
 | clickAndWait | link=Socialtext |  |
 | wait_for_element_visible_ok | link=Profile Fields | 30000 |
