@@ -13,6 +13,14 @@
   [%- PROCESS css_link -%]
 [% END %]
 
+[% IF dynamic_logo_url %]
+<style type="text/css">
+div#header div#logo a {
+	background: url([% dynamic_logo_url %]) no-repeat top left;
+}
+</style>
+[% END %]
+
 [%- BLOCK css_link -%]
   [% media = 'screen' %][% SET media = 'print' IF css_file.search('print\.') %][% SET media = 'wikiwyg' IF css_file.search('wikiwyg\.') %]
   [%- IF css_file.search('ie\.') OR css_file.search('\/ieprint') -%]<!--[if gte IE 6]>[% END %]

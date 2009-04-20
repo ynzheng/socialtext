@@ -29,7 +29,11 @@ sub if_authorized {
 sub GET_image {
     my $self = shift;
     my $rest = shift;
-    my $acct = Socialtext::Account->new(account_id => $self->acct);
+
+    my $acct_id = $self->acct;
+    my $acct = ($acct_id) ?
+        Socialtext::Account->new(account_id => $acct_id) :
+        Socialtext::Account->Default();
 
     my $logo = $acct->logo;
     my $image_ref = eval { $logo->load(); };

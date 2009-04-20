@@ -231,6 +231,15 @@ sub global_template_vars {
         } Socialtext::Pluggable::Adapter->plugins
     ];
 
+    my $logo_acct_id;
+    if ($cur_ws->name ne '') {
+        $logo_acct_id = $cur_ws->account_id;
+    }
+    else {
+        $logo_acct_id = ($cur_user->is_authenticated) ? $cur_user->primary_account_id : 0;
+    }
+    my $logo = "/data/accounts/$logo_acct_id/logo";
+
     my $cookies = {};
     eval { $cookies = Apache::Cookie->fetch() };
 
@@ -262,6 +271,7 @@ sub global_template_vars {
         plugins_enabled    => $plugins_enabled,
         self_registration  => Socialtext::AppConfig->self_registration(),
         time               => time,
+        dynamic_logo_url   => $logo,
         $self->hub->pluggable->hooked_template_vars,
     );
 
