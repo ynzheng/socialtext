@@ -1,7 +1,5 @@
 # @COPYRIGHT@
 package Socialtext::WikiFixture::EmailJob;
-use strict;
-use warnings;
 use Socialtext::AppConfig;
 use Socialtext::System qw/shell_run/;
 use Socialtext::File qw/get_contents_utf8/;
