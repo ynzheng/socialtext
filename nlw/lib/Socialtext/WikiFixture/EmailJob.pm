@@ -10,7 +10,7 @@ use Moose;
 
 extends 'Socialtext::WikiFixture::SocialRest';
 
-after init => sub {
+after 'init' => sub {
     shell_run('nlwctl -c stop');
 };
 
