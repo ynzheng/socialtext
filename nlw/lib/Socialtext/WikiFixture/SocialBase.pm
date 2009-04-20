@@ -949,7 +949,7 @@ Clear out any queued jobs.
 
 sub st_clear_jobs {
     shell_run('ceq-rm .');
-    shell_run('ceqlotron -f -o');
+    shell_run('-ceqlotron -f -o');
 }
 
 =head2 st-process-jobs
@@ -959,7 +959,7 @@ Run any queued jobs.
 =cut
 
 sub st_process_jobs {
-    shell_run('ceqlotron -f -o');
+    shell_run('-ceqlotron -f -o');
 }
 
 

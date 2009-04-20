@@ -10,6 +10,10 @@ use Moose;
 
 extends 'Socialtext::WikiFixture::SocialRest';
 
+after init => sub {
+    shell_run('nlwctl -c stop');
+};
+
 sub email_file { Socialtext::AppConfig->data_root_dir . '/emails.txt' }
 
 sub clear_email {
