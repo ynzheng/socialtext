@@ -320,6 +320,12 @@
             'application/json': [Socialtext::Rest::AccountUsers, GET_json]
         '*':                    [Socialtext::Rest::AccountUsers, bad_method]
 -
+    '/data/accounts/:acct/logo':
+        'GET':
+            '*/*':       [Socialtext::Rest::AccountLogo, bad_type]
+            'image/png': [Socialtext::Rest::AccountLogo, GET_image]
+        '*':             [Socialtext::Rest::AccountLogo, bad_method]
+-
     '/data/wafl/:text':
         'GET':
             '*/*':              [Socialtext::Rest::Wafl, GET_image]

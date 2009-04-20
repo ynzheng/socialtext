@@ -20,7 +20,9 @@ use Socialtext::SystemSettings qw( get_system_setting );
 use Socialtext::Skin;
 use Socialtext::Timer;
 use Socialtext::Pluggable::Adapter;
+use Socialtext::AccountLogo;
 use YAML qw/DumpFile LoadFile/;
+use namespace::clean;
 
 Readonly our @ACCT_COLS => qw(
     account_id
@@ -129,6 +131,12 @@ sub skin_name {
         $self->{skin_name} = $skin;
     }
     return $self->{skin_name} || get_system_setting('default-skin');
+}
+
+sub logo {
+    my $self = shift;
+    $self->{logo} ||= Socialtext::AccountLogo->new(account => $self);
+    return $self->{logo};
 }
 
 sub custom_workspace_skins {
