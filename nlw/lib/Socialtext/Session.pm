@@ -39,7 +39,7 @@ sub _wrapper {
             generate    => 'MD5',
             serialize   => 'Base64',
             handle      => get_dbh(),
-            commit      => 1,
+            commit      => 0, # autocommit
         );
 
     return $_[0]->{wrapper};
