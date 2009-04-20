@@ -2,6 +2,7 @@ package Socialtext::DaemonUtil;
 # @COPYRIGHT@
 use warnings;
 use strict;
+use Carp qw/carp/;
 
 sub Check_and_drop_privs {
     if ($>) {
@@ -21,7 +22,7 @@ sub _check_privs {
     my $uid      = ( stat $data_root )[4];
     my $username = getpwuid $uid;
 
-    warn <<"EOF";
+    carp <<"EOF";
 
  The data root dir at $data_root is not writeable by this process.
 
