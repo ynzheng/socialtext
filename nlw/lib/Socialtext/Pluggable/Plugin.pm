@@ -688,4 +688,64 @@ sub clear_workspace_prefs {
     st_log()->info("$username cleared $plugin preferences for $wksp_name");
 }
 
+# User Plugin Prefs
+
+sub set_user_prefs {
+    my ($self, %prefs) = @_;
+    my $user_id = $self->hub->current_user->user_id || die "No user";
+    my $plugin = $self->name;
+
+    my $qs = join ', ', ('?') x keys %prefs;
+
+    sql_begin_work;
+
+    eval {
+        sql_execute("
+            DELETE
+              FROM user_plugin_pref
+             WHERE user_id = ?
+               AND plugin = ?
+               AND key IN ($qs)
+        ", $user_id, $plugin, keys %prefs);
+
+        my @columns;
+        for my $key (keys %prefs) {
+            push @{$columns[0]}, $user_id;
+            push @{$columns[1]}, $plugin;
+            push @{$columns[2]}, $key;
+            push @{$columns[3]}, $prefs{$key};
+        }
+
+        sql_execute_array('
+            INSERT INTO user_plugin_pref (
+                user_id, plugin, key, value
+            ) VALUES (?, ?, ?, ?)
+        ', {}, @columns);
+    };
+    if (my $error = $@) {
+        sql_rollback;
+        die $error;
+    }
+    sql_commit;
+
+    my $username  = $self->hub->current_user->username;
+    st_log()->info("$username changed their $plugin plugin preferences");
+}
+
+sub get_user_prefs {
+    my $self = shift;
+    my $user_id = $self->hub->current_user->user_id || die "No user";
+    my $sth = sql_execute('
+        SELECT key, value
+          FROM user_plugin_pref
+         WHERE user_id = ?
+           AND plugin = ?
+    ', $user_id, $self->name);
+    my %res;
+    while (my $row = $sth->fetchrow_hashref) {
+        $res{$row->{key}} = $row->{value};
+    }
+    return \%res;
+}
+
 1;

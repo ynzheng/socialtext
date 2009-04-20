@@ -25,7 +25,6 @@ field 'created_by_user_id';
 field 'is_business_admin';
 field 'is_technical_admin';
 field 'is_system_created';
-field 'dm_sends_email';
 
 sub create_if_necessary {
     my $class = shift;
@@ -92,21 +91,15 @@ sub create {
     $p{is_business_admin}  ||= 'f';
     $p{is_technical_admin} ||= 'f';
     $p{is_system_created}  ||= 'f';
-    if (defined($p{dm_sends_email}) && (!$p{dm_sends_email})) {
-        $p{dm_sends_email} = '0';
-    } else {
-        $p{dm_sends_email} = '1';
-    }
     sql_execute(
         'INSERT INTO "UserMetadata"'
         . ' (user_id, email_address_at_import,'
         . ' created_by_user_id, is_business_admin,'
-        . ' is_technical_admin, is_system_created, primary_account_id,'
-        . ' dm_sends_email)'
-        . ' VALUES (?,?,?,?,?,?,?,?)',
+        . ' is_technical_admin, is_system_created, primary_account_id)'
+        . ' VALUES (?,?,?,?,?,?,?)',
         $p{user_id}, $p{email_address_at_import}, $p{created_by_user_id},
         $p{is_business_admin}, $p{is_technical_admin}, $p{is_system_created},
-        $p{primary_account_id}, $p{dm_sends_email},
+        $p{primary_account_id},
     );
 
     return $class->new( user_id => $p{user_id} );
@@ -126,15 +119,6 @@ sub set_business_admin {
 
     $self->_update_field('is_business_admin=?', $value);
     $self->is_business_admin( $value );
-    return $self;
-}
-
-sub set_dm_sends_email {
-    my ( $self, $value ) = @_;
-    
-    $value ||= "0";
-    $self->_update_field('dm_sends_email=?', $value);
-    $self->dm_sends_email( $value );
     return $self;
 }
 

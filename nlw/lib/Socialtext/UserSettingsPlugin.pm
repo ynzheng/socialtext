@@ -49,9 +49,18 @@ sub manage_signals {
     $self->_update_signals_settings()
         if $self->cgi->Button;
 
+    my $plugin = $self->hub->pluggable->plugin_object('signals');
+    my $dm_sends_email = 1;
+    if ($plugin) {
+        my $prefs = $plugin->get_user_prefs();
+        $dm_sends_email = $prefs->{dm_sends_email}
+            if defined $prefs->{dm_sends_email};
+    }
+
     my $settings_section = $self->template_process(
         'element/settings/signals_settings_section',
-        user => $self->hub->current_user,
+        user           => $self->hub->current_user,
+        dm_sends_email => $dm_sends_email,
         $self->status_messages_for_template,
     );
 
@@ -67,10 +76,15 @@ sub manage_signals {
 
 
 sub _update_signals_settings() {
-    my $self = shift;
-    my $user = $self->hub->current_user;
-    my %update;
-    $user->set_dm_sends_email($self->cgi->dm_sends_email);
+    my $self  = shift;
+    my $value = $self->cgi->dm_sends_email ? 1 : 0;
+
+    my $plugin = $self->hub->pluggable->plugin_object('signals');
+    return unless $plugin;
+    $plugin->set_user_prefs(
+        dm_sends_email => $value,
+    );
+
     $self->message(loc('Changes Saved'));
 }
 

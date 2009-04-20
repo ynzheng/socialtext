@@ -147,8 +147,7 @@ CREATE TABLE "UserMetadata" (
     is_business_admin boolean DEFAULT false NOT NULL,
     is_technical_admin boolean DEFAULT false NOT NULL,
     is_system_created boolean DEFAULT false NOT NULL,
-    primary_account_id bigint,
-    dm_sends_email boolean DEFAULT true NOT NULL
+    primary_account_id bigint
 );
 
 CREATE TABLE "UserWorkspaceRole" (
@@ -598,6 +597,13 @@ CREATE VIEW user_account AS
    LEFT JOIN "UserWorkspaceRole" uwr USING (user_id)
    LEFT JOIN "Workspace" w USING (workspace_id)
   ORDER BY u.user_id, u.driver_key, u.driver_unique_id, u.driver_username, um.created_by_user_id, um.creation_datetime, um.primary_account_id, w.account_id, u.is_profile_hidden;
+
+CREATE TABLE user_plugin_pref (
+    user_id bigint NOT NULL,
+    plugin text NOT NULL,
+    "key" text NOT NULL,
+    value text NOT NULL
+);
 
 CREATE SEQUENCE users___user_id
     INCREMENT BY 1
@@ -1054,6 +1060,12 @@ CREATE INDEX storage_key_value_viewer_ix
 	    ON "storage" ("key", value)
 	    WHERE (("key")::text = 'viewer');
 
+CREATE INDEX user_plugin_pref_idx
+	    ON user_plugin_pref (user_id, plugin);
+
+CREATE INDEX user_plugin_pref_key_idx
+	    ON user_plugin_pref (user_id, plugin, "key");
+
 CREATE UNIQUE INDEX users_driver_unique_id
 	    ON users (driver_key, driver_unique_id);
 
@@ -1381,6 +1393,11 @@ ALTER TABLE ONLY topic_signal_user
 
 ALTER TABLE ONLY topic_signal_user
     ADD CONSTRAINT tsu_user_fk
+            FOREIGN KEY (user_id)
+            REFERENCES users(user_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY user_plugin_pref
+    ADD CONSTRAINT user_plugin_pref_user_fk
             FOREIGN KEY (user_id)
             REFERENCES users(user_id) ON DELETE CASCADE;
 
