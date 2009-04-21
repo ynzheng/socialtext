@@ -14,6 +14,7 @@
   </dd>
 </dl>
 
+<!--
 <dl class="form">
   <dt><label>[% loc('Workspace Logo Image') %]</label></dt>
   <dd>[% loc('You can choose an image to use as the workspace logo. You may enter the web address of an image already on the web, or you may upload an image from your computer.') %]</dd>
@@ -36,6 +37,7 @@
     <i>[% loc('Example: C:\My Pictures\socialtext-logo-30.gif') %]</i>
   </dd>
 </dl>
+-->
 
 <dl class="form">
   <dt><label>[% loc('Workspace Link') %]</label></dt>
