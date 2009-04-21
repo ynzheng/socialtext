@@ -1196,6 +1196,14 @@ Default: 1
 
 =for code type => BOOLEAN_TYPE
 
+=head2 default_workspace
+
+Set this to a workspace name to have users redirected to it when their primary account does not have dashboard.
+
+Optional.
+
+=for code type => SCALAR_TYPE
+
 =head1 OTHER METHODS
 
 In addition to the methods available for each configuration variable,

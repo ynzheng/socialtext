@@ -3,6 +3,7 @@ package Socialtext::Pluggable::Plugin::Default;
 use strict;
 use warnings;
 use Socialtext::BrowserDetect;
+use Socialtext::AppConfig;
 
 use base 'Socialtext::Pluggable::Plugin';
 use Class::Field qw(const field);
@@ -29,7 +30,12 @@ sub register {
 
 sub root {
     my ($self, $rest) = @_;
-    my $is_mobile = Socialtext::BrowserDetect::is_mobile();
+    my $is_mobile     = Socialtext::BrowserDetect::is_mobile();
+
+    my $default_wksp  = Socialtext::AppConfig->default_workspace;
+    if ($default_wksp) {
+        return $self->redirect( '/' . $default_wksp );
+    }
 
     # logged in users go to the Workspace List
     my $user = $rest->user();
