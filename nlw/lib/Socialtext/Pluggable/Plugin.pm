@@ -618,6 +618,8 @@ sub set_workspace_prefs {
     my $workspace_id = $self->current_workspace_id || die "No workspace";
     my $plugin = $self->name;
 
+    return unless %prefs;
+
     my $qs = join ', ', ('?') x keys %prefs;
 
     sql_begin_work;
