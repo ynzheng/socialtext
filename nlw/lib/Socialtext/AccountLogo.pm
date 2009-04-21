@@ -54,8 +54,7 @@ sub _transform_image {
         image_filename => $filename,
         width => 201,
         height => 36,
-        fill_color => 'rgba(235,246,250,0.0)', # transparent '#EBF6FA',
-        #fill_color => 'rgba(255,0,0,0.5)',
+        fill_color => '#EBF6FA',
     );
 
     my $txfrm_image = Socialtext::File::get_contents_binary($filename);
