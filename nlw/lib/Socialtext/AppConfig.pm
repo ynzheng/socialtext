@@ -232,15 +232,6 @@ sub _default_locale {
     return get_build_setting('default-locale') || 'en';
 }
 
-sub _default_workspace {
-    my $locale = _default_locale();
-    if ($locale eq 'en') {
-        return 'help';
-    } else {
-        return lc("help-$locale");
-    }
-}
-
 sub _user_root {
     if ( $ENV{HARNESS_ACTIVE} ) {
         my $dir;
@@ -1094,7 +1085,9 @@ Default: 0
 When a user logs into the system and the app does not know what
 workspace they want, this is default workspace they are sent to.
 
-=for code default => _default_workspace()
+Set this to a workspace name to have users redirected to it when their primary account does not have dashboard.
+
+Optional.
 
 =for code type => SCALAR_TYPE
 
@@ -1195,14 +1188,6 @@ Set this to false to prevent users from sending invite emails for other people t
 Default: 1
 
 =for code type => BOOLEAN_TYPE
-
-=head2 default_workspace
-
-Set this to a workspace name to have users redirected to it when their primary account does not have dashboard.
-
-Optional.
-
-=for code type => SCALAR_TYPE
 
 =head1 OTHER METHODS
 
