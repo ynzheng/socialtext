@@ -91,7 +91,7 @@
       </div><!-- header END -->
       <div id="mainNav" class="st-wiki-subnav-dashboard">
         [% home_href = '/' %]
-        [% IF default_workspace %][% home_href = "/?action=dashboard" %][% END %]
+        [% IF default_workspace %][% home_href = "/?dashboard" %][% END %]
         <div id="homeLink"><a id="st-home-link" href="[% home_href %]">[% loc("Home") %]</a></div>
         <ul id="st-wiki-subnav-left" class="level1">
         [% IF dashboard_available %]
