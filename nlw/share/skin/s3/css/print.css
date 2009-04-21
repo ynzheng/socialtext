@@ -286,6 +286,11 @@ div#mainNav {
     vertical-align: top;
 }
 
+.wiki table.borderless th,
+.wiki table.borderless td {
+    border: none;
+}
+
 .wiki h1,
 .wiki h2,
 .wiki h3,
