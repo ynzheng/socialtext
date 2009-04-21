@@ -233,6 +233,16 @@ sub PUT_html {
     my $page = $self->page;
     my $existed_p = $page->content ne '';
 
+    my $match_header = $self->rest->request->header_in('If-Match');
+    if (   $existed_p
+        && $match_header
+        && ( $match_header ne $page->revision_id() ) ) {
+        $rest->header(
+            -status => HTTP_412_Precondition_Failed,
+        );
+        return '';
+    }
+
     my $html = $rest->getContent(),
 
     my $wc = new HTML::WikiConverter( dialect => 'Socialtext');
@@ -257,6 +267,16 @@ sub PUT_json {
 
     my $page = $self->page;
     my $existed_p = $page->content ne '';
+
+    my $match_header = $self->rest->request->header_in('If-Match');
+    if (   $existed_p
+        && $match_header
+        && ( $match_header ne $page->revision_id() ) ) {
+        $rest->header(
+            -status => HTTP_412_Precondition_Failed,
+        );
+        return '';
+    }
 
     my $content = $rest->getContent();
     my $object = decode_json( $content );
