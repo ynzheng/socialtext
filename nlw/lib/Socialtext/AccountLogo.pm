@@ -77,13 +77,27 @@ sub save_image {
 
 sub cache_image {
     my $self = shift;
+    my $cache_dir = $self->Cache_dir();
+    # TODO: if this account is the default, write the image for account_id
+    # 0 as well.
+    $self->logo->cache_to_dir($cache_dir);
+}
+
+sub Cache_dir {
+    my $class = shift;   
     my $cache_dir = Socialtext::Paths::cache_directory('account_logo');
     Socialtext::File::ensure_directory($cache_dir);
 
-    # TODO: if this account is the default, write the image for to account_id
-    # 0 as well.
+    return $cache_dir;
+}
 
-    $self->logo->cache_to_dir($cache_dir);
+sub remove {
+    my $self = shift;
+    my $logo = $self->logo;
+    $logo->remove;
+    # TODO: if this account is the default, remove the image for account_id 0
+    # as well.
+    $logo->remove_cache( $self->Cache_dir );
 }
 
 sub Default_logo_name {
