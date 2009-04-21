@@ -138,9 +138,7 @@ sub _run_htmldoc {
 
     return '%PDF' eq substr $$output_ref, 0, 4;
 }
-
-# EXTRACT: This probably belongs as a special method on either the formatter
-# or the page.
+# EXTRACT: This probably belongs as a special method on either the formatter # or the page.
 sub _get_html {
     my $self = shift;
     my $page_name = shift;
@@ -150,8 +148,11 @@ sub _get_html {
 
     # Hack in table borders, HTML 3.2 style.
     local *Socialtext::Formatter::Table::html_start = sub {
+        my $self = shift;
+        my $opts = $self->options;
+        my $borders = $opts->{border} ? 'border="1"' : '';
         qq{<table
-                border="1"
+                $borders
                 cellpadding="3"
                 style="border-collapse: collapse;"
                 class="formatter_table">\n}
