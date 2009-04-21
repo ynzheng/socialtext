@@ -11,7 +11,7 @@
 | set | eto_ws_user | %%to_ws%%\@%%wikiemail%% |
 
 | *Comment* | Test Case: Invite people. Create new acct, user in it, and brand new (workspace == new user) |  |
-| *Comment* | The user to be invited is %%to_ws_user%% and the wiki to be created is %%to_ws%%, so the user email addr and wiki email addr are identical, so we can read the email in the wiki! |
+| *Comment* | The user to be invited is %%to_ws_user%% and the wiki to be created is %%to_ws%%, so the user email addr and wiki email addr are identical, so we can read the email in the wiki! |  |
 | st-admin | create-account --name "%%acct%%" | created |
 | st-admin | enable-plugin --account "%%acct%%" --plugin dashboard |  |
 | st-admin | create-user --e %%acct_user%% --p %%password%% --account "%%acct%%" | created |
@@ -50,7 +50,7 @@ TODO: verify cannot actually issue invitations via URL
 
 | *Comment* | Test Case: Invite people. Invite four users to this network |  |
 | *Comment* | existing member, brand new user, %%email%% in another network, and a malformed email addr |  |
-| type_ok | users_new_ids | %%acct_user%%\n%%to_ws_user%%\n%%guest%%\nfoo2bar.com |  |
+| type_ok | users_new_ids | %%acct_user%%\n%%to_ws_user%%\n%%guest%%\nfoo2bar.com |
 | check_ok | append_invitation |  |
 | type_ok | invitation_text | Here is an invitation from %%acct_user%% to join my %%acct%% network. w00t! |
 | click_and_wait | link=Invite |  |
@@ -65,9 +65,9 @@ TODO: verify cannot actually issue invitations via URL
 | text_like | Invite people to your network |  |
 
 | *Comment* | Test Case: Invite people. login as %%email%% so you can see the confirmation email |  |
-| st-logoutin |  |
+| st-logoutin |  |  |
 | open_ok | /%%to_ws%%/?action=recent_changes |  |
-| wait_for_element_visible_ok | link=I'm inviting you into the %%acct%% network |  |
+| wait_for_element_visible_ok | link=I'm inviting you into the %%acct%% network | 30000 |
 | click_and_wait | link=I'm inviting you into the %%acct%% network |  |
 
 | *Comment* | Test Case: Invite people. click the confirmation link |  |
@@ -77,7 +77,7 @@ TODO: verify cannot actually issue invitations via URL
 | click_ok | //a[contains(@href,'confirm_email')] |  |
 
 | *Comment* | Test Case: Invite people. Choose Password opens in new window |  |
-| pause | 5000 |
+| pause | 30000 |  |
 | selectWindow | Choose Password |  |
 
 | *Comment* | Test Case: Invite people. Choose a pwd and log in |  |
@@ -86,10 +86,10 @@ TODO: verify cannot actually issue invitations via URL
 | type_ok | password | %%password%% |
 | type_ok | password2 | %%password%% |
 | click_and_wait | link=Register |  |
-| text_like | Your password has been set and you can now login |
+| text_like | Your password has been set and you can now login |  |
 | type_ok | username | %%to_ws_user%% |
 | type_ok | password | %%password%% |
-| click_and_wait | link=Log in |
+| click_and_wait | link=Log in |  |
 
 | *Comment* | Test Case: Invite people. log in and go to dashboard. No workspaces |  |
 | text_like | qr/Welcome.+New User/i |  |

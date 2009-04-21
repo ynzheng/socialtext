@@ -1,7 +1,13 @@
 | *Comment* | Test Case: Double Click to Edit |  |
-| open_ok | /%%workspace%%/?Announcements and Links |  |
+| st-admin | update-page --w %%workspace%% --e %%email%% --p "DCTE %%start_time%%" < %%wikitest_client_files%%wikitest.txt | has been created |
+| open_ok | /%%workspace%%/?DCTE %%start_time%% |  |
 | double_click_ok | st-page-content |  |
+
 | *Comment* | Test Case: Double Click to Edit waiting for Save button |  |
 | wait_for_element_visible_ok | st-save-button-link | 10000 |
-| text_like | st-editing-title | Editing: Announcements and Links |
+| text_like | st-editing-title | Editing: DCTE %%start_time%% |
+
+| *Comment* | Test Case: Double Click to Edit TEARDOWN |  |
+| st-admin | purge-page --w %%workspace%% --p dcte_%%start_time%% | purged |
+
 | *Comment* | Test Case: Double Click to Edit COMPLETED |  |
