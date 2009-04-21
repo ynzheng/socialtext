@@ -1898,13 +1898,6 @@ If this is true, links outside of NLW open a new browser window.
 If this is true, then the workspace is not indexed using a search factory, and
 searching uses the "basic" mechanism.
 
-=head2 header_image_logo_filename
-
-The filename of the image to be shown in the page header, which is
-different from the logo image shown in the page's side pane. This
-defaults to the Socialtext logo (F<logo-bar-12.gif>), but this
-attribute can be overridden as needed.
-
 =head2 show_welcome_message_below_logo
 
 If this is true, the welcome message ("Welcome, Faye Wong") is shown

@@ -262,25 +262,21 @@ sub customjs_name {
     return $self->skin_info->{customjs_name} || $self->workspace->customjs_name;
 }
 
-sub header_logo_image_uri {
+sub dynamic_logo {
     my $self = shift;
+    return if ($self->skin_name eq 's3');
 
-    my $logo_file = Socialtext::File::catfile(
-        $CODE_BASE, 'images',
-        $self->skin_name, 'logo-bar-12.gif' );
-
-    if ( -f $logo_file ) {
-        return join '/',
-            Socialtext::Helpers->static_path,
-            'images',
-            $self->skin_name,
-            'logo-bar-12.gif';
+    my $logo_acct_id = 0;
+    my $cur_ws = $self->workspace;
+    if ($cur_ws->real) {
+        $logo_acct_id = $cur_ws->account_id;
     }
-
-    return join '/',
-        Socialtext::Helpers->static_path,
-        'images',
-        'logo-bar-12.gif';
+    else {
+        my $cur_user = $self->hub->current_user;
+        $logo_acct_id = $cur_user->primary_account_id
+            if ($cur_user->is_authenticated);
+    }
+    return "/data/accounts/$logo_acct_id/logo";
 }
 
 sub make_dirs {
