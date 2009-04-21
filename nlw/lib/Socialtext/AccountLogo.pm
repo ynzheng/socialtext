@@ -5,6 +5,8 @@ use Socialtext::File;
 use Socialtext::Skin;
 use File::Spec;
 use Socialtext::Paths;
+use Socialtext::Image;
+use File::Temp qw/tempfile/;
 use namespace::clean -except => 'meta';
 
 has 'account' => (
@@ -39,18 +41,37 @@ sub load {
     return $logo->image_ref;
 }
 
+sub _transform_image {
+    my $self = shift;
+    my $image_ref = shift;
+
+    # TODO: resize $image_ref 
+    my ($fh, $filename) = tempfile;
+    print $fh $$image_ref;
+    close $fh or die "Could not process image: $!";
+
+    Socialtext::Image::constrain_and_fill_image(
+        image_filename => $filename,
+        width => 201,
+        height => 36,
+        fill_color => 'rgba(235,246,250,0.0)', # transparent '#EBF6FA',
+        #fill_color => 'rgba(255,0,0,0.5)',
+    );
+
+    my $txfrm_image = Socialtext::File::get_contents_binary($filename);
+    return \$txfrm_image;
+}
+
 sub save_image {
     my $self = shift;
     my $image_ref = shift;
 
     my $logo = $self->logo;
 
-    # TODO: resize $image_ref 
-    my $txfrm_image_ref = $image_ref;
+    my $txfrm_image_ref = $self->_transform_image($image_ref);
 
     $logo->image_ref($txfrm_image_ref);
     $logo->save();
-
     return $self->cache_image();
 }
 
@@ -58,6 +79,10 @@ sub cache_image {
     my $self = shift;
     my $cache_dir = Socialtext::Paths::cache_directory('account_logo');
     Socialtext::File::ensure_directory($cache_dir);
+
+    # TODO: if this account is the default, write the image for to account_id
+    # 0 as well.
+
     $self->logo->cache_to_dir($cache_dir);
 }
 
