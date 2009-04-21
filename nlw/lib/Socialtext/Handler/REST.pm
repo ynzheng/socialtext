@@ -134,59 +134,63 @@ sub log_timings {
     my $status_string = $headers{-status};
     my $path = $handler->getLastMatchTemplate();
     my $status = 'UNDEF';
-    if ( !$status_string || $status_string =~ /^([23]\d{2})\D/ ) {
-        $status = $1 if $status_string;
 
-        my $method = $handler->getRequestMethod();
+    return if $status_string and $status_string !~ /^([23]\d{2})\D/;
+    if ($status_string and $status_string =~ m/^([23]\d{2})\D/) {
+        $status = $1;
+        return unless $status =~ m/^[23]/;
+    }
 
-        # get the template we matched
-        my $message = $method . ',' . $path . ',' . $status;
+    my $method = $handler->getRequestMethod();
 
-        # get the hash which is the keys and values of the :word things
-        # in the template path
-        my %template_vars = $handler->getTemplateVars($path);
+    # get the template we matched
+    my $message = $method . ',' . $path . ',' . $status;
 
-        my $query_hash = {};
-        if ( $method eq 'GET' ) {
-            # get any query string data
-            my $args = [ $handler->request->args ];
-            if (@$args % 2) {
-                $query_hash = {
-                    page_name => shift @$args,
-                    @$args,
-                };
-            }
-            else {
-                $query_hash = { @$args };
-            }
-        }
-        elsif ( $method eq 'POST' ) {
-            my $query = $handler->query;
-            my @params = $query->param();
+    # get the hash which is the keys and values of the :word things
+    # in the template path
+    my %template_vars = $handler->getTemplateVars($path);
+
+    my $query_hash = {};
+    if ( $method eq 'GET' ) {
+        # get any query string data
+        my $args = [ $handler->request->args ];
+        if (@$args % 2) {
             $query_hash = {
-                map {
-                    my $val = $query->param($_);
-                    $val = 'ref:'.ref($val) if ref $val;
-                    # 254 is ~ page id size
-                    length($val) > 254 ? () : ($_ => $val)
-                } @params
+                page_name => shift @$args,
+                @$args,
             };
         }
-
-        my $data = {
-            %template_vars,
-            ( keys(%$query_hash) ? (q => $query_hash) : () ),
-        };
-
-        st_timed_log(
-            'info',
-            'WEB',
-            $message,
-            $handler->user,
-            $data,
-            Socialtext::Timer->Report()
-        );
+        else {
+            $query_hash = { @$args };
+        }
     }
+    elsif ( $method eq 'POST' ) {
+        my $query = $handler->query;
+        my @params = $query->param();
+        $query_hash = {
+            map {
+                my $val = $query->param($_);
+                $val = 'ref:'.ref($val) if ref $val;
+                # 254 is ~ page id size
+                length($val) > 254 ? () : ($_ => $val)
+            } @params
+        };
+    }
+
+    my $data = {
+        %template_vars,
+        ($status eq 'UNDEF' ? () : (status => $status)),
+        ( keys(%$query_hash) ? (q => $query_hash) : () ),
+    };
+
+    st_timed_log(
+        'info',
+        'WEB',
+        $message,
+        $handler->user,
+        $data,
+        Socialtext::Timer->Report()
+    );
 }
 
 

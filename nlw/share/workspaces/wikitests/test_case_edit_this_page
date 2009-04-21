@@ -84,14 +84,14 @@
 
 | *Comment* | Test Case: Edit This Page Cancel and keep unsaved edits |  |
 | *Comment* | NOTE: in order cancel a Confirmation popup, acknowledge it with "confirmation_is" |  |
-| confirmation_is | Are you sure you want to Cancel?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay in the editor. |  |
+| confirmation_is | Are you sure you want to cancel?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay on the current page. |  |
 
 | *Comment* | Test Case: Edit This Page verify edit buffer not lost |  |
 | verifyValue | wikiwyg_wikitext_textarea | abcdefg |
 
 | *Comment* | Test Case: Edit This Page Cancel and lose unsaved edits |  |
 | click_ok | st-cancel-button-link |  |
-| verifyConfirmation | Are you sure you want to Cancel?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay in the editor. |  |
+| verifyConfirmation | Are you sure you want to cancel?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay on the current page. |  |
 
 | *Comment* | Test Case: Edit This Page verify edit canceled |  |
 | wait_for_element_visible_ok | st-page-content | 30000 |
@@ -108,7 +108,7 @@
 | type_ok | wikiwyg_wikitext_textarea | hijklmno |
 | chooseCancelOnNextConfirmation |  |  |
 
-| *Comment* | ONLY HOME LINK WORKS HERE. AUDREY TANG ADDED A TESTABLE HANDLER TO THE HOME LINK SO THAT SELENIUM WILL RECOGNIZE A CLICK ON HOME WHILE IT IS PARKED IN WIKIWYG |  |
+| *Comment* | Use the Home link to navigate away. |  |
 | click_ok | st-home-link |  |
 
 | *Comment* | Test Case: Edit This Page Cancel navigate away and keep unsaved edits |  |
@@ -138,7 +138,7 @@
 
 | *Comment* | Test Case: Edit This Page verify edit buffer kept in Simple mode |  |
 | *Comment* | NOTE: in order click Cancel on a Confirmation popup, acknowledge it with "confirmation_is" |  |
-| confirmation_is | Are you sure you want to Cancel?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay in the editor. |  |
+| confirmation_is | Are you sure you want to cancel?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay on the current page. |  |
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
@@ -148,7 +148,7 @@
 | click_ok | link=Rich Text |  |
 | pause | 6000 | wait for Rich Text editor |
 | click_ok | st-cancel-button-link |  |
-| verifyConfirmation | Are you sure you want to Cancel?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay in the editor. |  |
+| verifyConfirmation | Are you sure you want to cancel?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay on the current page. |  |
 | wait_for_element_visible_ok | st-page-content | 30000 |
 | text_like | st-page-content | Edit This Page content %%start_time%% |
 | open_ok | /%%workspace%%/?Edit This Page %%start_time%% | reload page for test to proceed |

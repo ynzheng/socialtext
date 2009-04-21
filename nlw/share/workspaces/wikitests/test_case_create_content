@@ -2,7 +2,7 @@
 | set | select_template | `//div[@id='create-content-from-template']/select` |
 | set | copy_from | `//div[@id='create-content-from-page']/input[2]` |
 
-| st-admin | disable-plugin --w %%workspace%% --plugin socialcalc | The socialcalc plugin is now disabled for workspace %%workspace%% |
+| st-admin | disable-plugin --w %%workspace%% --plugin socialcalc |  |
 
 | *Comment* | Test Case: Create Content: reload page after disabling spreadsheets |  |
 | open_ok | /%%workspace%% |  |

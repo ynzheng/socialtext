@@ -2,46 +2,45 @@
 
 * Fixture: SocialWidgets
 
-| st-admin | create-workspace --name workspacewidget-%%start_time%% --title "workspacewidget %%start_time%%" |  |
+| st-admin | create-workspace --name workspacewidget-%%start_time%% --title "Workspace Widget %%start_time%%" |  |
 | st-admin | add-member --workspace workspacewidget-%%start_time%% --username %%username%% |  |
 
 | open_ok | /?dashboard | 60000 |
 | st-empty-container |  |  |
-| pause | 2000 |  |
+| wait_for_element_visible_ok | link=Add Content | 30000 |
+| click_and_wait | link=Add Content |  |
+| wait_for_element_visible_ok | gallery-widget-Workspaces | 30000 |
+| click_and_wait | gallery-widget-Workspaces |  |
+
 | *Comment* | Test Case: Widgets - Workspaces Widget |  |
-| st-add-widget | widgets/share/widgets/my_workspaces.xml | myworkspace |
-
-st-wait-for-widget-load | myworkspace | 25000 | Doesn't seem to work right now |
-
-| pause | 15000 | I hate pause |
+| st-name-widget | 1 | myworkspace |
 | st-widget-title-like | myworkspace | Workspaces |
 | st-select-widget-frame | myworkspace |  |
-| text_like | //body | %%title%% |
 | text_like | //body | changes |
 | text_like | //body | views |
-| text_like | //body | workspacewidget %%start_time%% |
-| wait_for_element_present_ok | link=new page |  |
-| click_ok | link=new page |  |
-| text_unlike | //body | Admin |
+| wait_for_element_visible_ok | link=new page | 30000 |
+| wait_for_element_visible_ok | link=Workspace Widget %%start_time%% | 30000 |
+| wait_for_element_visible_ok | link=%%title%% | 30000 |
 | select-frame | relative=parent |  |
 
 | *Comment* | Remove member, see if workspace is gone |  |
-| *Comment* | The widget name is %%myworkspace%% |
-| st-admin | remove-member --username %%username%% --workspace workspacewidget-%%start_time%% |  |
-| st-empty-container |  |  |
-| st-add-widget | widgets/share/widgets/my_workspaces.xml | second_myworkspace |
+| *Comment* | The widget name is %%myworkspace%% |  |
+| st-admin | remove-member --username %%username%% --workspace workspacewidget-%%start_time%% | is no longer a member |
 
-st-wait-for-widget-load | second_myworkspace | 25000 |
-
-| pause | 15000 |  |
-| st-select-widget-frame | second_myworkspace |  |
-| text_like | //body | %%title%% |
+| open_ok | /?dashboard | 60000 |
+| st-name-widget | 1 | myworkspace |
+| st-widget-title-like | myworkspace | Workspaces |
+| st-select-widget-frame | myworkspace |  |
+| text_like | //body | changes |
 | text_like | //body | views |
-| text_unlike | //body | workspacewidget %%start_time%% |
+| wait_for_element_visible_ok | link=new page | 30000 |
+| wait_for_element_visible_ok | link=%%title%% | 30000 |
+| text_like | //body | %%title%% |
+| text_unlike | //body | Workspace Widget %%start_time%% |
 | select-frame | relative=parent |  |
 
 | *Comment* | Test Case: Workspace Widget Teardown |  |
 | st-empty-container |  |  |
-| st-admin | delete-workspace --workspace workspacewidget-%%start_time%% --no-export --title workspacewidget%%start_time%% | has been deleted |
+| st-admin | delete-workspace --workspace workspacewidget-%%start_time%% --no-export | has been deleted |
 
 | *Comment* | Test Case: Workspace Widget COMPLETED |  |
