@@ -144,25 +144,9 @@ sub _get_html {
     my $page_name = shift;
     my $page = $self->hub->pages->new_from_name( $page_name );
 
-    no warnings 'once', 'redefine';
-
-    # Hack in table borders, HTML 3.2 style.
-    local *Socialtext::Formatter::Table::html_start = sub {
-        my $self = shift;
-        my $opts = $self->options;
-        my $borders = $opts->{border} ? 'border="1"' : '';
-        qq{<table
-                $borders
-                cellpadding="3"
-                style="border-collapse: collapse;"
-                class="formatter_table">\n}
-    };
-
     # Old school here.  htmldoc doesn't support the &trade; entitity, and it
     # doesn't support Unicode.
     local *Socialtext::Formatter::TradeMark::html = sub {'<SUP>TM</SUP>'};
-
-    # FIXME: Add special link dictionary here.
     return "<html><head><title>"
         . $page->metadata->Subject
         . "</title><body>"

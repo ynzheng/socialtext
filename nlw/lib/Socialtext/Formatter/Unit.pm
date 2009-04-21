@@ -311,7 +311,8 @@ sub html_start {
     my $class = 'formatter_table';
     $class .= ' sort' if $opts->{sort};
     $class .= ' borderless' unless $opts->{border};
-    qq{<table options="$self->{options}" class="$class">\n};
+    my $borders = $opts->{border} ? 'border="1"' : '';
+    qq{<table $borders style="border-collapse:collapse" options="$self->{options}" class="$class">\n};
 }
 
 ################################################################################
