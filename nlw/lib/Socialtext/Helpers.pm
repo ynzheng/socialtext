@@ -231,14 +231,18 @@ sub global_template_vars {
         } Socialtext::Pluggable::Adapter->plugins
     ];
 
-    my $logo_acct_id;
-    if ($cur_ws->name ne '') {
-        $logo_acct_id = $cur_ws->account_id;
+    my $logo;
+    if ($self->hub->skin->skin_name eq 's3') {
+        my $logo_acct_id = 0;
+        if ($cur_ws->real) {
+            $logo_acct_id = $cur_ws->account_id;
+        }
+        else {
+            $logo_acct_id = $cur_user->primary_account_id
+                if ($cur_user->is_authenticated);
+        }
+        $logo = "/data/accounts/$logo_acct_id/logo";
     }
-    else {
-        $logo_acct_id = ($cur_user->is_authenticated) ? $cur_user->primary_account_id : 0;
-    }
-    my $logo = "/data/accounts/$logo_acct_id/logo";
 
     my $cookies = {};
     eval { $cookies = Apache::Cookie->fetch() };
