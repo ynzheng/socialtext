@@ -248,8 +248,12 @@ sub tr_start {
     # number of cells to come up with the TWIPS per page.
     @cells = $node->find_by_tag_name('td');
     my $width = int((6.5 * 1440) / (scalar(@cells) || 1));
-    my $tr_decl
-        = RTF::Writer::TableRowDecl->new( widths => [ map {$width} @cells ] );
+    my $parent = $node->parent;
+    my $borders = $parent->attr('class') =~ /\bborderless\b/ ? 0 : 1;
+    my $tr_decl = RTF::Writer::TableRowDecl->new(
+        widths => [ map {$width} @cells ],
+        borders => $borders,
+    );
 
     $h->row(
         $tr_decl,
