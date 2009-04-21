@@ -1778,24 +1778,22 @@ use warnings;
 
 use base 'Socialtext::Workspace';
 use Class::Field qw(const);
-use Socialtext::SQL 'sql_execute';
 use Socialtext::User;
-use Socialtext::SystemSettings qw(get_system_setting);
 
 const name => '';
+const skin_name => '';
 const title => 'The NoWorkspace Workspace';
 const account_id => 1;
 const workspace_id => 0;
 const email_addresses_are_hidden => 0;
 const real => 0;
-
-sub skin_name { '' }
+const is_plugin_enabled => 0;
+const _set_workspace_option => 1;
+const drop_breadcrumb => undef;
 
 sub created_by_user_id {
     Socialtext::User->SystemUser->user_id;
 }
-
-sub drop_breadcrumb {}
 
 sub new {
     my $class = shift;
@@ -1803,10 +1801,6 @@ sub new {
     bless $self, $class;
     return $self;
 }
-
-sub _set_workspace_option { return 1; }
-
-sub is_plugin_enabled { 0 }
 
 1;
 
