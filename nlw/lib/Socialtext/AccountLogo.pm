@@ -23,10 +23,14 @@ has 'logo' => (
 sub _build_logo {
     my $self = shift;
 
+    my $default = Socialtext::Account->Default();
+    my $is_default = ($default->account_id == $self->account_id);
+
     return Socialtext::UploadedImage->new(
         table => 'account_logo',
         column => 'logo',
         id => [ account_id => $self->account_id ],
+        ($is_default) ? (alternate_ids => {account_id => [0]}) : (),
     );
 }
 
@@ -77,8 +81,6 @@ sub save_image {
 sub cache_image {
     my $self = shift;
     my $cache_dir = $self->Cache_dir();
-    # TODO: if this account is the default, write the image for account_id
-    # 0 as well.
     $self->logo->cache_to_dir($cache_dir);
 }
 
@@ -94,8 +96,6 @@ sub remove {
     my $self = shift;
     my $logo = $self->logo;
     $logo->remove;
-    # TODO: if this account is the default, remove the image for account_id 0
-    # as well.
     $logo->remove_cache( $self->Cache_dir );
 }
 
