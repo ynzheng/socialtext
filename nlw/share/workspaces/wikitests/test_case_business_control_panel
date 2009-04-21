@@ -330,7 +330,8 @@ text_like | qr/0-sort-2-workspace1-%%start_time%%.+0-sort-3-workspace1-%%start_t
 | addSelection | members | label=0_sort_3_user1@%%start_time%%.com |
 | click_ok | add-selected |  |
 
-| click_and_wait | invite-button |  |
+| click_ok | invite-button |  |
+| wait_for_page_to_load_ok | 120000 |  |
 | text_like | errors-and-messages | qr/Congratulations! You successfully created a new workspace with \d+ users. They will receive an invitation message with a link to ws-n%%start_time%%./ |
 
 | *Comment* | TC: BCP This section tests the custom Profile fields. |  |

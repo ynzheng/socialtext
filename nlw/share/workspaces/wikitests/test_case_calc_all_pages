@@ -26,10 +26,10 @@
 | text_like | st-page-titletext | allpages spreadsheet0001%%start_time%% |
 
 | open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |  |
-
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Title |
 | text_like | contentContainer | qr/allpages spreadsheet0001%%start_time%%.+allpages spreadsheet0004%%start_time%%/ |
-
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Title (↓) |
 | text_like | contentContainer | qr/allpages spreadsheet0004%%start_time%%.+allpages spreadsheet0001%%start_time%%/ |
 
@@ -39,16 +39,13 @@
 | pause | 5000 | I hate pause; needed for entire page load |
 | click_and_wait | st-save-button-link |  |
 
-| open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |
-
-| text_like | contentContainer | qr/allpages spreadsheet0005%%start_time%%.+allpages spreadsheet0001%%start_time%%/ |
-
-| select_ok | sort-picker | label=Date |
-| pause | 10000 |  |
-| text_like | contentContainer | qr/allpages spreadsheet0005%%start_time%%.+allpages spreadsheet0001%%start_time%%/ |
-
+| open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |  |
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Date (↑) |
 | text_like | contentContainer | qr/allpages spreadsheet0004%%start_time%%.+allpages spreadsheet0005%%start_time%%/ |
+| wait_for_element_visible_ok | sort-picker | 30000 |
+| select_and_wait | sort-picker | label=Date (↓) |
+| text_like | contentContainer | qr/allpages spreadsheet0005%%start_time%%.+allpages spreadsheet0001%%start_time%%/ |
 
 | *Comment* | Test Case: Calc All Pages revision sort |  |
 | open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |
@@ -62,10 +59,10 @@
 | wait_for_element_visible_ok | st-edit-button-link |  |
 
 | open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |
-
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Revisions |
 | text_like | contentContainer | qr/allpages spreadsheet0004%%start_time%%.+allpages spreadsheet0003%%start_time%%/ |
-
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Revisions (↑) |
 | text_like | contentContainer | qr/allpages spreadsheet0003%%start_time%%.+allpages spreadsheet0004%%start_time%%/ |
 
@@ -97,10 +94,10 @@ For some reason, IE 6 blows up when open_ok is used in some places. We avoid it.
 | *Comment* | Test Case: Calc All Pages verify revision by user %%s_user%% |  |
 
 | open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |  |
-
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Last Edited By |
 | text_like | contentContainer | qr/allpages spreadsheet0003%%start_time%%.+allpages spreadsheet0001%%start_time%%/ |
-
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Last Edited By (↓) |  |
 | text_like | contentContainer | qr/allpages spreadsheet0001%%start_time%%.+allpages spreadsheet0003%%start_time%%/ |
 

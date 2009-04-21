@@ -25,9 +25,6 @@
 
 | *Comment* | Test Case: Calc What's New Sorting tests |
 
-| *Comment* | Test Case: Calc What's New default sorted default Date desc |  |
-| text_like | contentContainer | qr/hey whats new %%start_time%% 0004.+hey whats new %%start_time%% 0001/ |
-
 | *Comment* | Test Case: Calc What's New sort Title asc |  |
 | select_and_wait | sort-picker | label=Title |
 | text_like | contentContainer | qr/hey whats new %%start_time%% 0001.+hey whats new %%start_time%% 0004/ |
@@ -47,9 +44,6 @@
 | click_and_wait | st-save-button-link |  |
 
 | open_ok | /%%workspace%%/index.cgi?action=recent_changes |  |
-
-| *Comment* | Test Case: Calc What's New sort default Date desc |  |
-| text_like | contentContainer | qr/hey whats new %%start_time%% 0005.+hey whats new %%start_time%% 0004/ |
 
 | *Comment* | Test Case: Calc What's New sort Date asc |  |
 | select_and_wait | sort-picker | Date (↑) |
