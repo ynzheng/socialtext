@@ -263,6 +263,7 @@ sub global_template_vars {
         ui_is_expanded     => defined($cookies->{"ui_is_expanded"}),
         plugins_enabled    => $plugins_enabled,
         self_registration  => Socialtext::AppConfig->self_registration(),
+        default_workspace  => Socialtext::AppConfig->default_workspace,
         time               => time,
         dynamic_logo_url   => $logo,
         $self->hub->pluggable->hooked_template_vars,
