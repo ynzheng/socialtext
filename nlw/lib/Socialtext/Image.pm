@@ -3,7 +3,7 @@ package Socialtext::Image;
 use strict;
 use warnings;
 
-use Socialtext::System qw(shell_run);
+use Socialtext::System qw(shell_run backtick);
 use Carp ();
 use Readonly;
 use IO::Handle;
@@ -50,94 +50,92 @@ sub shrink {
     return ($w,$h);
 }
 
-sub MAX_LARGE_IMAGE_WIDTH  { 64 }
-sub MAX_LARGE_IMAGE_HEIGHT { 64 }
-sub MAX_SMALL_IMAGE_WIDTH  { 27 }
-sub MAX_SMALL_IMAGE_HEIGHT { 27 }
-sub BORDER_COLOUR { '#FFFFFF' }
-
 # scale and crop a profile image. you can find the "spec" for this function
 # at:
 #     https://www2.socialtext.net/dev-tasks/index.cgi?story_user_can_upload_photo_to_their_people_profile
-sub process_profile_image {
+sub constrain_and_fill_image {
     my %p = @_;
 
-    die "'image' and 'size' parameters are required"
-        unless ($p{image} && $p{size});
+    die "an 'image_filename' filename parameter is required"
+        unless $p{image_filename};
 
-    my $img = $p{image};
-    my $size = $p{size};
-    my ($max_w, $max_h);
+    my $img = $p{image_filename};
+    my ($max_w, $max_h) = @p{qw(width height)};
+    die "must supply width and height" unless $max_w && $max_h;
 
-    if ($size eq 'large') {
-        $max_w = MAX_LARGE_IMAGE_WIDTH;
-        $max_h = MAX_LARGE_IMAGE_HEIGHT;
-    } elsif ($size eq 'small') {
-        $max_w = MAX_SMALL_IMAGE_WIDTH;
-        $max_h = MAX_SMALL_IMAGE_HEIGHT;
-    } else {
-        die "Invalid size '$size'";
-    }
+    my $fill = $p{fill_color} || undef;
 
     my ($w, $h, $scenes) = split ' ', `identify -format '\%w \%h \%n' $img`;
 
-    if ($scenes != 1) {
-        die "Can't resize animated images";
+    die "Can't resize animated images" unless ($scenes == 1);
+
+    my @opts = ();
+
+    if ($w == $max_w && $h == $max_h) {
+        # no transformation needed
     }
-
-    my %opts = ( bordercolor => '#FFFFFF' );
-
-    if ($h > $max_h && $w > $max_w) {
+    elsif ($h > $max_h && $w > $max_w) {
         my ($new_w, $new_h) = get_proportions(
             new_width  => $w,
             new_height => $h,
             max_width  => $max_w,
             max_height => $max_h
         );
-        my $border_w = int(.5 + ($max_w - $new_w) / 2);
-        my $border_h = int(.5 + ($max_h - $new_h) / 2);
 
-
-        $opts{scale} = "${new_w}x${new_h}!";
-        $opts{border} = "${border_w}x${border_h}";
+        push @opts, scale => "${new_w}x${new_h}!";
+        if ($fill) {
+            my $border_w = int(.5 + ($max_w - $new_w) / 2);
+            my $border_h = int(.5 + ($max_h - $new_h) / 2);
+            push @opts, bordercolor => $fill;
+            push @opts, border => "${border_w}x${border_h}";
+        }
     }
     elsif ($h > $max_h) {
-        my $border_w = int($max_w - $w) / 2;
-        my $border_h = 0;
-        $opts{crop} = "${max_w}x${max_h}!";
-        $opts{border} = "${border_w}x${border_h}";
+        push @opts, crop => "${max_w}x${max_h}!";
+        if ($fill) {
+            my $border_w = int($max_w - $w) / 2;
+            my $border_h = 0;
+            push @opts, bordercolor => $fill;
+            push @opts, border => "${border_w}x${border_h}";
+        }
     }
     elsif ($w > $max_w) {
-        my $border_w = 0;
-        my $border_h = ($max_h - $h) / 2;
-
-        $opts{crop} = "${max_w}x${max_h}!";
-        $opts{border} = "${border_w}x${border_h}";
+        push @opts, crop => "${max_w}x${max_h}!";
+        if ($fill) {
+            my $border_w = 0;
+            my $border_h = ($max_h - $h) / 2;
+            push @opts, bordercolor => $fill;
+            push @opts, border => "${border_w}x${border_h}";
+        }
     }
     else {
         # image is smaller than our maximum bounds, so lets create a border
         # around it to pad the edges. this will have the nice side effect of
         # centering the image
         my ($bw, $bh) = (($max_w - $w) / 2, ($max_h - $h) / 2);
-        $opts{border} = "${bw}x${bh}";
+        $fill ||= '#FFFFFF';
+        push @opts, bordercolor => $fill;
+        push @opts, border => "${bw}x${bh}";
     }
 
     # Convert to PNG
     convert($img, "$img.png");
     rename "$img.png", $img or die "Error converting to PNG";
 
-    # Resize
-    convert($img, $img, %opts);
+    return if ($w == $max_w && $h == $max_h);
+    convert($img, $img, @opts);
 }
 
 sub convert {
-    my ($in, $out, %opts) = @_;
+    my $in = shift;
+    my $out = shift;
 
-    my $opts = join ' ', map { "-$_ '$opts{$_}'" } keys %opts;
-    my $cmd = "convert $in $opts $out >&2";
+    my @opts;
+    while (my ($k,$v) = splice(@_,0,2)) {
+        push @opts, "-$k", $v;
+    }
 
-    local $Socialtext::System::SILENT_RUN = 1;
-    shell_run $cmd;
+    backtick('convert', $in, @opts, $out);
 }
 
 sub crop_geometry {
