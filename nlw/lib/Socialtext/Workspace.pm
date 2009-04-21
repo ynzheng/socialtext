@@ -1406,9 +1406,15 @@ sub _dump_users_to_yaml_file {
         my $role = $elem->[1];
         last unless defined $user;
 
+        my $adapter = Socialtext::Pluggable::Adapter->new;
+        $adapter->make_hub($user);
+        my $plugin_prefs = {};
+        $adapter->hook('nlw.export_user_prefs', $plugin_prefs);
+
         my $dump = $user->to_hash;
         delete $dump->{user_id};
         $dump->{role_name} = $role->name;
+        $dump->{plugin_prefs} = $plugin_prefs if keys %$plugin_prefs;
         push @dump, $dump;
     }
 

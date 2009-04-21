@@ -287,10 +287,18 @@ sub _import_users {
     my @users;
     for my $info (@$users) {
         delete $info->{primary_account_id};
+        my $plugin_prefs = delete($info->{plugin_prefs}) || {};
+
         my $user = Socialtext::User->new( username => $info->{username} )
                 || Socialtext::User->new( email_address => $info->{email_address} )
                 || Socialtext::User->Create_user_from_hash( $info );
         push @users, [ $user, $info->{role_name} ];
+
+        if (keys %$plugin_prefs) {
+            my $adapter = Socialtext::Pluggable::Adapter->new;
+            $adapter->make_hub($user);
+            $adapter->hook('nlw.import_user_prefs', $plugin_prefs);
+        }
     }
 
     return @users;

@@ -748,4 +748,22 @@ sub get_user_prefs {
     return \%res;
 }
 
+sub export_user_prefs {
+    my $self = shift;
+    my $hash = shift;
+
+    $hash->{$self->name} = $self->get_user_prefs();
+}
+
+sub import_user_prefs {
+    my $self = shift;
+    my $hash = shift;
+
+    if (my $prefs = $hash->{$self->name}) {
+        if (ref($prefs) eq 'HASH' and keys %$prefs) {
+            $self->set_user_prefs(%$prefs);
+        }
+    }
+}
+
 1;

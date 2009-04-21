@@ -237,6 +237,24 @@ sub create_workspace {
     diag "Created workspace $name";
 }
 
+sub purge_workspace {
+    my $self = shift;
+    my $name = shift;
+
+    my $ws = Socialtext::Workspace->new(name => $name);
+    unless ($ws) {
+        die "Workspace $name doesn't already exist";
+    }
+
+    my $users = $ws->users;
+    while (my $user = $users->next) {
+        sql_execute('DELETE FROM users WHERE user_id = ? CASCADE',
+            $user->user_id);
+    }
+    $ws->delete();
+    diag "Workspace $name was purged, along with all users in that workspace.";
+}
+
 sub set_ws_permissions {
     my $self       = shift;
     my $workspace  = shift;
