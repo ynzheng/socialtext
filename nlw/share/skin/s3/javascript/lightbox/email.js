@@ -77,15 +77,6 @@ proto.show = function () {
             }
         });
 
-/*        jQuery.getJSON(this.restURL + '/users', function (data) {
-            for (var i=0; i<data.length; i++) {
-                jQuery('<option />')
-                    .html(data[i].email)
-                    .attr('value', data[i].email)
-                    .appendTo('#email_source')
-            }
-        });
-*/
         jQuery('#st-email-lightbox-form').submit(function () {
             if (jQuery('#email_dest').get(0).length <= 0) {
                 alert(loc('Error: To send email, you must specify a recipient.'));
@@ -111,6 +102,7 @@ proto.show = function () {
             })
             return false;
         });
+
     }
 
     $('#st-email-lightbox .submit').click(function () {

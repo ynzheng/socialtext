@@ -22,7 +22,7 @@
     <tr>
       <th>[% loc('Recipient(s)') %]</th>
       <td>
-        <input class="email_input lookahead-prompt" name="email_recipient" type="text" size="60" value="[% loc("Start typing a user's name to search.") %]" id="email_recipient" />
+        <input class="email_input lookahead-prompt" name="email_recipient" type="text" size="60" value="[% loc("Start typing the name of any recipient") %]" id="email_recipient" />
       </td>
       <td>
         <input class="email_input_button" type="button" id="email_add" value="[% loc('Add') %]" /><br />
