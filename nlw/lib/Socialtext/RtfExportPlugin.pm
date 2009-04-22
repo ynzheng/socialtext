@@ -117,7 +117,7 @@ sub export {
 
     my $html = join "\n<HR/>\n", map { 
         my $page = $self->hub->pages->new_from_uri( $_ );
-        ((@page_names > 1) ? "<h1>" . $page->title . "</h1>" : '') . $self->_get_html($page) 
+        "<h1>" . $page->title . "</h1>" . $self->_get_html($page) 
     } @page_names;
 
     $$content_ref = HTML::FormatRTFWithImages->format_string(
