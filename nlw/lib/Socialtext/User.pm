@@ -894,7 +894,9 @@ sub Resolve {
     if (ref($maybe_user) && $maybe_user->can('user_id')) {
         return $maybe_user;
     }
-    elsif ($maybe_user =~ /^\d+$/) {
+
+    # SHORT-CIRCUIT: if it looks like a User ID, look that up *first*
+    if ($maybe_user =~ /^\d+$/) {
         $user = Socialtext::User->new(user_id => $maybe_user) 
     }
 
