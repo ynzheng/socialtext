@@ -89,7 +89,11 @@ proto.show = function () {
         });
 
         jQuery('#st-email-lightbox-form').submit(function () {
-            if (jQuery('#email_dest').get(0).length <= 0) {
+            var val = jQuery('#email_recipient').val();
+            if (val.length > 0) 
+                jQuery('#email_add').click();
+
+            if (jQuery('#email_dest').get(0).length <= 0 || self.firstAdd) {
                 alert(loc('Error: To send email, you must specify a recipient.'));
                 return false;
             }
