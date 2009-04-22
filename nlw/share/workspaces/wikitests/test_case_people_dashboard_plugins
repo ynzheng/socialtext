@@ -18,8 +18,6 @@ This test is designed to test global navigation changes as people/dashboard is e
 | text_like | contentRight | %%title%% |
 | click_and_wait | link=People |  |
 | text_like | All People |  |
-| text_like | Names |  |
-| text_like | Summaries |  |
 | text_like | Showing 1 |  |
 | click_and_wait | link=Home |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |

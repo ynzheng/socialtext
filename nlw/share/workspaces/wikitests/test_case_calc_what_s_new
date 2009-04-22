@@ -45,13 +45,13 @@
 
 | open_ok | /%%workspace%%/index.cgi?action=recent_changes |  |
 
-| *Comment* | Test Case: Calc What's New sort Date asc |  |
-| select_and_wait | sort-picker | Date (↑) |
-| text_like | contentContainer | qr/hey whats new %%start_time%% 0002.+hey whats new %%start_time%% 0003/ |
-
 | *Comment* | Test Case: Calc What's New sort Date desc |  |
 | select_and_wait | sort-picker | Date (↓) |
 | text_like | contentContainer | qr/hey whats new %%start_time%% 0004.+hey whats new %%start_time%% 0001/ |
+
+| *Comment* | Test Case: Calc What's New sort Date asc |  |
+| select_and_wait | sort-picker | Date (↑) |
+| text_like | contentContainer | qr/hey whats new %%start_time%% 0002.+hey whats new %%start_time%% 0003/ |
 
 | *Comment* | Test Case: Calc What's New create Rev 2 |  |
 | open_ok | %%workspace%%/index.cgi?action=display;page_type=spreadsheet;page_name=hey whats new %%start_time%% 0005#edit |  |

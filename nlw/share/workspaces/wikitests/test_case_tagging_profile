@@ -40,10 +40,8 @@ text_like | 所以 | |
 | open_ok | /?action=people;tag=fog%20%%start_time%% |  |
 
 | *Comment* | Test Case: Tagging Profile list view: tag fog %%start_time%% |  |
-| wait_for_element_visible_ok | link=Summaries | 30000 |
-| click_ok | link=Summaries |  |
 | text_like | All People Tagged 'fog %%start_time%%' |  |
-| wait_for_text_present_ok | %%email%% | 30000 |
+| text_like | %%email%% |  |
 
 | *Comment* | Test Case: Tagging Profile add the same tag to a different user |  |
 
@@ -72,23 +70,11 @@ text_like | 所以 | |
 | text_like | link=fog %%start_time%% | fog %%start_time%% |
 | open_ok | /?action=people;tag=fog%20%%start_time%% |  |
 
-| *Comment* | Test Case: Tagging Profile list view: tag fog %%start_time%% two users Summaries |  |
-| wait_for_element_visible_ok | link=Summaries | 30000 |
-| click_ok | link=Summaries |  |
+| *Comment* | Test Case: Tagging Profile list view: tag fog %%start_time%% two users |  |
 | text_like | All People Tagged 'fog %%start_time%%' |  |
-| wait_for_text_present_ok | %%short_username%% | 30000 |
-| wait_for_text_present_ok | %%email%% | 30000 |
-| wait_for_text_present_ok | %%fname%% %%lname%% | 30000 |
-| wait_for_text_present_ok | %%e_user%% | 30000 |
-
-| *Comment* | Test Case: Tagging Profile list view: tag fog %%start_time%% two users Names |  |
-| wait_for_element_visible_ok | link=Names | 30000 |
-| click_ok | link=Names |  |
-| text_like | All People Tagged 'fog %%start_time%%' |  |
-| wait_for_text_present_ok | %%short_username%% | 30000 |
-| wait_for_text_not_present_ok | %%email%% | 30000 |
-| wait_for_text_present_ok | %%fname%% %%lname%% | 30000 |
-| wait_for_text_not_present_ok | %%e_user%% | 30000 |
+| text_like | %%email%% |  |
+| text_like | %%fname%% %%lname%% |  |
+| text_like | %%e_user%% |  |
 
 | *Comment* | Make and tag a new user |  |
 | set | tag_user | `tagger.%%start_time%%@ken.socialtext.net` |

@@ -40,12 +40,14 @@
 | click_and_wait | st-save-button-link |  |
 
 | open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |  |
+
+| *Comment* | Test Case: Calc All Pages reopen. Default sort is date, not sticky |  |
+| wait_for_element_visible_ok | sort-picker | 30000 |
+| select_and_wait | sort-picker | label=Date (↓) |
+| text_like | contentContainer | qr/allpages spreadsheet0005%%start_time%%.+allpages spreadsheet0004%%start_time%%/ |
 | wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Date (↑) |
 | text_like | contentContainer | qr/allpages spreadsheet0004%%start_time%%.+allpages spreadsheet0005%%start_time%%/ |
-| wait_for_element_visible_ok | sort-picker | 30000 |
-| select_and_wait | sort-picker | label=Date (↓) |
-| text_like | contentContainer | qr/allpages spreadsheet0005%%start_time%%.+allpages spreadsheet0001%%start_time%%/ |
 
 | *Comment* | Test Case: Calc All Pages revision sort |  |
 | open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |
