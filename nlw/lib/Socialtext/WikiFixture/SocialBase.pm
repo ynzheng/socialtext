@@ -87,6 +87,8 @@ sub http_user_pass {
     $self->{http}->password($pass) if $pass;
 }
 
+
+
 =head2 follow_redirects_for ( $methods )
 
 Choose which methods to follow redirects for.
@@ -134,7 +136,7 @@ sub big_db {
         grep { exists $self->{"db_$_"} }
         qw(accounts users pages events signals);
 
-    shell_run('really-big-db.pl', @args);
+    Socialtext::System::shell_run('really-big-db.pl', @args);
 }
 
 =head2 stress_for <secs>
@@ -149,7 +151,7 @@ sub stress_for {
         grep { exists $self->{"torture_$_"} }
         qw(signalsleep postsleep eventsleep background-sleep signalsclients postclients eventclients background-clients use-at get-avs server limit rampup followers sleeptime base users);
 
-    shell_run('torture', @args);
+    Socialtext::System::shell_run('torture', @args);
 }
 
 sub create_account {
@@ -941,12 +943,12 @@ sub parse_logs {
     die "File doesn't exist!" unless -e $file;
     my $report_perl = "$^X -I$ENV{ST_CURRENT}/socialtext-reports/lib"
         . " -I$ENV{ST_CURRENT}/nlw/lib $ENV{ST_CURRENT}/socialtext-reports";
-    shell_run("$report_perl/bin/st-reports-consume-access-log $file");
+    Socialtext::System::shell_run("$report_perl/bin/st-reports-consume-access-log $file");
 }
 
 sub clear_reports {
     my $self = shift;
-    shell_run("cd $ENV{ST_CURRENT}/socialtext-reports; ./setup-dev-env");
+Socialtext::System::shell_run("cd $ENV{ST_CURRENT}/socialtext-reports; ./setup-dev-env");
 }
 
 =head2 header_isnt ( header, value )
@@ -986,8 +988,8 @@ Clear out any queued jobs.
 =cut
 
 sub st_clear_jobs {
-    shell_run('ceq-rm .');
-    shell_run('-ceqlotron -f -o');
+    Socialtext::System::shell_run('ceq-rm .');
+    Socialtext::System::shell_run('-ceqlotron -f -o');
 }
 
 =head2 st-process-jobs
@@ -997,8 +999,17 @@ Run any queued jobs.
 =cut
 
 sub st_process_jobs {
-    shell_run('-ceqlotron -f -o');
+    Socialtext::System::shell_run('-ceqlotron -f -o');
 }
 
+
+=head2 shell-run any-command and args
+
+=cut
+
+sub shell_run {
+    my $self = shift;
+    Socialtext::System::shell_run(join ' ', @_);
+}
 
 1;
