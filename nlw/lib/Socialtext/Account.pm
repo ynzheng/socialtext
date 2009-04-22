@@ -22,6 +22,7 @@ use Socialtext::Timer;
 use Socialtext::Pluggable::Adapter;
 use Socialtext::AccountLogo;
 use YAML qw/DumpFile LoadFile/;
+use MIME::Base64 ();
 use namespace::clean;
 
 Readonly our @ACCT_COLS => qw(
@@ -286,12 +287,15 @@ sub export {
 
     my $export_file = $opts{file} || "$dir/account.yaml";
 
+    my $image_ref = $self->logo->load();
+
     my $data = {
         name => $self->name,
         is_system_created => $self->is_system_created,
         skin_name => $self->skin_name,
         email_addresses_are_hidden => $self->email_addresses_are_hidden,
         users => $self->users_as_hash,
+        logo => MIME::Base64::encode($$image_ref),
     };
     $hub->pluggable->hook('nlw.export_account', $self, $data);
 
@@ -346,6 +350,16 @@ sub import_file {
         skin_name => $hash->{skin_name},
         email_addresses_are_hidden => $hash->{email_addresses_are_hidden},
     );
+
+    if ($hash->{logo}) {
+        print loc("Importing account logo ...") . "\n";
+        eval {
+            my $image = MIME::Base64::decode($hash->{logo});
+            $account->logo->save_image(\$image);
+            delete $hash->{logo};
+        };
+        warn "Could not import account logo: $@" if $@;
+    }
     
     my @profiles;
     for my $user_hash (@{ $hash->{users} }) {

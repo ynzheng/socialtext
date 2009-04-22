@@ -3,9 +3,11 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 83;
+use Test::Socialtext tests => 88;
 use Test::Socialtext::User;
 use Test::Exception;
+use Socialtext::File;
+use MIME::Base64 ();
 use YAML qw/LoadFile/;
 
 BEGIN { push @INC, 't/share/plugin/fakeplugin/lib' }
@@ -161,6 +163,15 @@ $mock_adapter->mock('hook', sub {});
 my $mock_hub = Test::MockObject->new({});
 $mock_hub->mock('pluggable', sub { $mock_adapter });
 
+my $logo_ref;
+Set_a_logo: {
+    my $orig_logo = Socialtext::File::get_contents_binary(
+        "t/test-data/discoverppl.jpg");
+    lives_ok { $test->logo->save_image(\$orig_logo) } 'set the account logo';
+    $logo_ref = $test->logo->logo->image_ref;
+    ok $logo_ref, 'logo ref was set';
+}
+
 my $export_file;
 Exporting_account_people: {
     $export_file = $test->export( dir => 't', hub => $mock_hub );
@@ -173,6 +184,13 @@ Exporting_account_people: {
     is $data->{users}[0]{email_address}, 'devnull2@example.com', 'user 1 email';
     is $data->{users}[1]{username}, 'dummy3', 'user 2 username';
     is $data->{users}[1]{email_address}, 'devnull3@example.com', 'user 2 email';
+
+    {
+        use bytes;
+        ok $data->{logo}, 'logo was exported';
+        my $exported_logo = MIME::Base64::decode($data->{logo});
+        ok $$logo_ref eq $exported_logo, 'exported the correct image';
+    }
 }
 
 # Now blow the account and users away for the re-import
@@ -188,6 +206,9 @@ Import_account: {
     is $account->name, 'Imported account', 'new name was set';
     is $account->workspace_count, 0, "import doesn't import workspace data";
     users_are($account, [qw/dummy2 dummy3/]);
+
+    my $imported_logo_ref = $account->logo->load();
+    ok $$imported_logo_ref eq $$logo_ref, 'logo identical on import';
 }
 
 Wierd_corner_case: {
