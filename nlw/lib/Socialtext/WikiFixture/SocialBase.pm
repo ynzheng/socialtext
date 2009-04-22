@@ -87,6 +87,26 @@ sub http_user_pass {
     $self->{http}->password($pass) if $pass;
 }
 
+=head2 follow_redirects_for ( $methods )
+
+Choose which methods to follow redirects for.
+
+Default: | follow_redirects_for | GET, HEAD |
+
+Don't follow any redirects: | follow_redirects_for | |
+
+=cut
+
+sub follow_redirects_for {
+    my $self    = shift;
+    my $methods = shift || '';
+
+    my @methods = map { uc } split m/\s*,\s*/, $methods;
+
+    diag "Only following " . join ', ', @methods;
+    $self->{http}->ua->requests_redirectable(\@methods);
+}
+
 =head2 big_db
 
 Loads the database with records.  Configured through wiki 
