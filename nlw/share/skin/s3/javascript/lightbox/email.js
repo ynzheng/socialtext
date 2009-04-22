@@ -63,6 +63,12 @@ proto.show = function () {
                     $(this).val("");
                     $(this).removeClass("lookahead-prompt");
                 }
+            })
+            .keypress(function (e) {
+                if (e.which == 13) {
+                    jQuery('#email_add').click();
+                    return false;
+                }
             });
 
         jQuery('#email_add').click(function () {
