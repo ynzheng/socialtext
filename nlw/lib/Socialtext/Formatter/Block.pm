@@ -21,7 +21,7 @@ field 'level';
 sub match {
     my $self = shift;
     my $text = shift;
-    return unless $text =~ /^(\^{1,6}) +(.*?)(\s+=+)?\s*?\n+/m;
+    return unless $text =~ /\A(\^{1,6}) +(.*?)(\s+=+)?\s*?\n+/m;
     $self->level( length($1) );
     $self->set_match($2);
 }
@@ -48,7 +48,7 @@ const formatter_id  => 'p';
 const html_start    => "<p>\n";
 const html_end      => "</p>\n";
 const pattern_block =>
-    qr/(            # Capture whole thing
+    qr/\A(            # Capture whole thing
         (?:
         ^(?!        # All consecutive lines *not* starting with
         (?:
@@ -85,7 +85,7 @@ use base 'Socialtext::Formatter::Paragraph';
 use Class::Field qw( const );
 
 const formatter_id  => 'empty_p';
-const pattern_block => qr/((^\s*\n)+)/m;
+const pattern_block => qr/\A((^\s*\n)+)/m;
 const html_start    => "";
 const html_end      => "<br />";
 
@@ -95,7 +95,7 @@ use base 'Socialtext::Formatter::Paragraph';
 use Class::Field qw( const );
 
 const formatter_id  => 'wafl_p';
-const pattern_block => qr/^(\{.*\})[\ \t]*\n/m;
+const pattern_block => qr/\A(\{.*\})[\ \t]*\n/m;
 const html_start    => "";
 const html_end      => "<br />";
 
@@ -113,7 +113,7 @@ field 'start_level';
 sub match {
     my $self = shift;
     my $text = shift;
-    return unless $text =~ /^(>+)/m;
+    return unless $text =~ /\A(>+)/m;
     my $l = length($1);
     $self->level($l);
     return unless $text =~ /(^(>{$l}(?!>).*\n)+)/m;

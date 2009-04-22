@@ -68,6 +68,7 @@ sub _parse_blocks {
     $unit->text(undef);
     my $units    = $unit->units;
     my $table    = $self->table;
+
     my $contains = $unit->contains_blocks;
     while ( defined $text and length $text ) {
         my $match = $self->_match_format_id( $contains, $table, $text );
