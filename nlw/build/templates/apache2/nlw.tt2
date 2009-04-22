@@ -47,46 +47,28 @@
     ExpiresActive On
     RewriteEngine On
 
-    # Have the Apache2 frontend serve the profile photos, but pass-thru
-    # to the backend if the photo doesn't exist.
+    [% BLOCK image_cache %]
     RewriteCond %{REQUEST_METHOD} ^GET$
-    RewriteCond %{REQUEST_URI} ^/data/people/([^/]+)/small_photo
-    RewriteCond [% config.cache_dir %]/avatar/%1-small.png -f
-    RewriteRule ^/data/people/([^/]+)/small_photo /nlw/avatar/$1-small.png [PT]
+    RewriteCond %{REQUEST_URI} [% rest_pattern %]
+    RewriteCond [% config.cache_dir %]/[% cache_name %]/%1[% file_suffix %] -f
+    RewriteRule [% rest_pattern %] /nlw/[% cache_name %]/$1[% file_suffix %] [PT]
 
-    RewriteCond %{REQUEST_METHOD} ^GET$
-    RewriteCond %{REQUEST_URI} ^/data/people/([^/]+)/photo
-    RewriteCond [% config.cache_dir %]/avatar/%1-large.png -f
-    RewriteRule ^/data/people/([^/]+)/photo /nlw/avatar/$1-large.png [PT]
-
-    Alias /nlw/avatar [% config.cache_dir %]/avatar
-
-    # Have the Apache2 frontend serve the wafl images as well, but pass-thru
-    # to the backend if the wafl image doesn't exist.
-    RewriteCond %{REQUEST_METHOD} ^GET$
-    RewriteCond %{REQUEST_URI} ^/data/wafl/(.*)
-    RewriteCond [% config.cache_dir %]/wafl/%1.png -f
-    RewriteRule ^/data/wafl/(.*) /nlw/wafl/$1.png [PT]
-
-    Alias /nlw/wafl [% config.cache_dir %]/wafl
-
-    RewriteCond %{REQUEST_METHOD} ^GET$
-    RewriteCond %{REQUEST_URI} ^/data/accounts/([^/]+)/logo
-    RewriteCond [% config.cache_dir %]/account_logo/%1.png -f
-    RewriteRule ^/data/accounts/([^/]+)/logo /nlw/account_logo/$1.png [PT]
-
-    Alias /nlw/account_logo [% config.cache_dir %]/account_logo
-
-    <LocationMatch ^/nlw/(avatar|wafl|account_logo)/>
+    [% IF alias %]
+    Alias /nlw/[% cache_name %] [% config.cache_dir %]/[% cache_name %]
+    <Location /nlw/[% cache_name %]/>
         Order allow,deny
         Allow from all
-         # Set these once we figure out how to get "user updates their own avatar" to
-         # re-cache properly:
-         #        ExpiresByType image/png "now plus 5 minutes"
-         #        Header append Cache-Control "public, must-revalidate, max-age=300, pre-check=300, post-check=300"
-         Header set Expires -1
-         Header append Cache-Control "public, must-revalidate, max-age=0, pre-check=0, post-check=0"
-    </LocationMatch>
+        Header set Expires -1
+        Header append Cache-Control "public, must-revalidate, max-age=0, pre-check=0, post-check=0"
+        Header set X-Cache "HIT from [% cache_name %]"
+    </Location>
+    [% END %]
+    [% END %]
+
+    [% PROCESS image_cache cache_name="avatar" rest_pattern="^/data/people/([^/]+)/photo" file_suffix="-large.png" alias=0 %]
+    [% PROCESS image_cache cache_name="avatar" rest_pattern="^/data/people/([^/]+)/small_photo" file_suffix="-small.png" alias=1 %]
+    [% PROCESS image_cache cache_name="wafl" rest_pattern="^/data/wafl/(.*)" file_suffix=".png" alias=1 %]
+    [% PROCESS image_cache cache_name="account_logo" rest_pattern="^/data/accounts/([^/]+)/logo" file_suffix=".png" alias=1 %]
 
 [%# The rewrite file must come before any of the redirect confs below %]
 [% PROCESS 'shared/rewrite.tt2' %]
