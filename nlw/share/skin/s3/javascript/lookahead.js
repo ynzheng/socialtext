@@ -193,28 +193,48 @@
          */
         var left = $(this.input).offset().left;
         var top = $(this.input).offset().top + $(this.input).height() + 10;
+        var width = $(this.input).width();
 
         if (!this.lookahead) {
-            this.lookahead = $('<ul></ul>')
+            this.lookahead = $('<div></div>')
+                .hide()
                 .css({
-                    overflow: 'hidden',
                     textAlign: 'left',
                     zIndex: 2500,
                     position: 'absolute',
                     background: '#B4DCEC',
                     border: '1px solid black',
-                    display: 'none',
                     padding: '0px'
                 })
                 .prependTo('body');
+
+            $('<ul></ul>').appendTo(this.lookahead);
+
+            if ($.browser.msie && $.browser.version < 7) {
+                $('<iframe src="/static/html/blank.html"></iframe>')
+                    .css({
+                        zIndex: -1,
+                        position: 'absolute',
+                        top: -1,
+                        left: -1,
+                        opacity: 0,
+                        width: (width+2) + 'px'
+                    })
+                    .appendTo(this.lookahead);
+            }
         }
 
         this.lookahead.css({
-            width: $(this.input).width() + 'px',
+            width: width + 'px',
             left: left + 'px',
             top: top + 'px'
         });
+
         return this.lookahead;
+    };
+
+    Lookahead.prototype.getLookaheadList = function () {
+        return $('ul', this.getLookahead());
     };
 
     Lookahead.prototype.linkTitle = function (item) {
@@ -254,8 +274,8 @@
     };
 
     Lookahead.prototype.displayData = function (data) {
-        var lookahead = this.getLookahead();
-        lookahead.html('');
+        var lookaheadList = this.getLookaheadList();
+        lookaheadList.html('');
 
         var self = this;
 
@@ -265,7 +285,7 @@
                 var item = this || {};
                 var li = $('<li></li>')
                     .css({ padding: '3px 5px' })
-                    .appendTo(lookahead);
+                    .appendTo(lookaheadList);
                 $('<a href="#"></a>')
                     .html(item.bolded_title)
                     .attr('value', i)
@@ -281,12 +301,17 @@
             this.show();
         }
         else {
-            lookahead.append(
+            lookaheadList.append(
                 jQuery("<li></li>")
                     .append("No matches for '"+$(this.input).val()+"'")
                     .css({padding: '3px 5px'}));
             this.show();
         }
+
+        // IE6 iframe hack:
+        $('iframe', this.lookahead).height(
+            this.lookahead.height() + 5
+        );
     };
 
     Lookahead.prototype.show = function () {
@@ -473,19 +498,19 @@
                 );
             },
             error: function (xhr, textStatus, errorThrown) {
-                var lookahead = self.getLookahead();
+                var list = self.getLookaheadList();
                 self._loading_lookahead = false;
                 if (self.opts.onError) {
                     var errorHandler = self.opts.onError[xhr.status]
                                     || self.opts.onError['default'];
                     if (errorHandler) {
                         if ($.isFunction(errorHandler)) {
-                            lookahead.html(
+                            list.html(
                                 errorHandler( xhr, textStatus, errorThrown )
                             );
                         }
                         else {
-                            lookahead.html( errorHandler );
+                            list.html( errorHandler );
                         }
                         this.show();
                     }
