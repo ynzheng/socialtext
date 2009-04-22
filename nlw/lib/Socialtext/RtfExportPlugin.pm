@@ -115,9 +115,10 @@ sub export {
 
     my @page_names = ref $page_name ? @$page_name : ($page_name);
 
-    # FIXME: In multipage only, need H1s or somesuch to put page names atop
-    # each page.
-    my $html = join "\n<HR/>\n", map { $self->_get_html($_) } @page_names;
+    my $html = join "\n<HR/>\n", map { 
+        my $page = $self->hub->pages->new_from_uri( $_ );
+        ((@page_names > 1) ? "<h1>" . $page->title . "</h1>" : '') . $self->_get_html($page) 
+    } @page_names;
 
     $$content_ref = HTML::FormatRTFWithImages->format_string(
         $html,
@@ -128,8 +129,7 @@ sub export {
 
 sub _get_html {
     my $self = shift;
-    my $page_name = shift;
-    my $page = $self->hub->pages->new_from_name( $page_name );
+    my $page = shift;
 
     # FIXME: Add special link dictionary here.
     return "<html><head><title>"
