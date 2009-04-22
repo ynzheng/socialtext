@@ -1,12 +1,12 @@
 package Socialtext::AccountLogo;
 # @COPYRIGHT@
 use Moose;
+use File::Spec;
+use File::Temp qw/tempfile/;
 use Socialtext::File;
 use Socialtext::Skin;
-use File::Spec;
 use Socialtext::Paths;
 use Socialtext::Image;
-use File::Temp qw/tempfile/;
 use namespace::clean -except => 'meta';
 
 has 'account' => (
@@ -80,6 +80,7 @@ sub save_image {
 sub cache_image {
     my $self = shift;
     my $cache_dir = $self->Cache_dir();
+    my $lock_fh = Socialtext::File::write_lock("$cache_dir/.lock");
     $self->logo->cache_to_dir($cache_dir);
 }
 
@@ -94,8 +95,10 @@ sub Cache_dir {
 sub remove {
     my $self = shift;
     my $logo = $self->logo;
+    my $dir = $self->Cache_dir;
     $logo->remove;
-    $logo->remove_cache( $self->Cache_dir );
+    my $lock_fh = Socialtext::File::write_lock("$dir/.lock");
+    $logo->remove_cache($dir);
 }
 
 sub Default_logo_name {
