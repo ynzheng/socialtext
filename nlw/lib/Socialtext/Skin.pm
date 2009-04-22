@@ -265,7 +265,8 @@ sub customjs_name {
 
 sub dynamic_logo {
     my $self = shift;
-    return if ($self->skin_name eq 's3');
+    # uploaded logos only apply to the default skin
+    return unless ($self->skin_name eq 's3');
 
     my $logo_acct_id = 0;
     my $cur_ws = $self->workspace;
