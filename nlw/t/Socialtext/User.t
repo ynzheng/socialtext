@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 
-use Test::Socialtext tests => 32;
+use Test::Socialtext tests => 35;
 fixtures(qw( clean db ));
 use Socialtext::User;
 
@@ -216,3 +216,39 @@ deactivate_user: {
     is $user->password, '*password*', "user's password was 'deactivated'";
 }
 
+user_workspaces: {
+    # create a user in a new account
+    my $account = Socialtext::Account->create(name => "lookups");
+    my $user = Socialtext::User->create(
+        username      => 'findme@ken.socialtext.net',
+        first_name    => 'Dev',
+        last_name     => 'Null',
+        email_address => 'findme@ken.socialtext.net',
+        password      => 'd3vnu11l'
+    );
+    $user->primary_account($account);
+
+    # add them to some workspaces
+    my @to_create = ( 'lookupaaa', 'lookupbbb', 'lookupccc' );
+    for my $name ( @to_create ) {
+        my $ws = Socialtext::Workspace->create(
+            name       => $name,
+            title      => "Lookups $name",
+            account_id => $account->account_id,
+        );
+        $ws->add_user(user => $user);
+    }
+
+    my @names = map { $_->name } 
+        $user->workspaces()->all();
+    is_deeply \@names, \@to_create, 'correct workspaces in correct order';
+
+    @names = map { $_->name } 
+        $user->workspaces( limit => 1 )->all();
+    is $names[0],  'lookupaaa', 'correct limit';
+
+    @names = map { $_->name }
+        $user->workspaces( limit => 2, offset => 1 )->all();
+    is_deeply \@names, [ 'lookupbbb', 'lookupccc' ], 'correct limit and offset';
+
+}

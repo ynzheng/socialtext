@@ -666,9 +666,16 @@ EOSQL
 }
 
 {
+    # order_by and sort_order are currently a part of the spec here,
+    # but are not actually being used. This is so we can pass paging
+    # arguments in from the control panel.
     Readonly my $spec => {
         selected_only => BOOLEAN_TYPE( default => 0 ),
         exclude => ARRAYREF_TYPE( default => [] ),
+        limit => SCALAR_TYPE(default => ''),
+        offset => SCALAR_TYPE(default => ''),
+        order_by => SCALAR_TYPE(default => 'name'),
+        sort_order => SCALAR_TYPE(default => 'asc'),
     };
     sub workspaces {
         my $self = shift;
@@ -683,6 +690,12 @@ EOSQL
             $exclude_clause = "AND workspace_id NOT IN ($wksps)";
         }
 
+        my $limit_and_offset = '';
+        if ( $p{limit} ) {
+            $limit_and_offset = "LIMIT $p{limit}";
+            $limit_and_offset .= " OFFSET $p{offset}" if $p{offset};
+        }
+
         my $sth = sql_execute(<<EOSQL, $self->user_id);
 SELECT *
     FROM "UserWorkspaceRole" LEFT OUTER JOIN "Workspace" USING (workspace_id)
@@ -690,6 +703,7 @@ SELECT *
     $selected_only_clause
     $exclude_clause
     ORDER BY name
+    $limit_and_offset
 EOSQL
 
         return Socialtext::MultiCursor->new(
