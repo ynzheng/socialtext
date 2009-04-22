@@ -51,25 +51,45 @@ sub _add_newline {
 
 =head1 NAME
 
-st-refresh-ldap-users - Utility to refresh DB cache of LDAP user data
+st-ldap - Socialtext LDAP integration utility
 
 =head1 SYNOPSIS
 
-  st-refresh-ldap-users [options]
+  st-ldap <command> [options]
+
+  Commands:
+    refresh-users   Refreshes user data from LDAP
+        --force         Force refresh for all LDAP users
 
   Options:
-    --force         Force refresh for all LDAP users
     --verbose       Enable verbose output
     --help/-?       Brief help message
     --man           Full documentation
 
   Example:
-    st-refresh-ldap-users --verbose
+    st-ldap refresh-users --force --verbose
 
 =head1 DESCRIPTION
 
-C<st-refresh-ldap-users> is a command line utility to refresh the local DB
-cache with information on LDAP users.
+C<st-ldap> is a command line utility to perform LDAP operations in your
+Socialtext environment.
+
+=head1 ARGUMENTS
+
+=over
+
+=item B<refresh-users>
+
+Refreshes the local DB cache with information on LDAP users.
+
+=over
+
+=item B<--force>
+
+Forces a refresh for B<all> LDAP users, not just those who are known to have
+stale/outdated cached data.
+
+=back
 
 LDAP user data I<is> refreshed automatically by the system as part of its
 regular operations, but there are times when you may wish to refresh the data
@@ -94,19 +114,16 @@ By default, only those users whose cached data is stale are refreshed.  This
 can be over-ridden by using the C<--force> command line option, which forces a
 refresh of B<all> LDAP users.
 
+=back
+
 =head1 OPTIONS
 
 =over
 
-=item B<--force>
-
-Forces a refresh for B<all> LDAP users, not just those who are known to have
-stale/outdated cached data.
-
 =item B<--verbose>
 
-Runs in verbose mode, displaying additional information as users are refreshed
-via LDAP.
+Runs in verbose mode, displaying additional information as operations are
+performed.
 
 =item B<--help/-?>
 
@@ -124,6 +141,6 @@ Graham TerMarsch C<< <graham.termarsch@socialtext.com> >>
 
 =head1 COPYRIGHT
 
-Copyright 2008 Socialtext, Inc.,  All Rights Reserved.
+Copyright 2008-2009 Socialtext, Inc.,  All Rights Reserved.
 
 =cut

@@ -138,6 +138,6 @@ Copyright 2009 Socialtext, Inc., All Rights Reserved.
 
 =head1 SEE ALSO
 
-L<st-refresh-ldap-users>.
+L<st-ldap>.
 
 =cut
