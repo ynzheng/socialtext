@@ -19,7 +19,7 @@ body {
     width: 80%; 
 }
 
-#support_link {
+#contact_support_link {
     clear: both;
 
     margin-top: 0.5em;
@@ -29,7 +29,7 @@ body {
     font-size: 75%;
 }
 
-* html #support_link {
+* html #contact_support_link {
     margin-right: 5px;
 }
 
