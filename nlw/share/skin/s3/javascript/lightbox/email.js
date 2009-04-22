@@ -5,7 +5,7 @@ ST.Email = function () {
     this.restURL = '/data/workspaces/' + Socialtext.wiki_id;
 };
 
-var proto = ST.Email.prototype = {};
+var proto = ST.Email.prototype = { firstAdd: true };
 
 
 proto.show = function () {
@@ -23,6 +23,11 @@ proto.show = function () {
         });
 
         jQuery('#email_add').click(function () {
+            if (self.firstAdd) {
+                jQuery('#email_dest option').remove();
+                jQuery('#email_dest').removeClass("lookahead-prompt");
+                self.firstAdd = false;
+            }
             jQuery('#email_source option:selected').appendTo('#email_dest');
         });
 

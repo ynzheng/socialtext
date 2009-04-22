@@ -20,7 +20,7 @@
       </td>
     </tr>
     <tr>
-      <th>[% loc('Recipient(s)') %]</th>
+      <th>[% loc('Recipients') %]</th>
       <td>
         <input class="email_input lookahead-prompt" name="email_recipient" type="text" size="60" value="[% loc("Start typing the name of any recipient") %]" id="email_recipient" />
       </td>
@@ -31,7 +31,9 @@
     <tr>
       <th></th>
       <td>
-        <select id="email_dest" class="email_input" multiple name="email_page_user_choices" size="14">
+        <select id="email_dest" class="email_input lookahead-prompt" multiple name="email_page_user_choices" size="14">
+        <option>[% loc("Use the Recipients box above to add") %]</option>
+        <option>[% loc("users to this list") %]</option>
         </select>
       </td>
       <td>
