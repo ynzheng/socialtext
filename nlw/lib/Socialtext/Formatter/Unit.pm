@@ -49,7 +49,6 @@ field -weak      => 'prev_unit';
 sub match {
     my $self = shift;
     my $text = shift;
-    my $orig_text = $text;
     my $match = $text =~ $self->pattern_block;
     return unless $match;
     $self->set_match;
@@ -158,7 +157,6 @@ sub match {
     my $self = shift;
     my $text = shift;
     my $bullet = $self->bullet;
-    my $orig_text = $text;
     my $regex = qr/\A((?:^($bullet).*\n)(?:^\2(?!$bullet).*\n)*)(?:\s*\n)?/m;
     my $match = $text =~ $regex;
     return unless $match;
