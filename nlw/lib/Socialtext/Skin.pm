@@ -34,8 +34,9 @@ sub PreloadTemplateDirs {
 }
 
 sub new {
-    my ($class, %args) = @_;
-    my $self = $class->SUPER::new(%args);
+    my $class = shift;
+    my %args = @_ % 2 ? () : (@_);
+    my $self = $class->SUPER::new(@_);
     $self->{_no_workspace} = Socialtext::NoWorkspace->new;
     $self->{_skin_name} = $args{name};
     return $self;
