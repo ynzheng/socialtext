@@ -50,10 +50,8 @@ sub shrink {
     return ($w,$h);
 }
 
-# scale and crop a profile image. you can find the "spec" for this function
-# at:
-#     https://www2.socialtext.net/dev-tasks/index.cgi?story_user_can_upload_photo_to_their_people_profile
-sub constrain_and_fill_image {
+# crop an image using an internal, centered rectangle of the desired size
+sub extract_rectangle {
     my %p = @_;
 
     die "an 'image_filename' filename parameter is required"
@@ -62,8 +60,6 @@ sub constrain_and_fill_image {
     my $img = $p{image_filename};
     my ($max_w, $max_h) = @p{qw(width height)};
     die "must supply width and height" unless $max_w && $max_h;
-
-    my $fill = $p{fill_color} || undef;
 
     my ($w, $h, $scenes) = split ' ', `identify -format '\%w \%h \%n' $img`;
 
@@ -111,7 +107,6 @@ sub constrain_and_fill_image {
         push @opts, crop => $max_w.'x'.$max_h.'+0+0';
     }
 
-    return if ($w == $max_w && $h == $max_h);
     convert($img, $img, @opts);
 }
 

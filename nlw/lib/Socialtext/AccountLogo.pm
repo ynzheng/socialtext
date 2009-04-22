@@ -54,11 +54,10 @@ sub _transform_image {
     print $fh $$image_ref;
     close $fh or die "Could not process image: $!";
 
-    Socialtext::Image::constrain_and_fill_image(
+    Socialtext::Image::extract_rectangle(
         image_filename => $filename,
         width => 201,
         height => 36,
-        fill_color => '#EBF6FA',
     );
 
     my $txfrm_image = Socialtext::File::get_contents_binary($filename);
