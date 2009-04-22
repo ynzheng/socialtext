@@ -19,6 +19,15 @@ sub _check_privs {
     my $data_root = Socialtext::AppConfig->data_root_dir();
     return if -w $data_root;
 
+    unless (-d $data_root) {
+        carp <<"EOF";
+
+ The data root dir at $data_root does not exist!
+
+EOF
+        _exit(1);
+    }
+
     my $uid      = ( stat $data_root )[4];
     my $username = getpwuid $uid;
 
