@@ -68,59 +68,48 @@ sub constrain_and_fill_image {
     my ($w, $h, $scenes) = split ' ', `identify -format '\%w \%h \%n' $img`;
 
     die "Can't resize animated images" unless ($scenes == 1);
-
-    my @opts = ();
-
-    if ($w == $max_w && $h == $max_h) {
-        # no transformation needed
-    }
-    elsif ($h > $max_h && $w > $max_w) {
-        my ($new_w, $new_h) = get_proportions(
-            new_width  => $w,
-            new_height => $h,
-            max_width  => $max_w,
-            max_height => $max_h
-        );
-
-        push @opts, scale => "${new_w}x${new_h}!";
-        if ($fill) {
-            my $border_w = int(.5 + ($max_w - $new_w) / 2);
-            my $border_h = int(.5 + ($max_h - $new_h) / 2);
-            push @opts, bordercolor => $fill;
-            push @opts, border => "${border_w}x${border_h}";
-        }
-    }
-    elsif ($h > $max_h) {
-        push @opts, crop => "${max_w}x${max_h}!";
-        if ($fill) {
-            my $border_w = int($max_w - $w) / 2;
-            my $border_h = 0;
-            push @opts, bordercolor => $fill;
-            push @opts, border => "${border_w}x${border_h}";
-        }
-    }
-    elsif ($w > $max_w) {
-        push @opts, crop => "${max_w}x${max_h}!";
-        if ($fill) {
-            my $border_w = 0;
-            my $border_h = ($max_h - $h) / 2;
-            push @opts, bordercolor => $fill;
-            push @opts, border => "${border_w}x${border_h}";
-        }
-    }
-    else {
-        # image is smaller than our maximum bounds, so lets create a border
-        # around it to pad the edges. this will have the nice side effect of
-        # centering the image
-        my ($bw, $bh) = (($max_w - $w) / 2, ($max_h - $h) / 2);
-        $fill ||= '#FFFFFF';
-        push @opts, bordercolor => $fill;
-        push @opts, border => "${bw}x${bh}";
-    }
+    die "Bad dimensions"
+        if ($h == 0 || $w == 0 || $max_h == 0 || $max_w == 0);
 
     # Convert to PNG
     convert($img, "$img.png");
     rename "$img.png", $img or die "Error converting to PNG";
+
+    return if ($w == $max_w && $h == $max_h);
+
+    my @opts = ();
+
+    # aspect ratios (rise over run):
+    # tall:   > 1.0
+    # square: = 1
+    # wide:   < 1.0
+
+    my $ratio         = $h / $w;
+    my $is_square     = ($h == $w);
+    my $new_ratio     = $max_h / $max_w;
+    my $new_is_square = ($max_h == $max_w);
+
+    if ($new_is_square && $is_square) {
+        # same aspect ratio, just scale
+        push @opts, resize => $max_w.'x'.$max_h;
+    }
+    else {
+        if ($new_ratio > $ratio) {
+            # new image is taller
+            # make the two the same height
+            push @opts, resize => 'x'.$max_h;
+        }
+        else {
+            # new image is wider
+            # make the two the same width
+            push @opts, resize => $max_w.'x';
+        }
+
+        # now that they're the same size in one dimension, take a
+        # center-anchored chunk of the correct size
+        push @opts, gravity => 'Center';
+        push @opts, crop => $max_w.'x'.$max_h.'+0+0';
+    }
 
     return if ($w == $max_w && $h == $max_h);
     convert($img, $img, @opts);
