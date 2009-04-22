@@ -899,6 +899,10 @@ sub Resolve {
     if ($maybe_user =~ /^\d+$/) {
         $user = Socialtext::User->new(user_id => $maybe_user) 
     }
+    # SHORT-CIRCUIT: if it looks like an e-mail address, look that up *first*
+    elsif ($maybe_user =~ /@/) {
+        $user = Socialtext::User->new(email_address => $maybe_user);
+    }
 
     # Search for User if we haven't found him yet.  Common case for lookup is
     # "username" so do that search first.
