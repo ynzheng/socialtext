@@ -230,6 +230,13 @@ sub global_template_vars {
             $cur_user->can_use_plugin($_->name)
         } Socialtext::Pluggable::Adapter->plugins
     ];
+    
+    my $default_workspace = Socialtext::AppConfig->default_workspace;
+    if ($default_workspace and !$cur_user->can_use_plugin('dashboard')) {
+        # setting this to nothing will cause Home to be rendered as '/',
+        # which will redirect to the default workspace anyways.
+        $default_workspace = ''; 
+    }
 
     my $logo = $self->hub->skin->dynamic_logo;
 
@@ -263,7 +270,7 @@ sub global_template_vars {
         ui_is_expanded     => defined($cookies->{"ui_is_expanded"}),
         plugins_enabled    => $plugins_enabled,
         self_registration  => Socialtext::AppConfig->self_registration(),
-        default_workspace  => Socialtext::AppConfig->default_workspace,
+        default_workspace  => $default_workspace,
         time               => time,
         dynamic_logo_url   => $logo,
         $self->hub->pluggable->hooked_template_vars,
