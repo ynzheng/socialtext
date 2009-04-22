@@ -67,6 +67,7 @@ proto.show = function () {
 
         jQuery('#email_add').click(function () {
             var val = jQuery('#email_recipient').val();
+            var email = val.replace(/^.*<(.*)>$/, '$1');
             if (!val) {
                 return false;
             }
@@ -76,8 +77,18 @@ proto.show = function () {
                 return false;
             }
             else {
-                jQuery('<option />').val(val).text(val).appendTo('#email_dest');
                 jQuery('#email_recipient').val('').focus();
+                var matches = jQuery.grep(
+                    jQuery('#email_dest option'),
+                    function(opt) {
+                        var val = opt.value.replace(/^.*<(.*)>$/, '$1');
+                        return val == email;
+                    }
+                );
+                if (!matches.length) {
+                    jQuery('<option />')
+                        .val(val).text(val).appendTo('#email_dest');
+                }
                 return false;
             }
         });
