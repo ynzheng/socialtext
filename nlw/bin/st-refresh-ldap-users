@@ -8,9 +8,7 @@ use lib "$FindBin::Bin/../lib";
 use Getopt::Long;
 use Pod::Usage;
 use Log::Dispatch::Screen;
-use Socialtext::Log qw(st_log);
-use Socialtext::SQL qw(sql_execute);
-use Socialtext::User::LDAP::Factory;
+use Socialtext::LDAP::Operations;
 
 ###############################################################################
 # Read in our command line options.
@@ -33,90 +31,23 @@ $logger->log->add( Log::Dispatch::Screen->new(
     name        => 'screen',
     min_level   => $verbose ? 'info' : 'notice',
     stderr      => 1,
+    callbacks   => [\&_add_newline],
 ) );
 binmode(STDERR, ':utf8');
 
 ###############################################################################
-# Get the list of LDAP users *directly* from the DB.
-#
-# Order this by "driver_key" so that we'll group all of the LDAP lookups for a
-# single server together; if we spread them out we risk having the LDAP
-# connection time out in between user lookups.
-st_log->info( "getting list of LDAP users to refresh\n" );
-my $sth = sql_execute( qq{
-    SELECT driver_key, driver_unique_id, driver_username
-      FROM users
-     WHERE driver_key ~* 'LDAP'
-     ORDER BY driver_key, driver_username
-} );
-st_log->info( "... found " . $sth->rows . " LDAP users\n" );
-
-###############################################################################
-# Refresh each of the LDAP users.
-while (my $row = $sth->fetchrow_arrayref()) {
-    my ($driver_key, $driver_unique_id, $driver_username) = @{$row};
-
-    # get the LDAP user factory we need for this user.
-    my $factory = _get_factory($driver_key);
-    next unless $factory;
-
-    # refresh the user data from the Factory, disabling cache freshness checks
-    # if we're forcing the refresh of all users
-    local $Socialtext::User::LDAP::Factory::CacheEnabled = 0 if ($force);
-    st_log->info( "... refreshing: $driver_username\n" );
-    my $homunculus = eval {
-        $factory->GetUser( driver_unique_id => $driver_unique_id )
-    };
-    if ($@) {
-        st_log->error(@_);
-    }
-}
-$sth->finish();
-
-###############################################################################
-# All done, exit peacefully.
-st_log->info( "done\n" );
+# Refresh the LDAP Users.
+Socialtext::LDAP::Operations->RefreshUsers(force => $force);
 exit;
 
 
 ###############################################################################
-# Subroutine:   _get_factory($driver_key)
-###############################################################################
-# Gets the LDAP user Factory to use for the given '$driver_key'.  Caches the
-# Factory for later re-use, so that we're not opening a new LDAP connection
-# for each and every user lookup.
-###############################################################################
-{
-    my %Factories;
-    sub _get_factory {
-        my $driver_key = shift;
-
-        # create a new Factory if we don't have a cached one yet
-        unless ($Factories{$driver_key}) {
-            # instantiate a new LDAP user Factory
-            my ($driver_id) = ($driver_key =~ /LDAP:(.*)/);
-            st_log->info( "creating new LDAP user Factory, '$driver_id'\n" );
-            my $factory = Socialtext::User::LDAP::Factory->new($driver_id);
-            unless ($factory) {
-                st_log->error( "unable to find LDAP config '$driver_id'; was it removed from your LDAP config?\n" );
-                return;
-            }
-
-            # make sure we can actually connect to the LDAP server
-            unless ($factory->connect()) {
-                st_log->error( "unable to connect to LDAP server\n" );
-                return;
-            }
-
-            # cache the factory for later re-use
-            $Factories{$driver_key} = $factory;
-        }
-        return $Factories{$driver_key};
-    }
+# Adds a newline to the log message.
+sub _add_newline {
+    my %p = @_;
+    $p{message} =~ s/\n*$/\n/;
+    return $p{message};
 }
-
-
-
 
 =head1 NAME
 
