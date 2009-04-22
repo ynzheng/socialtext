@@ -70,7 +70,14 @@
 
     Alias /nlw/wafl [% config.cache_dir %]/wafl
 
-    <LocationMatch ^/nlw/(avatar|wafl)/>
+    RewriteCond %{REQUEST_METHOD} ^GET$
+    RewriteCond %{REQUEST_URI} ^/data/accounts/([^/]+)/logo
+    RewriteCond [% config.cache_dir %]/account_logo/%1.png -f
+    RewriteRule ^/data/accounts/([^/]+)/logo /nlw/account_logo/$1.png [PT]
+
+    Alias /nlw/account_logo [% config.cache_dir %]/account_logo
+
+    <LocationMatch ^/nlw/(avatar|wafl|account_logo)/>
         Order allow,deny
         Allow from all
          # Set these once we figure out how to get "user updates their own avatar" to
