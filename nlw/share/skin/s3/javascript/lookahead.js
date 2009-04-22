@@ -61,6 +61,7 @@
     var DEFAULTS = {
         count: 10,
         filterName: 'filter',
+        requireMatch: false,
         params: { 
             order: 'alpha',
             count: 30 // for fetching
@@ -81,6 +82,7 @@
         if (!opts.url) throw new Error("url missing");
         if (!opts.linkText) throw new Error("linkText missing");
 
+        this._items = [];
         this.input = input;
         this.opts = $.extend(true, {}, DEFAULTS, opts); // deep extend
         var self = this;
@@ -94,7 +96,12 @@
                     self.clearLookahead();
                 }
                 else if (e.keyCode == KEYCODES.ENTER) {
-                    self.clickCurrent();
+                    if (self._items.length) {
+                        self.clickCurrent();
+                    }
+                    else if (!self.opts.requireMatch) {
+                        self.acceptInputValue();
+                    }
                 }
                 else if (e.keyCode == KEYCODES.DOWN) {
                     self.selectDown();
@@ -299,6 +306,15 @@
         }
     };
 
+    Lookahead.prototype.acceptInputValue = function() {
+        var value = $(this.input).val();
+        this.clearLookahead();
+
+        if (this.opts.onAccept) {
+            this.opts.onAccept.call(this.input, value, {});
+        }
+    };
+
     Lookahead.prototype.accept = function (i) {
         if (!i) i = 0; // treat undefined as 0
         var item;
@@ -376,7 +392,7 @@
     };
 
     Lookahead.prototype.clickCurrent = function () {
-        if ((this._items) && (this._items.length)) {
+        if (this._items.length) {
             var selitem = jQuery('li.selected a', this.lookahead);
             if (selitem.length) {
                 selitem.triggerHandler("click"); 
