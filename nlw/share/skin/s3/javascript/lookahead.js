@@ -200,7 +200,7 @@
                 .hide()
                 .css({
                     textAlign: 'left',
-                    zIndex: 2500,
+                    zIndex: 3001,
                     position: 'absolute',
                     background: '#B4DCEC',
                     border: '1px solid black',
@@ -217,7 +217,7 @@
                         position: 'absolute',
                         top: -1,
                         left: -1,
-                        opacity: 0,
+                        filter: "alpha(opacity=0)",
                         width: (width+2) + 'px'
                     })
                     .appendTo(this.lookahead);
@@ -309,9 +309,9 @@
         }
 
         // IE6 iframe hack:
-        $('iframe', this.lookahead).height(
-            this.lookahead.height() + 5
-        );
+        $('iframe', this.lookahead)
+            .height(this.lookahead.height() + 2)
+            .width(this.lookahead.width() + 2);
     };
 
     Lookahead.prototype.show = function () {

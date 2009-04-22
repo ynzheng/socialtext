@@ -33,7 +33,9 @@
 
     $.fn.showLightbox = function() {
         if (!$('#lightbox').size()) {
-            $('<div id="lightbox" />').appendTo('body');
+            $('<div id="lightbox" />')
+                .css('zIndex', 2002)
+                .appendTo('body');
         }
 
         var pageScroll = _getPageScroll();
@@ -45,7 +47,7 @@
             opts.speed = 500;
 
         if (!$('#overlay').size()) {
-            $('<div id="overlay" />')
+            $('<div id="overlay"></div>')
                 .click(function () { $.hideLightbox() })
                 .css({
                     display: 'none',
@@ -53,11 +55,24 @@
                     background: opts.overlayBackground,
                     opacity: "0.5",
                     filter: "alpha(opacity=50)",
-                    zIndex: 2000,
+                    zIndex: 2001,
                     padding: 0,
                     margin: 0
                 })
                 .appendTo('body');
+
+            if ($.browser.msie && $.browser.version < 7) {
+                $('<iframe src="/static/html/blank.html"></iframe>')
+                    .addClass('hack')
+                    .css({
+                        zIndex: 2000,
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        filter: "alpha(opacity=0)"
+                    })
+                    .appendTo('#overlay');
+            } 
         }
 
         var arrayPageScroll = _getPageScroll();
@@ -86,14 +101,6 @@
             $('#lightbox')
                 .css('overflow', 'hidden');
         }
-        
-        $('#lightbox')
-            .css({
-                left: (pageScroll.left + (($(window).width() -
-                        $('#lightbox').width()) / 2)) + 'px',
-                top:  (pageScroll.top + (($(window).height() -
-                        $('#lightbox').height()) / 4)) + 'px'
-            });
 
         opts._originalHTMLOverflow = $('html').css('overflow') || 'visible';
         opts._originalBodyOverflow = $('body').css('overflow') || 'visible';
@@ -105,13 +112,26 @@
             });
         }
 
-        $('#overlay')
-            .css({
-                top: pageScroll.top,
-                left: pageScroll.left,
-                width: $(window).width(),
-                height: $(window).height()
+        $(window)
+            .resize(function() {
+                $('#lightbox')
+                    .css({
+                        left: (pageScroll.left + (($(window).width() -
+                                $('#lightbox').width()) / 2)) + 'px',
+                        top:  (pageScroll.top + (($(window).height() -
+                                $('#lightbox').height()) / 4)) + 'px'
+                    });
+
+                $('#overlay, #overlay iframe.hack').css({
+                    top: 0,
+                    left: 0,
+                    width: $(document.body).width() + 'px',
+                    height: $(document.body).height() + 'px'
+                })
             })
+            .resize();
+
+        $('#overlay')
             .fadeIn(opts.speed, function () {
                 $('#lightbox').fadeIn(function() {
                     $(opts.focus).focus();
