@@ -111,9 +111,20 @@ that can be performed.
 
 =over
 
-=item B<Socialtext::LDAP::Operations-E<gt>RefreshUsers()>
+=item B<Socialtext::LDAP::Operations-E<gt>RefreshUsers(%opts)>
 
 Refreshes known/existing LDAP Users from the configured LDAP servers.
+
+Supports the following options:
+
+=over
+
+=item force => 1
+
+Forces a refresh of the LDAP User data regardless of whether our local cached
+copy is stale or not.  By default, only stale Users are refreshed.
+
+=back
 
 =back
 
