@@ -15,11 +15,19 @@ TODO: email_page_keep_attachments
 | type_ok | st-newpage-pagename-edit | Email title %%start_time%% |
 | click_and_wait | st-save-button-link |  |
 
-| *Comment* | Test Case: Email. No recipient, then cancel |  |
+| *Comment* | Test Case: Email. Default content. |  |
 | click_ok | st-pagetools-email |  |
+
+| wait_for_element_visible_ok | email_recipient | 30000 |
+| text_like | email_recipient | Start typing the name of any recipient |
+| wait_for_element_visible_ok | email_page_user_choices | 30000 |
+| text_like | email_page_user_choices | Use the Recipients box above to add users to this list |
+
+| *Comment* | Test Case: Email. No recipient, then cancel |  |
 | wait_for_element_visible_ok | email_send | 30000 |
 | click_ok | email_send |  |
-| verifyAlert | Error: To send email, you must specify a recipient. |  |
+| verifyAlert | "Start typing the name of any recipient" is not a valid email address. |  |
+| verifyAlert | Error: To send email, you must specify a recipient |  |
 | wait_for_element_visible_ok | email_cancel | 30000 |
 | click_ok | email_cancel |  |
 | wait_for_element_not_visible_ok | st-email-lightbox | 30000 |
@@ -59,12 +67,12 @@ TODO: email_page_keep_attachments
 | text_unlike | email_page_user_choices | %%start_time%%_two@ken.socialtext.net |
 
 | *Comment* | Test Case: Email Custom Recipient |  |
-| type_ok | email_recipient | %%workspace%%@%%wikiemail%% |
-| click_ok | email_add |  |
-| text_like | email_page_user_choices | %%workspace%%@%%wikiemail%% |
 | type_ok | email_recipient | foobar2ken.socialtext.net |
 | click_ok | email_add |  |
 | verifyAlert | "foobar2ken.socialtext.net" is not a valid email address. |  |
+| type_ok | email_recipient | %%workspace%%@%%wikiemail%% |
+| click_ok | email_add |  |
+| text_like | email_page_user_choices | %%workspace%%@%%wikiemail%% |
 
 | *Comment* | Test Case: Email Note and Attachments |  |
 | text_like | email_page_add_note | Hello, this is a page from the workspace that I wanted you to see. This page is also available for viewing or editing on the web at: |

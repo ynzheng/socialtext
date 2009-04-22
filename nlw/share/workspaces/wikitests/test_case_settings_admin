@@ -82,7 +82,7 @@
 | click_and_wait | link=Settings |  |
 | click_and_wait | link=Workspace Appearance |  |
 | type_ok | title | New Title %%start_time%% |
-| text_like | contentContainer | choose an image |
+| text_unlike | contentContainer | choose an image |
 | text_like | contentContainer | When users click |
 | click_and_wait | link=Save |  |
 | open_ok | /newspace-%%start_time%% |  |
