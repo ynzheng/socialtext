@@ -5,9 +5,9 @@ Any LDAP user specific testcases should go here.
 Every test should override the passed in values as follows:
 
  set | username | devnull3 |
- set | email | devnull3@socialtext.com |
- set | password | ldapd3v |
- set | email_esc | devnull3\@socialtext.com |
+set | email | devnull3@socialtext.com |
+set | password | ldapd3v |
+set | email_esc | devnull3\@socialtext.com |
 
 LDAP test cases must explicitly use the above ldap username, email, and pwd so LDAP Testcases can be called from tests where a Default user is logged in.
 
@@ -21,12 +21,6 @@ Special test case for LDAP user CLI commands
 
 * [Test Case: Command Line: LDAP USERS]
 
-Special test for LDAP user deletion.
-
-TODO: this testcases is broken until the OpenLDAP local server is implemented
-
-`* [Test Case: LDAP Deleted User]`
-
 Run a fairly complex testcase logged in as the LDAP user
 
 * [Test Case: LDAP Watchlist]
@@ -34,3 +28,9 @@ Run a fairly complex testcase logged in as the LDAP user
 Make sure that the "Email this page" popup works correctly with LDAP users
 
 * [Test Case: Email page shows LDAP emails]
+
+Special test for LDAP user deletion.
+
+* [Test Case: LDAP Deleted User]
+
+* [Test Case: A Enable LDAP]
