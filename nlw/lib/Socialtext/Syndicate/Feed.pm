@@ -114,6 +114,10 @@ sub _item_as_html {
     }
     Socialtext::Timer->Pause('_item_as_html_tags');
 
+    if (my $summary = $page->edit_summary) {
+        push @html_headers, "<div>Summary: $summary</div>";
+    }
+
     Socialtext::Timer->Continue('_item_as_html_css');
     my $css_uri = Socialtext::URI::uri(
         path => Socialtext::Skin->new('s3')->skin_uri('css','wiki.css'),
