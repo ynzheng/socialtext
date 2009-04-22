@@ -900,6 +900,8 @@ sub Resolve {
         $user = Socialtext::User->new(user_id => $maybe_user) 
     }
 
+    # Search for User if we haven't found him yet.  Common case for lookup is
+    # "username" so do that search first.
     $user ||= Socialtext::User->new(username => $maybe_user);
     $user ||= Socialtext::User->new(email_address => $maybe_user);
 
