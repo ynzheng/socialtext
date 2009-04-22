@@ -124,6 +124,9 @@ proto.show = function () {
         });
 
     }
+    else {
+        jQuery('#email_dest option').remove();
+    }
 
     $('#st-email-lightbox .submit').click(function () {
         $(this).parents('form').submit();
