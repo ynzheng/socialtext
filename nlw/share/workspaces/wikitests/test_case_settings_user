@@ -2,11 +2,14 @@
 
 | set | new_user | user_%%start_time%%@ken.socialtext.net |
 | set | new_name | user %%start_time%% |
+| set | new_account | account%%start_time%% |
 
 | *Comment* | Test Case: Settings: User RT 25472 |  |
 | *Comment* | "Your workspaces" displays workspace that user is no longer member of |  |
 
-| st-admin | create-workspace --name rt-25472%%start_time%% --title "rt 25472%%start_time%%" |  |
+| st-admin | create-account --name %%new_account%% was created |  |
+| st-admin | enable-plugin --plugin signals --account %%new_account%% |  |
+| st-admin | create-workspace --name rt-25472%%start_time%% --title "rt 25472%%start_time%%" --account %%new_account%% |  |
 | st-admin | add-member --email %%email%% --workspace rt-25472%%start_time%% |  |
 | open_ok | /rt-25472%%start_time%% |  |
 | open_ok | /test-data |  |
@@ -18,7 +21,7 @@
 | *Comment* | Test Case: Settings: User END RT 25472 |  |
 
 | *Comment* | Test Case: Settings: User create user-level account for testing |  |
-| st-admin | create-user --email %%new_user%% --password 123456 |  |
+| st-admin | create-user --email %%new_user%% --password 123456 --account %%new_account%% |  |
 | st-admin | add-member --email %%new_user%% --workspace %%workspace%% |  |
 | st-logoutin | %%new_user%% | 123456 |
 
@@ -141,6 +144,33 @@
 | click_and_wait | //input[@value='Unsubscribe from the %%workspace%% workspace'] |  |
 | st-login | %%new_user%% | 654321 |
 | text_like | errors-and-messages | You are not authorized to view this workspace. |
+
+| *Comment* | Test Case: Settings: User can turn email notification on and off |  |
+| st-admin | add-member --email %%new_user%% --workspace %%workspace%% |  |
+| open_ok | /%%workspace%%/index.cgi?action=users_settings |  |
+| wait_for_element_visible_ok | link=Signals | 10000 |
+| click_ok | link=Signals | 10000 |
+| wait_for_text_present_ok | Send Socialtext Signals private messages as email: | 10000 |
+| wait_for_element_visible_ok | dm_sends_email | 10000 |
+| is_checked_ok | dm_sends_email |  |
+| uncheck_ok | dm_sends_email |  |
+| click_and_wait | link=Save |  |
+| click_and_wait | link=My Workspaces |  |
+| text_like | contentContainer | %%workspace%% |
+| click_ok | link=Signals | 10000 |
+| wait_for_text_present_ok | Send Socialtext Signals private messages as email: | 10000 |
+| verify_value | dm_sends_email | off |
+
+| *Comment* | Test Case: Settings: Signals does appear if signals plugin is disabled for account, but I have a signals-enabled workspace for another acct |  |
+| st-admin | disable-plugin --plugin signals --account %%new_account%% |  |
+| open_ok | /%%workspace%%/index.cgi?action=users_settings |  |
+| wait_for_element_present_ok | link=My Settings | 10000 |
+| wait_for_element_present_ok | link=Signals | 10000 |
+| st-admin | remove-member --email %%new_user%% --workspace %%workspace%% |  |
+| *Comment* | Test Case: Settings: Signals does appear if signals plugin is disabled for account |  |
+| open_ok | /?action=users_settings |  |
+| wait_for_element_present_ok | link=My Settings | 10000 |
+| text_unlike | //body | Signals |
 
 | *Comment* | Test Case: Settings: User Teardown |  |
 | st-admin | purge-page --w %%workspace%% --p first_post_in_brackets_%%start_time%%_weblog | qr/.+ was purged .+/ |
