@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 # @COPYRIGHT@
 
+### NOTE: This script can be purged as of August 1st 2009.
+
 use strict;
 use warnings;
 use FindBin;
