@@ -174,6 +174,7 @@
 
     Lookahead.prototype.clearLookahead = function () {
         this._cache = {};
+        this._items = [];
         this.hide();
     };
 
