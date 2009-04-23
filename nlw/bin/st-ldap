@@ -15,11 +15,13 @@ use Socialtext::LDAP::Operations;
 my ($help, $man);
 my $verbose = 0;
 my $force   = 0;
+my $dryrun  = 0;
 GetOptions(
     'help|?'    => \$help,
     'man'       => \$man,
     'verbose'   => \$verbose,
     'force'     => \$force,
+    'dryrun'    => \$dryrun,
 ) || pod2usage(1);
 pod2usage(1) if ($help);
 pod2usage( -exitstatus=>0, -verbose=>2 ) if ($man);
@@ -42,6 +44,9 @@ binmode(STDERR, ':utf8');
 my %commands = (
     'refresh-users' => sub {
         Socialtext::LDAP::Operations->RefreshUsers(force => $force);
+    },
+    'load-users' => sub {
+        Socialtext::LDAP::Operations->LoadUsers(dryrun => $dryrun);
     },
 );
 unless ($commands{$command}) {
@@ -72,6 +77,9 @@ st-ldap - Socialtext LDAP integration utility
   st-ldap <command> [options]
 
   Commands:
+    load-users      Loads Users from LDAP
+        --dryrun        Dry-run; show Users, but don't add them
+
     refresh-users   Refreshes user data from LDAP
         --force         Force refresh for all LDAP users
 
@@ -81,6 +89,7 @@ st-ldap - Socialtext LDAP integration utility
     --man           Full documentation
 
   Example:
+    st-ldap load-users
     st-ldap refresh-users --force --verbose
 
 =head1 DESCRIPTION
@@ -91,6 +100,28 @@ Socialtext environment.
 =head1 ARGUMENTS
 
 =over
+
+=item B<load-users>
+
+Loads users from LDAP into Socialtext.
+
+=over
+
+=item B<--dryrun>
+
+Dry-run; logs information on Users found and that would be added to the
+system, but doesn't actually add them.
+
+=back
+
+Each of the configured LDAP servers is queried to determine what User records
+they contain, and those Users are then added to the Socialtext Appliance.
+
+This command B<requires> that you have a valid C<filter> specified in B<all>
+of your LDAP configurations, in order to prevent non-User records from being
+added to Socialtext (e.g. groups, mailing lists).  If I<any> of your LDAP
+configurations are missing a C<filter>, B<no> Users will be loaded into the
+system.
 
 =item B<refresh-users>
 
