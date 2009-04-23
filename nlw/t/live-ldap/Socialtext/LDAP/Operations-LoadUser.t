@@ -15,6 +15,10 @@ use Socialtext::LDAP::Operations;
 fixtures(qw( db ));
 
 ###############################################################################
+# ERASE any existing LDAP config, so it doesn't pollute this test suite
+unlink Socialtext::LDAP::Config->config_filename();
+
+###############################################################################
 # Sets up OpenLDAP, adds some test data, and adds the OpenLDAP server to our
 # list of user factories.
 sub set_up_openldap {
