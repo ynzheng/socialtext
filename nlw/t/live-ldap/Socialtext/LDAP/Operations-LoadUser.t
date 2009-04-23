@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use mocked 'Socialtext::Log', qw(:tests);
 use Test::Socialtext::Bootstrap::OpenLDAP;
-use Test::Socialtext tests => 25;
+use Test::Socialtext tests => 31;
 use Socialtext::LDAP::Operations;
 
 ###############################################################################
@@ -156,6 +156,13 @@ test_dry_run: {
 
     logged_like 'info', qr/found $NUM_TEST_USERS LDAP users to load/,
         '... logged number of LDAP Users found';
+
+    logged_like 'info', qr/found: john.doe/,    '... found John Doe';
+    logged_like 'info', qr/found: jane.smith/,  '... found Jane Smith';
+    logged_like 'info', qr/found: bubba.brain/, '... found Bubba Brain';
+    logged_like 'info', qr/found: jim.smith/,   '... found Jim Smith';
+    logged_like 'info', qr/found: jim.q.smith/, '... found Jim Q Smith';
+    logged_like 'info', qr/found: ray.parker/,  '... found Ray Parker';
 
     my $count_after = Socialtext::User->Count();
     is $count_after, $count_before,

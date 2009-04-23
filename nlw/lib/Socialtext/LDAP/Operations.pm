@@ -114,8 +114,13 @@ sub LoadUsers {
     my $total_users = scalar @emails;
     st_log->info( "... found $total_users LDAP users to load" );
 
-    # If we're only doing a dry-run, STOP!
-    return if ($dryrun);
+    # If we're doing a dry-run, log info on the Users found and STOP!
+    if ($dryrun) {
+        foreach my $addr (@emails) {
+            st_log->info("... found: $addr");
+        }
+        return;
+    }
 
     # Instantiate/vivify all of the Users.
     my $users_loaded = 0;
