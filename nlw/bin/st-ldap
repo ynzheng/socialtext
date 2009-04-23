@@ -24,6 +24,8 @@ GetOptions(
 pod2usage(1) if ($help);
 pod2usage( -exitstatus=>0, -verbose=>2 ) if ($man);
 
+my $command = shift @ARGV;
+
 ###############################################################################
 # Get a hold of the system logger.
 my $logger = Socialtext::Log->new();
@@ -36,8 +38,20 @@ $logger->log->add( Log::Dispatch::Screen->new(
 binmode(STDERR, ':utf8');
 
 ###############################################################################
-# Refresh the LDAP Users.
-Socialtext::LDAP::Operations->RefreshUsers(force => $force);
+# Execute the requested command.
+my %commands = (
+    'refresh-users' => sub {
+        Socialtext::LDAP::Operations->RefreshUsers(force => $force);
+    },
+);
+unless ($commands{$command}) {
+    die "Unknown command, '$command'.\n";
+}
+
+$commands{$command}->();
+
+###############################################################################
+# All done, exit peacefully.
 exit;
 
 
