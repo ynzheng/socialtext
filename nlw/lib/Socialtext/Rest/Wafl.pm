@@ -31,7 +31,7 @@ my $ellipsis = '...';
 
 sub GET_image {
     my $self = shift;
-    my $uneditable = $self->rest->query->param('uneditable');
+    my $uneditable = $self->rest->query->param('uneditable') ? 1 : 0;
     my $current = 0;
 
     my $cache_dir = Socialtext::Paths::cache_directory('wafl');
@@ -39,7 +39,7 @@ sub GET_image {
     ensure_directory($cache_dir);
 
     my $text = decode_utf8($self->text);
-    my $image_file = abs_path("$cache_dir/$text.png");
+    my $image_file = abs_path("$cache_dir/$text.$uneditable.png");
 
     die 'Bad Text' unless dirname($image_file) eq $cache_dir;
     return $self->return_file($image_file) if -f $image_file;
@@ -104,8 +104,8 @@ sub GET_image {
 
     my $image = Imager->new(xsize => $width, ysize => $height, channels => 4);
 
-    my $background_color = $uneditable ? Imager::Color->new(238,238,238) : Imager::Color->new(255, 251, 248);
-    my $font_color = Imager::Color->new( 85,85,85 );
+    my $background_color = $uneditable ? Imager::Color->new(238,238,238) : Imager::Color->new(208, 208, 208);
+    my $font_color = Imager::Color->new( 47,47,47 );
     my @boundary_points = (
         [3,0], [$width-4,0],
         [$width-1,3], [$width-1,$height-3],
@@ -119,7 +119,7 @@ sub GET_image {
 
     $image->polyline(
         points => \@boundary_points,
-        color => Imager::Color->new( 17, 12, 201),
+        color => Imager::Color->new( 160, 160, 160),
         aa => 1,
     );
 
@@ -175,6 +175,8 @@ sub new_font {
         file => $font_path . '/' . $font_table[$type]{font},
         size => $font_table[$type]{size},
         utf8 => 1,
+        aa => 1,
+        type => 'ft2',
     );
     unless ($font) {
         die "Cannot load $font_path ", Imager->errstr, "#";
