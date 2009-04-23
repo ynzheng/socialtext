@@ -3,6 +3,7 @@ package Socialtext::LDAP::Operations;
 
 use strict;
 use warnings;
+use List::MoreUtils qw(uniq);
 use Socialtext::LDAP;
 use Socialtext::Log qw(st_log);
 use Socialtext::SQL qw(sql_execute);
@@ -51,6 +52,88 @@ sub RefreshUsers {
 
     # All done.
     st_log->info( "done" );
+}
+
+###############################################################################
+# Loads Users from LDAP into Socialtext.
+sub LoadUsers {
+    my ($class, %opts) = @_;
+    my $dryrun = $opts{dryrun};
+
+    # SANITY CHECK: make sure that *ALL* of the LDAP configurations have a
+    # "filter" specified.
+    my @configs = Socialtext::LDAP::Config->load();
+    my @missing_filter = grep { !$_->filter } @configs;
+    if (@missing_filter) {
+        foreach my $cfg (@missing_filter) {
+            my $ldap_id = $cfg->id();
+            st_log->error("no LDAP filter in config '$ldap_id'; aborting");
+        }
+        return;
+    }
+
+    # Query the LDAP servers to get a list of e-mail addresses for all of the
+    # User records that they contain.
+    my @emails;
+    st_log->info( "getting list of LDAP users to load" );
+    foreach my $cfg (@configs) {
+        # get the LDAP attribute that contains the e-mail address
+        my $mail_attr = $cfg->attr_map->{email_address};
+
+        # query LDAP for User records that have e-mail addresses
+        my $ldap = Socialtext::LDAP->new($cfg);
+        my $mesg = $ldap->search(
+            base    => $cfg->base(),
+            scope   => 'sub',
+            filter  => "($mail_attr=*)",        # HAS an e-mail address
+            attrs   => [$mail_attr],            # get their e-mails
+        );
+
+        # fail/abort on *any* error (play it safe)
+        unless ($mesg) {
+            my $ldap_id = $cfg->id();
+            st_log->error("no response from LDAP server '$ldap_id'; aborting");
+            return;
+        }
+        if ($mesg->code) {
+            my $err = $mesg->error();
+            st_log->error("error while searching for Users, aborting; $err");
+            return;
+        }
+
+        # gather the e-mails out of the response
+        foreach my $rec ($mesg->entries()) {
+            my $email = $rec->get_value($mail_attr);
+            push @emails, $email;
+        }
+    }
+
+    # Uniq-ify the list of e-mails.
+    @emails = uniq(@emails);
+
+    my $total_users = scalar @emails;
+    st_log->info( "... found $total_users LDAP users to load" );
+
+    # If we're only doing a dry-run, STOP!
+    return if ($dryrun);
+
+    # Instantiate/vivify all of the Users.
+    my $users_loaded = 0;
+    foreach my $email (@emails) {
+        st_log->info("... loading: $email");
+        my $user = eval { Socialtext::User->new(email_address => $email) };
+        if ($@) {
+            st_log->error($@);
+        }
+        elsif (!$user) {
+            st_log->error("unable to instantiate user with address '$email'");
+        }
+        else {
+            $users_loaded++;
+        }
+    }
+    st_log->info("Successfully loaded $users_loaded out of $total_users total LDAP Users");
+    return $users_loaded;
 }
 
 ###############################################################################
@@ -123,6 +206,34 @@ Supports the following options:
 
 Forces a refresh of the LDAP User data regardless of whether our local cached
 copy is stale or not.  By default, only stale Users are refreshed.
+
+=back
+
+=item B<Socialtext::LDAP::Operations-e<gt>LoadUsers(%opts)>
+
+Loads User records from LDAP into Socialtext from all configured LDAP
+directories.
+
+Load is performed by searching for all records in your LDAP directory that
+have a valid e-mail address, and then loading each of those records into
+Socialtext.
+
+B<NOTE:> you B<must> have a C<filter> specified in your LDAP configurations
+before you can load Users into Socialtext.  This is required so that it forces
+you to stop and think about how you filter for "only User records" in B<your>
+LDAP directories.  Without a filter, I<any> record found in LDAP that has an
+e-mail address would be loaded into Socialtext, including Groups, Mailing
+Lists, and any other device/item that may have an e-mail address (which most
+assuredly is B<not> what you want).
+
+Supports the following options:
+
+=over
+
+=item dryrun => 1
+
+Dry-run; Users are searched for in the configured LDAP directories, but are
+B<not> actually added to Socialtext.
 
 =back
 
