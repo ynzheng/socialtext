@@ -15,6 +15,10 @@ sub RefreshUsers {
     my ($class, %opts) = @_;
     my $force = $opts{force};
 
+    # Disable cache freshness checks if we're forcing the refresh of all
+    # users.
+    local $Socialtext::User::LDAP::Factory::CacheEnabled = 0 if ($force);
+
     # Get the list of LDAP users *directly* from the DB.
     #
     # Order this by "driver_key" so that we'll group all of the LDAP lookups
@@ -37,9 +41,7 @@ sub RefreshUsers {
         my $factory = _get_factory($driver_key);
         next unless $factory;
 
-        # refresh the user data from the Factory, disabling cache freshness
-        # checks if we're forcing the refresh of all users
-        local $Socialtext::User::LDAP::Factory::CacheEnabled = 0 if ($force);
+        # refresh the user data from the Factory
         st_log->info( "... refreshing: $driver_username" );
         my $homunculus = eval {
             $factory->GetUser( driver_unique_id => $driver_unique_id )
