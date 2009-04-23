@@ -105,22 +105,28 @@
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
-| type_ok | wikiwyg_wikitext_textarea | hijklmno |
-| chooseCancelOnNextConfirmation |  |  |
+
+ type_ok | wikiwyg_wikitext_textarea | hijklmno |
+chooseCancelOnNextConfirmation | | |
 
 | *Comment* | Use the Home link to navigate away. |  |
-| click_ok | st-home-link |  |
+
+ click_ok | st-home-link | |
 
 | *Comment* | Test Case: Edit This Page Cancel navigate away and keep unsaved edits |  |
-| confirmation_is | Are you sure you want to navigate away from this page?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay on the current page. |  |
-| verifyValue | wikiwyg_wikitext_textarea | hijklmno |
+
+ confirmation_is | Are you sure you want to navigate away from this page?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay on the current page. | |
+verifyValue | wikiwyg_wikitext_textarea | hijklmno |
 
 | *Comment* | Test Case: Edit This Page confirm Navigate away Advanced mode. Go HOME. |  |
-| click_ok | st-home-link |  |
-| verifyConfirmation | Are you sure you want to navigate away from this page?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay on the current page. |  |
+
+ click_ok | st-home-link | |
+verifyConfirmation | Are you sure you want to navigate away from this page?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay on the current page. | |
 
 | *Comment* | Test Case: Edit This Page can it see HOME? |  |
-| wait_for_text_present_ok | Welcome | 30000 |
+
+ wait_for_text_present_ok | Welcome | 30000 |
+
 | open_ok | /%%workspace%%/?Edit This Page %%start_time%% |  |
 
 | *Comment* | Test Case: Edit This Page Cancel Edit then keep Simple mode edits |  |
@@ -158,27 +164,33 @@
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
-| type_ok | wikiwyg_wikitext_textarea | Edit This Page Simple mode |
-| verifyValue | wikiwyg_wikitext_textarea | Edit This Page Simple mode |
-| click_ok | link=Rich Text |  |
-| pause | 6000 | wait for Rich Text editor |
 
-| chooseCancelOnNextConfirmation |  |  |
-| click_ok | st-home-link |  |
+ type_ok | wikiwyg_wikitext_textarea | Edit This Page Simple mode |
+verifyValue | wikiwyg_wikitext_textarea | Edit This Page Simple mode |
+click_ok | link=Rich Text | |
+pause | 6000 | wait for Rich Text editor |
+
+ chooseCancelOnNextConfirmation | | |
+click_ok | st-home-link | |
 
 | *Comment* | Simple Mode: Cancel navigate away and keep unsaved edits |  |
-| confirmation_is | Are you sure you want to navigate away from this page?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay on the current page. |  |
+
+ confirmation_is | Are you sure you want to navigate away from this page?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay on the current page. | |
+
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
-| verifyValue | wikiwyg_wikitext_textarea | Edit This Page Simple mode |
+
+ verifyValue | wikiwyg_wikitext_textarea | Edit This Page Simple mode |
 
 | *Comment* | Navigate away in Simple mode and lose unsaved edits |  |
-| click_ok | st-home-link |  |
-| verifyConfirmation | Are you sure you want to navigate away from this page?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay on the current page. |  |
+
+ click_ok | st-home-link | |
+verifyConfirmation | Are you sure you want to navigate away from this page?\n\nYou have unsaved changes.\n\nPress OK to continue, or Cancel to stay on the current page. | |
 
 | *Comment* | Test Case: Edit This Page can it see HOME Again? |  |
-| wait_for_text_present_ok | Welcome | 30000 |
+
+ wait_for_text_present_ok | Welcome | 30000 |
 
 | open_ok | /%%workspace%%/?Edit This Page %%start_time%% |  |
 | wait_for_element_visible_ok | st-page-content | 30000 |

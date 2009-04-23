@@ -21,7 +21,7 @@ TODO: email_page_keep_attachments
 | wait_for_element_visible_ok | st-email-lightbox | 30000 |
 | wait_for_element_visible_ok | email_recipient | 30000 |
 | wait_for_element_visible_ok | email_page_user_choices | 30000 |
-| text_like | email_recipient | Start typing the name of any recipient |
+| verifyValue | email_recipient | Start typing the name of any recipient |
 | text_like | email_page_user_choices | Use the Recipients box above to add users to this list |
 
 | *Comment* | Test Case: Email. No recipient, then cancel |  |
