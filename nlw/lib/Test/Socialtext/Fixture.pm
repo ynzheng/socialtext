@@ -73,7 +73,7 @@ sub _built_in_clean {
     );
     local $Socialtext::System::SILENT_RUN
         = $self->env->verbose ? 0 : 1;
-    shell_run '-ceq-rm .';
+    shell_run '-ceq-rm . 2> /dev/null';
     rmtree( \@to_clean );
 }
 
