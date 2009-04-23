@@ -45,7 +45,7 @@ sub RefreshUsers {
             $factory->GetUser( driver_unique_id => $driver_unique_id )
         };
         if ($@) {
-            st_log->error(@_);
+            st_log->error($@);
         }
     }
     $sth->finish();
