@@ -8,6 +8,14 @@ ST.Email = function () {
 var proto = ST.Email.prototype = { firstAdd: true };
 
 
+proto.clearHelp = function () {
+    if (this.firstAdd) {
+        jQuery('#email_dest option').remove();
+        jQuery('#email_dest').removeClass("lookahead-prompt");
+        this.firstAdd = false;
+    }
+};
+
 proto.show = function () {
     var self = this;
     if (!jQuery('#st-email-lightbox').size()) {
@@ -23,11 +31,7 @@ proto.show = function () {
         });
 
         jQuery('#email_add').click(function () {
-            if (self.firstAdd) {
-                jQuery('#email_dest option').remove();
-                jQuery('#email_dest').removeClass("lookahead-prompt");
-                self.firstAdd = false;
-            }
+            self.clearHelp();
             jQuery('#email_source option:selected').appendTo('#email_dest');
         });
 
@@ -36,7 +40,14 @@ proto.show = function () {
         });
 
         jQuery('#email_all').click(function () {
-            jQuery('#email_source option').appendTo('#email_dest');
+            jQuery.getJSON('/data/workspaces/' + Socialtext.wiki_id + '/users', function (data) {
+                self.clearHelp();
+                for (var i=0; i<data.length; i++) {
+                    jQuery('<option />')
+                        .html(data[i].email)
+                        .appendTo('#email_dest');
+                }
+            });
         });
 
         jQuery('#email_none').click(function () {

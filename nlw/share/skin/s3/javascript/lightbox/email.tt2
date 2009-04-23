@@ -37,6 +37,7 @@
         </select>
       </td>
       <td>
+        <input class="email_input_button" type="button" id="email_all" value="[% loc('Add All Members') %]" /><br />
         <input class="email_input_button" type="button" id="email_remove" value="[% loc('Remove') %]" /><br />
         <input class="email_input_button" type="button" id="email_none" value="[% loc('Remove All') %]" />
       </td>
