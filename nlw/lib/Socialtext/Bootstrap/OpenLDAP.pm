@@ -310,6 +310,7 @@ sub _ldap_config {
         host        => $self->host(),
         port        => $self->port(),
         base        => $self->base_dn(),
+        filter      => '(objectClass=inetOrgPerson)',
         attr_map    => {
             user_id         => 'dn',
             username        => 'cn',

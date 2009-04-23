@@ -178,6 +178,10 @@ search_without_filter_gets_users_and_contacts: {
     ok $openldap->add_ldif('t/test-data/ldap/people.ldif'), 'added data; people';
     ok $openldap->add_ldif('t/test-data/ldap/contacts.ldif'), 'added data; contacts';
 
+    # clear any filter in the LDAP config
+    $openldap->ldap_config->filter(undef);
+    $openldap->add_to_ldap_config();
+
     # check to make sure that LDAP config has -NO- filter in it
     my $ldap = Socialtext::LDAP->new();
     isa_ok $ldap, 'Socialtext::LDAP::OpenLDAP', 'connected to OpenLDAP';
