@@ -1348,7 +1348,7 @@ proto.applyTableOptions = function($table, opt_string) {
 
 proto.tableOptionsFromNode = function ($node) {
     var opt_array = [];
-    jQuery('input', $node).each(function(i, el) {
+    jQuery('input[type=checkbox]', $node).each(function(i, el) {
         var key = $(el).attr('name');
         opt_array.push(key + ($(el).is(':checked') ? ':on' : ':off'));
     });
