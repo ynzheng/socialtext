@@ -76,6 +76,7 @@ test env properly and are not testing the test-workspace
 * [Test Case: Edit Summaries]
 * [Test Case: People Dashboard Navigation]
 * [Test Case: Invite people to your network]
+* [Test Case: Servername redirect to default ws]
 
 Put tests that don't use the browser here
 

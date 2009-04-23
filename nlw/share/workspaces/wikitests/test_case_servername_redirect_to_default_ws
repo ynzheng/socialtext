@@ -1,0 +1,19 @@
+| *Comment* | Test Case: Servername redirect to default ws |
+| *Comment* | Test Case: Servername redirect to default ws is based on "http colon slash slash servername goes to default workspace" |
+
+| *Comment* | Test Case: Servername redirect to default ws |  |
+| st-config | set default_workspace '' | Wrote updated config file to |
+| open_ok | / |  |
+| wait_for_element_visible_ok | link=Add Content | 30000 |
+| st-config | set default_workspace %%workspace%% | Wrote updated config file to |
+| open_ok | / |  |
+| wait_for_element_visible_ok | st-edit-button-link | 30000 |
+| wait_for_element_visible_ok | link=Socialtext Documentation | 30000 |
+| wait_for_element_visible_ok | link=start here | 30000 |
+| text_like | Every once in a while, visit What's new (next to Quick jump, at the top) to see recent changes and additions, and see |  |
+| st-config | set default_workspace '' | Wrote updated config file to |
+| open_ok | / |  |
+| wait_for_element_visible_ok | link=Add Content | 30000 |
+| text_unlike | //body | Every once in a while, visit What's new (next to Quick jump, at the top) to see recent changes and additions, and see |
+
+| *Comment* | Test case: Servername redirect to default ws COMPLETED |  |
