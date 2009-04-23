@@ -208,7 +208,12 @@
                 })
                 .prependTo('body');
 
-            $('<ul></ul>').appendTo(this.lookahead);
+            $('<ul></ul>')
+                .css({
+                    listStyle: 'none',
+                    padding: '0'
+                })
+                .appendTo(this.lookahead);
 
             if ($.browser.msie && $.browser.version < 7) {
                 $('<iframe src="/static/html/blank.html"></iframe>')
