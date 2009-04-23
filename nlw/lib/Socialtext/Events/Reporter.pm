@@ -182,6 +182,7 @@ sub decorate_event_set {
 
 my $FIELDS = <<'EOSQL';
     at AT TIME ZONE 'UTC' || 'Z' AS at_utc,
+    at AS at,
     event_class AS event_class,
     action AS action,
     actor_id AS actor_id,
@@ -362,10 +363,8 @@ sub _build_standard_sql {
     my $outer_where = join("\n  AND ",
                            map {"($_)"} ('1=1',@{$self->{_outer_conditions}}));
 
-    (my $fields = $FIELDS) =~ s/\be\.//sg;
-
     my $sql = <<EOSQL;
-SELECT $fields FROM (
+SELECT $FIELDS FROM (
     SELECT evt.* FROM (
         SELECT e.*
         FROM event e
@@ -380,6 +379,8 @@ LEFT JOIN page ON (outer_e.page_workspace_id = page.workspace_id AND
                    outer_e.page_id = page.page_id)
 LEFT JOIN "Workspace" w ON (outer_e.page_workspace_id = w.workspace_id)
 
+-- the JOINs above mess up the order. Fortunately, the re-sort isn't too hideous after LIMIT-ing
+ORDER BY outer_e.at DESC
 EOSQL
 
     return $sql, [@{$self->{_condition_args}}, @{$self->{_outer_condition_args}}, @limit_args];
