@@ -953,6 +953,10 @@ Returns an array ref for the plugins enabled.
 
 Disables the plugin for the specified account.
 
+=item $account->logo()
+
+Return the logo for an account.
+
 =item $account->export(dir => $dir)
 
 Export the account data to a file in the specified directory.
