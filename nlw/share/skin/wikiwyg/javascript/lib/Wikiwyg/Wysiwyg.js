@@ -835,9 +835,6 @@ proto.toolbarStyling = function() {
 
             jQuery("#wikiwyg_button_table").addClass("disabled");
             jQuery("#wikiwyg_button_table-settings").removeClass("disabled");
-            if (jQuery(cursor_state.table).find('tr').size() < 2) {
-                jQuery("#wikiwyg_button_table-settings").addClass("disabled");
-            }
 
             if (cursor_state.header_row) {
                 jQuery("#wikiwyg_button_move-row-down, #wikiwyg_button_move-row-up, #wikiwyg_button_add-row-above").addClass("disabled");
@@ -1359,10 +1356,6 @@ proto.do_table_settings = function() {
     var self = this;
 
     this._do_table_manip(function($cell) {
-        if ($cell.parents('table:eq(0)').find('tr').size() < 2) {
-            return;
-        }
-
         var $table = $cell.parents("table:eq(0)");
         var $lb = $('#st-table-settings');
 
@@ -1389,6 +1382,11 @@ proto.do_table_settings = function() {
                         $el.removeAttr("checked");
                     }
                 });
+
+                /* Don't allow sorting a single row table, or a new table */
+                if ($table.find('tr').size() < 2) {
+                    $lb.find("input[name=sort]").attr('disabled', true);
+                }
             }
         });
     });
