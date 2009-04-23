@@ -52,6 +52,10 @@
 | click_and_wait | link=Add Content |  |
 | wait_for_element_visible_ok | link=Recent Conversations | 30000 |
 | click_and_wait | link=Recent Conversations |  |
+
+| *Comment* | Test Case: My Conversations Widget is the widget there? |  |
+| wait_for_element_visible_ok | //a[@class='close'] | 30000 |
+
 | st-name-widget | 1 | my_conversations |
 | st-widget-title-like | my_conversations | My Conversations |
 | st-select-widget-frame | my_conversations |  |

@@ -14,9 +14,7 @@
 | text_like | All Pages ( |  |
 
 | *Comment* | Test Case: All Pages Sorting tests |  |
-
-| *Comment* | Test Case: All Pages default sorted Date desc |  |
-| text_like | contentContainer | qr/all pages %%start_time%% 0004.+all pages %%start_time%% 0001/ |
+|  select_and_wait |  sort-picker | Revisions |
 
 | *Comment* | Test Case: All Pages sort Title asc |  |
 | select_and_wait | sort-picker | label=Title |
@@ -35,8 +33,10 @@
 
 | open_ok | /%%workspace%%/index.cgi?action=recent_changes |  |
 | clickAndWait | link=All Pages |  |
+|  select_and_wait | sort-picker  |  Revisions |
 
 | *Comment* | Test Case: All Pages default sort Date desc |  |
+|  select_and_wait |  sort-picker |  label=Date |
 | text_like | contentContainer | qr/all pages %%start_time%% 0005.+all pages %%start_time%% 0004/ |
 
 | *Comment* | Test Case: All Pages sort Date asc |  |

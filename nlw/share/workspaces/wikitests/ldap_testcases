@@ -4,7 +4,7 @@ Any LDAP user specific testcases should go here.
 
 Every test should override the passed in values as follows:
 
- set | username | devnull3 |
+set | username | devnull3 |
 set | email | devnull3@socialtext.com |
 set | password | ldapd3v |
 set | email_esc | devnull3\@socialtext.com |
@@ -33,4 +33,4 @@ Special test for LDAP user deletion.
 
 * [Test Case: LDAP Deleted User]
 
-* [Test Case: A Enable LDAP]
+* [Test Case: Z Enable LDAP]

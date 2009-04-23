@@ -7,7 +7,9 @@ RSS feeds are tested in a separate test
 | *Comment* | Test Case: Weblogs Create test weblog |  |
 | open_ok | /%%workspace%%/?action=users_settings |  |
 
+| wait_for_element_visible_ok | link=Create New Weblog | 30000 |
 | click_and_wait | link=Create New Weblog |  |
+| wait_for_element_visible_ok | weblog_title | 30000 |
 | type_ok | weblog_title | Test %%start_time%% Weblog |
 | click_and_wait | link=Save |  |
 
@@ -15,12 +17,12 @@ RSS feeds are tested in a separate test
 | *Comment* | reliably open Recent Changes, navigate away then revisit it |  |
 | open_ok | /%%workspace%%/index.cgi?action=weblog_display&category=recent+changes |  |
 | wait_for_element_visible_ok | page-control-category-selector | 30000 |
-| select_ok | page-control-category-selector | Test %%start_time%% Weblog |
-| wait_for_text_present_ok | Weblog: Test %%start_time%% Weblog | 30000 |
-| select_ok | page-control-category-selector | Recent Changes |
-| wait_for_text_present_ok | Weblog: Recent Changes | 30000 |
-| select_ok | page-control-category-selector | Test %%start_time%% Weblog |
-| wait_for_text_present_ok | Weblog: Test %%start_time%% Weblog | 30000 |
+| select_and_wait | page-control-category-selector | Test %%start_time%% Weblog |
+| text_like | Weblog: Test %%start_time%% Weblog |  |
+| select_and_wait | page-control-category-selector | Recent Changes |
+| text_like | Weblog: Recent Changes |  |
+| select_and_wait | page-control-category-selector | Test %%start_time%% Weblog |
+| text_like | Weblog: Test %%start_time%% Weblog |  |
 
 Selenium can't "see" feed pages
 open_ok | /feed/workspace/%%workspace%%?category=test_%%start_time%%_weblog | |
@@ -58,59 +60,73 @@ open_ok | /%%workspace%%/index.cgi?action=weblog_display&category=test_%%start_t
 
 | *Comment* | Test Case: Weblogs weblogs that differ only by square brackets cause error |  |
 | click_and_wait | link=Settings |  |
+| wait_for_element_visible_ok | link=Create New Weblog | 30000 |
 | click_and_wait | link=Create New Weblog |  |
+| wait_for_element_visible_ok | weblog_title | 30000 |
 | type_ok | weblog_title | `Test [%%start_time%%] Weblog` |
 | click_and_wait | link=Save |  |
 | text_like | `error: There is already a 'Test [%%start_time%%] Weblog' weblog. Please choose a different name.` |  |
 
 | *Comment* | Test Case: Weblogs square brackets are legal for weblog titles |  |
 | click_and_wait | link=Settings |  |
+| wait_for_element_visible_ok | link=Create New Weblog | 30000 |
 | click_and_wait | link=Create New Weblog |  |
+| wait_for_element_visible_ok | weblog_title | 30000 |
 | type_ok | weblog_title | `TestX [%%start_time%%] Weblog` |
 | click_and_wait | link=Save |  |
 | wait_for_element_visible_ok | page-control-category-selector | 30000 |
-| select_ok | page-control-category-selector | Recent Changes |
-| wait_for_text_present_ok | Weblog: Recent Changes | 30000 |
-| select_ok | page-control-category-selector | `TestX [%%start_time%%] Weblog` |
-| wait_for_text_present_ok | `Weblog: TestX [%%start_time%%] Weblog` | 30000 |
+| select_and_wait | page-control-category-selector | Recent Changes |
+| text_like | Weblog: Recent Changes |  |
+| select_and_wait | page-control-category-selector | `TestX [%%start_time%%] Weblog` |
+| text_like | `Weblog: TestX [%%start_time%%] Weblog` |  |
 
 | *Comment* | Test Case: Weblogs RT 27013 |  |
 | *Comment* | Test Case: blog or weblog ending respected |  |
 
 | click_and_wait | link=Settings |  |
+| wait_for_element_visible_ok | link=Create New Weblog | 30000 |
 | click_and_wait | link=Create New Weblog |  |
+| wait_for_element_visible_ok | weblog_title | 30000 |
 | type_ok | weblog_title | X%%start_time%% blog |
 | click_and_wait | link=Save |  |
-
 | text_like | st-editing-tools-edit | Weblog: X%%start_time%% blog |
 
 | click_and_wait | link=Settings |  |
+| wait_for_element_visible_ok | link=Create New Weblog | 30000 |
 | click_and_wait | link=Create New Weblog |  |
+| wait_for_element_visible_ok | weblog_title | 30000 |
 | type_ok | weblog_title | Y%%start_time%% weblog |
 | click_and_wait | link=Save |  |
-
 | text_like | st-editing-tools-edit | Weblog: Y%%start_time%% weblog |
 
 | *Comment* | Test Case: Weblogs END RT 27013 |  |
 
 | *Comment* | Test Case: Weblogs Duplicate Names |  |
 | click_and_wait | link=Settings |  |
+| wait_for_element_visible_ok | link=Create New Weblog | 30000 |
 | click_and_wait | link=Create New Weblog |  |
+| wait_for_element_visible_ok | weblog_title | 30000 |
 | type_ok | weblog_title | Z%%start_time%% weblog |
 | click_and_wait | link=Save |  |
 | text_like | st-editing-tools-edit | Weblog: Z%%start_time%% weblog |
 | click_and_wait | link=Settings |  |
+| wait_for_element_visible_ok | link=Create New Weblog | 30000 |
 | click_and_wait | link=Create New Weblog |  |
+| wait_for_element_visible_ok | weblog_title | 30000 |
 | type_ok | weblog_title | Z%%start_time%% |
 | click_and_wait | link=Save |  |
 | text_like | contentRight | error: There is already a 'Z%%start_time%% Weblog' weblog. |
 | click_and_wait | link=Settings |  |
+| wait_for_element_visible_ok | link=Create New Weblog | 30000 |
 | click_and_wait | link=Create New Weblog |  |
+| wait_for_element_visible_ok | weblog_title | 30000 |
 | type_ok | weblog_title | Z%%start_time%% Weblog |
 | click_and_wait | link=Save |  |
 | text_like | contentRight | error: There is already a 'Z%%start_time%% Weblog' weblog. |
 | click_and_wait | link=Settings |  |
+| wait_for_element_visible_ok | link=Create New Weblog | 30000 |
 | click_and_wait | link=Create New Weblog |  |
+| wait_for_element_visible_ok | weblog_title | 30000 |
 | type_ok | weblog_title | Z%%start_time%% weblog |
 | click_and_wait | link=Save |  |
 | text_like | contentRight | error: There is already a 'Z%%start_time%% weblog' weblog. |

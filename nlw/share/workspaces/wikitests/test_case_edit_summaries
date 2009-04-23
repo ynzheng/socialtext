@@ -1,5 +1,4 @@
 | *Comment* | Test Case: Edit Summaries |  |  |
-| set_default | pt | 8000 | summaries pop-up needs time for JS to load |
 
 | *Comment* | Test Case: Edit Summaries - create a page from file, because we can't type newlines with type_ok |  |
 | st-admin | update-page --workspace %%workspace%% --email %%email%% --page "Edit Summaries %%start_time%%" < %%wikitest_client_files%%wikitest_toc.txt | The "Edit Summaries %%start_time%%" page has been created. |
@@ -13,10 +12,7 @@
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | wait_for_element_visible_ok | st-save-button-link | 30000 |
 
-| *Comment* | Test Case: Edit Summaries. Pause for Mouseover |  |
-| pause | %%pt%% |  |
-| MouseOver | st-save-button-link |  |
-| pause | %%pt%% |  |
+| *Comment* | Test Case: Edit Summaries. type the summary |  |
 | wait_for_element_present_ok | st-edit-summary-text-area | 30000 |
 | click_ok | st-edit-summary-text-area |  |
 | type_ok | st-edit-summary-text-area | Quick Summary for my friends %%start_time%% |
@@ -31,10 +27,7 @@
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 
-| *Comment* | Test Case: Edit Summaries. Pause for Mouseover again. |  |
-| pause | %%pt%% |  |
-| MouseOver | st-save-button-link |  |
-| pause | %%pt%% |  |
+| *Comment* | Test Case: Edit Summaries. type the second summary. |  |
 | wait_for_element_present_ok | st-edit-summary-text-area | 30000 |
 | click_ok | st-edit-summary-text-area |  |
 | type_ok | st-edit-summary-text-area | A second summary for a wikitest %%start_time%% |

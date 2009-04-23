@@ -51,7 +51,7 @@ Visit some individual pages in the workspace; add them to the watchlist. View wa
 | st-is-watched | 1 | CCC %%start_time%% |
 
 User removes page from watchlist through the watchlist UI.
-Watchlist icon reverses color to indicate no longer a member of watchlist. 
+Watchlist icon reverses color to indicate no longer a member of watchlist.
 Entry does not disappear.
 User adds removed page from watchlist through the watchlist UI.
 Watchlist icon reverses color to indicate a member of watchlist.
@@ -89,9 +89,6 @@ and the watchlist is not empty |
 Set up to check sorting. (↑) (↓)
 
 | click_and_wait | link=My Watchlist |  |
-
-| *Comment* | Test Case: What's New default sorted default Date desc |  |
-| text_like | contentContainer | qr/CCC %%start_time%%.+BBB %%start_time%%.+AAA %%start_time%%/ |
 
 | *Comment* | Test case: Watchlist title sort |  |
 | select_and_wait | sort-picker | label=Title |

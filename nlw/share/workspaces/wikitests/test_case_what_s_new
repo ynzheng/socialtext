@@ -9,9 +9,6 @@
 | open_ok | /%%workspace%%/index.cgi?action=recent_changes |  |
 | text_like | Changes in Last |  |
 
-| *Comment* | Test Case: What's New default sorted default Date desc |  |
-| text_like | contentContainer | qr/hey whats new %%start_time%% 0004.+hey whats new %%start_time%% 0001/ |
-
 | *Comment* | Test Case: What's New sort Title asc |  |
 | select_and_wait | sort-picker | label=Title |
 | text_like | contentContainer | qr/hey whats new %%start_time%% 0001.+hey whats new %%start_time%% 0004/ |
@@ -28,16 +25,18 @@
 | st-admin | update-page --email %%email%% --workspace %%workspace%% --page "hey whats new %%start_time%% 0005" < %%wikitest_client_files%%wikitest.txt | The "hey whats new %%start_time%% 0005" page has been created. |
 
 | open_ok | /%%workspace%%/index.cgi?action=recent_changes |  |
+|  select_and_wait |  sort-picker |  label=Revisions |
 
-| *Comment* | Test Case: What's New sort default Date desc |  |
-| text_like | contentContainer | qr/hey whats new %%start_time%% 0005.+hey whats new %%start_time%% 0004/ |
+| *Comment* | Test Case: What's New sort Date desc |  |
+| select_and_wait | sort-picker | label=Date |
+| text_like | contentContainer | qr/hey whats new %%start_time%% 0004.+hey whats new %%start_time%% 0001/ |
 
 | *Comment* | Test Case: What's New sort Date asc |  |
-| select_and_wait | sort-picker | Date (↑) |
+| select_and_wait | sort-picker | label=Date (↑) |
 | text_like | contentContainer | qr/hey whats new %%start_time%% 0002.+hey whats new %%start_time%% 0003/ |
 
 | *Comment* | Test Case: What's New sort Date desc |  |
-| select_and_wait | sort-picker | Date (↓) |
+| select_and_wait | sort-picker | label=Date (↓) |
 | text_like | contentContainer | qr/hey whats new %%start_time%% 0004.+hey whats new %%start_time%% 0001/ |
 
 | *Comment* | Test Case: What's New create Rev 2 |  |

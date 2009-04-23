@@ -6,6 +6,7 @@ TODO: email_page_keep_attachments
 | st-admin | add-member --email %%start_time%%_one@ken.socialtext.net --workspace %%workspace%% |  |
 | st-admin | create-user --email %%start_time%%_two@ken.socialtext.net --password 123456 |  |
 | st-admin | add-member --email %%start_time%%_two@ken.socialtext.net --workspace %%workspace%% |  |
+
 | open_ok | /%%workspace%%/?action=new_page |  |
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |
 | click_ok | link=Wiki Text |  |
@@ -17,10 +18,10 @@ TODO: email_page_keep_attachments
 
 | *Comment* | Test Case: Email. Default content. |  |
 | click_ok | st-pagetools-email |  |
-
+| wait_for_element_visible_ok | st-email-lightbox | 30000 |
 | wait_for_element_visible_ok | email_recipient | 30000 |
-| text_like | email_recipient | Start typing the name of any recipient |
 | wait_for_element_visible_ok | email_page_user_choices | 30000 |
+| text_like | email_recipient | Start typing the name of any recipient |
 | text_like | email_page_user_choices | Use the Recipients box above to add users to this list |
 
 | *Comment* | Test Case: Email. No recipient, then cancel |  |

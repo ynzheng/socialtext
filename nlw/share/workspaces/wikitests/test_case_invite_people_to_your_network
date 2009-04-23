@@ -66,7 +66,9 @@ TODO: verify cannot actually issue invitations via URL
 
 | *Comment* | Test Case: Invite people. login as %%email%% so you can see the confirmation email |  |
 | st-logoutin |  |  |
-| open_ok | /%%to_ws%%/?action=recent_changes |  |
+| open_ok | /%%to_ws%%/ |  |
+| wait_for_element_visible_ok | link=What's New | 30000 |
+| click_and_wait | link=What's New |  |
 | wait_for_element_visible_ok | link=I'm inviting you into the %%acct%% network | 30000 |
 | click_and_wait | link=I'm inviting you into the %%acct%% network |  |
 
