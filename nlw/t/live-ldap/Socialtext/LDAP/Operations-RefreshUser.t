@@ -3,12 +3,14 @@
 
 use strict;
 use warnings;
+use mocked 'Socialtext::Log', qw(:tests);
 use Test::Socialtext::Bootstrap::OpenLDAP;
-use Test::Socialtext tests => 64;
+use Test::Socialtext tests => 57;
 use Test::Socialtext::User;
 use File::Slurp qw(write_file);
 use Benchmark qw(timeit timestr);
 use Socialtext::SQL qw(:exec);
+use Socialtext::LDAP::Operations;
 
 ###############################################################################
 # FIXTURE: db
@@ -29,10 +31,8 @@ sub set_up_openldap {
 ###############################################################################
 # TEST: if we've got *NO* LDAP users, refresh doesn't choke.
 test_no_ldap_users: {
-    my $results = `st-ldap refresh-users --verbose 2>&1`;
-    is $?, 0, 'st-ldap refresh-users ran successfully';
-    diag $results if $?;
-    like $results, qr/found 0 LDAP users/, 'no LDAP users present';
+    Socialtext::LDAP::Operations->RefreshUsers();
+    logged_like 'info', qr/found 0 LDAP users/, '... no LDAP users present';
 }
 
 ###############################################################################
@@ -52,10 +52,8 @@ test_ldap_users_all_fresh: {
     sleep 2;
 
     # refresh LDAP users
-    my $results = `st-ldap refresh-users --verbose 2>&1`;
-    is $?, 0, 'st-ldap refresh-users ran successfully';
-    diag $results if $?;
-    like $results, qr/found 1 LDAP users/, 'one LDAP user present';
+    Socialtext::LDAP::Operations->RefreshUsers();
+    logged_like 'info', qr/found 1 LDAP users/, 'one LDAP user present';
 
     # get the refreshed LDAP user record
     my $refreshed_user = Socialtext::User->new( email_address => 'john.doe@example.com' );
@@ -112,16 +110,14 @@ test_refresh_stale_users: {
     #
     # granularity on "cached_at" is only to the second, so we'll sleep a bit
     # around the refresh so we can check afterwards that (a) the user was
-    # refreshed, and (b) that it was done by "st-ldap refresh-users" and not by
-    # our re-instantiating the user record.
+    # refreshed, and (b) that it was done by the refresh and not by our
+    # re-instantiating the user record.
     my $time_before_refresh = time();
     {
         sleep 2;
 
-        my $results = `st-ldap refresh-users --verbose 2>&1`;
-        is $?, 0, 'st-ldap refresh-users ran successfully';
-        diag $results if $?;
-        like $results, qr/found 1 LDAP users/, 'one LDAP user present';
+        Socialtext::LDAP::Operations->RefreshUsers();
+        logged_like 'info', qr/found 1 LDAP users/, 'one LDAP user present';
 
         sleep 2;
     }
@@ -134,10 +130,10 @@ test_refresh_stale_users: {
     my $refreshed_homey = $refreshed_user->homunculus;
     isa_ok $refreshed_homey, 'Socialtext::User::LDAP', 'refreshed LDAP homunculus';
 
-    # make sure the user *was* refreshed by "st-ldap refresh-users"
+    # make sure the user *was* refreshed by the call to RefreshUsers()
     my $refreshed_at = $refreshed_homey->cached_at->epoch();
     ok $refreshed_at > $time_before_refresh, 'user was refreshed';
-    ok $refreshed_at < $time_after_refresh, '... by st-ldap refresh-users';
+    ok $refreshed_at < $time_after_refresh, '... by RefreshUsers()';
 
     # make sure that the bogus data we set into the user was over-written by
     # the refresh
@@ -166,16 +162,14 @@ test_force_refresh: {
     #
     # granularity on "cached_at" is only to the second, so we'll sleep a bit
     # around the refresh so we can check afterwards that (a) the user was
-    # refreshed, and (b) that it was done by "st-ldap refresh-users" and not by
-    # our re-instantiating the user record.
+    # refreshed, and (b) that it was done by the refresh and not by our
+    # re-instantiating the user record.
     my $time_before_refresh = time();
     {
         sleep 2;
 
-        my $results = `st-ldap refresh-users --verbose --force 2>&1`;
-        is $?, 0, 'st-ldap refresh-users ran successfully';
-        diag $results if $?;
-        like $results, qr/found 1 LDAP users/, 'one LDAP user present';
+        Socialtext::LDAP::Operations->RefreshUsers(force => 1);
+        logged_like 'info', qr/found 1 LDAP users/, 'one LDAP user present';
 
         sleep 2;
     }
@@ -188,10 +182,10 @@ test_force_refresh: {
     my $refreshed_homey = $refreshed_user->homunculus;
     isa_ok $refreshed_homey, 'Socialtext::User::LDAP', 'refreshed LDAP homunculus';
 
-    # make sure the user *was* refreshed by "st-ldap refresh-users"
+    # make sure the user *was* refreshed by RefreshUsers()
     my $refreshed_at = $refreshed_homey->cached_at->epoch();
     ok $refreshed_at > $time_before_refresh, 'user was refreshed';
-    ok $refreshed_at < $time_after_refresh, '... by st-ldap refresh-users';
+    ok $refreshed_at < $time_after_refresh, '... by RefreshUsers()';
 
     # cleanup; don't want to pollute other tests
     Test::Socialtext::User->delete_recklessly($ldap_user);
@@ -234,16 +228,14 @@ test_ldap_missing_first_name: {
     #
     # granularity on "cached_at" is only to the second, so we'll sleep a bit
     # around the refresh so we can check afterwards that (a) the user was
-    # refreshed, and (b) that it was done by "st-ldap refresh-users" and not by
-    # our re-instantiating the user record.
+    # refreshed, and (b) that it was done by the refresh and not by our
+    # re-instantiating the user record.
     my $time_before_refresh = time();
     {
         sleep 2;
 
-        my $results = `st-ldap refresh-users --verbose 2>&1`;
-        is $?, 0, 'st-ldap refresh-users ran successfully';
-        diag $results if $?;
-        like $results, qr/found 1 LDAP users/, 'one LDAP user present';
+        Socialtext::LDAP::Operations->RefreshUsers();
+        logged_like 'info', qr/found 1 LDAP users/, 'one LDAP user present';
 
         sleep 2;
     }
@@ -256,10 +248,10 @@ test_ldap_missing_first_name: {
     my $refreshed_homey = $refreshed_user->homunculus;
     isa_ok $refreshed_homey, 'Socialtext::User::LDAP', 'refreshed LDAP homunculus';
 
-    # make sure the user *was* refreshed by "st-ldap refresh-users"
+    # make sure the user *was* refreshed by RefreshUsers()
     my $refreshed_at = $refreshed_homey->cached_at->epoch();
     ok $refreshed_at > $time_before_refresh, 'user was refreshed';
-    ok $refreshed_at < $time_after_refresh, '... by st-ldap refresh-users';
+    ok $refreshed_at < $time_after_refresh, '... by RefreshUsers()';
 
     # make sure that the User now has a blank/empty first name
     is $refreshed_homey->first_name, '', '... first_name is blank/empty';
@@ -305,16 +297,14 @@ test_ldap_missing_last_name: {
     #
     # granularity on "cached_at" is only to the second, so we'll sleep a bit
     # around the refresh so we can check afterwards that (a) the user was
-    # refreshed, and (b) that it was done by "st-ldap refresh-users" and not by
-    # our re-instantiating the user record.
+    # refreshed, and (b) that it was done by the refresh and not by our
+    # re-instantiating the user record.
     my $time_before_refresh = time();
     {
         sleep 2;
 
-        my $results = `st-ldap refresh-users --verbose 2>&1`;
-        is $?, 0, 'st-ldap refresh-users ran successfully';
-        diag $results if $?;
-        like $results, qr/found 1 LDAP users/, 'one LDAP user present';
+        Socialtext::LDAP::Operations->RefreshUsers();
+        logged_like 'info', qr/found 1 LDAP users/, 'one LDAP user present';
 
         sleep 2;
     }
@@ -327,10 +317,10 @@ test_ldap_missing_last_name: {
     my $refreshed_homey = $refreshed_user->homunculus;
     isa_ok $refreshed_homey, 'Socialtext::User::LDAP', 'refreshed LDAP homunculus';
 
-    # make sure the user *was* refreshed by "st-ldap refresh-users"
+    # make sure the user *was* refreshed by RefreshUsers()
     my $refreshed_at = $refreshed_homey->cached_at->epoch();
     ok $refreshed_at > $time_before_refresh, 'user was refreshed';
-    ok $refreshed_at < $time_after_refresh, '... by st-ldap refresh-users';
+    ok $refreshed_at < $time_after_refresh, '... by RefreshUsers()';
 
     # make sure that the User now has a blank/empty last name
     is $refreshed_homey->last_name, '', '... last_name is blank/empty';
@@ -372,12 +362,10 @@ test_ldap_missing_email_address: {
     $ldap_homey->expire();
 
     # refresh LDAP users
-    my $results = `st-ldap refresh-users --verbose 2>&1`;
-    is $?, 0, 'st-ldap refresh-users ran successfully';
-    diag $results if $?;
-    like $results, qr/found 1 LDAP users/, 'one LDAP user present';
-    like $results, qr/Unable to refresh LDAP user '$username'/, '... unable to refresh the LDAP user';
-    like $results, qr/Email address is a required field/, '... LDAP user is missing e-mail address';
+    Socialtext::LDAP::Operations->RefreshUsers();
+    logged_like 'info', qr/found 1 LDAP users/, 'one LDAP user present';
+    logged_like 'warning', qr/Unable to refresh LDAP user '$username'/, '... unable to refresh the LDAP user';
+    logged_like 'warning', qr/Email address is a required field/, '... LDAP user is missing e-mail address';
 
     # cleanup; don't want to pollute other tests
     Test::Socialtext::User->delete_recklessly($ldap_user);
@@ -446,7 +434,7 @@ ENDLDIF
         # refresh all of the users
         diag "refreshing $BENCHMARK_USERS users";
         $t = timeit(1, sub {
-            `st-ldap refresh-users --verbose --force 2>&1`;
+            Socialtext::LDAP::Operations->RefreshUsers(force => 1);
         } );
         diag "... " . timestr($t);
 
