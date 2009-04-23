@@ -23,6 +23,10 @@ sub cleanup_filter {
 
     # Remove start of word character
     $filter =~ s/\\b//g;
+
+    die "empty filter"
+        if (defined $filter && $filter =~ /^\s*$/);
+
     $filter .= '%';
 
     $self->filter($filter);
