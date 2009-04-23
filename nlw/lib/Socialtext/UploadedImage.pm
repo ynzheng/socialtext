@@ -1,4 +1,5 @@
 package Socialtext::UploadedImage;
+# @COPYRIGHT@
 use Moose;
 use Socialtext::SQL qw/get_dbh :exec :txn/;
 use DBD::Pg qw/:pg_types/;
