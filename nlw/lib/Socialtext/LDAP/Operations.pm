@@ -33,8 +33,11 @@ sub RefreshUsers {
     } );
     st_log->info( "... found " . $sth->rows . " LDAP users" );
 
+    my $rows_aref = $sth->fetchall_arrayref();
+    $sth->finish();
+
     # Refresh each of the LDAP Users
-    while (my $row = $sth->fetchrow_arrayref()) {
+    foreach my $row (@{$rows_aref}) {
         my ($driver_key, $driver_unique_id, $driver_username) = @{$row};
 
         # get the LDAP user factory we need for this user.
@@ -50,7 +53,6 @@ sub RefreshUsers {
             st_log->error($@);
         }
     }
-    $sth->finish();
     _clear_factory_cache();
 
     # All done.
