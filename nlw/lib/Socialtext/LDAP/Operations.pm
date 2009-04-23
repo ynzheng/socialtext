@@ -49,6 +49,7 @@ sub RefreshUsers {
         }
     }
     $sth->finish();
+    _clear_factory_cache();
 
     # All done.
     st_log->info( "done" );
@@ -174,6 +175,9 @@ sub LoadUsers {
             $Factories{$driver_key} = $factory;
         }
         return $Factories{$driver_key};
+    }
+    sub _clear_factory_cache {
+        %Factories = ();
     }
 }
 
