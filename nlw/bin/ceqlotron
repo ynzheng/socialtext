@@ -124,6 +124,8 @@ sub write_pid_file {
 }
 
 sub main_loop {
+    disconnect_dbh();
+
     while (!$ExitPlease) {
 
         # If "max_procs" in P::FM is zero, start() will pretend that the
@@ -154,8 +156,6 @@ sub main_loop {
 }
 
 sub start_worker {
-    disconnect_dbh();
-
     $SIG{HUP} = $SIG{INT} = $SIG{TERM} = sub {
         $ExitPlease = 1;
         st_log->debug("Ceqlotron worker: caught hangup");
