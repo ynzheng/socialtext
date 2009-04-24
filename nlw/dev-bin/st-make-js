@@ -6,3 +6,5 @@ MAKEFILES="$ST_CURRENT/nlw/share/skin/Makefile $ST_CURRENT/plugins/socialcalc/sh
 # $ST_CURRENT/nlw/share/skin/js-test/Makefile
 
 for i in $MAKEFILES ; do echo Making $i ; pushd `dirname $i` ; make clean all ; popd ; done ;
+st-widgets update-gallery --fork
+
