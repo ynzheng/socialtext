@@ -36,11 +36,16 @@ my @TEST_USERS = (
 ###############################################################################
 # LDAP "anonymous bind" is supported
 ldap_anonymous_bind: {
+    # Flush the LDAP Connection Cache
+    Socialtext::LDAP->ConnectionCache->clear();
+
+    # Set up our mocked LDAP connection
     Net::LDAP->set_mock_behaviour(
         search_results => [ $TEST_USERS[0] ],
         );
     clear_log();
 
+    # Connect to LDAP and create an LDAP User Factory
     my $factory = Socialtext::User::LDAP::Factory->new();
     isa_ok $factory, 'Socialtext::User::LDAP::Factory', 'created factory ok';
     ok $factory->connect(), 'was able to connect to the server';
@@ -59,6 +64,10 @@ ldap_anonymous_bind: {
 ###############################################################################
 # Instantiation with missing authentication returns empty handed.
 instantiation_bind_requires_additional_auth: {
+    # Flush the LDAP Connection Cache
+    Socialtext::LDAP->ConnectionCache->clear();
+
+    # Set up our mocked LDAP connection
     Net::LDAP->set_mock_behaviour(
         bind_credentials => {
             'requires' => 'authentication',
@@ -66,6 +75,7 @@ instantiation_bind_requires_additional_auth: {
         );
     clear_log();
 
+    # Connect to LDAP and create an LDAP User Factory
     my $factory = Socialtext::User::LDAP::Factory->new();
     isa_ok $factory, 'Socialtext::User::LDAP::Factory', 'created factory ok';
     ok !$factory->connect(),'instantiation w/bind requires additional auth';
