@@ -10,10 +10,10 @@ fixtures( 'admin' );
 my @tests = (
     [ "{soap bogus_service bogus method}" =>
       qr{Service description 'bogus_service' can't be loaded: 400}],
-    [ "{soap http://www.xmethods.net/sd/2001/TemperatureService.wsdl getTemp 47408}" =>
-      qr{---\s+-?\d+}],
+    [ "{soap http://staff.um.edu.mt/cabe2/supervising/undergraduate/owlseditFYP/TemperatureService.wsdl getTemp 47408}" =>
+      qr{47408}],
     [ "{googlesoap chris dent}" =>
-      qr{Glacial Erratics}],
+      qr{<b>Chris Dent</b>}],
 );
 
 plan tests => scalar @tests;
