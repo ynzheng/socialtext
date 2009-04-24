@@ -1943,7 +1943,7 @@ SHOW_MEMBERS: {
                 ]
             )->show_members();
         },
-        qr/^.*devnull5.*smtest1/s,
+        qr/\| smtest1\@socialtext.net \| Test1 \| User \|/s,
         'Show members has correct list'
     );
 }
