@@ -10,6 +10,7 @@ use Socialtext::Log 'st_log', 'st_timed_log';
 use Socialtext::Paths;
 use Socialtext::SQL qw/get_dbh sql_execute invalidate_dbh disconnect_dbh/;
 use Socialtext::Timer;
+use Socialtext::Cache;
 use Getopt::Long;
 use Pod::Usage;
 use Parallel::ForkManager;
@@ -125,6 +126,7 @@ sub write_pid_file {
 
 sub main_loop {
     disconnect_dbh();
+    Socialtext::Cache->clear();
 
     while (!$ExitPlease) {
 
@@ -202,6 +204,7 @@ sub do_work {
         # if we're going to loop again...
         if ($jobs_remaining && !$ExitPlease) {
             st_log->debug("Ceqlotron worker: sleeping");
+            Socialtext::Cache->clear();
             invalidate_dbh();
             sleep $sleep_for;
         }
