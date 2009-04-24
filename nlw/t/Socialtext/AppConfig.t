@@ -30,7 +30,7 @@ BEGIN {
     delete $ENV{NLW_APPCONFIG};
 }
 
-plan tests => 64;
+plan tests => 63;
 
 my $user = getpwuid($>);
 
@@ -220,7 +220,6 @@ CHECK_ALL_METHODS: {
         status_message_file
         support_address
         syslog_level
-        technorati_key
         template_compile_dir
         unauthorized_returns_forbidden
         web_hostname

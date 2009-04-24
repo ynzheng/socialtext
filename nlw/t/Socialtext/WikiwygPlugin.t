@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 use YAML;
-use Test::Socialtext tests => 108;
+use Test::Socialtext tests => 106;
 
 fixtures( 'admin' );
 
@@ -290,14 +290,6 @@ PARSE_WIDGET_googlesoap: {
     my $widget = $admin->wikiwyg->parse_widget($wafl, $widgets);
     is( $widget->{id}, 'googlesoap', 'googlesoap widget id' );
     is( $widget->{search_term}, 'term', 'googlesoap search' );
-}
-
-PARSE_WIDGET_technorati: {
-    my $widgets = YAML::LoadFile($yaml_path);
-    my $wafl = "{technorati: term}";
-    my $widget = $admin->wikiwyg->parse_widget($wafl, $widgets);
-    is( $widget->{id}, 'technorati', 'technorati widget id' );
-    is( $widget->{search_term}, 'term', 'technorati search' );
 }
 
 PARSE_WIDGET_recent_changes: {
