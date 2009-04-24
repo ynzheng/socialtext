@@ -47,6 +47,7 @@ test_get_events: {
     my $base_select = <<'EOSQL';
 SELECT
     at AT TIME ZONE 'UTC' || 'Z' AS at_utc,
+    at AS at,
     event_class AS event_class,
     action AS action,
     actor_id AS actor_id, 
@@ -121,7 +122,7 @@ my $decorate_sql = <<'EOSQL';
 LEFT JOIN page ON (outer_e.page_workspace_id = page.workspace_id AND 
                    outer_e.page_id = page.page_id)
 LEFT JOIN "Workspace" w ON (outer_e.page_workspace_id = w.workspace_id)
-
+ORDER BY outer_e.at DESC
 EOSQL
 
     Get_no_events: {
