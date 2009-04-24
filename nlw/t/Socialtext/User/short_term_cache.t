@@ -64,6 +64,15 @@ sub set_names {
     $Socialtext::User::LDAP::Factory::CacheEnabled = 0;
 }
 
+# Explicitly *DISABLE* the LDAP connection cache.
+#
+# We're going to be doing testing at a low-level behaviour with mocked
+# connections, so don't let them get cached.
+{
+    no warnings 'once';
+    $Socialtext::LDAP::CacheEnabled = 0;
+}
+
 verify_not_caching_is_the_default_behaviour: {
     # get a user from LDAP, and verify who they are
     Net::LDAP->set_mock_behaviour(
