@@ -378,7 +378,6 @@ BEGIN {
             Socialtext::SOAPGoogle
             Socialtext::SyndicatePlugin
             Socialtext::TiddlyPlugin
-            Socialtext::TechnoratiPlugin
             Socialtext::TimeZonePlugin
             Socialtext::OpenIdPlugin
             Socialtext::UserPreferencesPlugin

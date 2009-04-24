@@ -950,16 +950,6 @@ Optional.
 
 =for code type => SCALAR_TYPE
 
-=head2 technorati_key
-
-The key to be used for Technorati searches (via WAFL).
-
-Note that the default is Socialtext's key.
-
-Default: 350218482ca294c73bb92bdcce1359c4
-
-=for code type => SCALAR_TYPE
-
 =head2 challenger
 
 The challenge system for this installation, defaults to the NLW login system
