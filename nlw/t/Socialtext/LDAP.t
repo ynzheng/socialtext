@@ -30,6 +30,15 @@ our %data = (
 );
 
 ###############################################################################
+# We're going to do some low-level testing here, turn off the LDAP connection
+# cache.
+###############################################################################
+{
+    no warnings 'once';
+    $Socialtext::LDAP::CacheEnabled = 0;
+}
+
+###############################################################################
 # List available LDAP connections (when only one exists)
 available_ldap_connections_one: {
     # create the LDAP configuration file

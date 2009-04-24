@@ -216,9 +216,29 @@ ENDLDIF
         } );
         diag "... " . timestr($t);
 
-        # load all of the Users into ST
-        diag "loading $BENCHMARK_USERS into ST";
+        # load all of the Users into ST, with the cache disabled
+        diag "loading $BENCHMARK_USERS into ST, cache disabled";
         $t = timeit(1, sub {
+            local $Socialtext::LDAP::CacheEnabled = 0;
+            Socialtext::Cache->clear();
+            Socialtext::LDAP::Operations->LoadUsers();
+        } );
+        diag "... " . timestr($t);
+
+        # remove the test Users between loads
+        diag "cleaning up $BENCHMARK_USERS users";
+        $t = timeit(1, sub {
+            foreach my $email (@emails) {
+                my $user = Socialtext::User->new(email_address => $email);
+                Test::Socialtext::User->delete_recklessly($user);
+            }
+        } );
+        diag "... " . timestr($t);
+
+        # load all of the Users into ST, with the cache enabled
+        diag "loading $BENCHMARK_USERS into ST, cache enabled";
+        $t = timeit(1, sub {
+            Socialtext::Cache->clear();
             Socialtext::LDAP::Operations->LoadUsers();
         } );
         diag "... " . timestr($t);

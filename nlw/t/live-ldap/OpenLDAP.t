@@ -17,6 +17,15 @@ use_ok 'Socialtext::LDAP::OpenLDAP';
 fixtures( 'db' );
 
 ###############################################################################
+# We're going to do some low-level testing here, turn off the LDAP connection
+# cache.
+###############################################################################
+{
+    no warnings 'once';
+    $Socialtext::LDAP::CacheEnabled = 0;
+}
+
+###############################################################################
 # Instantiation; connecting to a live OpenLDAP server.
 instantiation_ok: {
     # bootstrap OpenLDAP

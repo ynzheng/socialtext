@@ -201,6 +201,9 @@ sub _autodetect_module_dir {
 sub DESTROY {
     my $self = shift;
 
+    # remove ourselves from any LDAP connection cache, the quick/dirty way
+    Socialtext::LDAP->ConnectionCache()->clear();
+
     # remove ourselves from the LDAP config
     #
     # wrapped in an eval in case it fails/dies (which could happen if the test

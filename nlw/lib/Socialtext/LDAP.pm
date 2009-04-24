@@ -9,6 +9,9 @@ use warnings;
 use Socialtext::Log qw(st_log);
 use Socialtext::LDAP::Config;
 
+# Enables/disables the LDAP connection cache
+our $CacheEnabled = 1;
+
 sub new {
     my ($class, $driver_or_config) = @_;
 
@@ -53,9 +56,30 @@ sub config {
 
 sub connect {
     my ($class, $config) = @_;
+
+    # check to see if we've already got an open connection to this LDAP server
+    if ($CacheEnabled) {
+        my $conn = ConnectionCache()->get($config->id);
+        return $conn if $conn;
+    }
+
+    # create a connection to the LDAP server, and bind it
     my $conn = _get_connection( $config );
     return unless ($conn);
-    return $conn->bind();
+
+    my $rc = $conn->bind();
+
+    # cache the connection so we can re-use it later
+    if ($rc && $CacheEnabled) {
+        ConnectionCache()->set($config->id, $conn);
+    }
+
+    # return the connection status to the caller
+    return $rc;
+}
+
+sub ConnectionCache {
+    return Socialtext::Cache->cache('ldap-connections');
 }
 
 sub available {
@@ -68,6 +92,10 @@ sub authenticate {
     my $driver_id = $opts{driver_id};
     my $user_id   = $opts{user_id};
     my $password  = $opts{password};
+
+    # Turn off connection cache, so Authen *always* gets its own LDAP
+    # connection.
+    local $Socialtext::LDAP::CacheEnabled = 0;
 
     # get an LDAP connection
     my $ldap = $class->new($driver_id);
