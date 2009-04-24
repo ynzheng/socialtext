@@ -8,12 +8,14 @@ Test cases for the "user directory" ReST API.
 
 | Comment | set up users and accounts |
 
-| set            | acct1     | %%start_time%%acct1 |
-| set            | acct2     | %%start_time%%acct2 |
-| create-account | %%acct1%% |                     |
-| create-account | %%acct2%% |                     |
+| set              | acct1     | %%start_time%%acct1 |
+| set              | ws1       | %%start_time%%ws1   |
+| set              | acct2     | %%start_time%%acct2 |
+| create-account   | %%acct1%% |                     |
+| create-workspace | %%ws1%%   | %%acct1%%           |
+| create-account   | %%acct2%% |                     |
 
-Create five users.  Zeno is in another account so we can test visibility.
+Create five users.  Zeno is in another account so we can test visibility.  A B and C are in a workspace.
 
 | set | user_a | asdf-%%start_time%%-a@ken.socialtext.com |
 | set | user_b | zxcv-%%start_time%%-b@ken.socialtext.com |
@@ -44,6 +46,10 @@ Create five users.  Zeno is in another account so we can test visibility.
 | set-user-id | user_c_id | %%user_c%% |
 | set-user-id | user_d_id | %%user_d%% |
 
+| add-member | %%user_a%% | %%ws1%% |
+| add-member | %%user_b%% | %%ws1%% |
+| add-member | %%user_c%% | %%ws1%% |
+
 | set | user_a_json | {"user_id":"%%user_a_id%%","first_name":"%%fn_a%%","last_name":"%%ln_a%%","email_address":"%%user_a%%","username":"%%user_a%%"} |
 | set | user_b_json | {"user_id":"%%user_b_id%%","first_name":"%%fn_b%%","last_name":"%%ln_b%%","email_address":"%%user_b%%","username":"%%user_b%%"} |
 | set | user_c_json | {"user_id":"%%user_c_id%%","first_name":"%%fn_c%%","last_name":"%%ln_c%%","email_address":"%%user_c%%","username":"%%user_c%%"} |
@@ -62,6 +68,12 @@ The results should always be sorted by "Last Name, First Name"
 | code-is    | 200                                      |                  |
 | json-parse |                                          |                  |
 | json-like  | [%%user_c_json%%]                        |                  |
+
+| Comment    | No filter: all users                                              |                  |
+| GET        | /data/users                                                       | application/json |
+| code-is    | 200                                                               |                  |
+| json-parse |                                                                   |                  |
+| json-like  | [%%user_c_json%%,%%user_a_json%%,%%user_b_json%%,%%user_d_json%%] |                  |
 
 | Comment | An empty filter param should be a bad query |                  |
 | get     | /data/users?filter=                         | application/json |
@@ -136,3 +148,24 @@ The results should always be sorted by "Last Name, First Name"
 | json-parse      |                                          |                  |
 | json-array-size | 1                                        |                  |
 | json-like       | [%%user_b_json%%]                        |                  |
+
+
+/data/workspaces/:ws/users works similarly to /data/users, but is in a workspace context.  Test out the lookahead.
+
+| Comment         | workspace no filter: all users                    |                  |
+| GET             | /data/workspaces/%%ws1%%/users                    | application/json |
+| code-is         | 200                                               |                  |
+| json-parse      |                                                   |                  |
+| json-array-size | 3                                                 |                  |
+| json-like       | [%%user_c_json%%,%%user_a_json%%,%%user_b_json%%] |                  |
+
+| Comment | workspace empty filter: invalid        |                  |
+| GET     | /data/workspaces/%%ws1%%/users?filter= | application/json |
+| code-is | 400                                    |                  |
+
+| Comment         | workspace simple filter                   |                  |
+| GET             | /data/workspaces/%%ws1%%/users?filter=cho | application/json |
+| code-is         | 200                                       |                  |
+| json-parse      |                                           |                  |
+| json-array-size | 2                                         |                  |
+| json-like       | [%%user_c_json%%,%%user_a_json%%]         |                  |
