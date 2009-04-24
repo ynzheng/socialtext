@@ -58,24 +58,61 @@ sub load {
     return $class->load_from($filename);
 }
 
-sub load_from {
-    my ($class, $file) = @_;
-    my @config = eval { YAML::LoadFile($file) };
-    if ($@) {
-        st_log->error( "$class\: error reading config in '$file'; $@" );
-        return;
-    }
+{
+    # cache the parsed YAML for each file, so we don't have to keep RE-parsing
+    # it every single time we want to read the config
+    #
+    # structure:
+    #   $ConfigCache{$filename} = {
+    #       last_modified   => $time_t,
+    #       last_size       => $size_in_bytes,
+    #       config          => \@config,
+    #       };
+    our %ConfigCache;
 
-    my @objects;
-    foreach my $cfg (@config) {
-        my $obj = $class->new( %{$cfg} );
-        unless ($obj) {
-            st_log->error( "\$class: error with config in '$file'" );
-            return;
+    sub load_from {
+        my ($class, $file) = @_;
+
+        # Load/Parse the YAML config file, caching the parsed YAML where
+        # possible.
+        #
+        # Checks for "last modified time is the same as it was last time we
+        # looked *and* the file size is also identical" (the *SAME* check we
+        # do in ST::AppConfig for socialtext.conf).
+        my @config;
+        my $mod_time = (stat $file)[9];
+        my $size     = -s _;
+        if (   $ConfigCache{$file}
+            && ($mod_time == $ConfigCache{$file}{last_modified})
+            && ($size == $ConfigCache{$file}{last_size})) {
+            @config = @{ $ConfigCache{$file}{config} };
         }
-        push @objects, $obj;
+        else {
+            @config = eval { YAML::LoadFile($file) };
+            if ($@) {
+                st_log->error( "$class\: error reading config in '$file'; $@" );
+                return;
+            }
+
+            $ConfigCache{$file} = {
+                last_modified   => $mod_time,
+                last_size       => $size,
+                config          => \@config,
+            };
+        }
+
+        # Turn the parsed YAML into config objects
+        my @objects;
+        foreach my $cfg (@config) {
+            my $obj = $class->new( %{$cfg} );
+            unless ($obj) {
+                st_log->error( "\$class: error with config in '$file'" );
+                return;
+            }
+            push @objects, $obj;
+        }
+        return wantarray ? @objects : $objects[0];
     }
-    return wantarray ? @objects : $objects[0];
 }
 
 sub save {
