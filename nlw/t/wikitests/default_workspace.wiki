@@ -62,18 +62,36 @@
 | code-is   | 302                                                          |                |
 | header-is | Location                                                     | /%%workspace%% |
 
-| Comment   | The default_workspace doesn't exist                                     |
-| set | bad_wksp | %%workspace%%-bad |
-| st-config | set default_workspace %%bad_wksp%% |
-| Comment   | ... Dashboard is disabled. User navigates to workspace list upon login. |
-| get | /%%bad_wksp%%/index.cgi |
-| code-is | 302 |
-| header-is | Location | /?action=workspace_list |
-| Comment   | ... Dashboard is enabled. User navigates to dashboard upon login        |
-| st-admin  | enable-plugin --plugin dashboard --account %%account%%                  |
-| get | / |
-| code-is | 302 |
-| header-is | Location | /%%bad_wksp%% |
 
-| Comment | un-set `default_workspace` |
-| st-config | set default_workspace '' |
+
+| Comment   | Set up a default_workspace that doesn't exist |                   |
+| set       | bad_wksp                                      | %%workspace%%-bad |
+| st-config | set default_workspace %%bad_wksp%%            |                   |
+
+| Comment  | Dashboard is disabled.                                  |
+| st-admin | disable-plugin --plugin dashboard --account %%account%% |
+
+| Comment     | bad workspace: User sent to workspace list upon login. |                              |
+| get         | /%%bad_wksp%%/index.cgi                                |                              |
+| code-is     | 302                                                    |                              |
+| header-like | Location                                               | qr/\?action=workspace_list$/ |
+
+| Comment     | root: user sent to workspace list |                              |
+| get         | /                                 |                              |
+| code-is     | 302                               |                              |
+| header-like | Location                          | qr/\?action=workspace_list$/ |
+
+| Comment  | Dashboard is enabled.                                  |
+| st-admin | enable-plugin --plugin dashboard --account %%account%% |
+
+| Comment     | bad workspace: user sent to workspace list |                              |
+| get         | /%%bad_wksp%%/index.cgi                    |                              |
+| code-is     | 302                                        |                              |
+| header-like | Location                                   | qr/\?action=workspace_list$/ |
+
+| Comment | root: user sent to dashboard |
+| get     | /                            |
+| code-is | 200                          |
+
+| Comment   | CLEANUP: un-set `default_workspace` |
+| st-config | set default_workspace ''            |

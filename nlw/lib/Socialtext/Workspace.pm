@@ -1772,6 +1772,18 @@ sub drop_breadcrumb {
     );
 }
 
+sub Default {
+    my $class = shift;
+    my $default_name = Socialtext::AppConfig->default_workspace;
+
+    return unless $default_name;
+
+    local $@;
+    return eval {
+        Socialtext::Workspace->new(name => $default_name);
+    };
+}
+
 package Socialtext::NoWorkspace;
 use strict;
 use warnings;

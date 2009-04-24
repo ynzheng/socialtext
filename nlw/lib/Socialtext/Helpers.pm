@@ -231,8 +231,9 @@ sub global_template_vars {
         } Socialtext::Pluggable::Adapter->plugins
     ];
     
-    my $default_workspace = Socialtext::AppConfig->default_workspace;
-    if ($default_workspace and !$cur_user->can_use_plugin('dashboard')) {
+    my $default_ws = Socialtext::Workspace->Default();
+    my $default_workspace = ($default_ws) ? $default_ws->name : '';
+    if ($default_ws and !$cur_user->can_use_plugin('dashboard')) {
         # setting this to nothing will cause Home to be rendered as '/',
         # which will redirect to the default workspace anyways.
         $default_workspace = ''; 

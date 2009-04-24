@@ -1085,7 +1085,11 @@ Default: 0
 When a user logs into the system and the app does not know what
 workspace they want, this is default workspace they are sent to.
 
-Set this to a workspace name to have users redirected to it when their primary account does not have dashboard.
+Set this to a workspace name to have users redirected to it when 
+their primary account does not have dashboard.
+
+If the default_workspace does not exist, the app will behave as though
+this is not set.
 
 Optional.
 
