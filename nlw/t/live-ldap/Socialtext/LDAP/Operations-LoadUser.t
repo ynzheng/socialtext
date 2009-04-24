@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use mocked 'Socialtext::Log', qw(:tests);
 use Test::Socialtext::Bootstrap::OpenLDAP;
-use Test::Socialtext tests => 31;
+use Test::Socialtext tests => 36;
 use Socialtext::LDAP::Operations;
 use File::Slurp qw(write_file);
 use Benchmark qw(timeit timestr);
@@ -37,6 +37,8 @@ test_load_successfully: {
     my $ldap = set_up_openldap();
     clear_log();
 
+    my $count_before = Socialtext::User->Count();
+
     # load Users, make sure its successful and that its logged everything
     my $rc = Socialtext::LDAP::Operations->LoadUsers();
     is $rc, $NUM_TEST_USERS, 'loaded correct number of LDAP Users';
@@ -52,6 +54,10 @@ test_load_successfully: {
 
     logged_like 'info', qr/loaded $NUM_TEST_USERS out of $NUM_TEST_USERS total/,
         '... logged success count';
+
+    my $count_after = Socialtext::User->Count();
+    is $count_after, $count_before+$NUM_TEST_USERS,
+        '... total User count matches expectation';
 }
 
 ###############################################################################
@@ -65,10 +71,15 @@ test_no_ldap_configurations: {
     ok !-e $cfg_file, 'no LDAP config present';
 
     # load Users, make sure it finds nobody to load
+    my $count_before = Socialtext::User->Count();
+
     my $rc = Socialtext::LDAP::Operations->LoadUsers();
     ok !$rc, 'load operation fails';
     logged_like 'info', qr/found 0 LDAP users to load/,
         '... because NO LDAP Users found to load';
+
+    my $count_after = Socialtext::User->Count();
+    is $count_before, $count_after, '... and no Users were loaded';
 }
 
 ###############################################################################
@@ -86,10 +97,15 @@ test_ldap_config_missing_filter: {
     ok !$filter, 'LDAP config contains *NO* filter';
 
     # load Users, make sure it fails
+    my $count_before = Socialtext::User->Count();
+
     my $rc = Socialtext::LDAP::Operations->LoadUsers();
     ok !$rc, 'load operation fails';
     logged_like 'error', qr/no LDAP filter in config/,
         '... load fails due to lack of LDAP filter';
+
+    my $count_after = Socialtext::User->Count();
+    is $count_after, $count_before, '... and no Users were loaded';
 }
 
 ###############################################################################
@@ -110,6 +126,8 @@ test_user_fails_data_validation: {
     );
 
     # load Users, make sure we tried this user, and that he failed validation
+    my $count_before = Socialtext::User->Count();
+
     my $rc = Socialtext::LDAP::Operations->LoadUsers();
     is $rc, $NUM_TEST_USERS, 'loaded correct number of LDAP Users';
 
@@ -122,6 +140,10 @@ test_user_fails_data_validation: {
 
     logged_like 'error', qr/invalid-email is not a valid email address/,
         '... which failed due to invalid e-mail address';
+
+    my $count_after = Socialtext::User->Count();
+    is $count_after, $count_before+$NUM_TEST_USERS,
+        '... total User count matches expectation';
 }
 
 ###############################################################################
@@ -142,10 +164,15 @@ test_user_without_email_isnt_considered: {
     # load Users, make sure the above User was *not* considered for load
     # - if the count matches the regular number of test Users, he wasn't
     #   considered for the load
+    my $count_before = Socialtext::User->Count();
+
     my $rc = Socialtext::LDAP::Operations->LoadUsers();
     ok !$rc, 'load operation fails';
     logged_like 'info', qr/found 0 LDAP users to load/,
         '... because NO LDAP Users found to load';
+
+    my $count_after = Socialtext::User->Count();
+    is $count_after, $count_before, '... and no Users were loaded';
 }
 
 ###############################################################################
