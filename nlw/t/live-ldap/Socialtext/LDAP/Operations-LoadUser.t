@@ -7,6 +7,8 @@ use mocked 'Socialtext::Log', qw(:tests);
 use Test::Socialtext::Bootstrap::OpenLDAP;
 use Test::Socialtext tests => 31;
 use Socialtext::LDAP::Operations;
+use File::Slurp qw(write_file);
+use Benchmark qw(timeit timestr);
 
 ###############################################################################
 # FIXTURE:  db
@@ -171,4 +173,65 @@ test_dry_run: {
     my $count_after = Socialtext::User->Count();
     is $count_after, $count_before,
         '... and *none* of those Users were actually added to the system';
+}
+
+###############################################################################
+# BENCHMARK: how long does it take to load ~1000 users?
+benchmark_load: {
+    my $BENCHMARK_USERS = 1000;
+
+    unless ($ENV{NLW_BENCHMARK}) {
+        diag "Benchmark tests skipped; set NLW_BENCHMARK=1 to run them";
+    }
+    else {
+        diag "Benchmark tests running; this may take a while...";
+        my $t;
+
+        # build up a set of users to use for the benchmark
+        my @ldif;
+        my @emails;
+        foreach my $count (0 .. $BENCHMARK_USERS) {
+            my $email = "test-$count\@ken.socialtext.net";
+            push @emails, $email;
+            push @ldif, <<ENDLDIF;
+dn: cn=User $count,dc=example,dc=com
+objectClass: inetOrgPerson
+cn: User $count
+gn: User
+sn: $count
+mail: $email
+userPassword: abc123
+
+ENDLDIF
+        }
+
+        # add all of the users to OpenLDAP
+        my $openldap = set_up_openldap();
+        diag "adding $BENCHMARK_USERS users to OpenLDAP";
+        $t = timeit(1, sub {
+            my $ldif_file = 'eraseme.ldif';
+            write_file( $ldif_file, @ldif );
+            $openldap->add_ldif( $ldif_file );
+            unlink $ldif_file;
+        } );
+        diag "... " . timestr($t);
+
+        # load all of the Users into ST
+        diag "loading $BENCHMARK_USERS into ST";
+        $t = timeit(1, sub {
+            Socialtext::LDAP::Operations->LoadUsers();
+        } );
+        diag "... " . timestr($t);
+
+        # cleanup; remove all our users so that the test harness doesn't spit
+        # out gobs of stuff on the screen
+        diag "cleaning up $BENCHMARK_USERS users";
+        $t = timeit(1, sub {
+            foreach my $email (@emails) {
+                my $user = Socialtext::User->new(email_address => $email);
+                Test::Socialtext::User->delete_recklessly($user);
+            }
+        } );
+        diag "... " . timestr($t);
+    }
 }
