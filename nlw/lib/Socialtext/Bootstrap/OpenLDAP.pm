@@ -224,7 +224,7 @@ sub start {
     # start OpenLDAP
     my @args = (
         '-f'    => $self->conffile(),
-        '-d'    => 1,
+        '-d'    => 256,
         '-h'    => "ldap://$self->{host}:$self->{port}",
         );
     my $pid;
