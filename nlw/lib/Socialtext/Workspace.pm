@@ -2590,6 +2590,10 @@ Save the user's breadcrumb list
 
 Add a workspace breadcrumb to the user's list
 
+=head2 Socialtext::Workspace->Default()
+
+Return the default workspace, if any, as specified in the config file.
+
 =head2 Socialtext::Workspace->new_from_hash_ref(hash)
 
 Returns a new instantiation of a Workspace object. Data members for the
