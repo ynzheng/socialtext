@@ -278,7 +278,8 @@ CREATE TABLE container_type (
     links_template text,
     hello_template text,
     layout_template text,
-    last_update timestamptz DEFAULT now() NOT NULL
+    last_update timestamptz DEFAULT now() NOT NULL,
+    "global" boolean DEFAULT false
 );
 
 CREATE SEQUENCE default_gadget_id
@@ -1451,4 +1452,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '55');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '56');
