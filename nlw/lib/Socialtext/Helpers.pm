@@ -14,6 +14,7 @@ use Socialtext::l10n qw/loc/;
 use Socialtext::Stax;
 use Socialtext::Timer;
 use Socialtext::String ();
+use Socialtext::Workspace;
 use Apache::Cookie;
 use Email::Address;
 use Email::Valid;
