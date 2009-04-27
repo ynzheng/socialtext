@@ -1929,7 +1929,8 @@ sub edit_in_progress {
                 user_business_card => $self->hub->pluggable->hook(
                     'template.user_business_card.content', $user->user_id),
                 user_link => $self->hub->pluggable->hook(
-                    'template.open_user_link.content', $user->user_id),
+                    'template.open_user_link.content', $user->user_id
+                ) || $user->best_full_name,
                 minutes_ago   => int((time - str2time($evt->{at})) / 60 ),
             };
         }
