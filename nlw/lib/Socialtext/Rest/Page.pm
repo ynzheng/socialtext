@@ -280,6 +280,7 @@ sub PUT_json {
 
     my $content = $rest->getContent();
     my $object = decode_json( $content );
+    $object->{date} ||= gmtime();
 
     my $edit_summary = $object->{edit_summary} || '';
     my $signal_edit_summary = $object->{signal_edit_summary} || '';
