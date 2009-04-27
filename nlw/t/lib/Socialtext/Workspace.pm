@@ -83,6 +83,11 @@ sub All {
     );
 }
 
+sub Default {
+    my $class = shift;
+    return $class->new( name => 'default' );
+}
+
 package Socialtext::NoWorkspace;
 use base 'Socialtext::Workspace';
 
