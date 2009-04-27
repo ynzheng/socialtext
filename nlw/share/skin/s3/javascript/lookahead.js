@@ -202,6 +202,7 @@
                     textAlign: 'left',
                     zIndex: 3001,
                     position: 'absolute',
+                    display: 'none', // Safari needs this explicitly: {bz: 2431}
                     background: '#B4DCEC',
                     border: '1px solid black',
                     padding: '0px'
