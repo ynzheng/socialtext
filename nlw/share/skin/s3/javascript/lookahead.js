@@ -90,6 +90,7 @@
         if (this.opts.clickCurrentButton) {
             this.opts.clickCurrentButton.click(function() {
                 self.clickCurrent();
+                return false;
             });
         }
 
