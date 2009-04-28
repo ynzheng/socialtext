@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 88;
+use Test::Socialtext tests => 90;
 use Test::Socialtext::User;
 use Test::Exception;
 use Socialtext::File;
@@ -163,6 +163,8 @@ $mock_adapter->mock('hook', sub {});
 my $mock_hub = Test::MockObject->new({});
 $mock_hub->mock('pluggable', sub { $mock_adapter });
 
+ok $test->logo->is_default_logo, 'logo is default';
+
 my $logo_ref;
 Set_a_logo: {
     my $orig_logo = Socialtext::File::get_contents_binary(
@@ -170,6 +172,7 @@ Set_a_logo: {
     lives_ok { $test->logo->save_image(\$orig_logo) } 'set the account logo';
     $logo_ref = $test->logo->uploaded->image_ref;
     ok $logo_ref, 'logo ref was set';
+    ok !$test->logo->is_default_logo, 'logo is no longer the default';
 }
 
 my $export_file;

@@ -39,7 +39,7 @@ sub _build_uploaded {
 
 sub is_default_logo {
     my $self = shift;
-    $self->load() unless ($self->logo->has_image_ref);
+    $self->load() unless ($self->uploaded->has_image_ref);
     return $self->_is_default_logo;
 }
 
@@ -83,6 +83,7 @@ sub save_image {
     my $txfrm_image_ref = $self->_transform_image($image_ref);
 
     $uploaded->image_ref($txfrm_image_ref);
+    $self->_is_default_logo(undef);
     $uploaded->save();
     return $self->cache_image();
 }
