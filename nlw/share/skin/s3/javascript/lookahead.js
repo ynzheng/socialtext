@@ -511,23 +511,31 @@
                 );
             },
             error: function (xhr, textStatus, errorThrown) {
-                var list = self.getLookaheadList();
                 self._loading_lookahead = false;
-                if (self.opts.onError) {
+                var $error = $('<span class="st-suggestion-warning"></span>');
+                $('<li></li>').append($error).appendTo(self.getLookaheadList());
+
+                if (textStatus == 'parsererror') {
+                    $error.html(loc("Error parsing data"));
+                }
+                else if (self.opts.onError) {
                     var errorHandler = self.opts.onError[xhr.status]
                                     || self.opts.onError['default'];
                     if (errorHandler) {
                         if ($.isFunction(errorHandler)) {
-                            list.html(
-                                errorHandler( xhr, textStatus, errorThrown )
+                            $error.html(
+                                errorHandler(xhr, textStatus, errorThrown)
                             );
                         }
                         else {
-                            list.html( errorHandler );
+                            $error.html(errorHandler);
                         }
-                        this.show();
                     }
                 }
+                else {
+                    $error.html(textStatus);
+                }
+                self.show();
             }
         });
     };
