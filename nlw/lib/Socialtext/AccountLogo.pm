@@ -15,12 +15,15 @@ has 'account' => (
     weak_ref => 1,
     handles => [qw(account_id)],
 );
-has 'logo' => (
+has 'uploaded' => (
     is => 'ro', isa => 'Socialtext::UploadedImage',
     lazy_build => 1,
 );
+has '_is_default_logo' => (
+    is => 'rw', isa => 'Bool', default => undef,
+);
 
-sub _build_logo {
+sub _build_uploaded {
     my $self = shift;
 
     my $default = Socialtext::Account->Default();
@@ -34,15 +37,22 @@ sub _build_logo {
     );
 }
 
+sub is_default_logo {
+    my $self = shift;
+    $self->load() unless ($self->logo->has_image_ref);
+    return $self->_is_default_logo;
+}
+
 sub load {
     my $self = shift;
-    my $logo = $self->logo; 
-    eval { $logo->load() };
+    my $uploaded = $self->uploaded; 
+    eval { $uploaded->load() };
     if ($@) {
         my $new_ref = \( $self->Default_logo() );
-        $logo->image_ref($new_ref);
+        $self->_is_default_logo(1);
+        $uploaded->image_ref($new_ref);
     }
-    return $logo->image_ref;
+    return $uploaded->image_ref;
 }
 
 sub _transform_image {
@@ -68,12 +78,12 @@ sub save_image {
     my $self = shift;
     my $image_ref = shift;
 
-    my $logo = $self->logo;
+    my $uploaded = $self->uploaded;
 
     my $txfrm_image_ref = $self->_transform_image($image_ref);
 
-    $logo->image_ref($txfrm_image_ref);
-    $logo->save();
+    $uploaded->image_ref($txfrm_image_ref);
+    $uploaded->save();
     return $self->cache_image();
 }
 
@@ -81,7 +91,7 @@ sub cache_image {
     my $self = shift;
     my $cache_dir = $self->Cache_dir();
     my $lock_fh = Socialtext::File::write_lock("$cache_dir/.lock");
-    $self->logo->cache_to_dir($cache_dir);
+    $self->uploaded->cache_to_dir($cache_dir);
 }
 
 sub Cache_dir {
@@ -94,11 +104,11 @@ sub Cache_dir {
 
 sub remove {
     my $self = shift;
-    my $logo = $self->logo;
+    my $uploaded = $self->uploaded;
     my $dir = $self->Cache_dir;
-    $logo->remove;
+    $uploaded->remove;
     my $lock_fh = Socialtext::File::write_lock("$dir/.lock");
-    $logo->remove_cache($dir);
+    $uploaded->remove_cache($dir);
 }
 
 sub Default_logo_name {

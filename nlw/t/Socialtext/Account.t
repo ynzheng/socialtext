@@ -168,7 +168,7 @@ Set_a_logo: {
     my $orig_logo = Socialtext::File::get_contents_binary(
         "t/test-data/discoverppl.jpg");
     lives_ok { $test->logo->save_image(\$orig_logo) } 'set the account logo';
-    $logo_ref = $test->logo->logo->image_ref;
+    $logo_ref = $test->logo->uploaded->image_ref;
     ok $logo_ref, 'logo ref was set';
 }
 
