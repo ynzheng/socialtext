@@ -77,6 +77,8 @@ sub account {
 }
 sub account_id { shift->account->account_id }
 
+sub has_user { $_[0]->{has_user} || 1 }
+
 sub All {
     return Socialtext::MultiCursor->new(
         iterables => [],
