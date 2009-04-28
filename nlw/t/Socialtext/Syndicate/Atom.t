@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 
-use Test::Socialtext tests => 80;
+use Test::Socialtext tests => 78;
 fixtures( 'admin_with_extra_pages' );
 
 BEGIN {
@@ -60,7 +60,7 @@ ATOM_1_0_UTF8: {
 ATOM_1_0_FULL: {
     my $feed = _get_feed(
         [
-            grep { ($_->id !~ /^in%C5/) && ($_->id ne 'html') }
+            grep { ($_->id !~ /^(in\%C5|allthe.*widgets)/) && ($_->id ne 'html') }
                 Socialtext::Pages->new( hub => $hub )->all()
         ]
     );

@@ -39,6 +39,11 @@ $Commands{$command}->(@ARGV);
 sub get {
     print "\n";
     for my $k (@_) {
+        unless ( Socialtext::AppConfig->can($k) ) {
+            print " Config name '$k' does not exist.\n";
+            next;
+        }
+
         my $value = Socialtext::AppConfig->$k() || 'undef';
         print " $k: $value\n";
     }
@@ -47,6 +52,13 @@ sub get {
 
 sub echo {
     my $k = shift;
+
+    die "\nPlease provide a config name and try again.\n\n"
+        unless defined $k;
+
+    die "\nConfig name '$k' does not exist.\n\n"
+        unless Socialtext::AppConfig->can($k);
+
     print Socialtext::AppConfig->$k();
 }
 
@@ -66,13 +78,16 @@ sub edit {
 }
 
 sub set {
-    my @kv = @_;
+    my ($key, $value) = @_;
 
-    Socialtext::AppConfig->set(@kv);
+    die "\n Config name '$key' does not exist.\n\n"
+        unless Socialtext::AppConfig->can( $key );
+
+    Socialtext::AppConfig->set($key, $value);
     Socialtext::AppConfig->write;
 
     print "\n Wrote updated config file to ", Socialtext::AppConfig->file, "\n\n";
-    st_log(info => "st-config: $kv[0] to '$kv[1]'");
+    st_log(info => "st-config: $key to '$value'");
 }
 
 sub usage {

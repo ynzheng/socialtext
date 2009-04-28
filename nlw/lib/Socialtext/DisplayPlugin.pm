@@ -68,7 +68,7 @@ sub new_page {
     }
 
     foreach ($self->_new_tags_to_add()) {
-        $uri .= ";add_tag=$_";
+        $uri .= ";add_tag=" . $self->uri_escape($_);
     }
     $uri = $uri . ';caller_action=' . $self->cgi->caller_action
         if $self->cgi->caller_action;

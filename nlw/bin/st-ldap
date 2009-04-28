@@ -123,6 +123,14 @@ added to Socialtext (e.g. groups, mailing lists).  If I<any> of your LDAP
 configurations are missing a C<filter>, B<no> Users will be loaded into the
 system.
 
+Automatic, scheduled synchronization of the User list from an LDAP directory
+into Socialtext can be performed by creating a cronjob which executes
+"C<st-ldap load-users>" on a regular basis.  Easiest way to do this is to
+create F</etc/cron.daily/st-ldap-load-users> as follows:
+
+  #!/bin/sh
+  st-ldap load-users
+
 =item B<refresh-users>
 
 Refreshes the local DB cache with information on LDAP users.

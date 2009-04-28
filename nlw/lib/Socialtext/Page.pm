@@ -1926,10 +1926,13 @@ sub edit_in_progress {
         for my $evt (@edits) {
             my $user = Socialtext::User->new(user_id => $evt->{actor}{id});
             return {
+                username => $user->best_full_name,
+                email_address => $user->email_address,
                 user_business_card => $self->hub->pluggable->hook(
                     'template.user_business_card.content', $user->user_id),
                 user_link => $self->hub->pluggable->hook(
-                    'template.open_user_link.content', $user->user_id),
+                    'template.open_user_link.content', $user->user_id
+                ),
                 minutes_ago   => int((time - str2time($evt->{at})) / 60 ),
             };
         }

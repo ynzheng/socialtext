@@ -22,6 +22,7 @@ share/l10n/mecab/rewrite.def
 share/l10n/mecab/right-id.def
 share/l10n/mecab/sys.dic
 share/l10n/mecab/unk.dic
+share/workspaces/wikitests/wikitests.1.tar.gz
 messages.mo
 nlw-en.po
 lib/Socialtext/Handler/ControlPanel.pm
@@ -131,7 +132,7 @@ t/selenium/follow_person/
 t/selenium/follow_person/followed_person_appears_in_global_nav.wiki
 t/selenium/follow_person/follow_unfollow.wiki
 t/selenium/follow_person/initial_follow_button_text.wiki
-t/Socialtext/CLI-profile-fields.t
+t/Socialtext/CLI/profile-fields.t
 t/Socialtext/Gadgets/
 t/Socialtext/Gadgets/Container.t
 t/Socialtext/Gadgets/Features.t

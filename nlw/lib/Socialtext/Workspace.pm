@@ -1772,6 +1772,18 @@ sub drop_breadcrumb {
     );
 }
 
+sub Default {
+    my $class = shift;
+    my $default_name = Socialtext::AppConfig->default_workspace;
+
+    return unless $default_name;
+
+    local $@;
+    return eval {
+        Socialtext::Workspace->new(name => $default_name);
+    };
+}
+
 package Socialtext::NoWorkspace;
 use strict;
 use warnings;
@@ -2577,6 +2589,10 @@ Save the user's breadcrumb list
 =head2 Socialtext::Workspace->drop_breadcrumb( USER )
 
 Add a workspace breadcrumb to the user's list
+
+=head2 Socialtext::Workspace->Default()
+
+Return the default workspace, if any, as specified in the config file.
 
 =head2 Socialtext::Workspace->new_from_hash_ref(hash)
 

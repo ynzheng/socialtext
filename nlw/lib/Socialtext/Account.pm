@@ -799,6 +799,17 @@ sub hash_representation {
     };
 }  
 
+sub is_using_account_logo_as_desktop_logo {
+    my $self = shift;
+    my $account_id = $self->account_id;
+    if ($self->desktop_logo_uri =~ m{^/data/accounts/\Q$account_id\E/logo(\?|$)}) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
 1;
 
 __END__
@@ -973,6 +984,10 @@ to allow plugins to finish the import of their data.
 =item $account->hash_representation()
 
 Returns a hash representation of the account.
+
+=item $account->is_using_account_logo_as_desktop_logo()
+
+Checks whether or not the desktop logo is an uploaded custom account logo.
 
 =item Socialtext::Account->Unknown()
 

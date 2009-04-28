@@ -28,21 +28,21 @@ __DATA__
 | 1 | 1 | 0 |
 --- match
 <div class="wiki">
-<table style="border-collapse: collapse;" class="formatter_table">
+<table border="1" style="border-collapse:collapse" options="" class="formatter_table">
 <tr>
-<td style="border: 1px solid black;padding: .2em;">0</td>
-<td style="border: 1px solid black;padding: .2em;">1</td>
-<td style="border: 1px solid black;padding: .2em;">1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
 </tr>
 <tr>
-<td style="border: 1px solid black;padding: .2em;">1</td>
-<td style="border: 1px solid black;padding: .2em;">0</td>
-<td style="border: 1px solid black;padding: .2em;">1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
 </tr>
 <tr>
-<td style="border: 1px solid black;padding: .2em;">1</td>
-<td style="border: 1px solid black;padding: .2em;">1</td>
-<td style="border: 1px solid black;padding: .2em;">0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
 </tr>
 </table>
 </div>

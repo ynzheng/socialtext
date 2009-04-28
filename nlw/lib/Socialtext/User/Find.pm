@@ -13,8 +13,15 @@ has filter => (is => 'rw', isa => 'Maybe[Str]');
 
 sub cleanup_filter {
     my $self = shift;
+    my $new_value = shift;
 
-    my $filter = lc Socialtext::String::trim($self->filter || '');
+    # undef: everyone
+    # empty: invalid query
+    # non-empty: prefix match
+
+    return $self->filter('%') unless defined $self->filter;
+
+    my $filter = lc Socialtext::String::trim($self->filter);
 
     # If we don't get rid of these wildcards, the LIKE operator slows down
     # significantly.  Matching on anything other than a prefix causes Pg to not
@@ -29,7 +36,7 @@ sub cleanup_filter {
 
     $filter .= '%';
 
-    $self->filter($filter);
+    return $self->filter($filter);
 }
 
 sub get_results {

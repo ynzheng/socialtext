@@ -87,6 +87,13 @@
         this.opts = $.extend(true, {}, DEFAULTS, opts); // deep extend
         var self = this;
 
+        if (this.opts.clickCurrentButton) {
+            this.opts.clickCurrentButton.click(function() {
+                self.clickCurrent();
+                return false;
+            });
+        }
+
         $(this.input)
             .attr('autocomplete', 'off')
             .unbind('keyup')
@@ -202,6 +209,7 @@
                     textAlign: 'left',
                     zIndex: 3001,
                     position: 'absolute',
+                    display: 'none', // Safari needs this explicitly: {bz: 2431}
                     background: '#B4DCEC',
                     border: '1px solid black',
                     padding: '0px'

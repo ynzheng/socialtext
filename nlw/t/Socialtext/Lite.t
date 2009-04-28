@@ -75,6 +75,7 @@ like( $html, qr{<textarea.*we are the children.*except that we're not}sm,
     'edit form contains correct page content' );
 
 # request edit screen for non-existent page
+sleep 1;
 my $incipient_page = $hub->pages->new_from_name('Stronger Than Dust?');
 eval {
     if ($incipient_page->active) {

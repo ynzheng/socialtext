@@ -35,6 +35,8 @@ sub create_user_find {
 
     my $filter = $self->rest->query->param('filter');
     my $workspace = Socialtext::Workspace->new( name => $self->ws );
+    die "invalid workspace" unless $workspace;
+
     return Socialtext::User::Find::Workspace->new(
         viewer => $self->rest->user,
         limit => $limit,

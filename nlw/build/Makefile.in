@@ -394,7 +394,7 @@ QUICK_TESTS = \
 	t/Socialtext/Cache.t \
 	t/Socialtext/CategoryPlugin-email-address-encoding.t \
 	t/Socialtext/CategoryPlugin-html-escape.t \
-	t/Socialtext/CLI-fs-perm-check.t \
+	t/Socialtext/CLI/fs-perm-check.t \
 	t/Socialtext/Config/Base.t \
 	t/Socialtext/CredentialsExtractor/Apache.t \
 	t/Socialtext/CredentialsExtractor/Cookie.t \
