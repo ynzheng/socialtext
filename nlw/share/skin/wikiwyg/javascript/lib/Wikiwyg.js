@@ -725,11 +725,12 @@ proto.enableLinkConfirmations = function() {
     wikiwyg.confirmed = false;
 
     window.onbeforeunload = function(ev) {
-        /* NOTE: {bz: 2407} - the test below doesn't work with Selenium 1.0
-         * anymore -- an additional new detection logic is needed.
-         * AudreyT is investigating.
+        /* {bz: 2407} - Selenium 1.0+ is almost undetectable, so we
+         * use the undocumented-anywhere-on-web "seleniumAlert"
+         * variable as the probe.  The "Selenium" variable is still
+         * probed to retain compatibility with Selenium 0.9x.
          */
-        if (typeof Selenium != 'undefined') {
+        if (typeof seleniumAlert != 'undefined' || typeof Selenium != 'undefined') {
             /* Selenium cannot handle .onbeforeunload, so simply let the
              * browser unload the window because there's no way to force
              * "Cancel" from within Javascript.
