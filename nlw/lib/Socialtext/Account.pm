@@ -985,6 +985,10 @@ to allow plugins to finish the import of their data.
 
 Returns a hash representation of the account.
 
+=item $account->is_using_account_logo_as_desktop_logo()
+
+Checks whether or not the desktop logo is an uploaded custom account logo.
+
 =item Socialtext::Account->Unknown()
 
 =item Socialtext::Account->Socialtext()
