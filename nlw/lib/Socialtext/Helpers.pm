@@ -164,6 +164,15 @@ sub _get_workspace_list_for_template
     return [ sort { lc($a->{label}) cmp lc($b->{label})} @workspacelist ];
 }
 
+sub _get_default_workspace {
+    my $self = shift;
+    my $ws = Socialtext::Workspace->Default;
+
+    return ( defined $ws && $ws->has_user( $self->hub->current_user ) )
+        ? { label => $ws->title, link => "/" . $ws->name }
+        : undef;
+}
+
 sub _get_history_list_for_template
 {
     my $self = shift;
@@ -232,14 +241,6 @@ sub global_template_vars {
         } Socialtext::Pluggable::Adapter->plugins
     ];
     
-    my $default_ws = Socialtext::Workspace->Default();
-    my $default_workspace = ($default_ws) ? $default_ws->name : '';
-    if ($default_ws and !$cur_user->can_use_plugin('dashboard')) {
-        # setting this to nothing will cause Home to be rendered as '/',
-        # which will redirect to the default workspace anyways.
-        $default_workspace = ''; 
-    }
-
     my $logo = $self->hub->skin->dynamic_logo;
 
     my $cookies = {};
@@ -269,10 +270,10 @@ sub global_template_vars {
         miki_url           => $self->miki_path,
         stax_info          => $self->hub->stax->hacks_info,
         workspaceslist     => $self->_get_workspace_list_for_template,
+        default_workspace  => $self->_get_default_workspace,
         ui_is_expanded     => defined($cookies->{"ui_is_expanded"}),
         plugins_enabled    => $plugins_enabled,
         self_registration  => Socialtext::AppConfig->self_registration(),
-        default_workspace  => $default_workspace,
         time               => time,
         dynamic_logo_url   => $logo,
         $self->hub->pluggable->hooked_template_vars,

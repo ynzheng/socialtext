@@ -90,9 +90,9 @@
         </div><!-- globalNav END -->
       </div><!-- header END -->
       <div id="mainNav" class="st-wiki-subnav-dashboard">
-        [% home_href = '/' %]
-        [% IF default_workspace %][% home_href = "/?dashboard" %][% END %]
-        <div id="homeLink"><a id="st-home-link" href="[% home_href %]">[% loc("Home") %]</a></div>
+        <div id="homeLink">
+          <a id="st-home-link" href="/[% IF dashboard_available && default_workspace %]?dashboard[% END %]">
+              [% loc("Home") %]</a></div>
         <ul id="st-wiki-subnav-left" class="level1">
         [% IF dashboard_available %]
           [% IF people %]
@@ -125,8 +125,19 @@
               <ul class="level2" id="global-workspace-list">
               [% IF workspaceslist.size %]
                 <li class="dropaction"><a href="?action=workspaces_listall">[% loc("All My Workspaces") %]...</a></li>
+                [% IF default_workspace %]
+                  <li class="dropaction">
+                    <a id="default-workspace-link" href="[% default_workspace.link %]">
+                     [% default_workspace.label %]&nbsp;([% loc('Default') %])
+                    </a></li>
+                  <li style="background-color: #eee;">&nbsp;</li>
+                [% END %]
                 [% FOREACH workspaceslist %]
-                <li><a href="[% link %]">[% label | label_ellipsis(30) %]</a></li>
+                <li><a href="[% link %]">[% label | label_ellipsis(30) %]&nbsp;
+                 [% IF label == default_workspace.label %]
+                   ([% loc('Default') %])
+                 [% END %]
+                </a></li>
                 [% END %]
               [% ELSIF user.is_guest %]
                 <li class="emptynotice">[% loc("...lists the workspaces you belong to. You must be logged in to see your list.") %]</li>

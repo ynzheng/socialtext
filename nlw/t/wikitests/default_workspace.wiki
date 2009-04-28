@@ -30,19 +30,21 @@
 | http-user-pass     | %%username%%                                                                               | password        |
 | get                | /%%workspace%%/index.cgi?%%workspace%%                                                     |                 |
 | code-is            | 200                                                                                        |                 |
+| body-like          | id="default-workspace-link"                                                                |                 |
 
-| Comment   | ... user clicks "home" - they navigate to dashboard |
-| body-like | <a id="st-home-link" href="/?dashboard">Home</a>    |
+| Comment   | ... user clicks "home" - they navigate to dashboard        |
+| body-like | qr/<a id="st-home-link" href="\/\?dashboard">\s*Home<\/a>/ |
+| body-like | id="default-workspace-link"                                |
 
-| Comment            | User's primary account has dashboard disabled.                                                                |                |
-| st-admin           | disable-plugin --plugin dashboard --account %%account%%                                                         |                |
-| Comment | shell-run          | nlwctl -1 restart |
-| Comment            | ... the default workspace is public. user navigates to $servername and is navigated to the default workspace. |                |
-| http-user-pass     |                                                                                                               |                |
-| set-ws-permissions | %%workspace%%                                                                                                 | public         |
-| get                | /                                                                                                             |                |
-| code-is            | 302                                                                                                           |                |
-| header-is          | Location                                                                                                      | /%%workspace%% |
+| Comment            | User's primary account has dashboard disabled.                                                                |                   |
+| st-admin           | disable-plugin --plugin dashboard --account %%account%%                                                       |                   |
+| Comment            | shell-run                                                                                                     | nlwctl -1 restart |
+| Comment            | ... the default workspace is public. user navigates to $servername and is navigated to the default workspace. |                   |
+| http-user-pass     |                                                                                                               |                   |
+| set-ws-permissions | %%workspace%%                                                                                                 | public            |
+| get                | /                                                                                                             |                   |
+| code-is            | 302                                                                                                           |                   |
+| header-is          | Location                                                                                                      | /%%workspace%%    |
 
 | Comment            | ... the default workspace is private. user logs in. they navigate to the default workspace |                 |
 | set-ws-permissions | %%workspace%%                                                                              | member-only     |
@@ -57,12 +59,11 @@
 | code-is            | 200                                                                                        |                 |
 
 | Comment   | ... user clicks home. they navigate to the default workspace |                |
-| body-like | <a id="st-home-link" href="/">Home</a>                       |                |
+| body-like | qr/<a id="st-home-link" href="\/">\s*Home<\/a>/              |                |
+| body-like | id="default-workspace-link"                                  |                |
 | get       | /                                                            |                |
 | code-is   | 302                                                          |                |
 | header-is | Location                                                     | /%%workspace%% |
-
-
 
 | Comment   | Set up a default_workspace that doesn't exist |                   |
 | set       | bad_wksp                                      | %%workspace%%-bad |
@@ -89,9 +90,10 @@
 | code-is     | 302                                        |                              |
 | header-like | Location                                   | qr/\?action=workspace_list$/ |
 
-| Comment | root: user sent to dashboard |
-| get     | /                            |
-| code-is | 200                          |
+| Comment     | root: user sent to dashboard, no default-workspace-link |
+| get         | /                                                       |
+| code-is     | 200                                                     |
+| body-unlike | id="default-workspace-link"                             |
 
 | Comment   | CLEANUP: un-set `default_workspace` |
 | st-config | set default_workspace ''            |
