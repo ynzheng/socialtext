@@ -87,6 +87,12 @@
         this.opts = $.extend(true, {}, DEFAULTS, opts); // deep extend
         var self = this;
 
+        if (this.opts.clickCurrentButton) {
+            this.opts.clickCurrentButton.click(function() {
+                self.clickCurrent();
+            });
+        }
+
         $(this.input)
             .attr('autocomplete', 'off')
             .unbind('keyup')
