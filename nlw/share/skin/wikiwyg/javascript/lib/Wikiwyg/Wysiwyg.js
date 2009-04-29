@@ -677,8 +677,9 @@ proto.enableThis = function() {
 
     var self = this;
     var ready = function() {
-        if (!self.is_ready && !self.wikiwyg.previous_mode)
+        if (!self.wikiwyg.previous_mode) {
             self.fromHtml( self.wikiwyg.div.innerHTML );
+        }
         if (Wikiwyg.is_gecko) {
             self.get_edit_document().designMode = 'on';
             setTimeout(function() {
@@ -706,18 +707,13 @@ proto.enableThis = function() {
                     'overflow', 'visible'
                 );
             }
-            self.set_clear_handler();
         }
 
         self.enable_keybindings();
         self.enable_pastebin();
-
-        if (self.is_ready) {
-            self.set_focus();
-            self.enable_keybindings();
-            self.rebindHandlers();
-            self.set_clear_handler();
-        }
+        self.set_focus();
+        self.rebindHandlers();
+        self.set_clear_handler();
 
         jQuery.poll(
             function() {
@@ -730,31 +726,20 @@ proto.enableThis = function() {
                     });
             }, 500, 10000
         );
-
-        self.is_ready = true;
     };
 
-    if (self.is_ready
-        || self.wikiwyg.config.justStart
-        || (Socialtext.page_id && Socialtext.revision_id && !Socialtext.start_in_edit_mode)
-        || (self.wikiwyg.first_mode.classtype != self.classtype)
-    ) {
-        ready();
-    }
-    else
-        jQuery(self.get_edit_window()).one("load", function() {
+    jQuery.poll(
+        function() {
             var doc = self.get_edit_document();
-            if (jQuery.browser.msie) {
-                var i = setInterval(function() {
-                    if (doc.readyState && (doc.readyState == "interactive" || doc.readyState == "complete") && doc.body && doc.body.innerHTML) { 
-                        clearInterval(i);
-                        ready();
-                    }
-                }, 1800);
-                return ;
+            if (!doc) return false;
+            if (jQuery.browser.msie && doc.readyState != 'interactive' && doc.readyState != 'complete') {
+                return false;
             }
-            ready();
-        });
+            return (doc.body && doc.body.innerHTML) ? true : false;
+        },
+        function() { ready() },
+        500, 10000
+    );
 
     if (!this.__toolbar_styling_interval) {
         this.__toolbar_styling_interval = setInterval(
@@ -920,14 +905,13 @@ proto.get_cursor_state = function() {
 
 proto.set_clear_handler = function () {
     var self = this;
+    if (!Socialtext.new_page) return;
+
     var editor = Wikiwyg.is_ie ? self.get_editable_div() : self.get_edit_document();
 
     var clean = function() {
         self.clear_inner_html();
-        jQuery(editor).unbind();
-
-        /* We've just unbound the paste handler, so re-enable it here */
-        self.rebindHandlers();
+        jQuery(editor).unbind('click', clean).unbind('keydown', clean);
     };
 
     try {
