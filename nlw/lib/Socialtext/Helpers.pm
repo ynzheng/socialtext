@@ -241,6 +241,13 @@ sub global_template_vars {
         } Socialtext::Pluggable::Adapter->plugins
     ];
     
+    my $plugins_enabled_for_current_workspace_account = [
+        map { $_->name }
+        grep {
+            $cur_ws->account->is_plugin_enabled($_->name)
+        } Socialtext::Pluggable::Adapter->plugins
+    ];
+    
     my $logo = $self->hub->skin->dynamic_logo;
 
     my $cookies = {};
@@ -273,6 +280,7 @@ sub global_template_vars {
         default_workspace  => $self->_get_default_workspace,
         ui_is_expanded     => defined($cookies->{"ui_is_expanded"}),
         plugins_enabled    => $plugins_enabled,
+        plugins_enabled_for_current_workspace_account => $plugins_enabled_for_current_workspace_account,
         self_registration  => Socialtext::AppConfig->self_registration(),
         time               => time,
         dynamic_logo_url   => $logo,
