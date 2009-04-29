@@ -100,18 +100,21 @@ sub _make_getter {
             );
         };
        Socialtext::Timer->Pause("GET_$content_type");
-       if (my $except = $@) {
-            if ($except->isa('Socialtext::Exception::Auth')) {
+       if ($@) {
+            my $e;
+            if (Exception::Class->caught('Socialtext::Exception::Auth')) {
                 return $self->not_authorized;
-            } elsif ($except->isa('Socialtext::Exception::NoSuchWorkspace')) {
-                return $self->no_workspace($except->{name});
+            }
+            elsif ($e = Exception::Class->caught('Socialtext::Exception::NoSuchWorkspace')) {
+                return $self->no_workspace($e->name);
+            }
+            elsif ($e = Exception::Class->caught('Socialtext::Exception')) {
+                $e->rethrow;
             }
             else {
-                warn "Error in ST::Rest::Collection: $except";
-
-                my ($error) = split "\n", $except;
-                $rest->header(-status => HTTP_500_Internal_Server_Error);
-                return $error;
+                warn "Error in ST::Rest::Collection: $@";
+                my ($error) = split "\n", $@; # first line only
+                Socialtext::Exception->throw(error => $error);
             }
         }
 

@@ -51,11 +51,10 @@ sub _POST_json {
     unless ($create_request_hash->{username} and
             $create_request_hash->{email_address}) 
     {
-        $rest->header(
-            -status => HTTP_400_Bad_Request,
-            -type   => 'text/plain',
+        Socialtext::Exception->throw(
+            error => "username, email_address required",
+            http_status => HTTP_400_Bad_Request,
         );
-        return "username, email_address required";
     }
     
     my ($new_user) = eval {
@@ -73,12 +72,10 @@ sub _POST_json {
         return join("\n", $e->messages);
     }
     elsif ($@) {
-        $rest->header(
-            -status => HTTP_400_Bad_Request,
-            -type   => 'text/plain'
+        Socialtext::Exception->throw(
+            error => "Unable to create user: $@",
+            http_status => HTTP_400_Bad_Request,
         );
-        # REVIEW: what kind of system logging should we be doing here?
-        return "$@";
     }
 
     $rest->header(
@@ -113,21 +110,19 @@ sub get_resource {
     my $f = eval { $self->create_user_find };
     if ($@) {
         warn $@;
-        $rest->header(
-            -status => HTTP_400_Bad_Request,
-            -type   => 'text/plain'
+        Socialtext::Exception->throw(
+            error => "Bad request or illegal filter options",
+            http_status => HTTP_400_Bad_Request,
         );
-        return "Bad request or illegal filter options";
     }
 
     my $results = eval { $f->typeahead_find };
     if ($@) {
         warn $@;
-        $rest->header(
-            -status => HTTP_400_Bad_Request,
-            -type   => 'text/plain'
+        Socialtext::Exception->throw(
+            error => "Illegal filter or query error",
+            http_status => HTTP_400_Bad_Request,
         );
-        return "Illegal filter or query error";
     }
 
     return $results || [];

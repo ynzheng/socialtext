@@ -270,23 +270,33 @@ sub callHandler {
         $result = $handler->(@args);
         $self->postHandler(\$result, \@args); # no-op by default.
     };
-    if (my $except = $@) {
-        if (   $except->can('isa')
-            && $except->isa('Socialtext::Exception::Auth')) {
+    if ($@) {
+        my $e;
+        if ($e = Exception::Class->caught('Socialtext::Exception::Auth')) {
+            my $type = $e->http_type || 'text/plain';
             if ($self->user->is_guest()) {
                 $self->header(
                     -status => HTTP_401_Unauthorized,
                     -WWW_Authenticate => 'Basic realm="Socialtext"',
-                    -type   => 'text/plain',
+                    -type   => $type,
                 );
             }
             else {
                 $self->header(
                     -status => HTTP_403_Forbidden,
-                    -type   => 'text/plain',
+                    -type   => $type,
                 );
             }
-            $result = $except->message;
+            $result = $e->message;
+        }
+        elsif ($e = Exception::Class->caught('Socialtext::Exception')) {
+            my $status = $e->http_status || HTTP_500_Internal_Server_Error;
+            $self->header(
+                -status => $status,
+                -type => ($e->http_type || 'text/plain'),
+            );
+            $result = $e->message;
+            $self->request->log_error($result);
         }
         else {
             $self->header(

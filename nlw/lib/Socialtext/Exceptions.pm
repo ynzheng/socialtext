@@ -13,7 +13,8 @@ my %e;
 BEGIN {
     %e = (
         'Socialtext::Exception' => {
-            description => 'Generic super-class for Socialtext exceptions'
+            description => 'Generic super-class for Socialtext exceptions',
+            fields      => [qw( http_status http_type )],
         },
 
         'Socialtext::Exception::Auth' => {
