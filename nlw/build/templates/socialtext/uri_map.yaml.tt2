@@ -334,6 +334,13 @@
     '/data':
         '*':                    [Socialtext::Rest, redirect_workspaces]
 -
+    '/settings/default_workspace':
+        'GET':  
+            '*/*': &default     [Socialtext::Rest::Settings::DefaultWorkspace, bad_type]
+            'application/json': [Socialtext::Rest::Settings::DefaultWorkspace, GET_json]
+            'text/html':        [Socialtext::Rest::Settings::DefaultWorkspace, GET_html]
+        '*':                    [Socialtext::Rest::Settings::DefaultWorkspace, bad_method]
+-
     '/lite/changes/:ws/:tag':
         'GET':                  [Socialtext::Rest::Lite, changes]
         '*':                    [Socialtext::Rest::Lite, bad_method]
