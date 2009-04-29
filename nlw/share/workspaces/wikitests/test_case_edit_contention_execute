@@ -1,0 +1,34 @@
+| *Comment* | Test Case: Edit Contention Execute. Must be preceded by TC: Edit Contention Setup. |  |
+| *Comment* | value for variable `page` must be same as in TC: Edit Contention Setup. |  |
+| *Comment* | short username is %%short_username%%. atmail is %%atmail%% |  |
+
+| set | page | Special Edit Contention Page |
+
+| open_ok | /%%workspace%%/?%%page%% |  |
+| text_like | qr/%%short_username%% opened this page for editing/i |  |
+
+| *Comment* | Test Case: Edit Contention Execute. Warning Text should disappear on its own. We need wait_for_text_not_visible but we don't have it. |  |
+| click_ok | link=Edit |  |
+| wait_for_element_visible_ok | link=Edit Anyway | 30000 |
+| wait_for_element_visible_ok | link=Return to Page View | 30000 |
+| text_like | qr/%%short_username%% has opened this page for editing/i |  |
+| text_like | qr/%%atmail%%/ |  |
+
+| *Comment* | Test Case: Edit Contention Execute. Test Return to Page View and Edit Anyway |  |
+| click_ok | link=Return to Page View |  |
+| wait_for_element_not_visible_ok | link=Edit Anyway | 30000 |
+| wait_for_element_not_visible_ok | link=Return to Page View | 30000 |
+| click_ok | link=Edit |  |
+| wait_for_element_visible_ok | link=Edit Anyway | 30000 |
+| wait_for_element_visible_ok | link=Return to Page View | 30000 |
+| click_ok | link=Edit Anyway |  |
+| wait_for_element_visible_ok | link=Wiki Text | 30000 |
+
+| *Comment* | Test Case: Edit Contention Execute. Save anyway. |  |
+| click_ok | link=Wiki Text |  |
+| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| wait_for_element_visible_ok | link=Save | 30000 |
+| click_and_wait | link=Save |  |
+
+| *Comment* | Test Case: Edit Contention Execute. TEARDOWN. Teardown will be done by Test Case: Edit Contention Reset |  |
+| *Comment* | Test Case: Edit Contention Execute COMPLETED |  |
