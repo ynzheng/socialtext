@@ -8,7 +8,7 @@ use File::Basename qw(dirname);
 
 my $data_dir = dirname(__FILE__) . "/stringify_data";
 my %ext_deps = (
-    html => 'lynx',
+    html => 'elinks',
     doc  => 'wvText',
     rtf  => 'unrtf',
     pdf  => 'pdftotext',
