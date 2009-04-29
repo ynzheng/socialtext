@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 
-use Test::Socialtext tests => 3;
+use Test::Socialtext tests => 5;
 fixtures( 'admin' );
 
 filters {
@@ -28,21 +28,21 @@ __DATA__
 ||||
 --- match
 <div class="wiki">
-<table style="border-collapse: collapse;" class="formatter_table">
+<table border="1" style="border-collapse:collapse" options="" class="formatter_table">
 <tr>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
 </tr>
 <tr>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
 </tr>
 <tr>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
 </tr>
 </table>
 </div>
@@ -54,21 +54,21 @@ __DATA__
 | | | |
 --- match
 <div class="wiki">
-<table style="border-collapse: collapse;" class="formatter_table">
+<table border="1" style="border-collapse:collapse" options="" class="formatter_table">
 <tr>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
 </tr>
 <tr>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
 </tr>
 <tr>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
-<td style="border: 1px solid black;padding: .2em;"><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
+<td><span style="padding:.5em">&nbsp;</span></td>
 </tr>
 </table>
 </div>
@@ -80,21 +80,63 @@ __DATA__
 | baz | foo | bar |
 --- match
 <div class="wiki">
-<table style="border-collapse: collapse;" class="formatter_table">
+<table border="1" style="border-collapse:collapse" options="" class="formatter_table">
 <tr>
-<td style="border: 1px solid black;padding: .2em;">foo</td>
-<td style="border: 1px solid black;padding: .2em;">bar</td>
-<td style="border: 1px solid black;padding: .2em;">baz</td>
+<td>foo</td>
+<td>bar</td>
+<td>baz</td>
 </tr>
 <tr>
-<td style="border: 1px solid black;padding: .2em;">bar</td>
-<td style="border: 1px solid black;padding: .2em;">baz</td>
-<td style="border: 1px solid black;padding: .2em;">foo</td>
+<td>bar</td>
+<td>baz</td>
+<td>foo</td>
 </tr>
 <tr>
-<td style="border: 1px solid black;padding: .2em;">baz</td>
-<td style="border: 1px solid black;padding: .2em;">foo</td>
-<td style="border: 1px solid black;padding: .2em;">bar</td>
+<td>baz</td>
+<td>foo</td>
+<td>bar</td>
+</tr>
+</table>
+</div>
+
+=== simple table, words sortable
+--- wiki
+|| sortable
+| foo | bar | baz |
+| bar | baz | foo |
+--- match
+<div class="wiki">
+<table border="1" style="border-collapse:collapse" options="sortable" class="formatter_table">
+<tr>
+<td>foo</td>
+<td>bar</td>
+<td>baz</td>
+</tr>
+<tr>
+<td>bar</td>
+<td>baz</td>
+<td>foo</td>
+</tr>
+</table>
+</div>
+
+=== simple table, words borderless
+--- wiki
+|| border:off
+| foo | bar | baz |
+| bar | baz | foo |
+--- match
+<div class="wiki">
+<table  style="border-collapse:collapse" options="border:off" class="formatter_table borderless">
+<tr>
+<td>foo</td>
+<td>bar</td>
+<td>baz</td>
+</tr>
+<tr>
+<td>bar</td>
+<td>baz</td>
+<td>foo</td>
 </tr>
 </table>
 </div>
