@@ -193,6 +193,8 @@ sub header {
                 highlight_class => 'st-revision-compare-new',
             );
         $col{editor} = $page->last_edited_by->username;
+        $col{summary} = $page->edit_summary;
+        $col{date} = $page->datetime_for_user;
         push @header, \%col;
     }
     return \@header;

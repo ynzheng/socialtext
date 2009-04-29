@@ -47,9 +47,15 @@
         <h2 class="tableTitle" title="[% display_title %]">[% col.link %]</h2>
       </div>
       <div class="st-revision-tags">
-        [% loc('Tags:') %][% col.tags %]
+        [% loc('Tags:') %]&nbsp;[% col.tags %]
       </div>
-      <div class="st-revision-attribution">[% loc('By:') %][% col.editor | decorate('user_avatar') %]</div>
+      <div class="st-revision-attribution">
+        [% loc('By:') %]&nbsp;[% col.editor | decorate('user_avatar') %] 
+        [% loc('on') %] [% col.date %]
+        [% IF col.summary %]
+          [% loc('saying "') %][% col.summary | html %][% loc('"') %]
+        [% END %]
+      </div>
       </td>
     [% END %]
     </tr>
