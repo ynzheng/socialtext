@@ -106,6 +106,7 @@ Post by Email popup
 | open_ok | /%%wiki%% |  |
 | clickAndWait | link=Settings |  |
 | clickAndWait | link=My Settings |  |
+| clickAndWait | link=Private Messages |  |
 | clickAndWait | link=Manage All Users |  |
 | clickAndWait | link=Invite New Users |  |
 | clickAndWait | link=My Workspaces |  |
@@ -125,7 +126,6 @@ Post by Email popup
 | clickAndWait | link=Time |  |
 | clickAndWait | link=Watchlist |  |
 | clickAndWait | link=Weblogs |  |
-| clickAndWait | link=Private Messages |  |
 | *Comment* | SlideShow FINISHED WITH SETTINGS |  |
 
 * a search result
