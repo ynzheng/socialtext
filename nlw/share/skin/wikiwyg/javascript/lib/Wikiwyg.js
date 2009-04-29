@@ -1920,11 +1920,7 @@ proto._do_link = function(widget_element) {
                 404: function () {
                     var ws = jQuery('#st-widget-workspace_id').val() ||
                              Socialtext.wiki_id;
-                    return(
-                        '<span class="st-suggestion-warning">'
-                        + loc('Workspace "[_1]" does not exist on wiki', ws)
-                        + '</span>'
-                    );
+                    return(loc('Workspace "[_1]" does not exist on wiki', ws));
                 }
             }
         });

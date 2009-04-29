@@ -25,6 +25,7 @@ Socialtext.wiki_title = '[% wiki.title.replace('\'', '\\\'') %]';
 Socialtext.revision_id = '[% page.revision_id %]';
 Socialtext.comment_form_window_height = '[% wiki.comment_form_window_height %]'
 Socialtext.plugins_enabled = [% plugins_enabled.json %];
+Socialtext.plugins_enabled_for_current_workspace_account = [% plugins_enabled_for_current_workspace_account.json %]
 
 Socialtext.stax = {};
 Socialtext.stax.entries = [% stax_info.entries.json || '[]' %];
@@ -111,6 +112,7 @@ v.wiki = {};
 v.wiki.static_path = "[% wiki.static_path %]";
 v.wiki.is_public = "[% wiki_is_public %]";
 v.plugins_enabled = Socialtext.plugins_enabled;
+v.plugins_enabled_for_current_workspace_account = Socialtext.plugins_enabled_for_current_workspace_account;
 v.wiki.skin_uri = function(skin) {
   return "[% wiki.skin_uri('s3') %]";
 };

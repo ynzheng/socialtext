@@ -6,6 +6,7 @@ package Socialtext::LDAP;
 
 use strict;
 use warnings;
+use Socialtext::Cache;
 use Socialtext::Log qw(st_log);
 use Socialtext::LDAP::Config;
 
