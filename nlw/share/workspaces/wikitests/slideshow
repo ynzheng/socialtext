@@ -125,6 +125,7 @@ Post by Email popup
 | clickAndWait | link=Time |  |
 | clickAndWait | link=Watchlist |  |
 | clickAndWait | link=Weblogs |  |
+| clickAndWait | link=Private Messages |  |
 | *Comment* | SlideShow FINISHED WITH SETTINGS |  |
 
 * a search result
