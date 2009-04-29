@@ -735,7 +735,7 @@ proto.enableThis = function() {
             if (jQuery.browser.msie && doc.readyState != 'interactive' && doc.readyState != 'complete') {
                 return false;
             }
-            return (doc.body && doc.body.innerHTML) ? true : false;
+            return doc.body && typeof(doc.body.innerHTML) != 'undefined';
         },
         function() { ready() },
         500, 10000
