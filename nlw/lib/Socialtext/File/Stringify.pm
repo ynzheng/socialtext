@@ -4,12 +4,17 @@ use strict;
 use warnings;
 
 use MIME::Types;
+use Socialtext::System;
 use Socialtext::File::Stringify::Default;
 use Socialtext::Encode;
 
 sub to_string {
     my ( $class, $filename, $type ) = @_;
     return "" unless defined $filename;
+
+    # default 5 minute timeout for backticked scripts
+    local $Socialtext::System::TIMEOUT = 300;
+
     my $convert_class = $class->_get_converter_for_file( $filename, $type );
     my $text = $convert_class->to_string($filename);
     return Socialtext::Encode::ensure_is_utf8($text);
