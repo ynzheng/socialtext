@@ -11,8 +11,7 @@ sub to_string {
     my @cmd = "lynx";
 
     if (-x '/usr/bin/elinks') {
-        warn "USING ELINKS\n";
-        @cmd = qw(/usr/bin/elinks -config-file /dev/null);
+        @cmd = qw(/usr/bin/elinks -no-home);
     }
 
     push @cmd, '-dump' => $file;
