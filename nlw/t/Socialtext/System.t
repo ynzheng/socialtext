@@ -1,36 +1,32 @@
 #!perl
 # @COPYRIGHT@
-
 use warnings;
 use strict;
-
-use Test::Socialtext tests => 12;
+use Test::More tests => 18;
+use Test::Exception;
 use Socialtext::System;
 use Socialtext::File qw/set_contents/;
 
 my $in = "obase=16\n912559\n65261\n";
 my $expected = "DECAF\nFEED\n";
 
-Ipc_run: {
-    my $out;
-    ipc_run([qw(bc)], \$in, \$out, \$out);
-    is($out, $expected, 'ipc_run');
-}
-
 Backtick: {
-    backtick("uggle");
+    my $out;
+    $out = backtick("uggle");
     like($@, qr{uggle.*not found}, 'backtick admits when the command isn\'t found');
+    ok !$out;
 
-    backtick(qw(cat /asdf/asdf/asd/f/asdf/));
+    $out = backtick(qw(cat /asdf/asdf/asd/f/asdf/));
     like($@, qr{asdf/: No such file}, 'backtick should die on command failures');
+    ok !$out;
 
     my $temp = "t/run.t-$$";
     set_contents($temp, $in);
-    my $output = backtick('bc', $temp);
+    lives_ok { $out = backtick('bc', $temp) };
     unlink $temp or die "Can't unlink $temp: $!";
 
     is($@, '', 'backtick should not emit errors if nothing went wrong');
-    is($output, $expected, 'backtick output correct');
+    is($out, $expected, 'backtick output correct');
 }
 
 Quote_args: {
@@ -47,9 +43,16 @@ Quote_args: {
 }
 
 Run: {
-    eval { shell_run('/bin/date > /dev/null') };
+    lives_ok { shell_run('/bin/date > /dev/null') };
     is $@, '', 'single arg';
 
-    eval { shell_run('-/bin/false') };
+    lives_ok { shell_run('-/bin/false') };
     is $@, '', 'prevented die';
+}
+
+Backticks_timeout: {
+    my $out;
+    $out = timeout_backtick(1 => qw(sleep 5));
+    ok !$out;
+    like $@, qr/Command Timeout/;
 }
