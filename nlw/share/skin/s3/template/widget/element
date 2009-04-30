@@ -1,5 +1,5 @@
 <li id="[% gadget.id %]-li" class="[% gadget.fixed ? "fixed" : "draggable" %]">
-<div class="[% IF gadget.fixed %]widgetTan[% ELSE %]widget[% END %]" id="[% gadget.id %]">
+<div class="[% IF gadget.fixed %]tan[% END %] widget" id="[% gadget.id %]">
 [% IF gadget.is_authorized %]
     <div class="widgetHeader">
         <div class="widgetHeaderButtons">

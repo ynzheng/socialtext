@@ -1,5 +1,3 @@
-<link rel="stylesheet" href="[% share %]/css/container.css" type="text/css" media="screen" />
-
 <script src="[% share %]/javascript/shindig/container-default.js.gz"></script>
 
 [% INCLUDE syndicator %]

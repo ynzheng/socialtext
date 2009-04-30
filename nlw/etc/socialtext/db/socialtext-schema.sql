@@ -277,9 +277,9 @@ CREATE TABLE container_type (
     path_args text[],
     links_template text,
     hello_template text,
-    layout_template text,
     last_update timestamptz DEFAULT now() NOT NULL,
-    "global" boolean DEFAULT false
+    "global" boolean DEFAULT false,
+    columns integer DEFAULT 3
 );
 
 CREATE SEQUENCE default_gadget_id
