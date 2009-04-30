@@ -4,16 +4,14 @@ use strict;
 use warnings;
 
 use base 'Exporter';
-our @EXPORT = qw'ipc_run backtick shell_run quote_args';
+our @EXPORT = qw/backtick timeout_backtick shell_run quote_args/;
 
 our $SILENT_RUN = 0;
+our $TIMEOUT = 0;
 
-use IPC::Run ();
+use IPC::Run qw(run timeout);
+use namespace::clean;
 
-
-sub ipc_run {
-    return IPC::Run::run(@_);
-}
 
 # like qx()'s, but use the safe, non-shell-interpolated call
 sub backtick {
@@ -23,10 +21,18 @@ sub backtick {
     eval {
         # IPC::Run::run returns true on success
         # STDIN  needs to be closed explicitly
-        my $return = ipc_run(\@_, \undef, \$out, \$err);
+        my $timer = timeout($TIMEOUT, exception => 'Command Timeout')
+            if $TIMEOUT;
+        my $return = run(\@_, \undef, \$out, \$err, $timer);
         die $err unless $return;
     };
     return $out;
+}
+
+sub timeout_backtick {
+    my $timeout = shift;
+    local $TIMEOUT = $timeout;
+    return backtick(@_);
 }
 
 sub shell_run {
