@@ -57,7 +57,7 @@
 [% ELSE %]
   <div class="error-message">
     <p>
-      [% loc('Your settings cannot be changed via the Socialtext settings UI.') %]
+      [% loc('Your user name and password cannot be changed using My Settings.') %]
       [% loc('Check with your [_1] administrator.', user.driver_name) %]
     </p>
   </div>
