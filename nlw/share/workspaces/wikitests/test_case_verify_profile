@@ -60,5 +60,38 @@
 
 | *Comment* | Test Case: Verify Profile. PHOTO |  |
 | wait_for_element_present_ok | //img[@class='bigAvatar'] | 1000 |
+| select-frame | relative=parent |  |
+
+| *Comment* | Test Case: Verify Profile. Verify tags present. |  |
+| text-like | Tags |  |
+| wait_for_element_visible_ok | new_tag | 30000 |
+| type_ok | new_tag | VPT %%start_time%% |
+| click_ok | //input[@value='Add Tag'] |  |
+| *Comment* | Test Case: Verify Profile. verify VPT added |  |
+| wait_for_element_visible_ok | link=VPT %%start_time%% | 30000 |
+| text_like | link=VPT %%start_time%% | VPT %%start_time%% |
+
+| *Comment* | Test Case: Verify Profile. Verify Updates present. |  |
+| click_and_wait | link=Profile |  |
+| text-like | Updates |  |
+| st-name-widget | 3 | updates |
+| st-select-widget-frame | updates |  |
+| text-like | %%fname%% %%lname%% edited their own profile |  |
+| text-like | %%fname%% %%lname%% tagged themself VPT %%start_time%% |  |
+| select-frame | relative=parent |  |
+
+| *Comment* | Test Case: Verify Profile. See if Networks is there. Can't do much else. |  |
+| st-name-widget | 4 | networks |
+| st-select-widget-frame | networks |  |
+| text_like | Follows |  |
+| text_like | Followers |  |
+| select-frame | relative=parent |  |
+
+| *Comment* | Test Case: Verify Profile. Verify Workspaces present. |  |
+| text-like | workspaces |  |
+| st-name-widget | 5 | workspaces |
+| st-select-widget-frame | workspaces |  |
+| text-like | You do not belong |  |
+| select-frame | relative=parent |  |
 
 | *Comment* | Test Case: Verify Profile COMPLETED |  |

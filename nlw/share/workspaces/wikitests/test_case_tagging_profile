@@ -3,14 +3,6 @@
 | *Comment* | Starting Test Case: Tagging Profile |  |
 | click_and_wait | link=Profile |  |
 
-| *Comment* | Test Case: Tagging Profile. See if Networks is there. Can't do much else. |  |
-| st-name-widget | 4 | networks |
-| st-select-widget-frame | networks |  |
-
-| text_like | Follows |  |
-| text_like | Followers |  |
-| select-frame | relative=parent |  |
-
 | *Comment* | Test Case: Tagging Profile. fog tag added |  |
 | wait_for_element_visible_ok | new_tag | 30000 |
 | type_ok | new_tag | fog %%start_time%% |
@@ -121,6 +113,6 @@ TODO: typing into textbox does not cause tag to be added ????
  wait_for_page_to_load | 30000 | |
 text_like | link=%%fname%% %%lname%% | %%fname%% %%lname%% |
 
-| *Comment* | Test Case : Tagging COMPLETED |  |
+| *Comment* | Test Case: Tagging Profile COMPLETED |  |
 
 TODO: find a way to test lookahead.
