@@ -11,6 +11,7 @@ use Socialtext::Pluggable::Adapter;
 use Socialtext::Handler::URIMap;
 use Apache;
 use Apache::Constants qw(OK AUTH_REQUIRED);
+use Class::Field qw/field/;
 use Encode qw(decode_utf8);
 use File::Basename;
 use File::Spec;
@@ -26,6 +27,8 @@ Readonly my $AUTH_INFO_DEFAULTS => {
     guest => 1,
     auth  => 'default', # meaningless right now
 };
+
+field 'meta';
 
 my @AuthInfo;
 my @ResourceHooks;
@@ -181,6 +184,7 @@ sub log_timings {
         %template_vars,
         ($status eq 'UNDEF' ? () : (status => $status)),
         ( keys(%$query_hash) ? (q => $query_hash) : () ),
+        ( $handler->meta ? (meta => $handler->meta ) : () ),
     };
 
     st_timed_log(
