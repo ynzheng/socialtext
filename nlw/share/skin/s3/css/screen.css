@@ -4066,4 +4066,9 @@ body#dashBoard div#controls div#controlsRight {
 body#dashBoard div#controls div#controlsRight ul {
     margin-top: 11px;
 }
+
+.container.edit_profile #col0 {
+    width: 80%;
+    margin: 0 10%
+}
 /* End of Container stuff */
