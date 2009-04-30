@@ -1216,6 +1216,16 @@ sub datetime_for_user {
 }
 
 
+sub time_for_user {
+    my $self = shift;
+    if (my $date = $self->metadata->Date) {
+        return $self->hub->timezone->time_local($date);
+    }
+
+    # XXX metadata starts out life as empty string
+    return '';
+}
+
 # cgi->title guesses the title from query_string, so $self->hub->cgi->title
 # is always defined even if it's a bad guess
 # REVIEW: refactor to fold this into the above when it's all better -- replace

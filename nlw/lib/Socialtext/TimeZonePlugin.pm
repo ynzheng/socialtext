@@ -269,6 +269,51 @@ sub date_local {
     return $self->get_date_user($datetime);
 }
 
+sub time_local {
+    my $self = shift;
+    my $date = shift;
+
+    my $locale = $self->hub->best_locale;
+
+    return unless defined $date;
+
+    # We seems to have some bad data in the system, so the best we can
+    # do is just return the date as is, since trying to localize it
+    # will probably just mangle it even worse-.
+    $date =~ /(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)/
+        or return $date;
+
+    my ( $year, $mon, $mday, $hour, $min, $sec ) = ( $1, $2, $3, $4, $5, $6 );
+
+    # XXX to be fixed. in timezone_seconds, adjust time for dst.
+    # Now, the routine is deleted, so must adjust in this.
+    my $datetime = DateTime->new(
+        year      => $year,
+        month     => $mon,
+        day       => $mday,
+        hour      => $hour,
+        minute    => $min,
+        second    => $sec,
+        time_zone => 'UTC'
+    );
+    return $self->get_time_user($datetime);
+}
+
+sub get_time_user {
+    my $self  = shift;
+    my $time  = shift;
+    my $prefs = $self->preferences;
+
+    my $locale = $self->hub->best_locale;
+
+    $self->get_time(
+        $time,
+        $prefs->time_display_12_24->value,
+        $prefs->time_display_seconds->value,
+        $prefs->timezone->value,
+    );
+}
+
 sub get_date_user {
     my $self  = shift;
     my $time  = shift;
@@ -361,6 +406,30 @@ sub get_date {
     }
 
     return ("$d $t");
+}
+
+sub get_time {
+    my $self                 = shift;
+    my $time                 = shift;
+    my $time_display_12_24   = shift;
+    my $time_display_seconds = shift;
+    my $timezone = shift;
+    my ( $d, $t );
+
+    my $locale = $self->hub->best_locale;
+
+    # $time->add is slow, so only do it once here
+    my $offset = $self->_timezone_offset($time) + $self->_dst_offset($time);
+    $time->add( seconds => $offset );
+
+    my $time_display_format = $time_display_12_24;
+    if ($time_display_seconds) {
+        $t = $self->_get_time_sec( $time, $time_display_format, $locale );
+    }else {
+        $t = $self->_get_time( $time, $time_display_format, $locale );
+    }
+
+    return ($t);
 }
 
 # No sence fetching now more than once per request, eh?
