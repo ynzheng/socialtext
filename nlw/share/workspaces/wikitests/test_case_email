@@ -1,5 +1,6 @@
-TODO: email_page_add_note_check
-TODO: email_page_keep_attachments
+TODO: Mail can be sent with and without Note
+TODO: Mail can be sent with and without Attachments
+TODO: find a way to test user chooser
 
 | *Comment* | Test Case: Email |  |
 | st-admin | create-user --email %%start_time%%_one@ken.socialtext.net --password 123456 |  |
@@ -66,6 +67,17 @@ TODO: email_page_keep_attachments
 | click_ok | email_none |  |
 | text_unlike | email_page_user_choices | %%start_time%%_one@ken.socialtext.net |
 | text_unlike | email_page_user_choices | %%start_time%%_two@ken.socialtext.net |
+
+| *Comment* | Test Case: Email All Recipients |  |
+| click_ok | email_all |  |
+| pause | 10000 | nothing to wait for |
+| text_like | email_page_user_choices | %%start_time%%_one@ken.socialtext.net |
+| text_like | email_page_user_choices | %%start_time%%_two@ken.socialtext.net |
+| text_like | email_page_user_choices | %%email%% |
+| click_ok | email_none |  |
+| text_unlike | email_page_user_choices | %%start_time%%_one@ken.socialtext.net |
+| text_unlike | email_page_user_choices | %%start_time%%_two@ken.socialtext.net |
+| text_unlike | email_page_user_choices | %%email%% |
 
 | *Comment* | Test Case: Email Custom Recipient |  |
 | type_ok | email_recipient | foobar2ken.socialtext.net |

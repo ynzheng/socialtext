@@ -1,3 +1,5 @@
+* Fixture: SocialWidgets
+
 | *Comment* | Starting Test Case: Tagging Profile |  |
 | click_and_wait | link=Profile |  |
 
@@ -101,6 +103,16 @@ text_like | 所以 | |
 | wait_for_element_visible_ok | link=%%short_username%% | 30000 |
 | text_like | link=%%short_username%% | %%short_username%% |
 
-| *Comment* | Test Case : Tagging COMPLETED |  |
+| *Comment* | Test Case: Tagging Profile. Add tag to someone |  |
+| click_ok | link=Add this tag to someone |  |
+| wait_for_element_visible_ok | add_tag_person | 30000 |
+| type_ok | add_tag_person | %%fname%% %%lname%% |
 
-TODO: find a way to test lookahead. Add this tag to someone only works with lookahead.
+TODO: typing into textbox does not cause tag to be added ????
+
+ wait_for_page_to_load | 30000 | |
+text_like | link=%%fname%% %%lname%% | %%fname%% %%lname%% |
+
+| *Comment* | Test Case: Tagging Profile COMPLETED |  |
+
+TODO: find a way to test lookahead.

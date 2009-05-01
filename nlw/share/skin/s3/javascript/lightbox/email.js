@@ -40,7 +40,7 @@ proto.show = function () {
         });
 
         jQuery('#email_all').click(function () {
-            jQuery.getJSON('/data/workspaces/' + Socialtext.wiki_id + '/users', function (data) {
+            jQuery.getJSON('/data/workspaces/' + Socialtext.wiki_id + '/users?limit=9999999', function (data) {
                 self.clearHelp();
                 for (var i=0; i<data.length; i++) {
                     jQuery('<option />')
