@@ -1,21 +1,17 @@
 [% user.guess_real_name %],
 
-[% loc('To stop receiving or change how often you receive emails about changes to [_1], go to', workspace.title) %]:
 
- [% preference_uri %]
+[% loc('The following pages in [_1] have recently changed. This email was generated on [_2] at [_3].', workspace.title, email_date, email_time) %]
+
+[%- FOR page = pages %]
+  [%- PROCESS 'email/page-details.txt' -%]
+[%- END %]
 
 --
 
-[% loc('The following pages in [_1] have recently changed:', workspace.title) %]
+[% loc('To stop receiving or change how often you receive emails about changes to [_1], go to', workspace.title) %]:
 
-[%- FOR page = pages %]
-[% page.metadata.Subject %]
-  [%+ workspace.uri %]?[% page.uri %]
- [%- IF include_editor %]
-  [% loc('(by [_1] on [_2])', page.last_edited_by.best_full_name( workspace => workspace ), page.datetime_for_user) %]
- [%- END %]
-
-[%- END %]
+ [% preference_uri %]
 
 [% PROCESS 'email/standard-footer.txt'
    support_link = 0 %]
