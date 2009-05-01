@@ -5,6 +5,9 @@ ALTER TABLE container_type
     DROP COLUMN layout_template,
     ADD COLUMN columns INTEGER DEFAULT 3;
 
+ALTER TABLE gadget
+    DROP COLUMN extra_files;
+
 UPDATE "System"
    SET value = '56'
  WHERE field = 'socialtext-schema-version';
