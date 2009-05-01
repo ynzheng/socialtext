@@ -1,8 +1,9 @@
 [%# @COPYRIGHT@ -%]
 <html>
 <head>
- [% SET escaped_str1 = workspace.title | html %]
- <title>[% loc('Watchlist Update for [_1]', escaped_str1) %]</title>
+ [% SET escaped_title = workspace.title | html %]
+ [% SET watchlist_uri = workspace.uri _ '?action=watchlist' %]
+ <title>[% loc('Watchlist Update for [_1]', escaped_title) %]</title>
 </head>
 
 <body>
@@ -12,28 +13,20 @@
 </p>
 
 <p>
-[% SET escaped_str2 = watchlist_preference_uri | html %]
-[% loc('To stop receiving or change how often you receive emails about changes to your watchlist in [_1], you can <a href="[_2]">change your preferences</a>.',  escaped_str1, escaped_str2) %]
-</p>
-
-<hr />
-
-<p>
-[% loc('The following pages you are watching in [_1] have recently changed:', escaped_str1) %]
+[% loc('The following pages in your <a href="[_1]">watchlist</a> in <a href="[_3]">[_2]</a> have recently changed. This email was generated on [_4] at [_5].', watchlist_uri, escaped_title, workspace.uri, email_date, email_time) %]
 </p>
 
 <ul>
 [%- FOR page = pages %]
- <li><a href="[% workspace.uri %]?[% page.uri %]">[% page.metadata.Subject %]</a>
-  [%- IF include_editor %]
-     <br />
-     [% SET escaped_str3 = page.last_edited_by.best_full_name( workspace => workspace ) | html %]
-     [% SET escaped_str4 = page.datetime_for_user | html %]
-     [% loc('(by [_1] on [_2])', escaped_str3, escaped_str4) %]
-  [%- END %]
- </li>
-[%- END %]
+  [% PROCESS 'email/page-details.html' %]
+[%- END %]     
 </ul>
+
+<hr />
+[% SET escaped_str2 = watchlist_preference_uri | html %]
+<p>
+[% loc('To stop receiving or change how often you receive emails about changes to your watchlist in [_1], you can <a href="[_2]">change your preferences</a>.',  escaped_title, escaped_str2) %]
+</p>
 
 [% PROCESS 'email/standard-footer.html'
    support_link = 0 %]

@@ -13,27 +13,21 @@
 </p>
 
 <p>
-[% loc('To stop receiving or change how often you receive emails about changes to [_1], you can <a href="[_2]">change your preferences</a>.', escaped_str1, escaped_str2) %]
-</p>
-
-<hr />
-
-<p>
-[% loc('The following pages in [_1] have recently changed:', escaped_str1) %]
+[% loc('The following pages in <a href="[_1]">[_2]</a> have recently changed. This email was generated on [_3] at [_4].', workspace.uri, escaped_str1, email_date, email_time) %]
 </p>
 
 <ul>
 [%- FOR page = pages %]
- <li><a href="[% workspace.uri %]?[% page.uri %]">[% page.metadata.Subject %]</a>
-  [%- IF include_editor %]
-     <br />
-     [% SET escaped_str3 = page.last_edited_by.best_full_name( workspace => workspace ) | html %]
-     [% SET escaped_str4 = page.datetime_for_user | html %]
-     [% loc('(by [_1] on [_2])', escaped_str3, escaped_str4) %]
-  [%- END %]
- </li>
+  [% PROCESS 'email/page-details.html' %]
 [%- END %]
 </ul>
+
+<hr />
+
+<p>
+[% loc('To stop receiving or change how often you receive emails about changes to [_1], you can <a href="[_2]">change your preferences</a>.', escaped_str1, escaped_str2) %]
+</p>
+
 
 [% PROCESS 'email/standard-footer.html',
    support_link = 0 %]

@@ -339,12 +339,16 @@ sub maybe_send_notifications {
         my $include_editor
             = $prefs->watchlist_links_only->value eq 'condensed' ? 0 : 1;
 
+        my $email_time = $self->hub->timezone->_now();
         my %vars = (
             user                     => $user,
             workspace                => $self->hub->current_workspace(),
             pages                    => $watched_pages,
             include_editor           => $include_editor,
             watchlist_preference_uri => $self->watchlist_preference_uri(),
+            email_time               => $self->hub->timezone->get_time_user($email_time) ,
+            email_date               => $self->hub->timezone->get_dateonly_user($email_time) ,
+            base_profile_uri         => Socialtext::URI::uri(path => '?profile/'),
         );
 
         next unless @$pages;

@@ -118,21 +118,26 @@ sub maybe_send_notifications {
         my $include_editor
               = $prefs->links_only->value eq 'condensed' ? 0 : 1;
 
-         my %vars = (
-                  user           => $user,
-                  workspace      => $self->hub()->current_workspace(),
-                  pages          => $pages,
-                  include_editor => $include_editor,
-                  preference_uri => $self->preference_uri(),
+        my $email_time = $self->hub->timezone->_now();
+        my %vars = (
+            user             => $user,
+            workspace        => $self->hub->current_workspace(),
+            pages            => $pages,
+            include_editor   => $include_editor,
+            preference_uri   => $self->preference_uri(),
+            email_time       => $self->hub->timezone->get_time_user($email_time) ,
+            email_date       => $self->hub->timezone->get_dateonly_user($email_time) ,
+            base_profile_uri => Socialtext::URI::uri(path => '?profile/'),
         );
 
-        $notifier->send_notifications( user      => $user, 
-                                   pages         => $pages,
-                                   from          => $from,
-                                   subject       => $subject,
-                                   vars          => \%vars,
-                                   text_template => $text_template,
-                                   html_template => $html_template) if $ready_users;
+        $notifier->send_notifications(
+            user          => $user, 
+            pages         => $pages,
+            from          => $from,
+            subject       => $subject,
+            vars          => \%vars,
+            text_template => $text_template,
+            html_template => $html_template) if $ready_users;
     }
     $notifier->release_lock;
     $self->hub->current_user($calling_user);
