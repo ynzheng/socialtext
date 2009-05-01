@@ -14,6 +14,10 @@ Visit in IE 6 and IE 7 and Safari
 | set_default | wiki | %%workspace%% | defaults to the test workspace |
 | set_default | pt | 5000 | defaults to five seconds |
 | set_default | popup | 8000 | cancel popups in 8 seconds |
+| set | logo_acc | logo-acc-%%start_time%% |
+| set | logo_ws | logo-ws-%%start_time%% |
+| set | logo_user | `logo-%%start_time%%@ken.socialtext.net` |
+
 | include | `[Disable LDAP]` |  | disable LDAP |
 
 | *Comment* | SlideShow: enabling unplugged and expanding sidebar |  |
@@ -574,12 +578,8 @@ Lightbox screens:
 | *Comment* | SlideShow SEE default workspaces |  |
 | pause | %%pt%% |  |
 | click_and_wait | link=People |  |
-| *Comment* | SlideShow SEE Names of People |  |
+| *Comment* | SlideShow SEE Names and Summaries of People (if they exist) |  |
 | pause | %%pt%% |  |
-| click_ok | link=Summaries |  |
-| *Comment* | SlideShow SEE Summaries of People |  |
-| pause | %%pt%% |  |
-
 | type_ok | st-search-term | socialtext |
 | *Comment* | SlideShow SEE People matching socialtext |  |
 | *Comment* | SlideShow SEE pagination UI |  |
@@ -674,7 +674,70 @@ moved Edit Tips to end because FF on galena can't close it. Bug.
 | *Comment* | moved Simple mode to end because Safari raises an alert |  |
 | click_ok | link=Rich Text |  |
 | *Comment* | SEE Simple mode except Safari |  |
+| click_ok | st-save-button-link |  |
+| wait_for_element_visible_ok | link=Log out | 30000 |
+
+| st-admin | create-account --name %%logo_acc%% --title %%logo_acc%% | A new account named "%%logo_acc%%" was created. |
+| st-admin | create-user --email %%logo_user%% --password %%password%% --account %%logo_acc%% | A new user with the username "%%logo_user%%" was created. |
+| st-admin | create-workspace --name %%logo_ws%% --title %%logo_ws%% --account %%logo_acc%% | A new workspace named "%%logo_ws%%" was created. |
+| st-admin | add-member --email %%logo_user%% --workspace %%logo_ws%% | %%logo_user%% is now a member of the %%logo_ws%% workspace. |
+| st-admin | add-member --email %%logo_user%% --workspace %%workspace%% | %%logo_user%% is now a member of the %%workspace%% workspace. |
+| st-admin | add-member --email %%username%% --workspace %%logo_ws%% | %%username%% is now a member of the %%logo_ws%% workspace. |
+| st-admin | give-accounts-admin --email %%logo_user%% | %%logo_user%% now has accounts admin access |
+| st-admin | enable-plugin --plugin dashboard --account %%logo_acc%% |
+
+| *Comment* | SEE: Login as new user |  |
+| st-logout |  |  |
+| st-login | %%logo_user%% | %%password%% |
+| open_ok | /nlw/control/account |  |
+| wait_for_element_visible_ok | link=%%logo_acc%% |  |
+| click_ok | link=%%logo_acc%% |  |
+| wait_for_element_visible_ok | link=Account Logo |  |
+| click_ok | link=Account Logo |  |
+| wait_for_element_visible_ok | new_logo_file |  |
+| type_ok | new_logo_file | %%wikitest_client_files%%wikitest.jpg |
+| click_ok | design_submit |  |
+| *Comment* | SEE: New Logo file on page |  |
 | pause | %%pt%% |  |
+| open_ok | / |  |
+| *Comment* | SEE: New Logo file on dashboard |  |
+| pause | %%pt%% |  |
+| open_ok | /%%logo_ws%%/ |  |
+| *Comment* | SEE: New Logo file on a workspace |  |
+| pause | %%pt%% |  |
+| *Comment* | SEE: OLD LOGO on %%workspace%% |  |
+| open_ok | /%%workspace%%/ |  |
+| pause | %%pt%% |  |
+| st-logout |  |  |
+| st-login |  |  |
+| open_ok | / |  |
+| *Comment* | SEE: Old user, dashboard, no logo |  |
+| pause | %%pt%% |  |
+| open_ok | /%%logo_ws%%/ |  |
+| *Comment* | SEE: NEW LOGO (Old user, workspace belongs to custom account) |  |
+| pause | %%pt%% |  |
+| open_ok | /%%workspace%%/ |  |
+| *Comment* | SEE: OLD LOGO (Old user, workspace belongs to non-custom account) |  |
+| st-logout |  |  |
+| st-login | %%logo_user%% | %%password%% |
+| open_ok | /nlw/control/account |  |
+| wait_for_element_visible_ok | link=%%logo_acc%% |  |
+| click_ok | link=%%logo_acc%% |  |
+| wait_for_element_visible_ok | link=Account Logo |  |
+| click_ok | link=Account Logo |  |
+| wait_for_element_visible_ok | new_logo_file |  |
+| wait_for_element_visible_ok | use_default |  |
+| *Comment* | SEE: NEW LOGO |  |
+| pause | %%pt%% |  |
+| click_ok | use_default |  |
+| *Comment* | SEE: OLD LOGO IS BACK! |  |
+| open_ok | / |  |
+| *Comment* | SEE: OLD LOGO ON DASHBOARD |  |
+| pause | %%pt%% |  |
+| *Comment* | SEE: OLD LOGO ON WORKSPACE |  |
+| open_ok | /%%logo_ws%%/ |  |
+| st-logout |  |  |
+| st-login |  |  |
 
 MAYBE
 
