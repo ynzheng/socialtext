@@ -1,4 +1,4 @@
-<script src="[% share %]/javascript/shindig/container-default.js.gz"></script>
+<script src="[% share %]/javascript/socialtext-container.js.gz"></script>
 
 [% INCLUDE syndicator %]
 
