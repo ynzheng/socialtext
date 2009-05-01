@@ -122,11 +122,18 @@
                                 $('#lightbox').height()) / 4)) + 'px'
                     });
 
+                var $body = $(document.body);
+                var $win = $(window);
+                var width = $body.width() > $win.width()
+                    ? $body.width() : $win.width();
+                var height = $body.height() > $win.height()
+                    ? $body.height() : $win.height();
+
                 $('#overlay, #overlay iframe.hack').css({
                     top: 0,
                     left: 0,
-                    width: $(document.body).width() + 'px',
-                    height: $(document.body).height() + 'px'
+                    width: width + 'px',
+                    height: height + 'px'
                 })
             })
             .resize();
