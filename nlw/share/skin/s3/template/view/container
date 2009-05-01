@@ -1,0 +1,45 @@
+[% WRAPPER layout/html 
+    id="dashBoard"
+    head_template="element/container_head"
+    title=loc('Socialtext')
+%]
+<input id="containerID" type="hidden" value="[% container.id %]"/>
+<input id="widgetList" type="hidden" value="[% container.gadgetlist %]"/>
+
+<div id="controls">
+    <div id="st-editing-tools-edit">
+        [% IF container.hello_template %]
+            [% INCLUDE $container.hello_template %]
+        [% ELSE %]
+            <ul></ul>
+        [% END %]
+    </div><!-- controlsLeft END -->
+    <div id="controlsRight">
+        [% IF container.links_template %]
+            [% INCLUDE $container.links_template %]
+        [% ELSE %]
+            <ul></ul>
+        [% END %]
+    </div><!-- controlsRight END -->
+</div><!-- controls END -->
+
+<div class="notice">
+[% FILTER decorate('notice') %]
+[% END %]
+</div>
+
+<div id="contentContainer" class="container [% container.type %]">
+    <div id="contentColumns">
+        [% SET lastcol = container.columns - 1 %]
+        [% FOR i = [0 .. lastcol] %]
+            <ul class="widgetColumn" id="col[% i %]">
+            [% FOR gadget = container.gadgets.$i %]
+                [% INCLUDE 'widget/element' gadget=gadget %]
+            [% END %]
+            </ul>
+        [% END %]
+    </div><!-- columnColumns END -->
+    <div class="clear"></div><!-- clear END -->
+</div><!-- contentContainer END -->
+
+[% END %]
