@@ -758,7 +758,7 @@ proto.enableLinkConfirmations = function() {
      * window.onbeforeunload, so Selenium can test it.
      */
     jQuery('#st-home-link').click(function(){
-        self.confirmLinkFromEdit();
+        return self.confirmLinkFromEdit();
     });
  
     return false;
