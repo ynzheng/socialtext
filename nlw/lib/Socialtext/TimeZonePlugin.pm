@@ -314,6 +314,20 @@ sub get_time_user {
     );
 }
 
+sub get_dateonly_user {
+    my $self  = shift;
+    my $time  = shift;
+    my $prefs = $self->preferences;
+
+    my $locale = $self->hub->best_locale;
+
+    $self->get_dateonly(
+        $time,
+        $prefs->date_display_format->value,
+        $prefs->timezone->value,
+    );
+}
+
 sub get_date_user {
     my $self  = shift;
     my $time  = shift;
@@ -372,6 +386,31 @@ sub _get_time_sec {
     $time_str =~ s/\s(\s)/$1/g;
 
     return $time_str;
+}
+
+sub get_dateonly {
+    my $self                 = shift;
+    my $time                 = shift;
+    my $date_display_format  = shift;
+    my $timezone = shift;
+    my ( $d, $t );
+
+    my $locale = $self->hub->best_locale;
+
+    # $time->add is slow, so only do it once here
+    my $offset = $self->_timezone_offset($time) + $self->_dst_offset($time);
+    $time->add( seconds => $offset );
+
+    # When display year is not equal this year,
+    # the formats skipped year must be added year (ref. %WithYear).
+    my $now = $self->_now;
+    if ($time->year != $now->year){
+        $date_display_format = Socialtext::Date::l10n->get_date_to_year_key_map( $date_display_format, $locale );
+    }
+
+    $d = $self->_get_date( $time, $date_display_format, $locale );
+
+    return ($d);
 }
 
 sub get_date {
