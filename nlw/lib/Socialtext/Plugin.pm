@@ -291,6 +291,7 @@ sub _get_pref_list {
         $_->{title} =~ s/ /&nbsp;/g;
         $_;
         } grep { $prefs->{ $_->{id} } }
+        grep { $_->{id} ne 'search' } # hide search prefs screen
         @{ $self->hub->registry->lookup->plugins };
 
     return \@pref_list;
