@@ -15,6 +15,9 @@ use Socialtext::l10n qw( loc );
 
 sub class_id {'timezone'}
 const class_title => loc('Time');
+const dcDATE => 1;
+const dcTIME => 2;
+const dcDATETIME => 3;
 
 const zones => {
     '-1200'   => loc('-1200 International Date Line West'),
@@ -299,49 +302,86 @@ sub time_local {
     return $self->get_time_user($datetime);
 }
 
+# Returns both date and time
+sub get_date_user {
+    my $self  = shift;
+    my $time  = shift;
+
+    $self->get_date(
+        $time,
+        $self->dcDATETIME,
+    );
+}
+
 sub get_time_user {
     my $self  = shift;
     my $time  = shift;
-    my $prefs = $self->preferences;
 
-    my $locale = $self->hub->best_locale;
-
-    $self->get_time(
+    $self->get_date(
         $time,
-        $prefs->time_display_12_24->value,
-        $prefs->time_display_seconds->value,
-        $prefs->timezone->value,
+        $self->dcTIME
     );
 }
 
 sub get_dateonly_user {
     my $self  = shift;
     my $time  = shift;
-    my $prefs = $self->preferences;
-
-    my $locale = $self->hub->best_locale;
-
-    $self->get_dateonly(
-        $time,
-        $prefs->date_display_format->value,
-        $prefs->timezone->value,
-    );
-}
-
-sub get_date_user {
-    my $self  = shift;
-    my $time  = shift;
-    my $prefs = $self->preferences;
-
-    my $locale = $self->hub->best_locale;
 
     $self->get_date(
         $time,
-        $prefs->date_display_format->value,
-        $prefs->time_display_12_24->value,
-        $prefs->time_display_seconds->value,
-        $prefs->timezone->value,
+        $self->dcDATE
     );
+}
+
+sub get_date {
+    my $self       = shift;
+    my $time       = shift;
+    my $components = shift || $self->dcDATETIME;
+
+    my $prefs = $self->preferences;
+
+    my $date_display_format  = $prefs->date_display_format->value;
+    my $time_display_12_24   = $prefs->time_display_12_24->value;
+    my $time_display_seconds = $prefs->time_display_seconds->value;
+    my $timezone = $prefs->timezone->value;
+
+    my ( $d, $t );
+
+    my $locale = $self->hub->best_locale;
+
+    # $time->add is slow, so only do it once here
+    my $offset = $self->_timezone_offset($time) + $self->_dst_offset($time);
+    $time->add( seconds => $offset );
+
+    if ($components & $self->dcDATE) {
+        # When display year is not equal this year,
+        # the formats skipped year must be added year (ref. %WithYear).
+        my $now = $self->_now;
+        if ($time->year != $now->year){
+            $date_display_format = Socialtext::Date::l10n->get_date_to_year_key_map( $date_display_format, $locale );
+        }
+
+        $d = $self->_get_date( $time, $date_display_format, $locale );
+    }
+
+    if ($components & $self->dcTIME) {
+        my $time_display_format = $time_display_12_24;
+        if ($time_display_seconds) {
+            $t = $self->_get_time_sec( $time, $time_display_format, $locale );
+        }else {
+            $t = $self->_get_time( $time, $time_display_format, $locale );
+        }
+    }
+
+    if ($components == $self->dcDATETIME) {
+        return "$d $t";
+    }
+    elsif ($components == $self->dcDATE) {
+        return $d;
+    }
+    else {
+        return $t;
+    }
 }
 
 sub _get_date {
@@ -350,8 +390,11 @@ sub _get_date {
 
     # DateTime parameter '%e' replace leading 0 to space. (when the value is single number)
     # Cut the space.
-    my $date_str = Socialtext::Date::l10n->get_formated_date( $time,
-            $date_display_format, $locale );
+    my $date_str = Socialtext::Date::l10n->get_formated_date(
+        $time,
+        $date_display_format,
+        $locale
+    );
     $date_str =~ s/\s(\d[^\d]+)/$1/g;
     $date_str =~ s/\s(\s)/$1/g;
 
@@ -362,8 +405,11 @@ sub _get_time {
     my $self = shift;
     my ($time, $time_display_format, $locale) = @_;
 
-    my $time_str = Socialtext::Date::l10n->get_formated_time( $time,
-            $time_display_format, $locale );
+    my $time_str = Socialtext::Date::l10n->get_formated_time(
+        $time,
+        $time_display_format,
+        $locale
+    );
 
     # DateTime parameter '%e' replace leading 0 to space. (when the value is single number)
     # Cut the space.
@@ -377,8 +423,11 @@ sub _get_time_sec {
     my $self = shift;
     my ($time, $time_display_format, $locale) = @_;
 
-    my $time_str = Socialtext::Date::l10n->get_formated_time_sec( $time,
-            $time_display_format, $locale );
+    my $time_str = Socialtext::Date::l10n->get_formated_time_sec(
+        $time,
+        $time_display_format,
+        $locale
+    );
 
     # DateTime parameter '%e' replace leading 0 to space. (when the value is single number)
     # Cut the space.
@@ -386,89 +435,6 @@ sub _get_time_sec {
     $time_str =~ s/\s(\s)/$1/g;
 
     return $time_str;
-}
-
-sub get_dateonly {
-    my $self                 = shift;
-    my $time                 = shift;
-    my $date_display_format  = shift;
-    my $timezone = shift;
-    my ( $d, $t );
-
-    my $locale = $self->hub->best_locale;
-
-    # $time->add is slow, so only do it once here
-    my $offset = $self->_timezone_offset($time) + $self->_dst_offset($time);
-    $time->add( seconds => $offset );
-
-    # When display year is not equal this year,
-    # the formats skipped year must be added year (ref. %WithYear).
-    my $now = $self->_now;
-    if ($time->year != $now->year){
-        $date_display_format = Socialtext::Date::l10n->get_date_to_year_key_map( $date_display_format, $locale );
-    }
-
-    $d = $self->_get_date( $time, $date_display_format, $locale );
-
-    return ($d);
-}
-
-sub get_date {
-    my $self                 = shift;
-    my $time                 = shift;
-    my $date_display_format  = shift;
-    my $time_display_12_24   = shift;
-    my $time_display_seconds = shift;
-    my $timezone = shift;
-    my ( $d, $t );
-
-    my $locale = $self->hub->best_locale;
-
-    # $time->add is slow, so only do it once here
-    my $offset = $self->_timezone_offset($time) + $self->_dst_offset($time);
-    $time->add( seconds => $offset );
-
-    # When display year is not equal this year,
-    # the formats skipped year must be added year (ref. %WithYear).
-    my $now = $self->_now;
-    if ($time->year != $now->year){
-        $date_display_format = Socialtext::Date::l10n->get_date_to_year_key_map( $date_display_format, $locale );
-    }
-
-    $d = $self->_get_date( $time, $date_display_format, $locale );
-
-    my $time_display_format = $time_display_12_24;
-    if ($time_display_seconds) {
-        $t = $self->_get_time_sec( $time, $time_display_format, $locale );
-    }else {
-        $t = $self->_get_time( $time, $time_display_format, $locale );
-    }
-
-    return ("$d $t");
-}
-
-sub get_time {
-    my $self                 = shift;
-    my $time                 = shift;
-    my $time_display_12_24   = shift;
-    my $time_display_seconds = shift;
-    my $timezone = shift;
-    my ( $d, $t );
-
-    my $locale = $self->hub->best_locale;
-
-    # $time->add is slow, so only do it once here
-    my $offset = $self->_timezone_offset($time) + $self->_dst_offset($time);
-    $time->add( seconds => $offset );
-
-    my $time_display_format = $time_display_12_24;
-    if ($time_display_seconds) {
-        $t = $self->_get_time_sec( $time, $time_display_format, $locale );
-    }else {
-        $t = $self->_get_time( $time, $time_display_format, $locale );
-    }
-
-    return ($t);
 }
 
 # No sence fetching now more than once per request, eh?
