@@ -4071,4 +4071,21 @@ body#dashBoard div#controls div#controlsRight ul {
     width: 80%;
     margin: 0 10%
 }
+
+.container.signals #col0 {
+    width: 25%;
+}
+.container.signals #col1 {
+    width: 73%;
+}
+.container.signals #col1 .widgetHeader {
+    display: none;
+}
+.container.signals #col1 div.widget,
+.container.signals #col1 div.widgetContent,
+.container.signals #col1 div.widgetBottom,
+.container.signals #col1 div.widgetBottomRight {
+    background: none !important;
+    border-left: none !important;
+}
 /* End of Container stuff */
