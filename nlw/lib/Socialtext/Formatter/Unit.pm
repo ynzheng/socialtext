@@ -49,9 +49,7 @@ field -weak      => 'prev_unit';
 sub match {
     my $self = shift;
     my $text = shift;
-    my $orig_text = $text;
-    my $match = $text =~ $self->pattern_block;
-    return unless $match;
+    return unless $text =~ $self->pattern_block;
     $self->set_match;
 }
 
@@ -158,10 +156,8 @@ sub match {
     my $self = shift;
     my $text = shift;
     my $bullet = $self->bullet;
-    my $orig_text = $text;
-    my $regex = qr/\A((?:^($bullet).*\n)(?:^\2(?!$bullet).*\n)*)(?:\s*\n)?/m;
-    my $match = $text =~ $regex;
-    return unless $match;
+    return
+        unless $text =~ /((?:^($bullet).*\n)(?:^\2(?!$bullet).*\n)*)(?:\s*\n)?/m;
     $self->set_match;
     $self->level( length($2) );
     return 1;
@@ -267,17 +263,6 @@ const html_end_tag   => '</ol>';
 const bullet         => '\#+(?=\ +|$)';
 
 ################################################################################
-package Socialtext::Formatter::Else;
-
-use base 'Socialtext::Formatter::Container';
-use Class::Field qw( const );
-
-const formatter_id   => 'else';
-const html_start_tag => '<p>';
-const html_end_tag   => '</p>';
-const pattern_block  => qr/^(.+)\n/;
-
-################################################################################
 package Socialtext::Formatter::Table;
 
 use base 'Socialtext::Formatter::Container';
@@ -285,7 +270,7 @@ use Class::Field qw( const );
 
 const formatter_id    => 'table';
 const contains_blocks => [qw(tr)];
-const pattern_block   => qr/\A(((^\|.*\| \n(?=\|))|(^\|.*\|  +\n)|(?s:^\|.*?\|\n))+)/m;
+const pattern_block   => qr/(((^\|.*\| \n(?=\|))|(^\|.*\|  +\n)|(?s:^\|.*?\|\n))+)/m;
 
 const html_end => "</table>\n";
 

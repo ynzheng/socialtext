@@ -34,7 +34,7 @@ sub match {
     my $text = shift;
     return
         unless $text
-        =~ /\A(?:^\.([\w\-]+)\ *\n)((?:.*\n)*?)(?:^\.\1\ *\n|\z)/m;
+        =~ /(?:^\.([\w\-]+)\ *\n)((?:.*\n)*?)(?:^\.\1\ *\n|\z)/m;
     $self->set_match($2);
     my $method = lc $1;
     $method =~ s/-/_/g;

@@ -21,7 +21,7 @@ const all_phrases => [
         b_mail file tt strong em del)
 ];
 const all_blocks =>
-    [qw(wafl_block hr hx wafl_p ul ol indent table p empty_p else)];
+    [qw(wafl_block hr hx wafl_p ul ol indent table p empty_p)];
 
 field page_id         => '';
 field url_prefix      => '';
