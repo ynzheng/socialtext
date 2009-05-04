@@ -103,7 +103,7 @@
                     self.clearLookahead();
                 }
                 else if (e.keyCode == KEYCODES.ENTER) {
-                    if (self._items.length) {
+                if (self._items.length) {
                         self.clickCurrent();
                     }
                     else if (!self.opts.requireMatch) {
@@ -287,13 +287,12 @@
     };
 
     Lookahead.prototype.displayData = function (data) {
+        var self = this;
+        this._items = data;
         var lookaheadList = this.getLookaheadList();
         lookaheadList.html('');
 
-        var self = this;
-
         if (data.length) {
-            this._items = data;
             $.each(data, function (i) {
                 var item = this || {};
                 var li = $('<li></li>')
