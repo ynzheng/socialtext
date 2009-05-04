@@ -4087,5 +4087,7 @@ body#dashBoard div#controls div#controlsRight ul {
 .container.signals #col1 div.widgetBottomRight {
     background: none !important;
     border-left: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 /* End of Container stuff */
