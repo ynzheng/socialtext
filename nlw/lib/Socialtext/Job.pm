@@ -35,6 +35,12 @@ has page => (
     lazy_build => 1,
 );
 
+# These are called as class methods:
+override 'keep_exit_status_for' => sub {3600};
+override 'grab_for'             => sub {3600};
+override 'retry_delay'          => sub {0};
+override 'max_retries'          => sub {0};
+
 sub work {
     my $class = shift;
     my $job = shift;
