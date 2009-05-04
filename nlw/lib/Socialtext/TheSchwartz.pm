@@ -62,7 +62,10 @@ sub _stat_jobs_per_dbh {
         SELECT funcname,
             COALESCE(queued, 0) AS queued,
             COALESCE(delayed, 0) AS delayed,
-            COALESCE(grabbed, 0) AS grabbed
+            COALESCE(grabbed, 0) AS grabbed,
+            COALESCE(succeeded, 0) AS succeeded,
+            COALESCE(failed, 0) AS failed,
+            COALESCE(last_completed, 0) AS last_completed
         FROM funcmap
         LEFT JOIN (
             SELECT funcid,
@@ -72,6 +75,14 @@ sub _stat_jobs_per_dbh {
             FROM job
             GROUP BY funcid
         ) s USING (funcid)
+        LEFT JOIN (
+            SELECT funcid,
+                COUNT(NULLIF(status = 0, 'f'::boolean)) AS succeeded,
+                COUNT(NULLIF(status <> 0, 'f'::boolean)) AS failed,
+                MAX(completion_time) AS last_completed
+            FROM exitstatus
+            GROUP BY funcid
+        ) e USING (funcid)
     });
 
     $sth->execute($now);
