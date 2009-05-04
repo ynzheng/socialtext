@@ -64,9 +64,10 @@ sub _stat_jobs_per_dbh {
             COALESCE(queued, 0) AS queued,
             COALESCE(delayed, 0) AS delayed,
             COALESCE(grabbed, 0) AS grabbed,
-            COALESCE(succeeded, 0) AS succeeded,
-            COALESCE(failed, 0) AS failed,
-            COALESCE(last_completed, 0) AS last_completed
+            COALESCE(num_ok, 0) AS num_ok,
+            COALESCE(num_fail, 0) AS num_fail,
+            COALESCE(last_ok, 0) AS last_ok,
+            COALESCE(last_fail, 0) AS last_fail
         FROM funcmap
         LEFT JOIN (
             SELECT funcid,
@@ -78,9 +79,18 @@ sub _stat_jobs_per_dbh {
         ) s USING (funcid)
         LEFT JOIN (
             SELECT funcid,
-                COUNT(NULLIF(status = 0, 'f'::boolean)) AS succeeded,
-                COUNT(NULLIF(status <> 0, 'f'::boolean)) AS failed,
-                MAX(completion_time) AS last_completed
+                COUNT(NULLIF(status = 0, 'f'::boolean)) AS num_ok,
+                COUNT(NULLIF(status <> 0, 'f'::boolean)) AS num_fail,
+                MAX(
+                    CASE WHEN status = 0 THEN completion_time
+                         ELSE 0
+                    END
+                ) AS last_ok,
+                MAX(
+                    CASE WHEN status <> 0 THEN completion_time
+                         ELSE 0
+                    END
+                ) AS last_fail
             FROM exitstatus
             GROUP BY funcid
         ) e USING (funcid)

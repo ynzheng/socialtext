@@ -7,7 +7,19 @@
             <tbody>
                 <tr class="job_stat_hdr">
                     [% FOREACH hdr IN columns %]
-                    <th>[% hdr %]</th>
+                    <th>
+                    [%- SWITCH hdr -%]
+                       [%- CASE 'name'     %][% loc('Name') -%]
+                       [%- CASE 'queued'   %][% loc('Queued') -%]
+                       [%- CASE 'delayed'  %][% loc('Delayed') -%]
+                       [%- CASE 'grabbed'  %][% loc('Grabbed') -%]
+                       [%- CASE 'num_ok'   %][% loc('Num OK') -%]
+                       [%- CASE 'num_fail' %][% loc('Num Fail') -%]
+                       [%- CASE 'last_ok'  %][% loc('Last OK') -%]
+                       [%- CASE 'last_fail'%][% loc('Last Fail') -%]
+                       [%- CASE %][% hdr -%]
+                    [%- END -%]
+                    </th>
                     [% END %]
                 </tr>
                 [% FOREACH job_stat IN job_stats %]

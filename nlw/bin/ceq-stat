@@ -26,14 +26,15 @@ my %header = (
     queued => loc('Queued'),
     grabbed => loc('Grabbed'),
     delayed => loc('Delayed'),
-    succeeded => loc('Num OK'),
-    failed => loc('Num Fail'),
-    last_completed => loc('Last Completed'),
+    num_ok => loc('Num OK'),
+    num_fail => loc('Num Fail'),
+    last_ok => loc('Last OK'),
+    last_fail => loc('Last Fail'),
 );
-my @stat_order = (qw(queued grabbed delayed succeeded failed last_completed));
-my @max_stats = (qw(last_completed));
-my @time_stats = (qw(last_completed));
-my @sum_stats = grep !/^last_completed$/, @stat_order;
+my @stat_order = (qw(queued grabbed delayed num_ok last_ok num_fail last_fail));
+my @max_stats = grep /^last_/, @stat_order;
+my @time_stats = grep /^last_/, @stat_order;
+my @sum_stats = grep !/^last_/, @stat_order;
 my $name_header = loc('Job Type');
 my $total = loc('Total');
 
