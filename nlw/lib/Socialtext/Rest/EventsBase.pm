@@ -4,19 +4,14 @@ use warnings;
 use strict;
 use base qw(Socialtext::Rest::Collection);
 
-use Class::Field 'field';
-use Date::Parse qw/str2time/;
-
 use Socialtext::Events;
 use Socialtext::Events::Reporter;
 use Socialtext::User;
 use Socialtext::Workspace;
 use Socialtext::Exceptions;
-use Socialtext::AppConfig;
-use Socialtext::TT2::Renderer;
-use Socialtext::URI;
 use Socialtext::JSON qw/encode_json/;
 use Socialtext::Timer;
+use Socialtext::l10n 'loc';
 
 use constant MAX_EVENT_COUNT => 500;
 use constant DEFAULT_EVENT_COUNT => 25;
@@ -146,63 +141,14 @@ sub extract_people_args {
     return @args;
 }
 
-sub code_base {
-   return Socialtext::AppConfig->code_base;
-}
-
-sub _renderer_load {
-    my $self = shift;
-
-    if (!$self->{_renderer}) {
-        Socialtext::Timer->Continue('event_tt2_prep');
-
-        $self->{_renderer} = Socialtext::TT2::Renderer->instance;
-
-        if (!$self->{_template_paths}) {
-            my $paths = $self->hub->skin->template_paths;
-            push @$paths, glob($self->code_base . "/plugin/*/template");
-            $self->{_template_paths} = $paths;
-        }
-
-        $self->{_template_vars} = [
-            collection_name => $self->collection_name,
-            link => Socialtext::URI::uri(path => $self->rest->request->uri),
-            minutes_ago => sub { int((time - str2time(shift)) / 60) },
-            round => sub { int($_[0] + .5) },
-
-            # XXX: can we avoid calling this, if possible?
-            $self->hub->helpers->global_template_vars,
-        ];
-
-        Socialtext::Timer->Pause('event_tt2_prep');
-    }
-
-    return @$self{qw(_renderer _template_paths _template_vars)};
-}
-
-sub template_render {
-    my ($self, $tmpl, $add_vars) = @_;
-    my ($renderer, $paths, $vars) = $self->_renderer_load();
-    return $renderer->render(
-        template => $tmpl,
-        paths => $paths,
-        vars => {
-            @$vars,
-            %$add_vars,
-        },
-    );
-}
-
 sub resource_to_text {
     my ($self, $events) = @_;
-    my $out
-        = $self->template_render('data/events.txt', { events => $events });
-    return $out;
+    $self->_template_render('data/events.txt', { events => $events });
 }
 
 sub resource_to_html {
     my ($self, $events) = @_;
-    $self->template_render('data/events.html', { events => $events });
+    $self->_template_render('data/events.html', { events => $events });
 }
 
 sub resource_to_atom {
@@ -210,12 +156,12 @@ sub resource_to_atom {
 
     # Format dates for atom
     $_->{at} =~ s{^(\d+-\d+-\d+) (\d+:\d+:\d+).\d+Z$}{$1T$2+0} for @$events;
-    $self->template_render('data/events.atom.xml', { events => $events });
+    $self->_template_render('data/events.atom.xml', { events => $events });
 }
 
-sub htmlize_event {
+sub _htmlize_event {
     my ($self, $event) = @_;
-    my $renderized = $self->template_render(
+    my $renderized = $self->_template_render(
         'data/event',
         { event => $event, out => 'html' }
     );
@@ -225,20 +171,8 @@ sub htmlize_event {
 
 sub resource_to_json {
     my ($self, $events) = @_;
-    $self->htmlize_event($_) for @$events;
-    encode_json($events);
-}
-
-{
-    no warnings 'once';
-    *GET_html = Socialtext::Rest::Collection::_make_getter(\&resource_to_html,
-        'text/html');
-    *GET_text = Socialtext::Rest::Collection::_make_getter(\&resource_to_text,
-        'text/plain');
-    *GET_atom = Socialtext::Rest::Collection::_make_getter(\&resource_to_atom,
-        'application/atom+xml');
-    *GET_json = Socialtext::Rest::Collection::_make_getter(\&resource_to_json,
-        'application/json');
+    $self->_htmlize_event($_) for @$events;
+    return encode_json($events);
 }
 
 1;

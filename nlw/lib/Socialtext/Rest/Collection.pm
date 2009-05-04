@@ -1,13 +1,17 @@
 package Socialtext::Rest::Collection;
 # @COPYRIGHT@
-
-use strict;
 use warnings;
-
+use strict;
 use base 'Socialtext::Rest';
+
+use Date::Parse qw/str2time/;
 use Socialtext::JSON;
 use Socialtext::HTTP ':codes';
 use Socialtext::Timer;
+use Socialtext::AppConfig;
+use Socialtext::TT2::Renderer;
+use Socialtext::URI;
+use Socialtext::Exceptions;
 use Socialtext::Base;
 
 =head1 NAME
@@ -53,22 +57,23 @@ sub POST_text {
     return "Added.";
 }
 
-=head2 GET_html, GET_json, GET_text
+=head2 GET_html, GET_json, GET_atom, GET_text
 
-Returns representations of your resource in text/html, application/json, and
-text/plain, respectively.
+Returns representations of your resource in text/html, application/json,
+application/atom+xml and text/plain, respectively.
 
 =cut
 
 {
     no warnings 'once';
-    *GET_html = _make_getter(\&resource_to_html, 'text/html');
-    *GET_json = _make_getter(\&resource_to_json, 'application/json');
-    *GET_text = _make_getter(\&resource_to_text, 'text/plain');
+    *GET_html = _make_getter(resource_to_html => 'text/html');
+    *GET_json = _make_getter(resource_to_json => 'application/json');
+    *GET_atom = _make_getter(resource_to_atom => 'application/atom+xml');
+    *GET_text = _make_getter(resource_to_text => 'text/plain');
 }
 
 sub _make_getter {
-    my ( $sub, $content_type ) = @_;
+    my ( $perl_method, $content_type ) = @_;
     return sub {
         my ( $self, $rest ) = @_;
 
@@ -95,7 +100,7 @@ sub _make_getter {
                         $rest->header,
                     );
                     $rest->header(%new_headers);
-                    $self->$sub($resource);
+                    $self->$perl_method($resource);
                 }
             );
         };
@@ -346,6 +351,49 @@ If SORT is not defined in the class, the defaults described in
 the parent class are used.
 
 =cut
+
+sub _renderer_load {
+    my $self = shift;
+
+    if (!$self->{_renderer}) {
+        Socialtext::Timer->Continue('coll_tt2_prep');
+
+        $self->{_renderer} = Socialtext::TT2::Renderer->instance;
+
+        if (!$self->{_template_paths}) {
+            my $paths = $self->hub->skin->template_paths;
+            push @$paths, glob(Socialtext::AppConfig->code_base . "/plugin/*/template");
+            $self->{_template_paths} = $paths;
+        }
+
+        $self->{_template_vars} = [
+            collection_name => $self->collection_name,
+            link => Socialtext::URI::uri(path => $self->rest->request->uri),
+            minutes_ago => sub { int((time - str2time(shift)) / 60) },
+            round => sub { int($_[0] + .5) },
+
+            # XXX: can we avoid calling this, if possible?
+            $self->hub->helpers->global_template_vars,
+        ];
+
+        Socialtext::Timer->Pause('coll_tt2_prep');
+    }
+
+    return @$self{qw(_renderer _template_paths _template_vars)};
+}
+
+sub _template_render {
+    my ($self, $tmpl, $add_vars) = @_;
+    my ($renderer, $paths, $vars) = $self->_renderer_load();
+    return $renderer->render(
+        template => $tmpl,
+        paths => $paths,
+        vars => {
+            @$vars,
+            %$add_vars,
+        },
+    );
+}
 
 1;
 
