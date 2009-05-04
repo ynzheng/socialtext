@@ -1,5 +1,12 @@
 --- !!omap
 -
+    '/data/jobs':
+        'GET':
+            '*/*':           &default [Socialtext::Rest::Jobs, GET_html]
+            'text/html':              *default
+            'application/json':       [Socialtext::Rest::Jobs, GET_json]
+        '*':                    [Socialtext::Rest::Jobs, bad_method]
+-
     '/data/events':
         'GET':
             '*/*':           &default [Socialtext::Rest::Events, GET_html]

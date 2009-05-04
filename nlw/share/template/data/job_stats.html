@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <title>[% collection_name %]</title>
+    </head>
+    <body>
+        <table width="100%">
+            <tbody>
+                <tr class="job_stat_hdr">
+                    [% FOREACH hdr IN columns %]
+                    <th>[% hdr %]</th>
+                    [% END %]
+                </tr>
+                [% FOREACH job_stat IN job_stats %]
+                <tr class="job_stat_row">
+                    [% FOREACH col IN columns %]
+                    <td class="job_stat_col_[%col%]">[% job_stat.$col |html%]</td>
+                    [% END %]
+                </tr>
+                [% END %]
+            </tbody>
+        </table>
+    </body>
+</html>

@@ -33,8 +33,9 @@ sub stat_jobs {
     my $fold = shift;
     $fold = 1 unless defined $fold;
     
+    my $now = time;
     my @results = map {
-        $self->_stat_jobs_per_dbh($_)
+        $self->_stat_jobs_per_dbh($_, $now)
     } @{$self->databases};
 
     return @results unless $fold;
