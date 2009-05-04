@@ -164,7 +164,7 @@ sub _get_workspace_list_for_template
     return [ sort { lc($a->{label}) cmp lc($b->{label})} @workspacelist ];
 }
 
-sub _get_default_workspace {
+sub default_workspace {
     my $self = shift;
     my $ws = Socialtext::Workspace->Default;
 
@@ -184,24 +184,6 @@ sub _get_history_list_for_template
         @$history;
     if ($#historylist > 19) { $#historylist = 19;}
     return  \@historylist;
-}
-
-sub _get_people_watchlist_for_people
-{
-    my $self = shift;
-
-    my $watchlist = Socialtext::People::Profile->GetWatchlistMinimal($self->hub->current_user->user_id);
-
-    my $result = [
-        map {
-            +{
-                pic_url => "/data/people/" . $_->{id} . "/small_photo",
-                label   => $_->{best_full_name},
-                link    => "/?profile/" . $_->{id}
-                }
-            } @$watchlist
-    ];
-    return $result;
 }
 
 sub global_template_vars {
@@ -277,7 +259,7 @@ sub global_template_vars {
         miki_url           => $self->miki_path,
         stax_info          => $self->hub->stax->hacks_info,
         workspaceslist     => $self->_get_workspace_list_for_template,
-        default_workspace  => $self->_get_default_workspace,
+        default_workspace  => $self->default_workspace,
         ui_is_expanded     => defined($cookies->{"ui_is_expanded"}),
         plugins_enabled    => $plugins_enabled,
         plugins_enabled_for_current_workspace_account => $plugins_enabled_for_current_workspace_account,
@@ -287,24 +269,6 @@ sub global_template_vars {
         $self->hub->pluggable->hooked_template_vars,
     );
 
-    if ($cur_user->can_use_plugin('people')) {
-        if (Socialtext::AppConfig->allow_network_invitation()) {
-            $result{invite_url} = '/?action=invite';
-        }
-
-        require Socialtext::People::Profile;
-        # This is expensive, and often not even needed (for /data/*, say)
-        my $cache;
-        $result{people} = sub { 
-            $cache ||= $self->_get_people_watchlist_for_people;
-            return $cache;
-        };
-    };
-
-    if ($cur_user->can_use_plugin('dashboard')) {
-        $result{dashboard_available} = 1;
-    }
-    
     # We're disabling the history global nav functionality for now, until its
     # truly global (cross workspace)
 #     if ($cur_ws->real) {

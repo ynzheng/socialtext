@@ -61,6 +61,11 @@ sub uri {
     return $self->hub->current_workspace->uri . Socialtext::AppConfig->script_name;
 }
 
+sub default_workspace {
+    my $self = shift;
+    return $self->hub->helpers->default_workspace;
+}
+
 sub base_uri {
     my $self = shift;
     return $self->{_base_uri} if $self->{_base_uri};

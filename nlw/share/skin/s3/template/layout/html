@@ -91,36 +91,22 @@
       </div><!-- header END -->
       <div id="mainNav" class="st-wiki-subnav-dashboard">
         <div id="homeLink">
-          <a id="st-home-link" href="/[% IF dashboard_available && default_workspace %]?dashboard[% END %]">
+          <a id="st-home-link" href="[% FILTER decorate('home_href') %]/[% END %]">
               [% loc("Home") %]</a></div>
         <ul id="st-wiki-subnav-left" class="level1">
-        [% IF dashboard_available %]
-          [% IF people %]
-          <li class="submenu"><a id="st-wiki-subnav-link-people" href="/?action=people">[% loc("People") %]</a>
-          [% ELSE %]
-          <li class="submenu"><a id="st-wiki-subnav-link-people" href="http://socialtext.com/products/features/Enable-People.php">[% loc("People") %]</a>
-          [% END %]
+          [% FILTER decorate('people_dropdown') %]
+            <li class="submenu"><a id="st-wiki-subnav-link-people" href="http://socialtext.com/products/features/Enable-People.php">[% loc("People") %]</a>
               <ul class="level2 withimage" id="global-people-directory">
               [% IF user.is_guest %]
-                  <li class="emptynotice">[% loc("...lists the people you are following. You must register or be logged in to use this feature.") %]</li>
-              [% ELSIF people %]
-                [% IF people.size %]
-                    <li class="dropaction"><a href="/?action=people">[% loc("People Directory") %]...</a></li>
-                    [% FOREACH people %]
-                    <li><img src="[% pic_url %]"/><a href="[% link %]">[% label | label_ellipsis(30) %]</a></li>
-                    [% END %]
-                [% ELSE %]
-                    <li class="dropaction"><a href="/?action=people">[% loc("People Directory") %]...</a></li>
-                    <li class="emptynotice">[% loc("You are not following anyone yet. To follow someone, go to a person's profile and click the \"Follow\" button.") %]</li>
-                [% END %]
+                <li class="emptynotice">[% loc("...lists the people you are following. You must register or be logged in to use this feature.") %]</li>
               [% ELSE %]
                 <li class="notinstallednotice"><span class="product-name">[% loc("Socialtext People") %]</span> [% loc("is a people directory with robust social networking features. You can find contact information for your colleagues, discover people with expertise and common interests, and find valuable information through your social connections.") %]</li>
                   <li class="notinstallednotice"><a href="http://socialtext.com/products/features/Enable-People.php">[% loc("Try Socialtext People") %]</a></li>
                   <li class="notinstallednotice">[% loc("If this link does not work for you, contact") %] <a href="mailto:sales@socialtext.com">sales@socialtext.com</a></li>
               [% END %]
               </ul>
-          </li>
-        [% END %]
+            </li>
+          [% END %]
           <li class="submenu"><a id="st-wiki-subnav-link-workspaces" href="?action=workspaces_listall">[% loc("Workspaces") %]</a>
               <ul class="level2" id="global-workspace-list">
               [% IF workspaceslist.size %]
