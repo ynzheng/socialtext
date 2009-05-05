@@ -4091,10 +4091,10 @@ body#dashBoard div#controls div#controlsRight ul {
 }
 
 .container.signals #col0 {
-    width: 25%;
+    width: 35%;
 }
 .container.signals #col1 {
-    width: 73%;
+    width: 62%;
 }
 .container.signals #col1 .widgetHeader {
     display: none;
