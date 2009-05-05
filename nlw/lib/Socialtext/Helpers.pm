@@ -237,6 +237,7 @@ sub global_template_vars {
 
     my $locale = $self->hub->display->preferences->locale;
     my %result = (
+        firebug           => $self->hub->rest->query->param('firebug') || 0,
         action            => $self->hub->cgi->action,
         pluggable         => $self->hub->pluggable,
         loc               => \&loc,
