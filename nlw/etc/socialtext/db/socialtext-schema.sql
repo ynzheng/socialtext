@@ -279,7 +279,8 @@ CREATE TABLE container_type (
     hello_template text,
     last_update timestamptz DEFAULT now() NOT NULL,
     "global" boolean DEFAULT false,
-    columns integer DEFAULT 3
+    columns integer DEFAULT 3,
+    title text
 );
 
 CREATE SEQUENCE default_gadget_id

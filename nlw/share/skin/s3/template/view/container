@@ -1,7 +1,7 @@
 [% WRAPPER layout/html 
     id="dashBoard"
     head_template="element/container_head"
-    title=loc('Socialtext')
+    title=container.title
 %]
 <input id="containerID" type="hidden" value="[% container.id %]"/>
 <input id="widgetList" type="hidden" value="[% container.gadgetlist %]"/>
