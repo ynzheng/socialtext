@@ -3,13 +3,14 @@
 
 use warnings;
 use strict;
-use Test::More tests => 4;
+use Test::More tests => 5;
 
 BEGIN {
     use_ok( 'Socialtext::PageMeta' );
 }
 
 my $meta = Socialtext::PageMeta->new;
+is( $meta->Locked, '0', 'Locked defaults to false' );
 eval { $meta->from_hash( { DoesNotExist => 1 } ) };
 is( $@, '', 'no error when bogus keys are passed to from_has()' );
 
