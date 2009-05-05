@@ -4,10 +4,10 @@
 use strict;
 use warnings;
 use Socialtext::Account;
-use Socialtext::Permission qw( ST_ADMIN_WORKSPACE_PERM ST_EMAIL_IN_PERM );
+use Socialtext::Permission qw( ST_ADMIN_WORKSPACE_PERM ST_EMAIL_IN_PERM ST_LOCK_PERM );
 use Socialtext::Role;
 use Socialtext::Workspace;
-use Test::Socialtext tests => 50;
+use Test::Socialtext tests => 57;
 fixtures(qw( clean db ));
 
 {
@@ -53,6 +53,13 @@ fixtures(qw( clean db ));
 
         is( $ws->permissions->role_can(%p), ( $guest_has_email_in ? 0 : 1 ),
             "guest's email_in permission is unchanged after second call to set_permissions()" );
+
+        %p = (
+            role       => Socialtext::Role->WorkspaceAdmin(),
+            permission => ST_LOCK_PERM,
+        );
+        my $admin_has_lock = $ws->permissions->role_can(%p);
+        is( $admin_has_lock, 1, 'Admin has page lock permissions');
 
 	my %defaults;
         $defaults{allows_html_wafl} = ( $set_name =~ /^(member|intranet|public\-read)/ ) ? 1 : 0;

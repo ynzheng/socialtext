@@ -4,7 +4,7 @@ package Socialtext::Permission;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use base 'Exporter';
 use Class::Field 'field';
@@ -19,7 +19,7 @@ field 'name';
 # FIXME: This belongs elsewhere, in fixture creation code, perhaps
 Readonly my @RequiredPermissions => qw(
     read edit attachments comment delete email_in email_out edit_controls
-    admin_workspace request_invite impersonate
+    admin_workspace request_invite impersonate lock
 );
 sub EnsureRequiredDataIsPresent {
     my $class = shift;
@@ -38,7 +38,7 @@ sub _setup_exports {
 
     Readonly my @ExportedPermissions => qw(
         read edit attachments comment delete email_in email_out edit_controls
-        request_invite admin_workspace
+        request_invite admin_workspace lock
     );
 
     foreach my $name (@ExportedPermissions) {
@@ -176,6 +176,8 @@ to access the permissions you need.
 
 =head2 ST_ADMIN_WORKSPACE_PERM
 
+=head2 ST_LOCK_PERM
+
 =head1 CLASS METHODS
 
 =over 4
@@ -249,6 +251,10 @@ Impersonate another user in the workspace
 =item * admin_workspace
 
 Edit workspace settings, invite users.
+
+=item * lock
+
+Lock or unlock a page.
 
 =back
 
