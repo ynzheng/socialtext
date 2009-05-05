@@ -1109,10 +1109,8 @@ div.widget {
 }
 
 body#dashBoard div.widget.tan {
-	width: 100%;
 	margin: 10px 0 0 0;
 	background:#fbf2e3 url(../images/widgetTanTop.png) no-repeat top left;
-	float: right;
 }
 
 body#settingsPage div.widget,body#dashBoard div.widget {
@@ -4043,6 +4041,10 @@ body#dashBoard div.widget {
 
 body#dashBoard .widget .widgetHeader {
     cursor: move;
+}
+
+body#dashBoard .widget.tan .widgetHeader {
+    cursor: pointer;
 }
 
 body#dashBoard .hidden {
