@@ -1,3 +1,4 @@
+
 div#buttomButtons div#pageAttribution {
     margin: 5px 5px 0 190px;
     padding: 5px;
@@ -45,7 +46,7 @@ html body#dashBoard div#controls div#controlsRight ul.profile-links li a {
     left: 0;
 }
 
-/* The right-hand controls are always empty during wiki edit. */
+
 html body div#st-edit-mode-container div#controls div#controlsRight {
     width: 10px !important;
 }
@@ -307,3 +308,7 @@ div.pagination-container .paging-forward {
     width: 130px;
 }
 
+/* We're not sure why we need this, but we do, to get right column 62% */
+* html .container.signals #col1 {
+    width: 62%;
+}
