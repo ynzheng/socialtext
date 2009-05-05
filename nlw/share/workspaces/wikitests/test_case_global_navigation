@@ -25,7 +25,7 @@
 | click_and_wait | link=Profile |  |
 | text_like | contentContainer | Profile |
 | text_like | contentContainer | Updates |
-| text_like | contentContainer | Networks |
+| text_like | contentContainer | Colleagues |
 | text_like | contentContainer | Workspaces |
 | text_like | contentContainer | Tags |
 | open_ok | /%%workspace%%/ |  |

@@ -135,9 +135,10 @@
 | text_like | //a[contains(@href,'original/wikitest.txt')] | wikitest.txt |
 
 | click_and_wait | link=Settings |  |
+| wait_for_element_visible_ok | link=Time | 30000  |
 | click_and_wait | link=Time |  |
+| wait_for_element_visible_ok | timezone__time_display_seconds | 30000  |
 | check_ok | timezone__time_display_seconds |  |
-
 | click_and_wait | link=Save |  |
 
 click_and_wait | //div[@id='contentRight']/form/ul[2]/li[1]/a | |

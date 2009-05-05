@@ -21,7 +21,7 @@ t.runAsync([
     },
 
     function() { 
-        t.$('.table-create input[name=save]').click();
+        t.$('.table-create a.save').click();
 
         t.poll(function() {
             return ($(

@@ -98,7 +98,7 @@ proto.show = function () {
                 );
                 if (!matches.length) {
                     jQuery('<option />')
-                        .val(val).text(val).appendTo('#email_dest');
+                        .val(email).text(val).appendTo('#email_dest');
                 }
                 return false;
             }
