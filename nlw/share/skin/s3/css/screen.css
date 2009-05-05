@@ -1120,7 +1120,6 @@ div#contentRight form ul.formButtons li a {
 div.widget {
 	width: 90%;
 	margin: 10px 15px 0 0;
-	background: url(../images/widgetTop.png) no-repeat top left;
 	float: right;
 }
 
@@ -1129,13 +1128,15 @@ body#dashBoard div.widget.tan {
 	background:#fbf2e3 url(../images/widgetTanTop.png) no-repeat top left;
 }
 
-body#settingsPage div.widget,body#dashBoard div.widget {
+body#settingsPage div.widget,
+body#dashBoard div.widget.regular {
 	background: url(../images/dashWidgetTop.png) no-repeat top left;
 	margin-right: 0px;
 }
 
 
-body#dashBoard div#contentColumns div#contentLeft div.widget,body#settingsPage div#contentColumns div#contentLeft div.widget {
+body#dashBoard div#contentColumns div#contentLeft div.widget,
+body#settingsPage div#contentColumns div#contentLeft div.widget {
 	float: left;
 	margin: 10px 0 0 0;
 	width: 100%; 
@@ -1145,7 +1146,7 @@ body#dashBoard div#contentColumns div#contentRight div.widget,body#settingsPage 
 	width: 100%;
 }
 
-div.widget div.widgetHeader {
+div.widget.regular div.widgetHeader {
 	height: 25px;
 	background: url(../images/widgetHeader.png) no-repeat top right;
 }
@@ -1156,7 +1157,8 @@ body#dashBoard div.widget.tan div.widgetHeader {
 	background: url(../images/widgetTanHeader.png) no-repeat top right;
 }
 
-body#dashBoard div.widget div.widgetHeader,body#settingsPage div.widget div.widgetHeader {
+body#dashBoard div.widget.regular div.widgetHeader,
+body#settingsPage div.widget div.widgetHeader {
 	height: 35px;
 	background: url(../images/dashWidgetHeader.png) no-repeat top right;
 }
@@ -4055,7 +4057,7 @@ body#dashBoard div.widget {
     background-color: white !important;
 }
 
-body#dashBoard .widget .widgetHeader {
+body#dashBoard .widget.regular .widgetHeader {
     cursor: move;
 }
 
