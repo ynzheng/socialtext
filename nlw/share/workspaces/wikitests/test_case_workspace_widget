@@ -16,8 +16,8 @@
 | st-name-widget | 1 | myworkspace |
 | st-widget-title-like | myworkspace | Workspaces |
 | st-select-widget-frame | myworkspace |  |
-| text_like | //body | changes |
-| text_like | //body | views |
+| wait_for_text_present_ok | changes | 30000 |
+| wait_for_text_present_ok | views | 30000 |
 | wait_for_element_visible_ok | link=new page | 30000 |
 | wait_for_element_visible_ok | link=Workspace Widget %%start_time%% | 30000 |
 | wait_for_element_visible_ok | link=%%title%% | 30000 |
@@ -31,8 +31,8 @@
 | st-name-widget | 1 | myworkspace |
 | st-widget-title-like | myworkspace | Workspaces |
 | st-select-widget-frame | myworkspace |  |
-| text_like | //body | changes |
-| text_like | //body | views |
+| wait_for_text_present_ok | changes | 30000 |
+| wait_for_text_present_ok | views | 30000 |
 | wait_for_element_visible_ok | link=new page | 30000 |
 | wait_for_element_visible_ok | link=%%title%% | 30000 |
 | text_like | //body | %%title%% |
