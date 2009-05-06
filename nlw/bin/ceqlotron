@@ -184,10 +184,17 @@ sub do_work {
             Socialtext::Jobs->work_once($job);
             Socialtext::Timer->Pause('work_once');
 
+            my @failures = eval { $job->failure_log; }
+            push @failures, "failed to get failures: $@" if $@;
+            my $verb = (@failures) ? 'failed', 'finished';
             st_timed_log(
-                'info', 'CEQ', "worker finished " . $job->funcname,
+                'info', 'CEQ', "worker $verb " . $job->funcname,
                 Socialtext::User->SystemUser(),
-                $job->arg,
+                {
+                    %{$job->arg},
+                    jobid => $job->jobid,
+                    failures => \@failures,
+                }
                 Socialtext::Timer->Report()
             );
 
