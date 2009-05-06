@@ -12,5 +12,8 @@ unless (-d $reports_dir) {
     die "Couldn't find reports directory at $reports_dir!\n";
 }
 
+symlink "$reports_dir/lib/Socialtext/Reports", "lib/Socialtext/Reports"
+    or die "Can't symlink reports";
+
 chdir $reports_dir;
 shell_run("./setup-dev-env");

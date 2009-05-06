@@ -338,6 +338,13 @@
         'GET':
             '*/*':              [Socialtext::Rest::Wafl, GET_image]
 -
+    '/data/report/:name/:start/:duration':
+        'GET':
+            '*/*':     &default [Socialtext::Rest::ReportAdapter, GET_html]
+            'text/html':        *default
+            'application/json': [Socialtext::Rest::ReportAdapter, GET_json]
+        '*':                    [Socialtext::Rest::ReportAdapter, bad_method]
+-
     '/data':
         '*':                    [Socialtext::Rest, redirect_workspaces]
 -
