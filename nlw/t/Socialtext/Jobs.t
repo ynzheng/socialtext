@@ -2,7 +2,7 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::Socialtext tests => 22;
+use Test::Socialtext tests => 27;
 use Test::Exception;
 use Socialtext::SQL qw/:exec get_dbh/;
 
@@ -86,4 +86,21 @@ Process_a_failing_job: {
     is scalar(@failures), 1;
     is $failures[0], "failed!\n";
     is $Socialtext::Job::Test::Work_count, 0;
+}
+
+Process_a_failing_cmd_job: {
+    $jobs->clear_jobs();
+
+    use_ok 'Socialtext::Job::Cmd';
+
+    my $handle = Socialtext::JobCreator->insert('Socialtext::Job::Cmd', cmd => '/bin/false');;
+    is scalar($jobs->list_jobs( funcname => 'Socialtext::Job::Cmd' )), 1;
+   
+    $jobs->can_do('Socialtext::Job::Cmd');
+    $jobs->work_once();
+
+    my @failures = $handle->failure_log;
+    is scalar(@failures), 1;
+    is $failures[0], "rc=256";
+    is $handle->exit_status, 256, 'correct exit status';
 }

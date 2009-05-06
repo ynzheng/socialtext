@@ -44,10 +44,15 @@ override 'max_retries'          => sub {0};
 sub work {
     my $class = shift;
     my $job = shift;
-    my $self = $class->new(
-        job => $job
-    );
-    return $self->do_work();
+    eval {
+        my $self = $class->new(job => $job);
+        $self->do_work();
+    };
+    if ($@) {
+        # make sure to record a result of 255
+        $job->failed($@, 255);
+        die $@;
+    }
 }
 
 sub _build_workspace {

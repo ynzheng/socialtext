@@ -57,7 +57,9 @@ touch_a_file: {
     is $touch_handle->exit_status, 0, 'touch job completed';
     ok -f $touchfile, "$touchfile exists";
 
-    is $false_handle->exit_status, 1, 'false job failed';
+    is $false_handle->exit_status, 256, 'false job failed';
+    my @failures = $false_handle->failure_log;
+    is_deeply \@failures, ['rc=256'], 'errors recorded correctly';
     my $false_job = $false_handle->job;
     ok !$false_job, 'false job failed permanently';
 }
