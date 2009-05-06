@@ -1,5 +1,3 @@
-from Recent Changes list view page: click a revisions link for a page with at least 5 revisions | correct All Revisions page appears
-
 | *Comment* | START Test Case: Revisions |  |
 
 | *Comment* | Test Case: Revisions: Create a page with five revisions |  |
@@ -46,13 +44,6 @@ from Recent Changes list view page: click a revisions link for a page with at le
 | *Comment* | Test Case: Revisions: Check the correct radio buttons are set |  |
 | verifyValue | new_revision_id | on |
 | verifyValue | document.revisions.old_revision_id[1] | on |
-
- click BackTo Current Revision | page appears
-
- from same page: click Revisions link at bottom of page | correct All Revisions page appears
-
- All Revisions page | check page for correctness | top 2 revisions are selected
-
 | clickAndWait | link=Back To Current Revision |  |
 | text_like | revision number five |  |
 | clickAndWait | `//a[contains(@href,'action=revision_list')]` |  |
@@ -63,8 +54,6 @@ from Recent Changes list view page: click a revisions link for a page with at le
 | verifyValue | new_revision_id | on |
 | verifyValue | document.revisions.old_revision_id[1] | on |
 
- Compare top 2 revisions | compare page appears & correct | test both "Compare Revisions" buttons
-
 | *Comment* | Test Case: Revisions: Comparing revisions |  |
 | clickAndWait | link=Compare Revisions |  |
 | text_like | qr/Revision 4.+Revision 5.+four.+five/s |  |
@@ -73,8 +62,6 @@ from Recent Changes list view page: click a revisions link for a page with at le
 | clickAndWait | link=All Revisions |  |
 | clickAndWait | //a[@class='compareRevisions genericBlueButton'][1] |  |
 | text_like | qr/Revision 4.+Revision 5.+four.+five/s |  |
-
- Compare two other revisions | compare page appears & correct
 
 | clickAndWait | link=All Revisions |  |
 | click_ok | document.revisions.old_revision_id[4] |  |
@@ -92,8 +79,6 @@ from Recent Changes list view page: click a revisions link for a page with at le
 | *Comment* | Test Case: Revisions. cannot compare revision to itself |  |
 | verifyAlert | You cannot compare a revision to itself. |  |
 
-Compare Revisions: older vs. younger | page appears with correct revisions. Diffs are reasonable and correct. | older on left, younger on right
-
 | *Comment* | Test Case: Revisions: older vs. younger |  |
 | clickAndWait | link=Back To Current Revision |  |
 | text_like | revision number five |  |
@@ -107,18 +92,6 @@ Compare Revisions: older vs. younger | page appears with correct revisions. Diff
 | click_ok | document.revisions.new_revision_id[1] |  |
 | clickAndWait | link=Compare Revisions |  |
 | text_like | qr/Revision 5.+Revision 4.+five.+four/s |  |
-
- Back To Current Revision | current revision appears
-
- Click Revisions link again | All Revisions page appears with top two items selected
-
- click Compare Revisions | revision compare page appears
-
- toggle "View Formatted" | Formatted/unformatted views appear correctly.
-
- link at top of older revision | older revision page appears and correct.
-
- link at top of newer revision | newer revision page appears and correct.
 
 | *Comment* | Test Case: Revisions: Checking revision formatting views |  |
 | clickAndWait | link=Back To Current Revision |  |
@@ -165,8 +138,6 @@ Find the same page using search, What's New list, and Revisions link. Observe re
  from All Revisions, click an older version | older version appears
 from Compare Revisions, click the link above the older version | older version appears
 
- All Revisions | All Revisions page appears
-
 | clickAndWait | `//a[contains(@href,'action=revision_list')]` |  |
 | wait_for_element_visible_ok | link=Revision 2 | 30000 |
 | clickAndWait | link=Revision 2 |  |
@@ -177,22 +148,6 @@ from Compare Revisions, click the link above the older version | older version a
 | clickAndWait | //strong |  |
 | text_like | revision number two %%start_time%% |  |
 | clickAndWait | link=All Revisions |  |
-
- click the older version again
-
- toggle "Source View" link | Formatted/unformatted views appear correctly.
-
- Restore revision X | Revision X appears in view mode as current revision
-
- Revisions at top of sidebar | All Revisions page appears
-
- All Revisions | restored revision is latest revision at top of revisions list
-
- Check revision number | revision number is the same as the revision number from which it was restored | revision numbers are not
-
- monotonically increasing
-
- Back to Current Revision | restored revision appears
 
 | *Comment* | Test Case: Revisions: Restoring revision |  |
 | wait_for_element_visible_ok | link=Revision 2 | 30000 |
@@ -208,6 +163,30 @@ from Compare Revisions, click the link above the older version | older version a
 | text_like | qr/Revision 2.+Revision 5.+Revision 4.+Revision 3.+Revision 2.+Revision 1/ |  |
 | clickAndWait | link=Back To Current Revision |  |
 | text_like | revision number two |  |
+
+| *Comment* | Test Case: Revisions: make a revision with an edit summary |  |
+| open_ok | /%%workspace%%/?test case revisions %%start_time%% |  |
+| wait_for_element_visible_ok | st-edit-button-link | 30000 |
+| click_ok | st-edit-button-link |  |
+| wait_for_element_visible_ok | link=Wiki Text | 30000 |
+| click_ok | link=Wiki Text |  |
+| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| type_ok | wikiwyg_wikitext_textarea | Revision 7 containing an edit summary |
+| wait_for_element_visible_ok | st-edit-summary-text-area | 30000 |
+| type_ok | st-edit-summary-text-area | Edit Summary %%start_time%% |
+| clickAndWait | st-save-button-link |  |
+
+| *Comment* | Test Case: Revisions: Check for edit summary in revision compare |  |
+| clickAndWait | `//a[contains(@href,'action=revision_list')]` |  |
+| text_like | qr/Revision 3.+Revision 2/ |  |
+| wait_for_element_visible_ok | link=Compare Revisions | 30000 |
+| clickAndWait | link=Compare Revisions |  |
+| text_like | qr/revision 2.+by.+on/ims |  |
+| text_like | qr/revision 3.+by.+on.+saying.+Edit Summary %%start_time%%/ims |  |
+
+| *Comment* | Test Case: Revisions: Check for edit summary in revision itself |  |
+| clickAndWait | link=Revision 3 |  |
+| text_like | qr/%%short_username%%.+Edit Summary %%start_time%%/im |  |
 
 | *Comment* | Test Case: Revisions: Teardown |  |
 | st-admin | purge-page --w %%workspace%% --page test_case_revisions_%%start_time%% | was purged |
