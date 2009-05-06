@@ -269,3 +269,4 @@ t/Socialtext/Signal/dm_email.t
 lib/Socialtext/Job/SignalDMNotify.pm
 t/wikitests/signals/dm-email.wiki
 t/wikitests/signals/dm-prefs.wiki
+lib/Socialtext/Reports
