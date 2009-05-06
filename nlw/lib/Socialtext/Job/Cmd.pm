@@ -24,7 +24,8 @@ sub do_work {
         $self->completed($output);
     }
     else {
-        $self->failed($?, $output);
+        $output ||= "rc=$?";
+        $self->failed($output,$?);
     }
 }
 
