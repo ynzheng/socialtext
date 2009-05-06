@@ -2,28 +2,76 @@ Tests for Tag History for a page via the REST API
 
 * Fixture: SocialRest
 
-| Comment          | Test Setup    |                                     |
-| set              | username      | u%%start_time%%@ken.socialtext.net  |
-| create-user      | %%username%%  | %%password%%                        |
-| http-user-pass   | %%username%%  | %%password%%                        |
-| set              | workspace     | w%%start_time%%                     |
-| create-workspace | %%workspace%% |                                     |
-| add-member       | %%username%%  | %%workspace%%                       |
-| set              | page          | Monkey                  |           |
-| edit-page        | %%workspace%% | %%page%%                | Hi there! |
-| set              | page_uri      | /data/workspaces/%%workspace%%/pages/%%page%% |
+| Comment          | Test Setup    |                                         |
+| set              | admin         | admin%%start_time%%@ken.socialtext.net  |
+| set              | member        | member%%start_time%%@ken.socialtext.net |
+| create-user      | %%admin%%     | %%password%%                            |
+| create-user      | %%member%%    | %%password%%                            |
+| set              | workspace     | w%%start_time%%                         |
+| create-workspace | %%workspace%% |                                         |
+| add-workspace-admin | %%admin%%  | %%workspace%% |
+| add-member          | %%member%% | %%workspace%% |
+
+| Comment | Set up page |                                      |
+| set     | page        | Monkey                               |
+| set     | pages_uri   | /data/workspaces/%%workspace%%/pages |
+| set     | page_uri    | %%pages_uri%%/%%page%%               |
+
+| Comment        | Log in as admin |              |           |
+| http-user-pass | %%admin%%       | %%password%% |           |
+| edit-page      | %%workspace%%   | %%page%%     | Hi there! |
 
 | Comment   | Check for locked flag |                  |
 | GET       | %%page_uri%%          | application/json |
 | code-is   | 200                   |                  |
 | body-like | "locked":"0"           |                  |
 
-| Comment   | Set the lock state |                  |
-| put-json  | %%page_uri%%          | {"content":"Pairing is fun","locked":"1"} |
-| code-is   | 204                   |                  |
+| Comment  | Set the lock state |                                           |
+| put-json | %%page_uri%%       | {"content":"Pairing is fun","locked":"1"} |
+| code-is  | 204                |                                           |
+
+| Comment   | Check for locked flag  |                  |
+| GET       | %%page_uri%%?verbose=1 | application/json |
+| code-is   | 200                    |                  |
+| body-like | "locked":"1"           |                  |
+| body-like | Pairing is fun         |                  |
+
+| Comment | set html content   |                        |        |
+| put     | %%page_uri%%       | Content-type=text/html | insane |
+| code-is | 204                |                        |        |
+
+| Comment   | Check for locked flag  |                  |
+| GET       | %%page_uri%%?verbose=1 | application/json |
+| code-is   | 200                    |                  |
+| body-like | "locked":"1"           |                  |
+| body-like | insane                 |                  |
+
+| Comment | set wikitext content |                                  |          |
+| put     | %%page_uri%%       | Content-type=text/x.socialtext-wiki | differnt |
+| code-is | 204                |                                    |          |
+
+| Comment   | Check for locked flag  |                  |
+| GET       | %%page_uri%%?verbose=1 | application/json |
+| code-is   | 200                    |                  |
+| body-like | "locked":"1"           |                  |
+| body-like | differnt             |                  |
+
+| Comment        | Log in as a workspace member |              |
+| http-user-pass | %%member%%                   | %%password%% |
 
 | Comment   | Check for locked flag |                  |
 | GET       | %%page_uri%%          | application/json |
 | code-is   | 200                   |                  |
-| body-like | "locked":"1"           |                  |
+| body-like | "locked":"1"          |                  |
 
+| Comment  | Set the lock state |                                           |
+| put-json | %%page_uri%%       | {"content":"Pairing is fun","locked":"1"} |
+| code-is  | 403                |                                           |
+
+| Comment | set html content   |                        |        |
+| put     | %%page_uri%%       | Content-type=text/html | insane |
+| code-is | 403                |                        |        |
+
+| Comment | set wikitext content |                                  |          |
+| put     | %%page_uri%%       | Content-type=text/x.socialtext-wiki | differnt |
+| code-is | 403                |                                    |          |

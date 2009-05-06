@@ -199,6 +199,8 @@ sub PUT_wikitext {
 
     return $self->no_workspace() unless $self->workspace;
     return $self->not_authorized() unless $self->user_can('edit');
+    return $self->not_authorized()
+        if ($self->page->locked && !$self->user_can('lock'));
 
     my $page = $self->page;
     my $existed_p = $page->content ne '';
@@ -229,6 +231,8 @@ sub PUT_html {
 
     return $self->no_workspace() unless $self->workspace;
     return $self->not_authorized() unless $self->user_can('edit');
+    return $self->not_authorized()
+        if ($self->page->locked && !$self->user_can('lock'));
 
     my $page = $self->page;
     my $existed_p = $page->content ne '';
@@ -264,6 +268,8 @@ sub PUT_json {
 
     return $self->no_workspace() unless $self->workspace;
     return $self->not_authorized() unless $self->user_can('edit');
+    return $self->not_authorized()
+        if ($self->page->locked && !$self->user_can('lock'));
 
     my $page = $self->page;
     my $existed_p = $page->content ne '';
