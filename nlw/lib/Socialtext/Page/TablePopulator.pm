@@ -104,6 +104,8 @@ sub populate {
                 $page->{revision_id}, $page->{revision_count},
                 $page->{revision_num},
                 $page->{type}, $page->{deleted}, $page->{summary},
+                $page->{edit_summary} || '',
+                $page->{locked} || 0,
             ];
 
             my %tags;

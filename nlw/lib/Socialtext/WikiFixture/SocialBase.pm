@@ -544,6 +544,18 @@ Put to the specified URI
 
 sub put { shift->_call_method('put', @_) }
 
+=head2 put_json( uri, json )
+
+Put json to the specified URI
+
+=cut
+
+sub put_json {
+    my $self = shift;
+    my $uri = shift;
+    $self->put($uri, 'Content-Type=application/json', @_);
+}
+
 =head2 set_http_keepalive ( on_off )
 
 Enables/disables support for HTTP "Keep-Alive" connections (defaulting to I<off>).
