@@ -8,6 +8,7 @@ use Class::Field qw(field);
 use KinoSearch::Highlight::Highlighter;
 use KinoSearch::Searcher;
 use Socialtext::Log qw(st_log);
+use Socialtext::Timer;
 use Socialtext::Search::AbstractFactory;
 use Socialtext::Search::KinoSearch::Factory;
 use Socialtext::Search::KinoSearch::QueryParser;
@@ -72,7 +73,10 @@ sub _search {
     my $query = $self->$query_parser_method($query_string);
     $self->_authorize( $query, $authorizer );
     _debug("Performing actual search for query");
-    return $self->searcher->search( query => $query );
+    Socialtext::Timer->Continue('ks_raw');
+    my $hits = $self->searcher->search( query => $query );
+    Socialtext::Timer->Pause('ks_raw');
+    return $hits;
 }
 
 # Either do nothing if the query's authorized, or throw NoSuchWorkspace or
