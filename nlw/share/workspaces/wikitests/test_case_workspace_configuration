@@ -126,12 +126,15 @@ text_like | comment_form | Red Field |
 | st-admin | set_workspace_config --workspace %%workspace%% restrict_invitation_to_search 1 |  |
 | click_and_wait | link=Settings |  |
 | click_and_wait | link=Invite New Users |  |
-| text_like | contentRight | All candidate email addresses must match this pattern |
+| text_like | contentRight | All candidate email addresses must match this pattern: %%username%% |
 
 | *Comment* | Test Case: Workspace Configuration Invitation search and invite user {bz: 547} |  |
 | type_ok | user_search | %%username%% |
 | click_and_wait | link=Search |  |
-| text_like | contentRight | %%username%% |
+
+| *Comment* | Test Case: Workspace Configuration Invitation a checkbox should have arrived |  |
+| wait_for_text_present_ok | Search Results | 30000 |
+| wait_for_element_visible_ok | //input[@value='%%username%%'] | 30000 |
 | st-admin | set_workspace_config --workspace %%workspace%% restrict_invitation_to_search 0 |  |
 | st-admin | set_workspace_config --workspace %%workspace%% invitation_filter "" |  |
 
