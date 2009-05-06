@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 
-use Test::Socialtext tests => 25;
+use Test::Socialtext tests => 29;
 fixtures( 'admin_with_extra_pages' );
 
 my $hub = new_hub('admin');
@@ -81,3 +81,24 @@ my $creator = Socialtext::User->new( username => 'devnull1@socialtext.com' );
     is $page->metadata->Subject, 'new line',
         'Page loads can handle newlines in Subjects - found in the wild';
 }
+
+{ # locked tests
+    my $title = "A Locked Page " . time;
+    my $page = Socialtext::Page->new( hub => $hub )->create(
+        title   => $title,
+        content => 'This page is locked.',
+        creator => $creator,
+    );
+    is $page->locked, 0, 'New page is unlocked';
+    $page->lock;
+    is $page->locked, 1, 'page is locked';
+    $page->unlock;
+    is $page->locked, 0, 'page is unlocked';
+
+    # Check that lock saving works
+    $page->lock;
+    $page->store(user => $creator);
+    my $page2 = $hub->pages->new_from_name($title);
+    is $page2->locked, 1, 'Lock state is saved and restored';
+}
+

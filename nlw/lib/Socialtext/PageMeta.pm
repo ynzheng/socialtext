@@ -21,7 +21,7 @@ field Type      => 'wiki';  # Page type - (wiki|spreadsheet)
 field Summary   => '';
 field MessageID => '';
 field RevisionSummary => '';
-field Locked    => '0';
+field Locked    => 0;
 field Category  => [];
 field Encoding  => '';
 

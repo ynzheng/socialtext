@@ -56,6 +56,7 @@ sub to_result {
         ) : (),
         is_spreadsheet => $self->is_spreadsheet,
         edit_summary => $self->{edit_summary},
+        Locked     => $self->{locked},
     };
 
     return $result;
@@ -82,6 +83,7 @@ sub hub            { $_[0]->{hub} || die "No hub was given to the page object"}
 sub is_spreadsheet { $_[0]->{page_type} eq 'spreadsheet' }
 sub current_revision_num { $_[0]->{current_revision_num} }
 sub revision_count { $_[0]->{revision_count} }
+sub locked         { $_[0]->{locked} }
 
 sub tags {
     my $self = shift;
@@ -109,6 +111,7 @@ sub hash_representation {
         tags           => $self->{tags},
         page_uri       => $self->full_uri,
         modified_time  => $self->modified_time,
+        locked         => $self->{locked},
     };
     return $hash;
 }
