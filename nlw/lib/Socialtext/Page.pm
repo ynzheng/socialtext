@@ -903,6 +903,7 @@ sub update_db_metadata {
         $hash->{type}, $self->deleted ? '1' : '0', 
         $self->metadata->Summary,
         $self->metadata->RevisionSummary,
+        $self->metadata->Locked ? '1' : '0',
         $wksp_id, $pg_id
     );
     my $insert_or_update;
@@ -914,7 +915,7 @@ sub update_db_metadata {
                 creator_id = ?, create_time = ?,
                 current_revision_id = ?, current_revision_num = ?,
                 revision_count = ?,
-                page_type = ?, deleted = ?, summary = ?, edit_summary = ?
+                page_type = ?, deleted = ?, summary = ?, edit_summary = ?, locked = ?
             WHERE
                 workspace_id = ? AND page_id = ?
 UPDSQL
@@ -932,7 +933,7 @@ UPDSQL
                 creator_id, create_time,
                 current_revision_id, current_revision_num, 
                 revision_count,
-                page_type, deleted, summary, edit_summary,
+                page_type, deleted, summary, edit_summary, locked,
                 workspace_id, page_id
             )
             VALUES (
@@ -941,7 +942,7 @@ UPDSQL
                 ?, ?::timestamptz,
                 ?, ?, 
                 ?, 
-                ?, ?, ?, ?,
+                ?, ?, ?, ?, ?,
                 ?, ?
             )
 INSSQL
@@ -1717,6 +1718,24 @@ sub is_in_category {
     my $category = shift;
 
     grep {$_ eq $category} @{$self->metadata->Category};
+}
+
+sub unlock {
+    my $self = shift;
+
+    $self->metadata->Locked(0);
+}
+
+sub lock {
+    my $self = shift;
+
+    $self->metadata->Locked(1);
+}
+
+sub locked {
+    my $self = shift;
+
+    return $self->metadata->Locked;
 }
 
 sub deleted {
