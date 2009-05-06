@@ -208,6 +208,7 @@ sub update_from_remote {
     my $subject     = $self->utf8_decode($p{subject});
     my $edit_summary = $self->utf8_decode($p{edit_summary});
     my $tags        = $p{tags};
+    my $locked      = exists($p{locked}) ? $p{locked} : $self->locked;
 
     if ($tags) {
         $tags = [ map { $self->utf8_decode($_) } @$tags ];
@@ -239,14 +240,13 @@ sub update_from_remote {
     $edit_summary ||= '';
 
     $self->load;
-
     if ( $self->revision_id ne $revision_id ) {
         Socialtext::Events->Record({
             event_class => 'page',
             action => 'edit_contention',
             page => $self,
         });
-
+ 
         my $ws = $self->hub->current_workspace;
 
         st_log->info(
@@ -269,8 +269,11 @@ sub update_from_remote {
         categories       => $tags,
         user             => $user,
         edit_summary     => $edit_summary,
+        locked           => $locked,
         $p{date} ? ( date => $p{date} ) : (),
     );
+
+    # XXX: record a lock/unlock event.
 
     Socialtext::Events->Record({
         event_class => 'page',
@@ -302,6 +305,7 @@ various places where this has been done in the past.
         date             => { can  => [qw(strftime)], default => undef },
         edit_summary     => { type => SCALAR,    default => '' },
         signal_edit_summary => { type => SCALAR, default => undef },
+        locked              => { type => SCALAR, default => undef },
     };
     sub update {
         my $self = shift;
@@ -315,12 +319,16 @@ various places where this has been done in the past.
         my $revision
             = $self->id eq $args{original_page_id} ? $args{revision} : 0;
 
+
         my $metadata = $self->metadata;
         $metadata->Subject($args{subject});
         $metadata->Revision($revision);
         $metadata->Received(undef);
         $metadata->MessageID('');
         $metadata->RevisionSummary(Socialtext::String::trim($args{edit_summary}));
+        if (defined($args{locked})) {
+            $metadata->Locked($args{locked});
+        }
         $metadata->loaded(1);
         foreach (@{$args{categories}}) {
             $metadata->add_category($_);

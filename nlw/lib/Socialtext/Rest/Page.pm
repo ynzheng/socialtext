@@ -110,7 +110,6 @@ sub GET_json {
     my $self = shift;
     my $rest = shift;
 
-
     $self->if_authorized(
         'GET',
         sub {
@@ -154,6 +153,7 @@ sub GET_json {
                 }
 
                 $page_hash->{metadata} = $page->metadata->to_hash if $metadata;
+                $page_hash->{locked} = $page->locked;
 
                 $self->_record_view($page);
                 return encode_json($page_hash);
@@ -292,6 +292,7 @@ sub PUT_json {
         edit_summary => $edit_summary,
         signal_edit_summary => $signal_edit_summary,
         $object->{tags} ? (tags => $object->{tags}) : (),
+        $object->{locked} ? (locked => $object->{locked}) : (),
     );
 
     $rest->header(
