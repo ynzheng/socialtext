@@ -74,8 +74,8 @@ sub DELETE {
     my $self = shift;
     my ($rest) = @_;
 
-    return $self->no_workspace() unless $self->workspace;
-    return $self->not_authorized() unless $self->user_can('edit');
+    my $permission_failed = $self->_delete_permission_failed();
+    return $permission_failed if ( $permission_failed );
 
     if ($self->_find_tag( $self->tag)) {
         $self->_delete_tag($self->tag);
@@ -87,6 +87,14 @@ sub DELETE {
     return '';
 }
 
+sub _delete_permission_failed {
+    my $self = shift;
+
+    return $self->no_workspace() unless $self->workspace;
+    return $self->not_authorized() unless $self->user_can('edit');
+
+    return 0;
+}
 
 sub _find_tag {
 }
