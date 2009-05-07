@@ -46,6 +46,7 @@
     [% END %]
   </head>
   <body id="[% id || 'socialtext-wiki' %]">
+    [% FILTER decorate('body') %]
     <div id="mainWrap">
       <div id="header" class="st-wiki-nav">
         <div id="logo"><a href="/">[% loc('Socialtext') %]</a></div><!-- logo END -->
@@ -255,5 +256,6 @@
         </div><!-- footer END -->
       </div><!-- contentWrap END -->
     </div><!-- mainWrap END -->
+    [% END %]
   </body>
 </html>

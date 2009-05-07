@@ -50,12 +50,14 @@
             [% IF workspace_present AND perm_admin %]
             <h4>[% loc('This Workspace') %]</h4>
             <ul class="leftNavList">
+              [% FILTER decorate('workspacesettings') %]
               <li><a href="?action=workspaces_settings_appearance">[% loc('Workspace Appearance') %]</a></li>
               <li><a href="?action=workspaces_settings_features">[% loc('Workspace Features') %]</a></li>
               [% IF current_workspace.allows_skin_upload %]
                 <li><a href="?action=workspaces_settings_skin">[% loc('Workspace Skin') %]</a></li>
               [% END %]
               <li><a href="?action=workspaces_permissions">[% loc('Workspace Privacy') %]</a></li>
+              [% END %]
             </ul>
             [% END %]
             [% IF perm_edit %]
