@@ -270,3 +270,4 @@ lib/Socialtext/Job/SignalDMNotify.pm
 t/wikitests/signals/dm-email.wiki
 t/wikitests/signals/dm-prefs.wiki
 lib/Socialtext/Reports
+t/Socialtext/People/helpers.t
