@@ -106,6 +106,7 @@ Readonly our @COLUMNS => (
     'cascade_css',
     'uploaded_skin',
     'allows_skin_upload',
+    'allows_page_locking',
 );
 
 # Hash for quick lookup of columns
