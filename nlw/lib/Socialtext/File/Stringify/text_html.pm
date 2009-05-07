@@ -10,10 +10,6 @@ sub to_string {
     my ( $class, $file ) = @_;
     my @cmd = "lynx";
 
-    if (-x '/usr/bin/elinks') {
-        @cmd = qw(/usr/bin/elinks -no-home);
-    }
-
     push @cmd, '-dump' => $file;
     my $text = Socialtext::System::backtick(@cmd);
     $text = Socialtext::File::Stringify::Default->to_string($file) if $? or $@;
