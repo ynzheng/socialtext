@@ -197,6 +197,7 @@ sub do_work {
                 },
                 Socialtext::Timer->Report()
             );
+            die "Job encountered failures" if @failures;
 
             next if $OnceMode;
             $jobs_remaining--;
