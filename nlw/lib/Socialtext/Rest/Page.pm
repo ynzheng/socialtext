@@ -184,6 +184,8 @@ sub DELETE {
     my ( $self, $rest ) = @_;
 
     return $self->no_workspace()   unless $self->workspace;
+    my $lock_check_failed = $self->page_lock_permission_fail();
+    return $lock_check_failed if ($lock_check_failed);
 
     $self->if_authorized(
         DELETE => sub {

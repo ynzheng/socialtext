@@ -68,7 +68,6 @@ Tests for Tag History for a page via the REST API
 | post    | %%page_uri%%/attachments?name=test.txt    | Content-Type=text/plain | Admin attachment text |
 | code-is | 201               |                                    |          |
 
-
 | Comment        | Log in as a workspace member |              |
 | http-user-pass | %%member%%                   | %%password%% |
 
@@ -101,6 +100,15 @@ Tests for Tag History for a page via the REST API
 | post    | %%page_uri%%/attachments?name=test.txt    | Content-Type=text/plain | Attachment text |
 | code-is | 403                |                                    |          |
 
+| Comment | User cannot delete a locked page |
+| delete  | %%page_uri%%    |
+| code-is | 403                      |
+
+| Comment        | Log in as admin |
+| http-user-pass | %%admin%%       | %%password%% |
+| Comment        | Admin can delete locked page |
+| delete  | %%page_uri%%    |
+| code-is | 204                    |
 
 
 
