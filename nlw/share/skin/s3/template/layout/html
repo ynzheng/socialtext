@@ -161,7 +161,7 @@
             </li>
           [% END %]
         [% IF invite_url %]
-          <li><a id="st-wiki-subnav-link-invite" href="[% invite_url %]">[% loc("Invite!") %]</a>
+          <li><a class="nodropdown" id="st-wiki-subnav-link-invite" href="[% invite_url %]">[% loc("Invite!") %]</a>
         [% END %]
         </ul>
         <div id="workSpaceLink">

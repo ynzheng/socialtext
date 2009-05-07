@@ -238,10 +238,6 @@ div#mainNav div#workSpaceLink a:hover {
 	color: #a6e4fc;
 	text-decoration: none;
 }
-
-div#mainNav ul.level1>li>a#st-wiki-subnav-link-invite { 
-    background: none;
-}
 /* mainNav End */
 
 /* contentWrap Start */
@@ -3145,6 +3141,11 @@ div#mainNav ul.level2 li a {
 /* WTF is the dropdownTick doing on the li element in styles.css? */
 div#mainNav ul.level1>li>a { 
     background: url(../images/dropdownTick.png) no-repeat center right;
+}
+
+div#mainNav ul.level1 li a.nodropdown {
+    background: none;
+    padding-right: 0;
 }
 
 div#mainNav ul.level1>li { 
