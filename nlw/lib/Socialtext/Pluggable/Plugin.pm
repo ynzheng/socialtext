@@ -332,6 +332,11 @@ sub redirect {
     return;
 }
 
+sub is_workspace_admin {
+    my $self = shift;
+    return $self->hub->checker->check_permission('admin_workspace');
+}
+
 sub logged_in {
     my $self = shift;
     return 0 unless $self->hub;
