@@ -243,7 +243,7 @@ executes C<< $self->$perl_method(@args) >>, and if not returns
 C<< $self->not_authorized >>.
 
 The default implementation of C<permission> requires C<read> for C<GET> and
-C<edit> for C<PUT>, C<POST>, and C<DELETE>.
+C<edit> for C<PUT>, C<POST>, and  C<delete> for C<DELETE>.
 
 =cut
 sub if_authorized {
