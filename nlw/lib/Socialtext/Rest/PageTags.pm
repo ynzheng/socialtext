@@ -7,6 +7,7 @@ use warnings;
 use Socialtext::String;
 
 use base 'Socialtext::Rest::Tags';
+use Socialtext::HTTP ':codes';
 
 =head1 NAME
 
@@ -31,6 +32,25 @@ See L<Socialtext::Rest::Tags> for information on representations.
 =cut
 sub last_modified   { $_[0]->page->modified_time }
 sub collection_name { "Tags for page " . $_[0]->page->title . "\n" }
+
+=head2 POST_text
+
+Calls add_text_element with the text/plain representation it was given.
+
+=cut
+
+sub POST_text {
+    my ( $self, $rest ) = @_;
+
+    my $unable_to_edit = $self->page_locked_or_unauthorized();
+    return $unable_to_edit if ($unable_to_edit);
+
+    my $location = $self->add_text_element($rest->getContent);
+    $rest->header( -status    => HTTP_201_Created,
+                   -type      => 'text/plain',
+                   -Location  => $location );
+    return "Added.";
+}
 
 sub _entities_for_query {
     my $self = shift;

@@ -316,6 +316,17 @@ sub no_workspace {
     return $ws . ' not found';
 }
 
+sub page_locked_or_unauthorized {
+    my $self = shift;
+
+    return $self->no_workspace() unless $self->workspace;
+    return $self->not_authorized() unless $self->user_can('edit');
+    return $self->not_authorized()
+        if ($self->page->locked && !$self->user_can('lock'));
+
+    return 0;
+}
+
 # REVIEW: making use of CGI.pm here
 sub full_url {
     my $self = shift;
