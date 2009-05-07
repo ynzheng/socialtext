@@ -194,13 +194,22 @@ sub DELETE {
     );
 }
 
-sub PUT_wikitext {
-    my ( $self, $rest ) = @_;
+sub _user_unable_to_edit {
+    my $self = shift;
 
     return $self->no_workspace() unless $self->workspace;
     return $self->not_authorized() unless $self->user_can('edit');
     return $self->not_authorized()
         if ($self->page->locked && !$self->user_can('lock'));
+
+    return 0;
+}
+
+sub PUT_wikitext {
+    my ( $self, $rest ) = @_;
+
+    my $unable_to_edit = $self->_user_unable_to_edit();
+    return $unable_to_edit if ($unable_to_edit);
 
     my $page = $self->page;
     my $existed_p = $page->content ne '';
@@ -229,10 +238,8 @@ sub PUT_wikitext {
 sub PUT_html {
     my ( $self, $rest ) = @_;
 
-    return $self->no_workspace() unless $self->workspace;
-    return $self->not_authorized() unless $self->user_can('edit');
-    return $self->not_authorized()
-        if ($self->page->locked && !$self->user_can('lock'));
+    my $unable_to_edit = $self->_user_unable_to_edit();
+    return $unable_to_edit if ($unable_to_edit);
 
     my $page = $self->page;
     my $existed_p = $page->content ne '';
@@ -266,10 +273,8 @@ sub PUT_html {
 sub PUT_json {
     my ( $self, $rest ) = @_;
 
-    return $self->no_workspace() unless $self->workspace;
-    return $self->not_authorized() unless $self->user_can('edit');
-    return $self->not_authorized()
-        if ($self->page->locked && !$self->user_can('lock'));
+    my $unable_to_edit = $self->_user_unable_to_edit();
+    return $unable_to_edit if ($unable_to_edit);
 
     my $page = $self->page;
     my $existed_p = $page->content ne '';
