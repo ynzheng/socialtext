@@ -41,6 +41,11 @@ sub _add_tag {
     $self->page->add_tags($tag);
 }
 
+sub _delete_permission_failed {
+    my $self = shift;
+    return $self->page_locked_or_unauthorized();
+}
+
 # REVIEW: this sure looks a lot like _add_tag
 sub _delete_tag {
     my $self = shift;
