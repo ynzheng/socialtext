@@ -1637,6 +1637,59 @@ sub purge_page {
             . " workspace.\n" );
 }
 
+sub lock_page {
+    my $self = shift;
+    $self->_toggle_page_lock( 1 );
+}
+
+sub unlock_page {
+    my $self = shift;
+    $self->_toggle_page_lock( 0 );
+}
+
+sub _toggle_page_lock {
+    my $self = shift;
+    my $status = shift;
+    my ( $hub, $main ) = $self->_require_hub();
+    my $page = $self->_require_page($hub);
+    my $workspace = $hub->current_workspace;
+
+    $self->_error(loc(
+        "Page locking is turned off for workspace '[_1]'.\n",
+        $workspace->title()
+    )) unless ( $workspace->allows_page_locking );
+
+    eval {
+        $page->metadata->Locked($status);
+        $page->store( user => Socialtext::User->SystemUser );
+    };
+    if ($@) {
+        die "$@";
+    }
+
+    my $message = ( $status ) ? 'locked' : 'unlocked';
+
+    $self->_success(loc(
+        "Page '[_1]' in workspace '[_2]' has been [_3].",
+        $page->metadata->Subject, $workspace->title(), $message
+    ));
+}
+
+sub can_lock_pages {
+    my $self = shift;
+    my ( $hub, $main ) = $self->_require_hub();
+    my $user = $self->_require_user();
+
+    $hub->current_user($user);
+    my $can_lock = $hub->checker->check_permission('lock') && $hub->current_workspace->allows_page_locking;
+
+    $self->_success(loc(
+        "User '[_1]' [_2] lock a page.\n",
+        $user->username,
+        $can_lock? 'can' : 'cannot',
+    ));
+}
+
 sub purge_attachment {
     my $self = shift;
 
@@ -2671,6 +2724,7 @@ Socialtext::CLI - Provides the implementation for the st-admin CLI script
   get-user-account [--username or --email]
   show-profile [--username or --email]
   hide-profile [--username or --email]
+  can-lock-pages [--username or --email] --workspace
   mass-add-users --csv --account
 
   WORKSPACES
@@ -2696,6 +2750,8 @@ Socialtext::CLI - Provides the implementation for the st-admin CLI script
   list-workspaces [--ids]
   html-archive --workspace --file
   mass-copy-pages --workspace --target [--prefix]
+  lock-page --workspace --page
+  unlock-page --workspace --page
   purge-page --workspace --page
   purge-attachment --workspace --page --attachment
   search-tags --workspace --search
@@ -2861,6 +2917,10 @@ Print the primary account of the specified user.
 =head2 hide-profile [--email or --username]
 
 Show or hide the user's profile in the people system.
+
+=head2 can-lock-pages [--email or --username] --workspace
+
+Show whether a user can lock pages in the workspace.
 
 =head2 mass-add-users --csv --account
 
@@ -3038,6 +3098,17 @@ the target workspace they are skipped.
 This command copies I<every> page in the specified workspace to the
 target workspace. If a prefix is provided, this is prepended to the
 page names in the target workspace.
+
+=head2 lock-page --workspace --page
+
+Lock the specified page in the given workspace. Only a workspace
+admin can edit a locked a page. The page must be specified by 
+its I<page id>, which is the name used in URIs.
+
+=head2 unlock-page --workspace --page
+
+Unlock the specified page in the given workspace. The page must 
+be specified by its I<page id>, which is the name used in URIs.
 
 =head2 purge-page --workspace --page
 
