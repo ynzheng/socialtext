@@ -8,10 +8,10 @@ Tests for Tag History for a page via the REST API
 | create-user      | %%admin%%     | %%password%%                            |
 | create-user      | %%member%%    | %%password%%                            |
 | set              | workspace     | w%%start_time%%                         |
-| set              | tag           | ADMINTAG |
-| create-workspace | %%workspace%% |                                         |
-| add-workspace-admin | %%admin%%  | %%workspace%% |
-| add-member          | %%member%% | %%workspace%% |
+| set              | tag           | ADMINTAG                                |
+| create-workspace    | %%workspace%% |               |
+| add-workspace-admin | %%admin%%     | %%workspace%% |
+| add-member          | %%member%%    | %%workspace%% |
 
 | Comment | Set up page |                                      |
 | set     | page        | Monkey                               |
@@ -25,7 +25,24 @@ Tests for Tag History for a page via the REST API
 | Comment   | Check for locked flag |                  |
 | GET       | %%page_uri%%          | application/json |
 | code-is   | 200                   |                  |
-| body-like | "locked":"0"           |                  |
+| body-like | "locked":"0"          |                  |
+
+| Comment | Admin can't set the lock state |
+| put-json | %%page_uri%%       | {"content":"Pairing is fun","locked":"1"} |
+| code-is  | 403                |                                           |
+
+| Comment | Enable locking on the workspace |
+| st-admin | set-workspace-config --workspace %%workspace%% allows_page_locking 1 |
+
+| Comment        | Log in as member |              |
+| http-user-pass | %%member%%       | %%password%% |
+
+| Comment | member cannot set the lock state |
+| put-json | %%page_uri%% | {"content":"Pairing is fun","locked":"1"} |
+| code-is  | 403          |                                           |
+
+| Comment        | Log in as admin |              |           |
+| http-user-pass | %%admin%%       | %%password%% |           |
 
 | Comment  | Set the lock state |                                           |
 | put-json | %%page_uri%%       | {"content":"Pairing is fun","locked":"1"} |
@@ -47,27 +64,27 @@ Tests for Tag History for a page via the REST API
 | body-like | "locked":"1"           |                  |
 | body-like | insane                 |                  |
 
-| Comment | set wikitext content |                                  |          |
-| put     | %%page_uri%%       | Content-type=text/x.socialtext-wiki | differnt |
-| code-is | 204                |                                    |          |
+| Comment | set wikitext content |
+| put     | %%page_uri%% | Content-type=text/x.socialtext-wiki | differnt |
+| code-is | 204 |
 
 | Comment   | Check for locked flag  |                  |
 | GET       | %%page_uri%%?verbose=1 | application/json |
 | code-is   | 200                    |                  |
 | body-like | "locked":"1"           |                  |
-| body-like | differnt             |                  |
+| body-like | differnt               |                  |
 
-| Comment | Admin can tag a page |
-| post    | %%page_uri%%/tags | Content-type=text/plain | %%tag%% |
-| code-is | 201               |                         |          |
+| Comment | Admin can tag a page |                         |         |
+| post    | %%page_uri%%/tags    | Content-type=text/plain | %%tag%% |
+| code-is | 201                  |                         |         |
 
 | Comment | Admin can comment on a locked page |
 | post    | %%page_uri%%/comments    | Content-type=text/x.socialtext-wiki | This an admin comment |
-| code-is | 204                |                                    |          |
+| code-is | 204 |
 
 | Comment | Admin can attach to a locked page |
 | post    | %%page_uri%%/attachments?name=test.txt    | Content-Type=text/plain | Admin attachment text |
-| code-is | 201               |                                    |          |
+| code-is | 201 |
 
 | Comment        | Log in as a workspace member |              |
 | http-user-pass | %%member%%                   | %%password%% |
@@ -87,38 +104,38 @@ Tests for Tag History for a page via the REST API
 
 | Comment | set wikitext content |                                  |          |
 | put     | %%page_uri%%       | Content-type=text/x.socialtext-wiki | differnt |
-| code-is | 403                |                                    |          |
+| code-is | 403 |
 
-| Comment | User cannot tag locked page |
-| post    | %%page_uri%%/tags       | Content-type=text/plain | THETAG |
-| code-is | 403                |                                    |          |
+| Comment | User cannot tag locked page |                         |        |
+| post    | %%page_uri%%/tags           | Content-type=text/plain | THETAG |
+| code-is | 403                         |                         |        |
 
 | Comment | User cannot comment on a locked page |
 | post    | %%page_uri%%/comments    | Content-type=text/x.socialtext-wiki | This is a comment |
-| code-is | 403                |                                    |          |
+| code-is | 403 |
 
 | Comment | User cannot attach to a locked page |
 | post    | %%page_uri%%/attachments?name=test.txt    | Content-Type=text/plain | Attachment text |
-| code-is | 403                |                                    |          |
+| code-is | 403 |
 
 | Comment | User cannot delete a locked page |
-| delete  | %%page_uri%%    |
-| code-is | 403                      |
+| delete  | %%page_uri%%                     |
+| code-is | 403                              |
 
 | Comment | User cannot delete a locked tag |
-| delete  | %%page_uri%%/tags/%%tag%%    |
-| code-is | 403                      |
+| delete  | %%page_uri%%/tags/%%tag%%       |
+| code-is | 403                             |
 
-| Comment        | Log in as admin |
+| Comment        | Log in as admin |              |
 | http-user-pass | %%admin%%       | %%password%% |
 
 | Comment | Admin can delete a locked tag |
-| delete  | %%page_uri%%/tags/%%tag%%    |
-| code-is | 204                      |
+| delete  | %%page_uri%%/tags/%%tag%%     |
+| code-is | 204                           |
 
-| Comment        | Admin can delete locked page |
-| delete  | %%page_uri%%    |
-| code-is | 204                    |
+| Comment | Admin can delete locked page |
+| delete  | %%page_uri%%                 |
+| code-is | 204                          |
 
 
 

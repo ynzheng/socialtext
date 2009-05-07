@@ -284,6 +284,16 @@ sub PUT_json {
     my $object = decode_json( $content );
     $object->{date} ||= gmtime();
 
+
+    # If the user is trying to lock the page, make sure that 1) they can
+    # and 2) the workspace allows page locking.
+    # In the case of an unauthorized user trying to _unlock_ a page, 
+    # the page_locked_or_unauthorized check above will catch 'em.
+    if ( $object->{locked} ) {
+        return $self->not_authorized()
+            unless $self->workspace->allows_page_locking
+                && $self->hub->checker->check_permission('lock');
+    }
     my $edit_summary = $object->{edit_summary} || '';
     my $signal_edit_summary = $object->{signal_edit_summary} || '';
 
