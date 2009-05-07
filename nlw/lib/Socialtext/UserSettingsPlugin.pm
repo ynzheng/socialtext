@@ -30,62 +30,12 @@ sub register {
     $registry->add( action => 'users_invitation' );
     $registry->add( action => 'users_invite' );
     $registry->add( action => 'users_search' );
-    $registry->add( action => 'manage_signals' );
 }
 
 # for backwards compat
 sub settings {
     my $self = shift;
     $self->redirect('action=users_settings');
-}
-
-sub manage_signals {
-    my $self = shift;
-    if ( $self->hub()->current_user()->is_guest() ) {
-        Socialtext::Challenger->Challenge(
-            type => 'settings_requires_account' );
-    }
-
-    $self->_update_signals_settings()
-        if $self->cgi->Button;
-
-    my $plugin = $self->hub->pluggable->plugin_object('signals');
-    my $dm_sends_email = 1;
-    if ($plugin) {
-        my $prefs = $plugin->get_user_prefs();
-        $dm_sends_email = $prefs->{dm_sends_email}
-            if defined $prefs->{dm_sends_email};
-    }
-
-    my $settings_section = $self->template_process(
-        'element/settings/signals_settings_section',
-        user           => $self->hub->current_user,
-        dm_sends_email => $dm_sends_email,
-        $self->status_messages_for_template,
-    );
-
-    $self->screen_template('view/settings');
-    return $self->render_screen(
-        settings_table_id => 'settings-table',
-        settings_section  => $settings_section,
-        hub               => $self->hub,
-        display_title     => loc('Signals'),
-        pref_list         => $self->_get_pref_list,
-    );
-}
-
-
-sub _update_signals_settings() {
-    my $self  = shift;
-    my $value = $self->cgi->dm_sends_email ? 1 : 0;
-
-    my $plugin = $self->hub->pluggable->plugin_object('signals');
-    return unless $plugin;
-    $plugin->set_user_prefs(
-        dm_sends_email => $value,
-    );
-
-    $self->message(loc('Changes Saved'));
 }
 
 sub users_settings {
