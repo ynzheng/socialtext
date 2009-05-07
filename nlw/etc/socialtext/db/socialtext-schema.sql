@@ -449,7 +449,7 @@ CREATE TABLE page (
     deleted boolean NOT NULL,
     summary text,
     edit_summary text,
-    locked boolean NOT NULL
+    locked boolean DEFAULT false NOT NULL
 );
 
 CREATE TABLE page_tag (
