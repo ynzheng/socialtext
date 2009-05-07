@@ -56,6 +56,10 @@ Tests for Tag History for a page via the REST API
 | body-like | "locked":"1"           |                  |
 | body-like | differnt             |                  |
 
+| Comment | Admin can tag a page |
+| post    | %%page_uri%%/tags | Content-type=text/plain | ADMINTAG |
+| code-is | 201               |                         |          |
+
 | Comment        | Log in as a workspace member |              |
 | http-user-pass | %%member%%                   | %%password%% |
 
@@ -75,3 +79,10 @@ Tests for Tag History for a page via the REST API
 | Comment | set wikitext content |                                  |          |
 | put     | %%page_uri%%       | Content-type=text/x.socialtext-wiki | differnt |
 | code-is | 403                |                                    |          |
+
+| Comment | User cannot tag locked page |
+| post    | %%page_uri%%/tags       | Content-type=text/plain | THETAG |
+| code-is | 403                |                                    |          |
+
+
+

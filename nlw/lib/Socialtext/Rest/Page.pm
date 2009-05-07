@@ -194,21 +194,10 @@ sub DELETE {
     );
 }
 
-sub _user_unable_to_edit {
-    my $self = shift;
-
-    return $self->no_workspace() unless $self->workspace;
-    return $self->not_authorized() unless $self->user_can('edit');
-    return $self->not_authorized()
-        if ($self->page->locked && !$self->user_can('lock'));
-
-    return 0;
-}
-
 sub PUT_wikitext {
     my ( $self, $rest ) = @_;
 
-    my $unable_to_edit = $self->_user_unable_to_edit();
+    my $unable_to_edit = $self->page_locked_or_unauthorized();
     return $unable_to_edit if ($unable_to_edit);
 
     my $page = $self->page;
@@ -238,7 +227,7 @@ sub PUT_wikitext {
 sub PUT_html {
     my ( $self, $rest ) = @_;
 
-    my $unable_to_edit = $self->_user_unable_to_edit();
+    my $unable_to_edit = $self->page_locked_or_unauthorized();
     return $unable_to_edit if ($unable_to_edit);
 
     my $page = $self->page;
@@ -273,7 +262,7 @@ sub PUT_html {
 sub PUT_json {
     my ( $self, $rest ) = @_;
 
-    my $unable_to_edit = $self->_user_unable_to_edit();
+    my $unable_to_edit = $self->page_locked_or_unauthorized();
     return $unable_to_edit if ($unable_to_edit);
 
     my $page = $self->page;
