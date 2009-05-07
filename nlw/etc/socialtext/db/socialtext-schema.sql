@@ -448,7 +448,7 @@ CREATE TABLE page (
     deleted boolean NOT NULL,
     summary text,
     edit_summary text,
-    locked boolean NOT NULL
+    locked boolean DEFAULT false NOT NULL
 );
 
 CREATE TABLE page_tag (
@@ -1453,4 +1453,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '56');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '57');
