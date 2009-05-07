@@ -13,6 +13,9 @@ sub permission      { +{ POST => 'comment' } }
 sub POST {
     my ( $self, $rest ) = @_;
 
+    my $lock_check_fail = $self->page_lock_permission_fail();
+    return $lock_check_fail if ($lock_check_fail);
+
     $self->if_authorized(
         POST => sub {
             if ( $self->page->content eq '' ) {

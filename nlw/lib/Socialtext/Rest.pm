@@ -316,13 +316,23 @@ sub no_workspace {
     return $ws . ' not found';
 }
 
+sub page_lock_permission_fail {
+    my $self = shift;
+
+    return $self->not_authorized()
+        if ($self->page->locked && !$self->user_can('lock'));
+
+    return 0;
+}
+
 sub page_locked_or_unauthorized {
     my $self = shift;
 
     return $self->no_workspace() unless $self->workspace;
     return $self->not_authorized() unless $self->user_can('edit');
-    return $self->not_authorized()
-        if ($self->page->locked && !$self->user_can('lock'));
+
+    my $lock_check_failed = $self->page_lock_permission_fail();
+    return $lock_check_failed if ($lock_check_failed);
 
     return 0;
 }
