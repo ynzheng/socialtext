@@ -23,6 +23,8 @@ sub POST {
 
     return $self->no_workspace() unless $self->workspace;
     return $self->not_authorized() unless $self->user_can('attachments');
+    my $lock_check_failed = $self->page_lock_permission_fail();
+    return $lock_check_failed if ($lock_check_failed);
 
     # TODO: We presumably should do some kind magic header
     # checking, but in the meantime, rather than doing a 500

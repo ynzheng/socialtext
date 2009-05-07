@@ -64,6 +64,11 @@ Tests for Tag History for a page via the REST API
 | post    | %%page_uri%%/comments    | Content-type=text/x.socialtext-wiki | This an admin comment |
 | code-is | 204                |                                    |          |
 
+| Comment | Admin can attach to a locked page |
+| post    | %%page_uri%%/attachments?name=test.txt    | Content-Type=text/plain | Admin attachment text |
+| code-is | 201               |                                    |          |
+
+
 | Comment        | Log in as a workspace member |              |
 | http-user-pass | %%member%%                   | %%password%% |
 
@@ -91,6 +96,11 @@ Tests for Tag History for a page via the REST API
 | Comment | User cannot comment on a locked page |
 | post    | %%page_uri%%/comments    | Content-type=text/x.socialtext-wiki | This is a comment |
 | code-is | 403                |                                    |          |
+
+| Comment | User cannot attach to a locked page |
+| post    | %%page_uri%%/attachments?name=test.txt    | Content-Type=text/plain | Attachment text |
+| code-is | 403                |                                    |          |
+
 
 
 
