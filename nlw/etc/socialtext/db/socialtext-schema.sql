@@ -203,7 +203,8 @@ CREATE TABLE "Workspace" (
     no_max_image_size boolean DEFAULT false NOT NULL,
     cascade_css boolean DEFAULT true NOT NULL,
     uploaded_skin boolean DEFAULT false NOT NULL,
-    allows_skin_upload boolean DEFAULT false NOT NULL
+    allows_skin_upload boolean DEFAULT false NOT NULL,
+    allows_page_locking boolean DEFAULT false NOT NULL
 );
 
 CREATE TABLE "WorkspaceBreadcrumb" (
