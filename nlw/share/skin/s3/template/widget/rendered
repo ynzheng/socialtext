@@ -13,7 +13,10 @@
                 gadgets.io.preloaded_["[% preload.href %]"] = [% preload.data %];
             [% END %]
         </script>
-    </head>
+        [% IF firebug %]
+        <script type='text/javascript' src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>
+        [% END %]
+        </head>
     <body>
         [% content %]
     </body>
