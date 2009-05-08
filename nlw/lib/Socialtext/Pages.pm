@@ -293,19 +293,28 @@ sub create_new_page {
 }
 
 sub page_exists_in_workspace {
-    my $self = shift;
-    my $page_title     = shift;
-    my $workspace_name = shift;
+    my $self       = shift;
+    my $page_title = shift;
+    my $ws_name    = shift;
+    my $page       = $self->page_in_workspace( $page_title, $ws_name );
 
-    my $main = Socialtext->new();
+    return ( $page ) ? 1 : 0;
+}
+
+sub page_in_workspace {
+    my $self       = shift;
+    my $page_title = shift;
+    my $ws_name    = shift;
+    my $main       = Socialtext->new();
+
     $main->load_hub(
         current_user      => Socialtext::User->SystemUser(),
-        current_workspace => Socialtext::Workspace->new( name => $workspace_name ),
+        current_workspace => Socialtext::Workspace->new( name => $ws_name ),
     );
     $main->hub()->registry()->load();
 
-    my $target_page = $main->hub->pages->new_from_name($page_title);
-    return ($target_page->metadata->Revision and $target_page->active);
+    my $page = $main->hub->pages->new_from_name($page_title);
+    return ($page->metadata->Revision and $page->active) ? $page : undef;
 }
 
 my $semaphore = {}; # for loop prevention
