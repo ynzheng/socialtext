@@ -320,7 +320,11 @@ sub page_lock_permission_fail {
     my $self = shift;
 
     return $self->not_authorized()
-        if ($self->page->locked && !$self->user_can('lock'));
+        if (
+            $self->workspace->allows_page_locking && 
+            $self->page->locked && 
+            !$self->user_can('lock')
+        );
 
     return 0;
 }
