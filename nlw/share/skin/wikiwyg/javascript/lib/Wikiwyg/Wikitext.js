@@ -1238,18 +1238,8 @@ proto.href_is_really_a_wiki_link = function(href) {
 proto.href_label_similar = function(elem, href, label) {
     var id_from_href  = nlw_name_to_id(href);
     var id_from_label = nlw_name_to_id(label);
-    var id_from_attr  = nlw_name_to_id(elem.wiki_page || "");
+    var id_from_attr  = nlw_name_to_id(jQuery(elem).attr('wiki_page') || "");
     return ((id_from_href == id_from_label) || id_from_attr == id_from_label);
-}
-
-proto.is_renamed_wiki_link = function(element) {
-    var comment = this.get_wiki_comment(element);
-    return comment && comment.data.match(/wiki-renamed-link/);
-}
-
-proto.is_renamed_hyper_link = function(element) {
-    var comment = this.get_wiki_comment(element);
-    return comment && comment.data.match(/wiki-renamed-hyperlink/);
 }
 
 proto.make_table_wikitext = function(rows, columns) {
@@ -2145,22 +2135,19 @@ proto.is_italic = function(elem) {
     );
 }
 
+proto.elem_is_wiki_link = function (elem) {
+    var href = elem.href || ''
+    return jQuery(elem).attr('wiki_page')
+        || (
+            this.href_is_wiki_link(href)
+            && this.href_is_really_a_wiki_link(href)
+          );
+}
+
 proto.make_wikitext_link = function(label, href, elem) {
     var mailto = href.match(/^mailto:(.*)/);
 
-    if (this.is_renamed_hyper_link(elem)) {
-        var link = this.get_wiki_comment(elem).data.
-            // The following line is a workaround for an apparent jQuery bug
-            // that I couldn't fix.
-            replace(/><\/http>\s$/, '/>').
-            replace(/^\s*wiki-renamed-hyperlink\s*/, '').
-            replace(/\s*$/, '').
-            replace(/=-/g, '-');
-        return(link);
-    }
-    else if (elem.wiki_page || (this.href_is_wiki_link(href) &&
-        this.href_is_really_a_wiki_link(href))
-    ) {
+    if (this.elem_is_wiki_link(elem)) {
         return this.handle_wiki_link(label, href, elem);
     }
     else if (mailto) {
@@ -2194,20 +2181,16 @@ proto.handle_wiki_link = function(label, href, elem) {
     // XXX more conversion/normalization poo
     // We don't yet have a smart way to get to page->Subject->metadata
     // from page->id
+    var wiki_page = jQuery(elem).attr('wiki_page');
+
     if (label == href_orig && !(label.match(/=/))) {
-        return '[' + (elem.wiki_page || href) + ']';
+        return '[' + (wiki_page || href) + ']';
     }
-    else if ((elem.wiki_page || this.is_renamed_wiki_link(elem)) &&
-             ! this.href_label_similar(elem, href, label))
-    {
-        var link = elem.wiki_page || this.get_wiki_comment(elem).data.
-            replace(/^\s*wiki-renamed-link\s*/, '').
-            replace(/\s*$/, '').
-            replace(/=-/g, '-');
-        return '"' + label + '"[' + link + ']';
+    else if (wiki_page && !this.href_label_similar(elem, href, label)) {
+        return '"' + label + '"[' + wiki_page + ']';
     }
     else {
-        return '[' + (elem.wiki_page || label) + ']';
+        return '[' + (wiki_page || label) + ']';
     }
 }
 

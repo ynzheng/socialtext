@@ -1042,17 +1042,8 @@ proto.make_link = function(label, page_name, url) {
     // Anchor HREF
     link_node.href = url || "?" + encodeURIComponent(page_name);
 
-    // Anchor hint for "label"[page] style links
-    if (label && page_name && label != page_name) {
-        var comment = document.createComment("wiki-renamed-link " + page_name);
-        link_node.appendChild(comment);
-    }
-
-    if (label && url) {
-        var comment = document.createComment(
-            'wiki-renamed-hyperlink "' + label + '"<' + url + '>'
-        );
-        link_node.appendChild(comment);
+    if (page_name) {
+        jQuery(link_node).attr('wiki_page', page_name)
     }
 
     this.insert_element_at_cursor(link_node);
@@ -1069,11 +1060,6 @@ if (Wikiwyg.is_ie) {
         }
         var html = "<a href=\"" + href + "\"" + attr + ">" + text;
 
-        if (label && url) {
-            html += '<!--' +
-                    'wiki-renamed-hyperlink "' + label + '"<' + url + '>' +
-                    '-->';
-        }
 
         html += "</a>";
 
