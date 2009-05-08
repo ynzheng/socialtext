@@ -59,24 +59,25 @@
       [% END %]
       <li class="last submenu"><a class="tools" id="st-pagetools-tools" href="#">[% loc('Tools') %]</a>
         <ul class="level2">
-          [% IF checker.check_permission('edit') %]
+          [% IF checker.check_permission('edit') AND !page_locked_for_user %]
           <li class="first"><a id="st-pagetools-duplicate" href="#">[% loc('Duplicate Page') %]</a></li>
           <li><a id="st-pagetools-rename" href="#">[% loc('Rename Page') %]</a></li>
           [% END %]
-          [% IF checker.check_permission('delete') %]
+          [% IF checker.check_permission('delete') AND !page_locked_for_user %]
           <li [% current_user_workspace_count == 1 ? "class=\"separator\"":"" %]><a href="index.cgi?[% page.id %]" id="st-pagetools-delete">[% loc('Delete Page') %]</a></li>
           [% END %]
-          [% IF current_user_workspace_count > 1 %]
+          [% IF current_user_workspace_count > 1 AND !page_locked_for_user %]
           <li class="separator"><a href="#" id="st-pagetools-copy">[% loc('Copy Page to Workspace') %]</a></li>
           [% END %]
           [% USE encode_mailto %]
-          [% IF checker.check_permission('email_in') &&
-                page.page_type != 'spreadsheet' %]
+          [% IF checker.check_permission('email_in') && page.page_type != 'spreadsheet' %]
           <li><a href="mailto:[% wiki.email_address %]" title="[% wiki.email_address %]">[% loc('Email To This Workspace') %]</a></li>
-            [% IF page.page_type == 'spreadsheet' %]
-          <li class="separator"><a href="mailto:[% wiki.email_address %]?subject=[% page.title | html_encode  %]" title="To: [% wiki.email_address %] / subject: [% page.title | html_encode %]" onclick="alert(loc('Sorry, this feature is not available for spreadsheets')); return false;" >[% loc('Email To This Page') %]</a></li>
-            [% ELSE %]
-          <li class="separator"><a href="mailto:[% wiki.email_address %]?subject=[% page.title | html_encode  %]" title="To: [% wiki.email_address %] / subject: [% page.title | html_encode %]">[% loc('Email To This Page') %]</a></li>
+            [% IF !page_locked_for_user %]
+              [% IF page.page_type == 'spreadsheet' %]
+            <li class="separator"><a href="mailto:[% wiki.email_address %]?subject=[% page.title | html_encode  %]" title="To: [% wiki.email_address %] / subject: [% page.title | html_encode %]" onclick="alert(loc('Sorry, this feature is not available for spreadsheets')); return false;" >[% loc('Email To This Page') %]</a></li>
+              [% ELSE %]
+            <li class="separator"><a href="mailto:[% wiki.email_address %]?subject=[% page.title | html_encode  %]" title="To: [% wiki.email_address %] / subject: [% page.title | html_encode %]">[% loc('Email To This Page') %]</a></li>
+              [% END %]
             [% END %]
           [% END %]
           <li><a href="index.cgi?action=display_html;page_name=[% page.id %]" target="_new">[% loc('Export as HTML') %]</a></li>
@@ -126,17 +127,19 @@
           [% FOR tag = tags.tags %]
             <li>
             <a href="?action=category_display;category=[% tag.name | uri %]" class="tag_name" title="[% tag.name | html %]">[% tag.name | html %]</a>
+            [% IF !page_locked_for_user %]
             <a href="#" class="delete_tag" title="[% loc('Delete this tag') %]" onclick="$(this).children('img').attr('src', '/static/skin/common/images/ajax-loader.gif'); Page.delTag($(this).prev().text()); return false"><img
                 src="[% wiki.skin_uri('s3') %]/images/delete.png"
                 width="16" height="16" border="0" alt="[% loc('Delete this tag') %]"
             /></a>
+            [% END %]
             </li>
           [% END %]
           [% IF tags.tags.size == 0 %]
             <div id="st-no-tags-placeholder">[% loc('There are no tags for this page.') %]</div>
           [% END %]
           </ul>
-          [% IF checker.check_permission('edit') %]
+          [% IF checker.check_permission('edit') AND !page_locked_for_user %]
           <ul id="st-tags-addlink" class="widgetButton">
             <li class="flexButtonGrey">
               <a class="greyButton" href="#">[% loc('Add Tag') %]</a>
@@ -200,7 +203,7 @@
             %]
             <li>
             <a title="[% loc("Uploaded by [_1] on [_2]. ([_3] bytes)", file.uploader, file.date, displaylength) | html_entity %]" href="[% file.uri %]">[% file.name %]</a>
-            [% IF file.name.match('\.(zip|tar|tar.gz|tgz)$') %]
+            [% IF file.name.match('\.(zip|tar|tar.gz|tgz)$') && !page_locked_for_user %]
             <a name="[% file.id %]" href="#" class="extract_attachment">
               <img src="/static/skin/common/images/extract.png"
                 width="16" height="16" border="0"
@@ -209,6 +212,7 @@
               />
             </a>
             [% END %]
+            [% IF !page_locked_for_user %]
             <a href="#" title="[% loc('Delete this attachment') %]" class="delete_attachment">
             <img src="[% wiki.skin_uri('s3') %]/images/delete.png"
                 width="16" height="16" border="0"
@@ -216,10 +220,11 @@
                 title="[% loc('Delete this attachment') %]"
               />
             </a>
+            [% END %]
             </li>
           [% END %]
           </ul>
-          [% IF checker.check_permission('attachments') %]
+          [% IF checker.check_permission('attachments') AND !page_locked_for_user %]
           <ul class="widgetButton">
             <li class="flexButtonGrey">
               <a id="st-attachments-uploadbutton" class="greyButton" href="#">[% loc('Upload Files') %]</a>
