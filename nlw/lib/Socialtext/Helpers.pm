@@ -268,6 +268,13 @@ sub global_template_vars {
         time               => time,
         dynamic_logo_url   => $logo,
         $self->hub->pluggable->hooked_template_vars,
+        locking_enabled       => $self->hub->current_workspace->allows_page_locking,
+        can_lock              => $self->hub->checker->check_permission('lock'),
+        page_locked           => $self->hub->pages->current->locked,
+        page_locked_for_user  => 
+            $self->hub->pages->current->locked && 
+            $self->hub->current_workspace->allows_page_locking &&
+            !$self->hub->checker->check_permission('lock'),
     );
 
     # We're disabling the history global nav functionality for now, until its
