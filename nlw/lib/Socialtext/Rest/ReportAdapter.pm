@@ -1,4 +1,5 @@
 package Socialtext::Rest::ReportAdapter;
+# @COPYRIGHT@
 use strict;
 use warnings;
 use base 'Socialtext::Rest::Entity';
