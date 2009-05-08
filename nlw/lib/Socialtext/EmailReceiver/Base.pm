@@ -63,11 +63,17 @@ sub receive {
             'Socialtext does not accept email from unidentified senders.';
     }
 
-    $self->_require_email_in_permission( $self->{from}->address() );
+    my $email_address = $self->{from}->address();
 
-    $self->_get_user_for_address( $self->{from}->address() );
+    $self->_require_email_in_permission( $email_address );
+
+    $self->_get_user_for_address( $email_address );
+
+    $self->_load_hub();
 
     $self->_get_page_for_subject();
+
+    $self->_lock_check();
 
     $self->_save_body_and_strip_attachments();
 
@@ -142,6 +148,16 @@ sub _require_email_in_permission {
         unless $has_perm;
 }
 
+sub _lock_check {
+    my $self = shift;
+    my $page = $self->{page};
+
+    auth_error 'You do not have permission to overwrite the ' .
+    $page->title . ' page in the ' . $self->{workspace}->name . ' workspace.' 
+        unless $self->{hub}->checker->can_modify_locked( $page );
+
+}
+
 sub _get_user_for_address {
     my $self          = shift;
     my $email_address = shift;
@@ -156,7 +172,7 @@ sub _get_user_for_address {
     $self->{user} = $user;
 }
 
-sub _get_page_for_subject {
+sub _load_hub {
     my $self = shift;
 
     my $main = Socialtext->new();
@@ -165,6 +181,12 @@ sub _get_page_for_subject {
         current_workspace => $self->{workspace},
     );
 
+    $self->{hub} = $main->hub;
+}
+
+sub _get_page_for_subject {
+    my $self = shift;
+
     my $subject = $self->_clean_subject();
     if (length Socialtext::Page->uri_escape($subject) 
         > Socialtext::String::MAX_PAGE_ID_LEN ) {
@@ -172,7 +194,7 @@ sub _get_page_for_subject {
         return;
     }
 
-    my $page = $main->hub()->pages()->new_from_name($subject);
+    my $page = $self->{hub}->pages()->new_from_name($subject);
     if (! defined($page) ) {
         data_validation_error loc("Page title is too long after URL encoding");
         return;
@@ -185,8 +207,6 @@ sub _get_page_for_subject {
     $metadata->MessageID( $self->{email}->header('Message-Id') );
     $metadata->Received( join '\\', $self->{email}->header('Received') );
 
-    # This needs to be saved so page's hub stays in scope
-    $self->{main} = $main;
     $self->{page} = $page;
 }
 
