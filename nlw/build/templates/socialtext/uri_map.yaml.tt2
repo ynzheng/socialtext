@@ -1,4 +1,10 @@
 --- !!omap
+[%- IF config.is_dev_install %]
+-
+    '/data/log':
+        'POST':
+            '*/*':              &default [Socialtext::Rest::Log, POST_form]
+[%- END %]
 -
     '/data/jobs':
         'GET':
