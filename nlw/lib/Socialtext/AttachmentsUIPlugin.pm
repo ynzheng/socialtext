@@ -153,8 +153,11 @@ sub process_attachments_upload {
     return loc('The file you are trying to upload does not exist')
         unless $count;
 
-    return loc('You dont have permission to upload attachments')
+    return loc('You don\'t have permission to upload attachments')
         unless $self->hub->checker->check_permission('attachments');
+
+    return loc('You don\'t have permission to upload attachments')
+        unless $self->hub->checker->can_modify_locked($self->hub->pages->current_page);
 
     my $error = '';
     for (my $i=0; $i < $count; $i++) {
@@ -389,6 +392,8 @@ sub _attachment_download_link {
 sub attachments_delete {
     my $self = shift;
     return unless $self->hub->checker->check_permission('delete');
+
+    return unless $self->hub->checker->can_modify_locked($self->hub->pages->current_page);
 
     for my $attachment_junk ( $self->cgi->selected ) {
         my ( $page_id, $id, undef ) = map { split ',' } $attachment_junk;
