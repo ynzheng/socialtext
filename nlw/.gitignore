@@ -271,3 +271,4 @@ t/wikitests/signals/dm-email.wiki
 t/wikitests/signals/dm-prefs.wiki
 lib/Socialtext/Reports
 t/Socialtext/People/helpers.t
+lib/Socialtext/Rest/Signals/Bookmarklet.pm
