@@ -1,6 +1,6 @@
 BEGIN;
 
--- Story: Custom skin is applied to Socialtext Desktop
+-- Story: Turn off Invite to Network by Account
 
 ALTER TABLE "Account"
     ADD COLUMN allow_invitation boolean DEFAULT true NOT NULL;
