@@ -9,7 +9,7 @@ use Class::Field qw( const );
 use Socialtext::AppConfig;
 use Socialtext::Page;
 use Socialtext::Pages;
-use Socialtext::Permission 'ST_EDIT_PERM';
+use Socialtext::Permission qw/ST_EDIT_PERM ST_LOCK_PERM/;
 use Socialtext::JSON;
 use Socialtext::String ();
 
@@ -163,26 +163,39 @@ sub mass_copy_to {
 }
 
 sub _duplicate {
-    my $self = shift;
-    my $workspace = shift;
-    my $page = $self->hub->pages->current;
+    my $self      = shift;
+    my $target_ws = shift;
+    my $pages     = $self->hub->pages;
 
     return 1
         unless $self->hub->authz->user_has_permission_for_workspace(
                    user       => $self->hub->current_user,
                    permission => ST_EDIT_PERM,
-                   workspace  => $workspace,
+                   workspace  => $target_ws,
                );
 
-    return 1 unless $self->hub->checker->can_modify_locked( $page );
+    # user cannot duplicate a locked page if they don't have locked perms.
+    return 1 unless $self->hub->checker->can_modify_locked( $pages->current );
 
     my $page_title = $self->cgi->new_title;
-    my $page_exists = $self->hub->pages->page_exists_in_workspace($page_title, $workspace->name);
+    my $new_page = $pages->page_in_workspace($page_title, $target_ws->name);
 
-    return 0 if ($page_exists && $self->cgi->clobber ne $page_title);
+    if (defined $new_page) {
+        # user cannot overwrite a locked ( target ) page if they don't have 
+        # perms to do so.
+        return 1 if $target_ws->allows_page_locking
+            && $new_page->locked
+            && ! $self->hub->authz->user_has_permission_for_workspace(
+                user       => $self->hub->current_user,
+                permission => ST_LOCK_PERM,
+                workspace  => $target_ws,
+            );
 
-    return $page->duplicate(
-        $workspace,
+        return 0 if $self->cgi->clobber ne $page_title;
+    }
+
+    return $pages->current->duplicate(
+        $target_ws,
         $page_title,
         $self->cgi->keep_categories || '',
         $self->cgi->keep_attachments || '',
