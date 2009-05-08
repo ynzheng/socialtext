@@ -188,13 +188,10 @@ sub html {
     if ($page_uri) {
         my $escaped_page_title = $page_title;
         $escaped_page_title =~ s/-/=-/g;
-        my $hint =
-            defined $label
-            ? "<!-- wiki-renamed-link $escaped_page_title -->"
-            : '';
+        my $page = defined $label ? $escaped_page_title : '';
         $label = $page_title unless defined $label;
 
-        $self->_freelink_url($page_uri, $page_disposition, $label, $hint);
+        $self->_freelink_url($page_uri, $page_disposition, $label, $page);
     }
     else {
         return $page_title;
@@ -206,7 +203,7 @@ sub _freelink_url {
     my $page_uri = shift;
     my $page_disposition = shift;
     my $label = shift;
-    my $hint = shift;
+    my $page = shift;
 
     my $link = $self->hub->viewer->link_dictionary->format_link(
         link => 'free',
@@ -214,8 +211,9 @@ sub _freelink_url {
         url_prefix => $self->url_prefix,
         workspace => $self->current_workspace_name, # for page inclusion
     );
+    my $page_attr = qq{ wiki_page="$page" };
     
-    return '<a href="' . $link . qq{" $page_disposition>$label$hint</a>};
+    return qq{<a href="$link"$page_attr $page_disposition>$label</a>};
 }
 
 ################################################################################
@@ -296,17 +294,13 @@ const pattern_start => qr{("[^"]*"\s*)?<(?:http|https|ftp|irc|file):.+?>};
 sub html {
     my $self = shift;
     my $match = $self->matched;
-    (my $escaped_match = $match) =~ s/-/=-/g;
     $match =~ s/<([^>]*)>$/$1/;
 
-    my ($text, $hint) = ($match, '');
+    my $text = $match;
     
     if ($match =~ s/^"(.*?)"\s*//) {
         my $quoted = $1;
         $text = $quoted;
-        if ($match =~ m!^\w+://!) {
-            $hint = "<!-- wiki-renamed-hyperlink $escaped_match -->";
-        }
     }
 
     my $target =
@@ -331,7 +325,7 @@ sub html {
         : $match =~ /^irc:/
         ? "<a title=\"(" . loc('start irc session') . "\" href=\"$href\">$escaped_text</a>"
         : "<a $target title=\"(" . loc('external link') .')" '
-        . qq{href="$href">$escaped_text$hint</a>};
+        . qq{href="$href">$escaped_text</a>};
     return $wrap_start . $output . $wrap_finish;
 }
 
