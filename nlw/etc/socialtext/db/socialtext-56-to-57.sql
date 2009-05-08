@@ -1,10 +1,6 @@
 BEGIN;
 
-ALTER TABLE page
-    ADD COLUMN locked BOOLEAN NOT NULL DEFAULT FALSE;
-
-ALTER TABLE "Workspace"
-    ADD COLUMN allows_page_locking BOOLEAN NOT NULL DEFAULT FALSE;
+-- Stub -- To be filled in later for the Page locking feature
 
 UPDATE "System"
    SET value = '57'
