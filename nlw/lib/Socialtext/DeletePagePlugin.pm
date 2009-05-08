@@ -37,6 +37,8 @@ sub undelete_page {
     my $page = $self->hub->pages->new_from_name(  
         Encode::decode("utf8", URI::Escape::uri_unescape($self->cgi->page_id )));
 
+    return $self->redirect( $page->uri ) if $page->active;
+
     return $self->redirect( $page->uri )
         unless $self->hub->checker->check_permission('edit');
 
