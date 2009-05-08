@@ -3,7 +3,6 @@
 * Fixture: SocialWidgets
 
 | *Comment* | Test Case: Signals Widget |  |
-| set_default | pt | 8000 |
 | st-admin | update-page --workspace %%workspace%% --email %%email%% --page "Edit Summary Signal %%start_time%%" < %%wikitest_client_files%%wikitest_toc.txt | The "Edit Summary Signal %%start_time%%" page has been created. |
 
 | *Comment* | Test Case: Signals Widget. Create one edit summary from signal |  |
@@ -14,48 +13,66 @@
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | wait_for_element_visible_ok | st-save-button-link | 30000 |
-| pause | %%pt%% |  |
-| MouseOver | st-save-button-link |  |
-| pause | %%pt%% |  |
 | wait_for_element_present_ok | st-edit-summary-text-area | 30000 |
 | click_ok | st-edit-summary-text-area |  |
 | type_ok | st-edit-summary-text-area | Super Edit Summary From Signal %%start_time%% |
 | click_ok | st-edit-summary-signal-checkbox |  |
 | click_and_wait | st-save-button-link |  |
 
-| *Comment* | Test Case: Signals Widget. Go to dashboard |  |
+| *Comment* | Test Case: Signals Widget. Get a fresh signals widget |  |
 | open_ok | /?dashboard | 60000 |
 | st-empty-container |  |  |
-| wait_for_element_visible_ok | link=Add Content |  |
+| wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
+| wait_for_element_visible_ok | link=Socialtext Signals | 30000 |
 | click_and_wait | link=Socialtext Signals |  |
-| wait_for_element_visible_ok | link=Add Content |  |
 
+| *Comment* | Test Case: Signals Widget. Verify back at Dashboard with widget |  |
+| wait_for_text_present_ok | Welcome | 30000 |
+| text_like | st-editing-tools-edit | Welcome |
+| wait_for_text_present_ok | Socialtext Signals | 30000 |
+
+| *Comment* | Test Case: Signals Widget. Send four signals |  |
 | st-name-widget | 1 | signals_widget |
 | st-widget-title-like | signals_widget | Signals |
 | st-select-widget-frame | signals_widget |  |
+
+| *Comment* | Test Case: Signals Widget. She rocks in the treehouse |  |
 | selectFrame | signalFrame |  |
-| type_ok | //body | She rocks in the treehouse, %%start_time%% |
+| wait_for_element_visible_ok | //body | 10000 |
+| type_ok | //body | She rocks in the treehouse %%start_time%% |
 | select-frame | relative=parent |  |
+| wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
-| pause | 1000 |  |
-| select-frame | signalFrame |  |
+
+| *Comment* | Test Case: Signals Widget. Rockin and a bopin |  |
+| selectFrame | signalFrame |  |
+| wait_for_element_visible_ok | //body | 10000 |
 | type_ok | //body | Rockin and a bopin %%start_time%% |
 | select-frame | relative=parent |  |
+| wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
-| pause | 1000 |  |
+
+| *Comment* | Test Case: Signals Widget. All the little birds |  |
 | selectFrame | signalFrame |  |
+| wait_for_element_visible_ok | //body | 10000 |
 | type_ok | //body | All the little birds %%start_time%% |
 | select-frame | relative=parent |  |
+| wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
-| pause | 1000 |  |
+
+| *Comment* | Test Case: Signals Widget. Love to hear the robin going |  |
 | selectFrame | signalFrame |  |
+| wait_for_element_visible_ok | //body | 10000 |
 | type_ok | //body | Love to hear the robin going %%start_time%% |
 | select-frame | relative=parent |  |
+| wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
-| pause | 1000 |  |
+
+| *Comment* | Test Case: Signals Widget. Verify signals in widget. Consider changing these to wait_for_text_present_ok |  |
+
 | text_like | //body | qr/Super.+Edit.+Summary.+From.+Signal.+%%start_time%%/ |
-| text_like | //body | She rocks in the treehouse, %%start_time%% |
+| text_like | //body | She rocks in the treehouse %%start_time%% |
 | text_like | //body | Rockin and a bopin %%start_time%% |
 | text_like | //body | All the little birds %%start_time%% |
 | text_like | //body | Love to hear the robin going %%start_time%% |
@@ -63,31 +80,38 @@
 
 | *Comment* | Test case: Signals Widget. Wait for Signal to appear in Updates |  |
 | click_and_wait | link=Profile |  |
+| wait_for_text_present_ok | Updates | 30000 |
 | st-name-widget | 3 | profile_updates |
 | st-select-widget-frame | profile_updates |  |
-| wait_for_text_present_ok | She rocks in the treehouse, %%start_time%% | 120000 |
+
+| wait_for_text_present_ok | She rocks in the treehouse %%start_time%% | 120000 |
 | wait_for_text_present_ok | Rockin and a bopin %%start_time%% | 120000 |
 | wait_for_text_present_ok | All the little birds %%start_time%% | 120000 |
 | wait_for_text_present_ok | Love to hear the robin going %%start_time%% | 120000 |
 | text_like | //body | qr/Super.+Edit.+Summary.+From.+Signal.+%%start_time%%/ |
 
-| *Comment* | Test Case: Signals widget. Wait for automatic refresh in Updates |  |
-| wait_for_text_present_ok | 3 minutes ago | 180000 |
-| text_unlike | //body | (4 minutes ago) |
+| *Comment* | Test Case: Signals widget. Wait for automatic refresh to one minute ago in Updates |  |
+| wait_for_text_present_ok | one minute ago | 120000 |
 | select-frame | relative=parent |  |
 
 | *Comment* | Test case: Signals Widget. Check Dashboard, then wait for auto refresh |  |
 | open_ok | / |  |
+| wait_for_text_present_ok | Welcome | 30000 |
+| text_like | st-editing-tools-edit | Welcome |
+| wait_for_text_present_ok | Socialtext Signals | 30000 |
 | st-name-widget | 1 | signals_widget |
 | st-widget-title-like | signals_widget | Signals |
 | st-select-widget-frame | signals_widget |  |
 
-| wait_for_text_present_ok | She rocks in the treehouse, %%start_time%% | 120000 |
-| wait_for_text_present_ok | Rockin and a bopin %%start_time%% | 120000 |
-| wait_for_text_present_ok | All the little birds %%start_time%% | 120000 |
-| wait_for_text_present_ok | Love to hear the robin going %%start_time%% | 120000 |
+| *Comment* | Test case: Signals Widget. Signals should still be there |  |
+| wait_for_text_present_ok | She rocks in the treehouse %%start_time%% | 10000 |
+| wait_for_text_present_ok | Rockin and a bopin %%start_time%% | 10000 |
+| wait_for_text_present_ok | All the little birds %%start_time%% | 10000 |
+| wait_for_text_present_ok | Love to hear the robin going %%start_time%% | 10000 |
 | text_like | //body | qr/Super.+Edit.+Summary.+From.+Signal.+%%start_time%%/ |
-| wait_for_text_present_ok | 3 minutes ago | 180000 |
+
+| *Comment* | Test case: Signals Widget. wait for auto refresh to two minutes ago |  |
+| wait_for_text_present_ok | 2 minutes ago | 120000 |
 
 | *Comment* | Test Case: Signals Widget Teardown |  |
 | select-frame | relative=parent |  |
