@@ -73,6 +73,7 @@ sub rename_page {
 
 sub _rename {
     my $self = shift;
+    my $page = $self->hub->pages->current;
 
     return 1
         unless $self->hub->authz->user_has_permission_for_workspace(
@@ -81,7 +82,9 @@ sub _rename {
                    workspace  => $self->hub->current_workspace,
                );
 
-    return $self->hub->pages->current->rename(
+    return 1 unless $self->hub->checker->can_modify_locked( $page );
+
+    return $page->rename(
         $self->cgi->new_title,
         $self->cgi->keep_categories || '',
         $self->cgi->keep_attachments || '',
