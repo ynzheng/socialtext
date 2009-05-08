@@ -10,6 +10,8 @@ Socialcalc enabled is required because we run Calc Testcases
 * [Core Testcases]
 * [Test Case: Miki Authentication]
 * [Test Case: RSS Icons]
+* [Test Case: Table Info]
+* [Test Case: Signals Widget]
 * [Calc Testcases]
 * [File Testcases]
 * [Localization Testcases]
@@ -24,8 +26,21 @@ It should be the last testset in this run, but it will re-enable LDAP when it fi
 
 * [Default User Testcases]
 
-*Note that we do not run Report Testcases as they require a special test setup in a dev env*
+People and Dasboard plugin tests. Keep these two cases together in alpha order.
 
+* [Test Case: People Dashboard Plugins]
+* [Test Case: People Dashboard Plugins Reset]
+
+Dashboard, People, and Signals tests
+
+* [Widgets Testcases]
+* [Test Case: Gadgets Galore]
+* [Profile Testcases]
+* [Test Case: Upload Update Gallery Widgets]
+* [Test Case: Add Remove Gallery Widgets]
+* [Test Case: Administer Dashboards]
+
+*Note that we do not run Report Testcases as they require a special test setup in a dev env*
 Appliance testcases are run last because they do a backup/restore
 
 * [Appliance Testcases]
