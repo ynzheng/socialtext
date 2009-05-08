@@ -63,6 +63,9 @@
           <li class="first"><a id="st-pagetools-duplicate" href="#">[% loc('Duplicate Page') %]</a></li>
           <li><a id="st-pagetools-rename" href="#">[% loc('Rename Page') %]</a></li>
           [% END %]
+          [% IF locking_enabled AND can_lock %]
+            <li><a id="st-pagetools-lockpage" href="#">[% page_locked ? loc('Unlock Page') : loc('Lock Page') %]</a></li>
+          [% END %]
           [% IF checker.check_permission('delete') AND !page_locked_for_user %]
           <li [% current_user_workspace_count == 1 ? "class=\"separator\"":"" %]><a href="index.cgi?[% page.id %]" id="st-pagetools-delete">[% loc('Delete Page') %]</a></li>
           [% END %]
