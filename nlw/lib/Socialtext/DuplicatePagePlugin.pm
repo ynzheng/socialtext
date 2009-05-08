@@ -165,6 +165,7 @@ sub mass_copy_to {
 sub _duplicate {
     my $self = shift;
     my $workspace = shift;
+    my $page = $self->hub->pages->current;
 
     return 1
         unless $self->hub->authz->user_has_permission_for_workspace(
@@ -173,13 +174,14 @@ sub _duplicate {
                    workspace  => $workspace,
                );
 
+    return 1 unless $self->hub->checker->can_modify_locked( $page );
 
     my $page_title = $self->cgi->new_title;
     my $page_exists = $self->hub->pages->page_exists_in_workspace($page_title, $workspace->name);
 
     return 0 if ($page_exists && $self->cgi->clobber ne $page_title);
 
-    return $self->hub->pages->current->duplicate(
+    return $page->duplicate(
         $workspace,
         $page_title,
         $self->cgi->keep_categories || '',
