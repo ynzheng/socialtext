@@ -94,6 +94,8 @@ sub category_delete_from_page {
     my $category = shift || $self->cgi->category;
     my $page = $self->hub->pages->new_page($page_id);
 
+    return unless $self->hub->checker->can_modify_locked($page);
+
     $page->delete_tag($category);
     $page->metadata->update(user => $self->hub->current_user);
     $page->store( user => $self->hub->current_user );
