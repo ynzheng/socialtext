@@ -32,6 +32,7 @@ Readonly our @ACCT_COLS => qw(
     is_system_created
     email_addresses_are_hidden
     is_exportable
+    allow_invitation
 
     desktop_logo_uri
     desktop_header_gradient_top
@@ -677,7 +678,8 @@ sub _AllByWorkspaceCount {
         . '       "Account".desktop_2nd_bg_color,'
         . '       "Account".desktop_text_color,'
         . '       "Account".desktop_link_color,'
-        . '       "Account".desktop_highlight_color'
+        . '       "Account".desktop_highlight_color,'
+        . '       "Account".allow_invitation'
         . " ORDER BY workspace_count $p{sort_order}, \"Account\".name ASC"
         . ' LIMIT ? OFFSET ?' ,
         @args );
