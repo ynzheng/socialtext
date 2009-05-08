@@ -93,7 +93,8 @@ CREATE TABLE "Account" (
     desktop_2nd_bg_color varchar(7) DEFAULT '#F2F2F2'::varchar,
     desktop_text_color varchar(7) DEFAULT '#000000'::varchar,
     desktop_link_color varchar(7) DEFAULT '#0081F8'::varchar,
-    desktop_highlight_color varchar(7) DEFAULT '#FFFDD3'::varchar
+    desktop_highlight_color varchar(7) DEFAULT '#FFFDD3'::varchar,
+    allow_invitation boolean DEFAULT true NOT NULL
 );
 
 CREATE SEQUENCE "Account___account_id"
@@ -1454,4 +1455,5 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '57');
+
+INSERT INTO "System" VALUES ('socialtext-schema-version', '58');
