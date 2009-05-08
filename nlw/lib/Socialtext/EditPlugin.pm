@@ -64,6 +64,9 @@ sub edit_content {
 
     $page->load;
 
+    return $self->to_display($page)
+        unless $self->hub->checker->can_modify_locked($page);
+
     my $append_mode = $self->cgi->append_mode || '';
 
     if ($self->_there_is_an_edit_contention($page, $self->cgi->revision_id)) {
@@ -164,6 +167,9 @@ sub save {
         unless $self->hub->checker->check_permission('edit');
 
     $page->load;
+
+    return $self->to_display($page)
+        unless $self->hub->checker->can_modify_locked($page);
 
     if ($self->_there_is_an_edit_contention($page, $self->cgi->revision_id)) {
         $self->_record_edit_contention($page);
@@ -296,6 +302,7 @@ sub _add_edit_event {
 
     my $page = $self->hub->pages->new_from_name($page_name);
     return '' unless $self->hub->checker->check_permission('edit');
+    return '' unless $self->hub->checker->can_modify_locked($page);
     return unless $page->active;
 
     eval {
