@@ -57,7 +57,7 @@ if (is_dev_env($host)) {
     $u = '-U nlw ';
 }
 
-my $delete_1 = 'psql ' . $u . $db . ' -c "delete from actions_by_user where account_id =' . $account_id . '; "';
+my $delete_1 = 'psql ' . $u . $db . ' -c "delete from workspace_actions_by_user where account_id =' . $account_id . '; "';
 `$delete_1`;
 my $delete_2 = 'psql ' . $u . $db . ' -c "delete from nlw_log_actions where account_id =' . $account_id . '; "';
 `$delete_2`;
