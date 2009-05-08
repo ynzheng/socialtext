@@ -124,7 +124,15 @@ sub revision_compare {
 sub revision_restore {
     my $self = shift;
     my $page = $self->hub->pages->current;
-    if ( $self->hub->checker->check_permission('edit') ) {
+
+
+    unless ( $self->hub->checker->can_modify_locked($page) ) {
+        $self->redirect($page->uri);
+        return '';
+    }
+
+    if ( $self->hub->checker->check_permission('edit')) {
+        warn "restoring page";
         $page->restore_revision(
             revision_id => $self->cgi->revision_id,
             user => $self->hub->current_user

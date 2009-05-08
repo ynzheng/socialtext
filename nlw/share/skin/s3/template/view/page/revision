@@ -25,7 +25,7 @@
           [% END %]
         </a>
       </li>
-      [% IF checker.check_permission('edit') %]
+      [% IF checker.check_permission('edit') AND ! page_locked_for_user %]
       <li class="flexButtonBlue">
           <a href="#" class="genericBlueButton" id="st-revision-restorebutton" onclick="jQuery('#restore-form').submit(); return false">
             [% loc("Restore Revision [_1]", human_readable_revision) %]
