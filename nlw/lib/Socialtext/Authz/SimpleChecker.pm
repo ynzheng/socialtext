@@ -44,6 +44,14 @@ sub check_permission {
     return $self->{has_perm}{$perm};
 }
 
+sub can_modify_locked {
+    my $self = shift;
+    my $page = shift;
+
+    return 1 unless ($self->{workspace}->allows_page_locking);
+    return 1 unless ($page->locked);
+    return $self->check_permission('lock');
+}
 
 1;
 
