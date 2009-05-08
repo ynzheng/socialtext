@@ -28,6 +28,9 @@ sub delete_page {
     return $self->redirect( $self->hub->pages->current->uri )
         unless $self->hub->checker->check_permission('delete');
 
+    return $self->redirect($self->hub->pages->current->uri)
+        unless $self->hub->checker->can_modify_locked($self->hub->pages->current);
+
     $self->hub->pages->current->delete( user => $self->hub->current_user );
     $self->finish;
 }
@@ -41,6 +44,9 @@ sub undelete_page {
 
     return $self->redirect( $page->uri )
         unless $self->hub->checker->check_permission('edit');
+
+    return $self->redirect($page->uri)
+        unless $self->hub->checker->can_modify_locked($page);
 
     my @rev_ids = $page->all_revision_ids;
     if ( @rev_ids < 2 ) {
