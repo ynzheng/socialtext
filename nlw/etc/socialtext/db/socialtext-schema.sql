@@ -975,6 +975,9 @@ CREATE INDEX ix_gadget_instance_user_pref__user_pref_id
 CREATE INDEX ix_gadget_user_pref_gadget_id
 	    ON gadget_user_pref (gadget_id);
 
+CREATE INDEX ix_job_piro_non_null
+	    ON job ((COALESCE((priority)::integer, 0)));
+
 CREATE INDEX ix_page_events_contribs_actor_time
 	    ON event (actor_id, "at")
 	    WHERE ((event_class = 'page') AND is_page_contribution("action"));
