@@ -73,7 +73,7 @@
 
 | *Comment* | Test Case: Verify Profile. Verify Updates present. |  |
 | click_and_wait | link=Profile |  |
-| text-like | Updates |  |
+| text-like | Activity |  |
 | st-name-widget | 3 | updates |
 | st-select-widget-frame | updates |  |
 | text-like | %%fname%% %%lname%% edited their own profile |  |

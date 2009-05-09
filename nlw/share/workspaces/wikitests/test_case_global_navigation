@@ -24,7 +24,7 @@
 | *Comment* | Test Case: Global Navigation Profile |  |
 | click_and_wait | link=Profile |  |
 | text_like | contentContainer | Profile |
-| text_like | contentContainer | Updates |
+| text_like | contentContainer | Activity |
 | text_like | contentContainer | Colleagues |
 | text_like | contentContainer | Workspaces |
 | text_like | contentContainer | Tags |
