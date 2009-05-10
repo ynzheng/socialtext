@@ -11,6 +11,7 @@
 | set | eto_ws_user | %%to_ws%%\@%%wikiemail%% |
 
 | *Comment* | Test Case: Invite people. Create new acct, user in it, and brand new (workspace == new user) |  |
+| *Comment* | Test Case: Invite people. Default allow_invitations is YES |  |
 | *Comment* | The user to be invited is %%to_ws_user%% and the wiki to be created is %%to_ws%%, so the user email addr and wiki email addr are identical, so we can read the email in the wiki! |  |
 | st-admin | create-account --name "%%acct%%" | created |
 | st-admin | enable-plugin --account "%%acct%%" --plugin dashboard |  |
@@ -32,7 +33,7 @@
 | open_ok | /?dashboard | 60000 |
 | wait_for_element_visible_ok | link=Home | 30000 |
 | wait_for_element_not_present_ok | st-wiki-subnav-link-invite | 30000 |
-| wait_for_text_not_present_ok | link=Invite people to your network! | 30000 |
+| wait_for_text_not_present_ok | link=Invite! | 30000 |
 
 TODO: verify cannot actually issue invitations via URL
 
@@ -41,10 +42,10 @@ TODO: verify cannot actually issue invitations via URL
 | open_ok | /?dashboard | 60000 |
 | wait_for_element_visible_ok | link=Home | 30000 |
 | wait_for_element_visible_ok | st-wiki-subnav-link-invite | 30000 |
-| text_like | st-wiki-subnav-link-invite | Invite people to your network! |
+| text_like | st-wiki-subnav-link-invite | Invite! |
 
 | *Comment* | Test Case: Invite people. Invite UI |  |
-| click_and_wait | link=Invite people to your network! |  |
+| click_and_wait | link=Invite! |  |
 | wait_for_element_visible_ok | account_id | 30000 |
 | select_ok | account_id | %%acct%% (primary) |
 
@@ -95,6 +96,24 @@ TODO: verify cannot actually issue invitations via URL
 
 | *Comment* | Test Case: Invite people. log in and go to dashboard. No workspaces |  |
 | text_like | qr/Welcome.+New User/i |  |
+
+| *Comment* | Test Case: Invite people. Disable invitations |  |
+| wait_for_element_visible_ok | link=Invite! | 30000 |
+| st-admin | set-account-config --account "%%acct%%" allow_invitation 0 | The account config for %%acct%% has been updated |
+| click_and_wait | link=Home |  |
+| wait_for_element_visible_ok | link=Workspaces | 30000 |
+| wait_for_element_not_present_ok | link=Invite! | 5000 |
+
+| *Comment* | Test Case: Invite people. Re-enable invitations |  |
+| st-admin | set-account-config --account "%%acct%%" allow_invitation 1 | The account config for %%acct%% has been updated |
+| click_and_wait | link=Home |  |
+| wait_for_element_visible_ok | link=Workspaces | 30000 |
+| wait_for_element_visible_ok | link=Invite! | 30000 |
+
+| *Comment* | Test Case: Invite people. Invite UI for new user |  |
+| click_and_wait | link=Invite! |  |
+| wait_for_element_visible_ok | account_id | 30000 |
+| select_ok | account_id | %%acct%% (primary) |
 
 | *Comment* | Test Case: Invite people TEARDOWN |  |
 | st-admin | delete-workspace --w %%to_ws%% --no-export | has been deleted |

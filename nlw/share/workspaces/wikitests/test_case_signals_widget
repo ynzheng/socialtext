@@ -78,11 +78,11 @@
 | text_like | //body | Love to hear the robin going %%start_time%% |
 | select-frame | relative=parent |  |
 
-| *Comment* | Test case: Signals Widget. Wait for Signal to appear in Updates |  |
+| *Comment* | Test case: Signals Widget. Wait for Signal to appear in Activity |  |
 | click_and_wait | link=Profile |  |
-| wait_for_text_present_ok | Updates | 30000 |
-| st-name-widget | 3 | profile_updates |
-| st-select-widget-frame | profile_updates |  |
+| wait_for_text_present_ok | Activity | 30000 |
+| st-name-widget | 3 | profile_activity |
+| st-select-widget-frame | profile_activity |  |
 
 | wait_for_text_present_ok | She rocks in the treehouse %%start_time%% | 120000 |
 | wait_for_text_present_ok | Rockin and a bopin %%start_time%% | 120000 |
@@ -90,7 +90,7 @@
 | wait_for_text_present_ok | Love to hear the robin going %%start_time%% | 120000 |
 | text_like | //body | qr/Super.+Edit.+Summary.+From.+Signal.+%%start_time%%/ |
 
-| *Comment* | Test Case: Signals widget. Wait for automatic refresh to one minute ago in Updates |  |
+| *Comment* | Test Case: Signals widget. Wait for automatic refresh to one minute ago in Activity |  |
 | wait_for_text_present_ok | one minute ago | 120000 |
 | select-frame | relative=parent |  |
 
