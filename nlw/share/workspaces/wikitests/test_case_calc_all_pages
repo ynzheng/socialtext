@@ -33,17 +33,19 @@
 | select_and_wait | sort-picker | label=Title (↓) |
 | text_like | contentContainer | qr/allpages spreadsheet0004%%start_time%%.+allpages spreadsheet0001%%start_time%%/ |
 
-| *Comment* | Test Case: Calc All Pages date sort |  |
+| *Comment* | Test Case: Calc All Pages. Open and Save for a later edit time |  |
 | open_ok | /%%workspace%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0005%%start_time%%#edit |  |
 | wait_for_element_visible_ok | st-save-button-link | 30000 |
 | pause | 5000 | I hate pause; needed for entire page load |
 | click_and_wait | st-save-button-link |  |
 
 | open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |  |
-
-| *Comment* | Test Case: Calc All Pages reopen. Default sort is date, not sticky |  |
 | wait_for_element_visible_ok | sort-picker | 30000 |
-| select_and_wait | sort-picker | label=Date (↓) |
+| select_and_wait | sort-picker | Revisions |
+
+| *Comment* | Test Case: Calc All Pages reopen. Date sort. |  |
+| wait_for_element_visible_ok | sort-picker | 30000 |
+| select_and_wait | sort-picker | label=Date |
 | text_like | contentContainer | qr/allpages spreadsheet0005%%start_time%%.+allpages spreadsheet0004%%start_time%%/ |
 | wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Date (↑) |

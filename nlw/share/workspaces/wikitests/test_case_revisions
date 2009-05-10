@@ -135,7 +135,7 @@ Find the same page using search, What's New list, and Revisions link. Observe re
 | clickAndWait | link=test case revisions %%start_time%% |  |
 | text_like | `//a[contains(@href,'action=revision_list')]` | qr/5.+Revisions/ |
 
- from All Revisions, click an older version | older version appears
+from All Revisions, click an older version | older version appears
 from Compare Revisions, click the link above the older version | older version appears
 
 | clickAndWait | `//a[contains(@href,'action=revision_list')]` |  |
@@ -160,7 +160,7 @@ from Compare Revisions, click the link above the older version | older version a
 | *Comment* | Test Case: Revisions: use the revisions/views link at the bottom of the page |  |
 | wait_for_element_visible_ok | link=6 revisions | 30000 |
 | clickAndWait | link=6 revisions |  |
-| text_like | qr/Revision 2.+Revision 5.+Revision 4.+Revision 3.+Revision 2.+Revision 1/ |  |
+| text_like | qr/Revision 2.+Revision 5.+Revision 4.+Revision 3.+Revision 2.+Revision 1/s |  |
 | clickAndWait | link=Back To Current Revision |  |
 | text_like | revision number two |  |
 
@@ -178,7 +178,7 @@ from Compare Revisions, click the link above the older version | older version a
 
 | *Comment* | Test Case: Revisions: Check for edit summary in revision compare |  |
 | clickAndWait | `//a[contains(@href,'action=revision_list')]` |  |
-| text_like | qr/Revision 3.+Revision 2/ |  |
+| text_like | qr/Revision 3.+Revision 2/s |  |
 | wait_for_element_visible_ok | link=Compare Revisions | 30000 |
 | clickAndWait | link=Compare Revisions |  |
 | text_like | qr/revision 2.+by.+on/ims |  |
@@ -186,7 +186,7 @@ from Compare Revisions, click the link above the older version | older version a
 
 | *Comment* | Test Case: Revisions: Check for edit summary in revision itself |  |
 | clickAndWait | link=Revision 3 |  |
-| text_like | qr/%%short_username%%.+Edit Summary %%start_time%%/im |  |
+| text_like | qr/%%short_username%%.+Edit Summary %%start_time%%/ims |  |
 
 | *Comment* | Test Case: Revisions: Teardown |  |
 | st-admin | purge-page --w %%workspace%% --page test_case_revisions_%%start_time%% | was purged |
