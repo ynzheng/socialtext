@@ -97,8 +97,6 @@ sub _process {
       unless defined $self->registry->lookup->action->{$self->action};
     my ($class_id, $method) =
       @{$self->registry->lookup->action->{$self->action}};
-    return $self->no_plugin_action
-      if $class_id eq 'pluggable' and not defined $method;
     $method ||= $self->action;
     Socialtext::Timer->Continue('drop_workspace_breadcrumb');
     $self->drop_workspace_breadcrumb($method);
@@ -110,6 +108,10 @@ sub _process {
     } elsif ($e) {
         $e->rethrow if eval { $e->can('rethrow') };
         die "$e\n";
+    }
+
+    if ($class_id eq 'pluggable' and !(defined $html and length $html)) {
+        return $self->no_plugin_action ;
     }
     
     # Safari's JS doesn't properly handled raw utf8 data.
