@@ -1264,7 +1264,8 @@ sub reset_account_skin {
 sub set_workspace_config {
     my $self = shift;
 
-    my $ws = $self->_require_workspace();
+    my ($hub, $main) = $self->_require_hub();
+    my $ws = $hub->current_workspace;
 
     # XXX - these checks belong in Socialtext::Workspace->update()
     my %unsettable = map { $_ => 1 } qw( name creation_datetime );
@@ -1309,6 +1310,17 @@ sub set_workspace_config {
     }
     elsif ( $e = $@ ) {
         die $e;
+    }
+
+    if ( defined $update{allows_page_locking}
+        && $update{allows_page_locking} == 0
+    ) {
+        my @ids = $hub->pages->all_ids_locked();
+        for my $page_id ( @ids ) {
+            my $page = $hub->pages->new_from_name( $page_id );
+            $page->unlock;
+            $page->store( user => Socialtext::User->SystemUser );
+        }
     }
 
     $self->_success(
@@ -1688,6 +1700,26 @@ sub can_lock_pages {
         $user->username,
         $can_lock? 'can' : 'cannot',
     ));
+}
+
+sub locked_pages {
+    my $self         = shift;
+    my ($hub, $main) = $self->_require_hub();
+    my $ws           = $hub->current_workspace();
+    my @page_ids     = $hub->pages->all_ids_locked();
+    my $msg;
+
+    if ( @page_ids > 0 ) {
+        $msg = loc("Locked pages in the '[_1]' workspace:", $ws->title);
+        for my $id ( @page_ids ) {
+            $msg .= "\n* " . $hub->pages->new_from_name( $id )->title;
+        }
+    }
+    else {
+        $msg = loc("Workspace '[_1]' has no locked pages.", $ws->title);
+    }
+
+    $self->_success("$msg\n\n");
 }
 
 sub purge_attachment {

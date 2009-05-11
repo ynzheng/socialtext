@@ -38,7 +38,27 @@ lock_page: {
             )->lock_page();
         },
         qr/\QPage 'Admin Wiki' in workspace 'Admin Wiki' has been locked.\E/,
-        'page lock success'
+        'page admin_wiki lock success'
+    );
+
+    expect_success(
+        sub {
+            Socialtext::CLI->new(
+                argv => [ qw/--workspace admin --page conversations/ ]
+            )->lock_page();
+        },
+        qr/\QPage 'Conversations' in workspace 'Admin Wiki' has been locked.\E/,
+        'page conversations lock success'
+    );
+
+    expect_success(
+        sub {
+            Socialtext::CLI->new(
+                argv => [ qw/--workspace admin --page member_directory/ ]
+            )->lock_page();
+        },
+        qr/\QPage 'Member Directory' in workspace 'Admin Wiki' has been locked.\E/,
+        'page member_directory lock success'
     );
 
     # Page does not exist
@@ -61,20 +81,6 @@ lock_page: {
         },
         qr/\QNo workspace named "ENOSUCH" could be found.\E/,
         'page lock fails when workspace does not exist'
-    );
-}
-
-# We don't need to re-run the whole battery of tests above because these
-# calls share code.
-unlock_page: {
-    expect_success(
-        sub {
-            Socialtext::CLI->new(
-                argv => [ qw/--workspace admin --page admin_wiki/ ]
-            )->unlock_page();
-        },
-        qr/\QPage 'Admin Wiki' in workspace 'Admin Wiki' has been unlocked.\E/,
-        'page unlock success'
     );
 }
 
@@ -109,3 +115,51 @@ can_lock_pages: {
         'user cannot lock pages'
     );
 }
+
+list_locked: {
+    expect_success(
+        sub {
+            Socialtext::CLI->new(
+                argv => [ qw/--workspace admin/ ]
+            )->locked_pages();
+        },
+        qr/\*\sadmin_wiki\s+\*\sconversations\s+\*\smember_directory/,
+        'locked_pages success'
+    );
+}
+
+unlock_page: {
+    expect_success(
+        sub {
+            Socialtext::CLI->new(
+                argv => [ qw/--workspace admin --page admin_wiki/ ]
+            )->unlock_page();
+        },
+        qr/\QPage 'Admin Wiki' in workspace 'Admin Wiki' has been unlocked.\E/,
+        'page unlock success'
+    );
+}
+
+disable_locking_unlocks_all: {
+    expect_success(
+        sub {
+            Socialtext::CLI->new(
+                argv => [qw/--workspace admin allows_page_locking 0/]
+            )->set_workspace_config();
+        },
+        qr/\QThe workspace config for admin has been updated.\E/,
+        'page locking turned off'
+    );
+    expect_success(
+        sub {
+            Socialtext::CLI->new(
+                argv => [ qw/--workspace admin/ ]
+            )->locked_pages();
+        },
+        qr/\QWorkspace 'Admin Wiki' has no locked pages.\E/,
+        'Disabling page locking unlocks all locked pages'
+    );
+
+}
+
+exit;
