@@ -1681,13 +1681,20 @@ sub _toggle_page_lock {
 }
 
 sub _update_page_lock_status {
-    my $self   = shift;
-    my $page   = shift;
-    my $status = shift;
+    my $self    = shift;
+    my $page    = shift;
+    my $status  = shift;
+    my $summary;
+    my $action;
 
-    my $summary = ( $status )
-        ? loc('Locking page.')
-        : loc('Unlocking page.');
+    if ( $status ) {
+        $summary = loc('Locking page.');
+        $action  = 'lock_page';
+    }
+    else {
+        $summary = loc('Unlocking page.');
+        $action  = 'unlock_page';
+    }
 
     eval {
         $page->update(
@@ -1703,6 +1710,12 @@ sub _update_page_lock_status {
     if ($@) {
         die "$@";
     }
+
+    Socialtext::Events->Record({
+        event_class => 'page',
+        action => $action,
+        page => $page,
+    });
 }
 
 sub can_lock_pages {
