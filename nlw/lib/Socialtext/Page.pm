@@ -234,7 +234,7 @@ sub update_from_remote {
     }
     die "A valid user is required to update a page\n" unless $user;
 
-    if ($self->hub->checker->can_modify_locked($self)) {
+    if (!$self->hub->checker->can_modify_locked($self)) {
         my $ws = $self->hub->current_workspace;
         st_log->info(
             'LOCK_EDIT,PAGE,lock_edit,'
