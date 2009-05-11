@@ -3,7 +3,7 @@
 
 use warnings;
 use strict;
-use Test::Socialtext tests => 9;
+use Test::Socialtext tests => 12;
 
 BEGIN {
     use_ok( 'Socialtext::Pages' );
@@ -49,3 +49,17 @@ Random_page: {
     ok $page->active, 'page is active';
 }
 
+All_ids_locked: {
+    my @locked = ();
+    foreach (qw(Conversations meeting_agendas)) {
+        my $page = $hub->pages->new_from_name($_);
+        $page->lock;
+        $page->store(user => $hub->current_user);
+    }
+
+    my @ids = $hub->pages->all_ids_locked;
+    is scalar(@ids), 2, 'Two locked pages returned';
+    ok grep({ /^conversations$/ } @ids), 'conversations is one of the pages';
+    ok grep({ /^meeting_agendas$/ } @ids), 'meeting_agendas is one of the pages';
+
+}
