@@ -234,7 +234,16 @@ sub update_from_remote {
     }
     die "A valid user is required to update a page\n" unless $user;
 
-    die "Page is locked and cannot be edited\n" unless ($self->hub->checker->can_modify_locked($self));
+    if ($self->hub->checker->can_modify_locked($self)) {
+        my $ws = $self->hub->current_workspace;
+        st_log->info(
+            'LOCK_EDIT,PAGE,lock_edit,'
+            . 'workspace:' . $ws->name . '(' . $ws->workspace_id . '),'
+            . 'user:' . $user->email_address . '(' . $user->user_id . '),'
+            . 'page:' . $self->id
+        );
+        die "Page is locked and cannot be edited\n";
+    }
 
     $revision_id  ||= $self->revision_id;
     $revision     ||= $self->metadata->Revision || 0;
