@@ -64,3 +64,7 @@ div#st-editing-tools-edit ul.buttonRight {
     margin-top: 10px;
     margin-bottom: -10px;
 }
+
+#st-editing-tools-edit h2.tableTitle {
+    margin-top:10px;
+}
