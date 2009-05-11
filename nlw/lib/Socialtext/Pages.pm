@@ -83,6 +83,29 @@ sub all_ids_newest_first {
     return $self->all_ids;
 }
 
+=head2 $pages->all_ids_locked()
+
+Returns a list of all page_id's which are currently locked.
+
+=cut 
+
+sub all_ids_locked {
+    my $self = shift;
+    Socialtext::Timer->Continue('all_locked');
+    my $sth = sql_execute(<<EOT,
+SELECT page_id 
+    FROM page
+    WHERE workspace_id = ?
+    AND locked = 't'
+    ORDER BY last_edit_time DESC
+EOT
+        $self->hub->current_workspace->workspace_id,
+    );
+    my $pages = $sth->fetchall_arrayref();
+    Socialtext::Timer->Pause('all_locked');
+    return map { $_->[0] } @$pages;
+}
+
 sub all_newest_first {
     my $self = shift;
     Socialtext::Timer->Continue('all_newest_first');
@@ -135,7 +158,6 @@ EOT
     Socialtext::Timer->Pause('random_page');
     return $random_page;
 }
-
 
 sub name_to_title { $_[1] }
 
