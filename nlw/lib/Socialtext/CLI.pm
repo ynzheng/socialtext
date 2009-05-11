@@ -1318,8 +1318,7 @@ sub set_workspace_config {
         my @ids = $hub->pages->all_ids_locked();
         for my $page_id ( @ids ) {
             my $page = $hub->pages->new_from_name( $page_id );
-            $page->unlock;
-            $page->store( user => Socialtext::User->SystemUser );
+            $self->_update_page_lock_status( $page, 0 );
         }
     }
 
@@ -1671,13 +1670,7 @@ sub _toggle_page_lock {
         $workspace->title()
     )) unless ( $workspace->allows_page_locking );
 
-    eval {
-        $page->metadata->Locked($status);
-        $page->store( user => Socialtext::User->SystemUser );
-    };
-    if ($@) {
-        die "$@";
-    }
+    $self->_update_page_lock_status( $page, $status );
 
     my $message = ( $status ) ? 'locked' : 'unlocked';
 
@@ -1685,6 +1678,31 @@ sub _toggle_page_lock {
         "Page '[_1]' in workspace '[_2]' has been [_3].",
         $page->metadata->Subject, $workspace->title(), $message
     ));
+}
+
+sub _update_page_lock_status {
+    my $self   = shift;
+    my $page   = shift;
+    my $status = shift;
+
+    my $summary = ( $status )
+        ? loc('Locking page.')
+        : loc('Unlocking page.');
+
+    eval {
+        $page->update(
+            subject          => $page->metadata->Subject,
+            revision         => $page->metadata->Revision,
+            locked           => $status,
+            user             => Socialtext::User->SystemUser,
+            content          => $page->content,
+            original_page_id => $page->id,
+            edit_summary     => $summary,
+        );
+    };
+    if ($@) {
+        die "$@";
+    }
 }
 
 sub can_lock_pages {
