@@ -308,6 +308,31 @@ $(function() {
         return false;
     });
 
+    $("#st-pagetools-lockpage").click(function () {
+        var form = $('<form>').attr({
+            method: 'POST',
+            action: 'index.cgi'
+        });
+
+        form.append(
+            $('<input>').attr({
+                name: 'action',
+                value: 'edit_lock'
+            })
+        );
+
+        form.append(
+            $('<input>').attr({
+                name: 'page_name',
+                value: Socialtext.page_title
+            });
+        );
+
+        $('body').append(form);
+        form.submit();
+        return false;
+    });
+
     //index.cgi?action=copy_to_workspace_popup;page_name=[% page.id %]')
     $("#st-pagetools-copy").click(function () {
         get_lightbox('copy', function () {
