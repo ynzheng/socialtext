@@ -13,6 +13,7 @@ use Socialtext::Workspace;
 use Socialtext::l10n qw/loc_lang/;
 use Fcntl ':flock';
 use File::chdir;
+use Socialtext::HTTP ':codes';
 use Module::Pluggable search_path => ['Socialtext::Pluggable::Plugin'],
                       search_dirs => \@libs,
                       sub_name => 'plugins';
@@ -67,7 +68,17 @@ sub handler {
     my $res;
     my $action;
     if (($action = $rest->query->param('action'))) {
-        $res = $self->hub->process;
+        eval { $res = $self->hub->process };
+        if (my $e = $@) {
+            my $redirect_class = 'Socialtext::WebApp::Exception::Redirect';
+            if (Exception::Class->caught($redirect_class)) {
+                 $rest->header(
+                     -status => HTTP_302_Found,
+                     -Location => $e->message,
+                 );
+                 return '';
+            }
+        }
         $rest->header(-type => 'text/html; charset=UTF-8', # default
                       $self->hub->rest->header);
     }
