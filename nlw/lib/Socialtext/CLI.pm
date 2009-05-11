@@ -2757,6 +2757,7 @@ Socialtext::CLI - Provides the implementation for the st-admin CLI script
   show-profile [--username or --email]
   hide-profile [--username or --email]
   can-lock-pages [--username or --email] --workspace
+  locked-pages --workspace
   mass-add-users --csv --account
 
   WORKSPACES
@@ -2954,6 +2955,10 @@ Show or hide the user's profile in the people system.
 
 Show whether a user can lock pages in the workspace.
 
+=head2 locked-pages --workspace
+
+List the locked pages for a given workspace.
+
 =head2 mass-add-users --csv --account
 
 Bulk adds/updates users from the given CSV file.
@@ -3033,6 +3038,9 @@ Given a valid workspace configuration key, this sets the value of the
 key for the specified workspace. Use "-null-" as the value to set the
 value to NULL in the DBMS. You can pass multiple key value pairs on
 the command line.
+
+If you are setting allows_locked_pages to false, this command will
+forcibly unlock any pages.
 
 =head2 show-workspace-config --workspace
 
