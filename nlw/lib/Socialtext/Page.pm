@@ -234,6 +234,8 @@ sub update_from_remote {
     }
     die "A valid user is required to update a page\n" unless $user;
 
+    die "Page is locked and cannot be edited\n" unless ($self->hub->checker->can_modify_locked($self));
+
     $revision_id  ||= $self->revision_id;
     $revision     ||= $self->metadata->Revision || 0;
     $subject      ||= $self->title,
