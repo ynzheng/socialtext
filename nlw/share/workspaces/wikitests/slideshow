@@ -110,7 +110,7 @@ Post by Email popup
 | open_ok | /%%wiki%% |  |
 | clickAndWait | link=Settings |  |
 | clickAndWait | link=My Settings |  |
-| clickAndWait | link=Private Messages |  |
+| clickAndWait | link=Private Signals Messages |  |
 | clickAndWait | link=Manage All Users |  |
 | clickAndWait | link=Invite New Users |  |
 | clickAndWait | link=My Workspaces |  |
