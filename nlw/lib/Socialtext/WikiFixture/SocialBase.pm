@@ -214,6 +214,7 @@ sub create_user {
     my $password = shift;
     my $account = shift;
     my $name = shift || ' ';
+    my $username = shift || $email;
 
     my ($first_name,$last_name) = split(' ',$name,2);
     $first_name ||= '';
@@ -221,7 +222,7 @@ sub create_user {
 
     my $user = Socialtext::User->create(
         email_address => $email,
-        username      => $email,
+        username      => $username,
         password      => $password,
         first_name    => $first_name,
         last_name     => $last_name,
