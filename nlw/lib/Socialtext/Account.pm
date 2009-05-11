@@ -297,6 +297,8 @@ sub export {
         email_addresses_are_hidden => $self->email_addresses_are_hidden,
         users => $self->users_as_hash,
         logo => MIME::Base64::encode($$image_ref),
+        allow_invitation => $self->allow_invitation,
+        (map { $_ => $self->$_ } grep { /^desktop_/ } @ACCT_COLS),
     };
     $hub->pluggable->hook('nlw.export_account', $self, $data);
 
