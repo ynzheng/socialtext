@@ -352,6 +352,12 @@ sub import_file {
         is_system_created => $hash->{is_system_created},
         skin_name => $hash->{skin_name},
         email_addresses_are_hidden => $hash->{email_addresses_are_hidden},
+        allow_invitation => (
+            defined $hash->{allow_invitation}
+                ? $hash->{allow_invitation}
+                : 1
+        ),
+        (map { $hash->{$_} ? ($_ => $hash->{$_}) : () } grep { /^desktop_/ } @ACCT_COLS),
     );
 
     if ($hash->{logo}) {
