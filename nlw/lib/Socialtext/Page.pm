@@ -298,6 +298,49 @@ sub update_from_remote {
     return; 
 }
 
+=head2 update_lock_status( $status )
+
+Update the lock status of the page.
+
+=cut
+
+sub update_lock_status {
+    my $self   = shift;
+    my $status = shift;
+    my $summary;
+    my $action;
+
+    if ( $status ) {
+        $summary = loc('Locking page.');
+        $action  = 'lock_page';
+    }
+    else {
+        $summary = loc('Unlocking page.');
+        $action  = 'unlock_page';
+    }
+
+    eval {
+        $self->update(
+            subject          => $self->metadata->Subject,
+            revision         => $self->metadata->Revision,
+            locked           => $status,
+            user             => Socialtext::User->SystemUser,
+            content          => $self->content,
+            original_page_id => $self->id,
+            edit_summary     => $summary,
+        );
+    };
+    if ($@) {
+        die "$@";
+    }
+
+    Socialtext::Events->Record({
+        event_class => 'page',
+        action => $action,
+        page => $self,
+    });
+}
+
 =head2 update( %args )
 
 Update or create the page. That is: edit a new or existing page
