@@ -1727,18 +1727,6 @@ sub is_in_category {
     grep {$_ eq $category} @{$self->metadata->Category};
 }
 
-sub unlock {
-    my $self = shift;
-
-    $self->metadata->Locked(0);
-}
-
-sub lock {
-    my $self = shift;
-
-    $self->metadata->Locked(1);
-}
-
 sub locked {
     my $self = shift;
 
