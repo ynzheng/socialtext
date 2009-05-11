@@ -214,6 +214,7 @@ sub create_user {
     my $password = shift;
     my $account = shift;
     my $name = shift || ' ';
+    my $username = shift || $email;
 
     my ($first_name,$last_name) = split(' ',$name,2);
     $first_name ||= '';
@@ -221,7 +222,7 @@ sub create_user {
 
     my $user = Socialtext::User->create(
         email_address => $email,
-        username      => $email,
+        username      => $username,
         password      => $password,
         first_name    => $first_name,
         last_name     => $last_name,
@@ -521,6 +522,18 @@ sub post_json {
     my $self = shift;
     my $uri = shift;
     $self->post($uri, 'Content-Type=application/json', @_);
+}
+
+=head2 post_form( uri, body )
+
+Post to the specified URI with header 'Content-Type=application/x-www-form-urlencoded'
+
+=cut
+
+sub post_form {
+    my $self = shift;
+    my $uri = shift;
+    $self->post($uri, 'Content-Type=application/x-www-form-urlencoded', @_);
 }
 
 =head2 put( uri, headers, body )

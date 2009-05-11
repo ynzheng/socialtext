@@ -44,9 +44,10 @@
 | click_and_wait | st-save-button-link |  |
 
 | open_ok | /%%workspace%%/index.cgi?action=recent_changes |  |
+|  select_and_wait |  sort-picker |  Revisions |
 
 | *Comment* | Test Case: Calc What's New sort Date desc |  |
-| select_and_wait | sort-picker | Date (↓) |
+| select_and_wait | sort-picker | Date |
 | text_like | contentContainer | qr/hey whats new %%start_time%% 0004.+hey whats new %%start_time%% 0001/ |
 
 | *Comment* | Test Case: Calc What's New sort Date asc |  |

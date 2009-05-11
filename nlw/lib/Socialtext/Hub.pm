@@ -93,7 +93,7 @@ sub _process {
 
     Socialtext::Timer->Continue('hub_process');
     $self->preload;
-    $self->no_plugin_action
+    return $self->no_plugin_action
       unless defined $self->registry->lookup->action->{$self->action};
     my ($class_id, $method) =
       @{$self->registry->lookup->action->{$self->action}};
@@ -108,6 +108,10 @@ sub _process {
     } elsif ($e) {
         $e->rethrow if eval { $e->can('rethrow') };
         die "$e\n";
+    }
+
+    if ($class_id eq 'pluggable' and !(defined $html and length $html)) {
+        return $self->no_plugin_action ;
     }
     
     # Safari's JS doesn't properly handled raw utf8 data.
@@ -146,10 +150,10 @@ sub preload {
 
 sub no_plugin_action {
     my $self = shift;
-    my $msg = 'An invalid action, '
+    my $msg = '<p>An invalid action, <b>'
         . $self->action
-        . ', was entered. '
-        . 'Returning to front page.';
+        . '</b>, was entered.</p><p>'
+        . 'Please contact your administrator and see if this feature has been disabled.</p><p>[ <a href="/">Return to the front page</a> ]';
     $self->fail_home_with_warning( $msg, "Invalid action: " . $self->action );
 }
 
@@ -174,12 +178,7 @@ sub handle_validation_error {
 sub fail_home_with_warning {
     my ( $self, $msg, $error ) = @_;
 
-    $self->main->status_message($msg);
-
-    $self->action('homepage');
-
-    warn "fail_home_with_warning: $error\n";
-    return $self->homepage->homepage;
+    return "<html><body>$msg</body></html>";
 }
 
 sub _load_class {

@@ -2,7 +2,6 @@
 | *Comment* | Test case: Business Control Panel passes in a dev env and a clean appliance VE |  |
 | *Comment* | If there are too many users or workspaces to fit on a single display page, it will fail |  |
 
-| st-admin | remove-accounts-admin --email %%email%% | %%username%% no longer has accounts admin access |
 | st-admin | give-accounts-admin --email %%email%% | %%username%% now has accounts admin access |
 
 | set | new_acct | acct %%start_time%% |
@@ -304,8 +303,12 @@ text_like | qr/0-sort-2-workspace1-%%start_time%%.+0-sort-3-workspace1-%%start_t
 | text_like | Account |  |
 | text_like | Administrators |  |
 | text_like | Available Workspaces |  |
-| text_like | Create a new workspace |
-| text_like | Invite To existing workspace(s) |
+| text_like | Create a new workspace |  |
+| text_like | Invite To existing workspace(s) |  |
+
+| *Comment* | Test case: Business Control Panel radio buttons create or invite |  |
+| wait_for_element_visible_ok | todo-invite | 30000 |
+| wait_for_element_visible_ok | todo-create | 30000 |
 
 | *Comment* | Test case: Business Control Panel invite to new workspace |  |
 | click_ok | todo-invite |  |
@@ -339,9 +342,9 @@ text_like | qr/0-sort-2-workspace1-%%start_time%%.+0-sort-3-workspace1-%%start_t
 | st-admin | enable-plugin --p people --account "0 sort 3 account %%start_time%%" |  |
 | click_and_wait | link=0 sort 3 account %%start_time%% |  |
 | wait_for_element_visible_ok | link=Profile Fields | 30000 |
+| click_and_wait | link=Profile Fields |  |
 
 | *Comment* | TC: BCP check all the Profile Fields info |  |
-| click_and_wait | link=Profile Fields |  |
 | text_like | qr/Field Title.*Field Name.*Field Type.*Hidden.*Source.*Actions/ |  |
 | text_like | qr/AIM™.+(Edit).+aol_sn/ |  |
 | text_like | qr/Assistant.+(Edit).+assistant/ |  |
@@ -364,21 +367,31 @@ text_like | qr/0-sort-2-workspace1-%%start_time%%.+0-sort-3-workspace1-%%start_t
 
 | *Comment* | TC: BCP check Save Field. We don't care about setting the fields back. Setting them at all proves the controls work, so no need to set them back. |  |
 | click_and_wait | link=Edit |  |
+| wait_for_element_visible_ok | field-title-input | 30000 |
 | text_like | qr/Field Title.+Field Name.+Data Source.+Field Type.+Hidden/ |  |
+
+| wait_for_element_visible_ok | data-source-select | 30000 |
+| wait_for_element_visible_ok | field-type-select | 30000 |
 | select_ok | data-source-select | label=External |
 | select_ok | field-type-select | label=Regular |
-| click_ok | //input[@name='is_hidden' and @value='1'] |  |
+| check_ok | //input[@name='is_hidden' and @value='1'] |  |
+| is_checked_ok | //input[@name='is_hidden' and @value='1'] |  |
 | click_and_wait | //input[@value='Save Field'] |  |
 | text_like | qr/Updated profile field.+This field is now hidden from users' profiles./ |  |
 | text_like | un-hide |  |
 
 | *Comment* | TC:BCP make new custom fields |  |
 | click_and_wait | link=Create New Field |  |
+| wait_for_element_visible_ok | field-title-input | 30000 |
+| wait_for_element_visible_ok | field-name-input | 30000 |
 | type_ok | field-title-input | ft %%start_time%% |
 | type_ok | field-name-input | fn_%%start_time%% |
+| wait_for_element_visible_ok | data-source-select | 30000 |
+| wait_for_element_visible_ok | field-type-select | 30000 |
 | select_ok | data-source-select | label=External |
-| select | field-type-select | label=Contact |
-| click | //input[@name='is_hidden' and @value='1'] |  |
+| select_ok | field-type-select | label=Contact |
+| check_ok | //input[@name='is_hidden' and @value='1'] |  |
+| is_checked_ok | //input[@name='is_hidden' and @value='1'] |  |
 | click_and_wait | //input[@value='Create New Field'] |  |
 | text_like | qr/Created profile field "ft %%start_time%%".+This field is now hidden from users' profiles./ |  |
 | text_like | qr/ft %%start_time%%.+fn_%%start_time%%.*Contact.*Yes.*External.*(un-hide)/ |  |
@@ -399,6 +412,7 @@ text_like | qr/0-sort-2-workspace1-%%start_time%%.+0-sort-3-workspace1-%%start_t
 
 | st-admin | enable-plugin --p dashboard --acc Socialtext |  |
 | st-admin | enable-plugin --p people --acc Socialtext |  |
+
 | wait_for_element_visible_ok | link=Socialtext | 60000 |
 | clickAndWait | link=Socialtext |  |
 | wait_for_element_visible_ok | link=Profile Fields | 30000 |
@@ -406,10 +420,15 @@ text_like | qr/0-sort-2-workspace1-%%start_time%%.+0-sort-3-workspace1-%%start_t
 | wait_for_element_visible_ok | link=Edit | 30000 |
 | click_and_wait | link=Edit |  |
 | text_like | qr/Field Title.+Field Name.+Data Source.+Field Type.+Hidden/ |  |
+| wait_for_element_visible_ok | data-source-select | 30000 |
+| wait_for_element_visible_ok | field-type-select | 30000 |
 | select_ok | data-source-select | label=External |
 | select_ok | field-type-select | label=Regular |
-| click_ok | //input[@name='is_hidden' and @value='1'] |  |
+| check_ok | //input[@name='is_hidden' and @value='1'] |  |
+| is_checked_ok | //input[@name='is_hidden' and @value='1'] |  |
+
 | click_and_wait | //input[@value='Cancel'] |  |
 | wait_for_text_present_ok | Account Profile Fields | 30000 |
+| wait_for_text_not_present_ok | un-hide | 10000 |
 
 | *Comment* | Test case: Business Control Panel COMPLETED |  |

@@ -297,6 +297,8 @@ sub export {
         email_addresses_are_hidden => $self->email_addresses_are_hidden,
         users => $self->users_as_hash,
         logo => MIME::Base64::encode($$image_ref),
+        allow_invitation => $self->allow_invitation,
+        (map { $_ => $self->$_ } grep { /^desktop_/ } @ACCT_COLS),
     };
     $hub->pluggable->hook('nlw.export_account', $self, $data);
 
@@ -350,6 +352,12 @@ sub import_file {
         is_system_created => $hash->{is_system_created},
         skin_name => $hash->{skin_name},
         email_addresses_are_hidden => $hash->{email_addresses_are_hidden},
+        allow_invitation => (
+            defined $hash->{allow_invitation}
+                ? $hash->{allow_invitation}
+                : 1
+        ),
+        (map { $hash->{$_} ? ($_ => $hash->{$_}) : () } grep { /^desktop_/ } @ACCT_COLS),
     );
 
     if ($hash->{logo}) {
