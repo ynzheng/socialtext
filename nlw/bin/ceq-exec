@@ -6,6 +6,14 @@ use strict;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 use Socialtext::JobCreator;
+use Getopt::Long;
+
+Getopt::Long::Configure('pass_through');
+
+my $timeout;
+GetOptions(
+    'timeout=i' => \$timeout,
+);
 
 my $cmd = shift;
 my @args = @ARGV;
@@ -14,6 +22,7 @@ my $job_h = Socialtext::JobCreator->insert(
     'Socialtext::Job::Cmd' => {
         cmd => $cmd,
         args => \@args,
+        ($timeout ? (timeout => $timeout) : ()),
     }
 );
 if ($job_h) {
@@ -32,7 +41,7 @@ ceq-exec - Queue a command to be run by the ceqlotron
 
 =head1 SYNOPSIS
 
-B<ceq-exec command arg1 arg2>
+B<ceq-exec [--timeout=30] command arg1 arg2>
 
 =head1 SEE ALSO
 
