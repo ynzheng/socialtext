@@ -67,6 +67,7 @@ Readonly my $CHANGES_TEMPLATE        => 'lite/changes/changes.html';
 Readonly my $SEARCH_TEMPLATE         => 'lite/search/search.html';
 Readonly my $CATEGORY_TEMPLATE       => 'lite/category/category.html';
 Readonly my $WORKSPACE_LIST_TEMPLATE => 'lite/workspace_list/workspace_list.html';
+Readonly my $PAGE_LOCKED_TEMPLATE     => 'lite/page/page_locked.html';
 
 =head1 METHODS
 
@@ -170,6 +171,9 @@ sub edit_save {
     eval { $page->update_from_remote(%p); };
     if ( $@ =~ /^Contention:/ ) {
         return $self->_handle_contention( $page, $p{subject}, $p{content} );
+    }
+    elsif ($@ =~ /Page is locked/) {
+        return $self->_handle_lock( $page, $p{subject}, $p{content} );
     }
     elsif ($@) {
         # rethrow
@@ -333,6 +337,21 @@ sub _handle_contention {
     );
 }
 
+sub _handle_lock {
+    my $self    = shift;
+    my $page    = shift;
+    my $subject = shift;
+    my $content = shift;
+
+    return $self->_process_template(
+        $PAGE_LOCKED_TEMPLATE,
+        title          => "$subject Editing Error",
+        content        => $content,
+        page_uri       => $page->uri,
+        workspace_name => $self->hub->current_workspace->name,
+    );
+}
+
 sub _frame_page {
     my $self = shift;
     my $page = shift;
@@ -347,7 +366,6 @@ sub _frame_page {
     Socialtext::Timer->Continue('lite_page_html');
     my $html = $page->to_html_or_default;
     Socialtext::Timer->Pause('lite_page_html');
-
     return $self->_process_template(
         $DISPLAY_TEMPLATE,
         page_html        => $html,
@@ -360,6 +378,11 @@ sub _frame_page {
         # for now
         page_uri         => $page->uri,
         workspace_name   => $self->hub->current_workspace->name,
+        page_locked           => $page->locked,
+        page_locked_for_user  => 
+            $page->locked && 
+            $self->hub->current_workspace->allows_page_locking &&
+            !$self->hub->checker->check_permission('lock'),
     );
 }
 
@@ -424,8 +447,9 @@ sub _page_update_info {
 }
 
 sub _edit_link {
-    my $self           = shift;
+    my $self = shift;
     my $page = shift;
+
     my $authz = Socialtext::Authz->new;
     unless ( $authz->user_has_permission_for_workspace(
                  user       => $self->hub->current_user,
@@ -444,6 +468,7 @@ sub _edit_link {
 
 sub _home_link {
     my $self           = shift;
+
     my $workspace_name = $self->hub->current_workspace->name;
     my $home = loc("Home");
     return qq{<a href="/lite/page/$workspace_name/">$home</a>};
@@ -451,6 +476,7 @@ sub _home_link {
 
 sub _recent_changes_link {
     my $self           = shift;
+ 
     my $workspace_name = $self->hub->current_workspace->name;
     my $rc = loc('Recent Changes');
     return qq{<a href="/lite/changes/$workspace_name">$rc</a>};
@@ -458,6 +484,7 @@ sub _recent_changes_link {
 
 sub _search_link {
     my $self           = shift;
+ 
     my $workspace_name = $self->hub->current_workspace->name;
     my $search = loc('Search');
     return qq{<a href="/lite/search/$workspace_name">$search</a>};

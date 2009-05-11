@@ -1,0 +1,15 @@
+[%# @COPYRIGHT@ -%]
+[% PROCESS lite/header.html %]
+
+    <div>
+        <p>[% loc('This page is locked and can only be edited by the workspace admin.') %]
+        [% loc('Click <a href="[_1]">here</a> to return to the page.', page_uri) %]
+        [% loc('The text you just edited is shown below.') %]</p>
+    <div>
+        <pre>
+[% content | html %]
+        </pre>
+    </div>
+
+[% PROCESS lite/footer.html %]
+
