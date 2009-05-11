@@ -524,6 +524,18 @@ sub post_json {
     $self->post($uri, 'Content-Type=application/json', @_);
 }
 
+=head2 post_form( uri, body )
+
+Post to the specified URI with header 'Content-Type=application/x-www-form-urlencoded'
+
+=cut
+
+sub post_form {
+    my $self = shift;
+    my $uri = shift;
+    $self->post($uri, 'Content-Type=application/x-www-form-urlencoded', @_);
+}
+
 =head2 put( uri, headers, body )
 
 Put to the specified URI
