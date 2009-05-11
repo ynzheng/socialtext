@@ -24,6 +24,7 @@ sub register {
     my $registry = shift;
     $registry->add(action => 'edit');
     $registry->add(action => 'edit_save');
+    $registry->add(action => 'edit_lock');
     $registry->add(action => 'edit_content');
     $registry->add(action => 'edit_start');
     $registry->add(action => 'edit_cancel');
@@ -49,6 +50,24 @@ sub _validate_pagename_length {
         my $message = loc("Page title missing");
         data_validation_error errors => [$message];
     }
+}
+
+sub edit_lock {
+    my $self      = shift;
+    my $page_name = $self->cgi->page_name;
+
+    $self->_validate_pagename_length( $page_name );
+
+    my $page = $self->hub->pages->new_from_name($page_name);
+
+    return $self->to_display($page)
+        unless $self->hub->checker->check_permission('lock')
+            && $self->hub->current_workspace->allows_page_locking;
+
+    my $status = ( $page->locked ) ? 0 : 1;
+
+    $page->update_lock_status( $status );
+    return $self->to_display($page)
 }
 
 sub edit_content {
