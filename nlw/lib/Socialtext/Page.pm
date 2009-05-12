@@ -324,7 +324,7 @@ sub update_lock_status {
             subject          => $self->metadata->Subject,
             revision         => $self->metadata->Revision,
             locked           => $status,
-            user             => Socialtext::User->SystemUser,
+            user             => $self->hub->current_user,
             content          => $self->content,
             original_page_id => $self->id,
             edit_summary     => $summary,
