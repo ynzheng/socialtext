@@ -134,9 +134,15 @@ sub date_display_format {
         my $choices = [];
         my $locale = $p->hub->best_locale;
         my @formats = Socialtext::Date::l10n->get_all_format_date($locale);
+        my $default_pattern = Socialtext::Date::l10n->get_date_format(
+            $locale, 'default')->pattern;
         for (@formats) {
             if ( $_ eq 'default' ) {
                 next;
+            }
+            my $format = Socialtext::Date::l10n->get_date_format($locale, $_);
+            if ($format->pattern eq $default_pattern) {
+                $p->default($_);
             }
             push @{$choices}, $_;
             push @{$choices},
@@ -144,7 +150,6 @@ sub date_display_format {
         }
         return $choices;
     });
-    $p->default('default');
 
     return $p;
 }
