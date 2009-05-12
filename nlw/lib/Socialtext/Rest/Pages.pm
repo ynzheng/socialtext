@@ -13,6 +13,8 @@ use Socialtext::Model::Pages;
 use Socialtext::Search 'search_on_behalf';
 use Socialtext::String;
 use Socialtext::Timer;
+use Socialtext::JSON;
+use Socialtext::l10n qw/loc/;
 
 $JSON::UTF8 = 1;
 
@@ -22,6 +24,7 @@ sub get_resource {
     my $self = shift;
     my $rest = shift;
     my $content_type = shift || '';
+    $self->{_content_type} = $content_type;
 
     # If we're filtering, get that from the DB directly
     my $minimal = $self->rest->query->param('minimal_pages');
@@ -40,6 +43,19 @@ sub get_resource {
     }
 
     return $self->SUPER::get_resource();
+}
+
+sub resource_to_json { 
+    my $self = shift;
+    my $resource = shift;
+
+    if ($self->{_too_many}) {
+        $resource = {
+            hit_count => $self->{_too_many},
+            message => loc('The search term you have entered is too general.'),
+        };
+    }
+    return encode_json($resource);
 }
 
 # REVIEW: Why are we picking the first element in the results?
@@ -162,6 +178,16 @@ sub _searched_pages {
             undef,    # undefined scope
             $self->hub->current_user
         );
+    if (@page_ids > Socialtext::AppConfig->search_warning_threshold) {
+        if ($self->{_content_type} ne 'application/json') {
+            $self->rest->header(
+                -status => HTTP_400_Bad_Request,
+                -type => 'text/plain',
+            );
+        }
+        $self->{_too_many} = @page_ids;
+        return ();
+    }
 
     my $pages = Socialtext::Model::Pages->By_id(
         hub              => $self->hub,
