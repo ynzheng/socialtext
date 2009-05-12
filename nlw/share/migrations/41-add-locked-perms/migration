@@ -1,0 +1,32 @@
+#!/usr/bin/perl
+# @COPYRIGHT@
+use strict;
+use warnings;
+use Socialtext::SQL qw/:exec/;
+
+my $role_id = sql_singlevalue(qq{
+ SELECT role_id
+   FROM "Role"
+  WHERE name = 'workspace_admin'
+});
+
+my $permission_id = sql_singlevalue(qq{
+ SELECT permission_id
+   FROM "Permission"
+  WHERE name = 'lock'
+});
+
+my $sth = sql_execute(qq{
+SELECT workspace_id
+  FROM "Workspace"
+});
+
+for my $ws ( @{ $sth->fetchall_arrayref } ) {
+    sql_execute(qq{
+        INSERT INTO "WorkspaceRolePermission" 
+               ( role_id, permission_id, workspace_id )
+        VALUES ( ?, ?, ? )
+    }, $role_id, $permission_id, $ws->[0]);
+}
+
+exit 0;
