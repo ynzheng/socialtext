@@ -133,6 +133,15 @@ sub search {
             . "num_results:" . $self->result_set->{hits}
             . ',[' . $timer->elapsed . ']');
 
+    if ($self->result_set->{hits} > 500) {
+        $self->screen_template('view/listview');
+        return $self->render_screen(
+            too_many => $self->result_set->{hits},
+            error_message => 'Too many results!',
+            try_again_search_term => $search_term,
+        );
+    }
+
     $self->display_results(
         $self->sortdir,
         sortby => $self->sortby,

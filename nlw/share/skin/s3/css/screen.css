@@ -148,7 +148,7 @@ div#header div#globalNav div {
 	margin-top: 22px;
 }
 
-div#globalNav div input.searchButton {
+div#globalNav div input.searchButton, div#inlineSearch input.searchButton {
 	width: 29px;
 	height: 24px;
 	background: url(../images/searchButton.png) no-repeat top left;
@@ -4112,3 +4112,10 @@ body#dashBoard div#controls div#controlsRight ul {
     margin: 0 !important;
 }
 /* End of Container stuff */
+
+/* Search Results */
+
+#tooManyResults {
+  margin:1em 0 4em 0;
+}
+
