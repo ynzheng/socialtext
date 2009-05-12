@@ -28,7 +28,7 @@
         [% loc('This page is locked and cannot be edited.') %]
       </div>
     [% ELSE %]
-      [% IF locking_enabled %]
+      [% IF locking_enabled && can_lock %]
         <div id="st-page-lock-admin">
         <a href="#" id="st-admin-lock-link">
         [% IF page_locked %]
