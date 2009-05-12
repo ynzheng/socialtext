@@ -1150,6 +1150,14 @@ names.
 
 =for code type => SCALAR_TYPE
 
+=head2 search_warning_threshold
+
+The maximum number of search results that will be returned for any query.
+
+Default: 500
+
+=for code type => SCALAR_TYPE
+
 =head2 reports_summary_email
 
 Setting this causes the reports summary to be sent to the specified address.

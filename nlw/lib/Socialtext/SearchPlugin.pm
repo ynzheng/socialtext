@@ -278,7 +278,7 @@ sub _new_search {
 
     Socialtext::Exception::TooManyResults->throw(
         num_results => scalar(@hits),
-    ) if @hits > 500;
+    ) if @hits > Socialtext::AppConfig->search_warning_threshold;
 
     eval { $self->_load_pages_for_hits(\@hits) };
     warn $@ if $@;
