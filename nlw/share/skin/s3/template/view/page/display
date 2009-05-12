@@ -23,19 +23,30 @@
 <div id="controls">
   <div id="st-editing-tools-edit">
     [% IF page_locked_for_user %]
-      <div class="st-page-lock-notification">
+      <div id="st-page-lock-notification">
         <img src="/static/skin/s3/images/lock-locked.png" />
         [% loc('This page is locked and cannot be edited.') %]
       </div>
     [% ELSE %]
-    <ul>
-      [% PROCESS 'element/page/display/edit-button' %]
-      [% IF page.page_type != 'spreadsheet' %]
-        [% PROCESS 'element/page/display/comment-button' %]
+      [% IF locking_enabled %]
+        <div id="st-page-lock-admin">
+        <a href="#" id="st-admin-lock-link">
+        [% IF page_locked %]
+          <img src="/static/skin/s3/images/lock-locked.png" />
+        [% ELSE %]
+          <img src="/static/skin/s3/images/lock-unlocked.png" />
+        [% END %]
+        </a>
+        </div>
       [% END %]
-    </ul>
-    <ul class="buttonRight">
-    </ul>
+      <ul>
+        [% PROCESS 'element/page/display/edit-button' %]
+        [% IF page.page_type != 'spreadsheet' %]
+          [% PROCESS 'element/page/display/comment-button' %]
+        [% END %]
+      </ul>
+      <ul class="buttonRight">
+      </ul>
     [% END %]
   </div><!-- st-editing-tools-edit END -->
 
