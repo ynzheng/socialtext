@@ -374,6 +374,15 @@ div#controls div#st-editing-tools-edit {
 	height: 41px;
 }
 
+.st-page-lock-notification {
+    font-weight: bold;
+    padding: 0 10px 0 28px;
+    line-height: 44px;
+}
+
+.st-page-lock-notification img {
+    vertical-align: text-bottom !important;
+}
 
 div#controls div#st-editing-tools-edit {
        width: auto !important;

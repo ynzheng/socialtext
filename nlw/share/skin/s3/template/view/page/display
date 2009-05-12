@@ -22,6 +22,12 @@
 [% WRAPPER layout/html id="contentPage" %]
 <div id="controls">
   <div id="st-editing-tools-edit">
+    [% IF page_locked_for_user %]
+      <div class="st-page-lock-notification">
+        <img src="/static/skin/s3/images/lock-locked.png" />
+        [% loc('This page is locked and cannot be edited.') %]
+      </div>
+    [% ELSE %]
     <ul>
       [% PROCESS 'element/page/display/edit-button' %]
       [% IF page.page_type != 'spreadsheet' %]
@@ -30,6 +36,7 @@
     </ul>
     <ul class="buttonRight">
     </ul>
+    [% END %]
   </div><!-- st-editing-tools-edit END -->
 
   <!-- XXX: move this somewhere or style it in screen.css -->
