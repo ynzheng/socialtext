@@ -12,16 +12,24 @@ sub get_formated_date {
     my $self = shift;
     my ( $date, $key, $locale ) = @_;
 
-    my $df;
+    my $df = $self->get_date_format($locale, $key);
+    return $df->format_datetime($date);
+}
+
+
+sub get_date_format {
+    my $self   = shift;
+    my $locale = shift;
+    my $key    = shift;
+
     my $class = 'Socialtext::Date::l10n::' . $locale;
     eval "use $class";
     if ($@) {
-        $df = Socialtext::Date::l10n::en->get_date_format($key);
+        return Socialtext::Date::l10n::en->get_date_format($key);
     }
     else {
-        $df = $class->get_date_format($key);
+        return $class->get_date_format($key);
     }
-    return $df->format_datetime($date);
 }
 
 sub get_date_to_year_key_map {
@@ -88,6 +96,7 @@ sub get_all_format_date {
     else {
         @formats = $class->get_date_format_keys;
     }
+
     return @formats;
 }
 
