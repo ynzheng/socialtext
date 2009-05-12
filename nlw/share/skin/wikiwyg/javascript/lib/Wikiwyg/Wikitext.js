@@ -1036,6 +1036,8 @@ proto.setHeightOf = function() {
 proto.initializeObject = function() {
     var self = this;
     this.initialize_object();
+    if (!this.config.javascriptLocation)
+        throw new Error("Missing javascriptLocation config option!");
     this.area.addBehavior(this.config.javascriptLocation + "Selection.htc");
     jQuery(this.area).bind('beforedeactivate', function () {
         self.old_range = document.selection.createRange();
