@@ -325,7 +325,7 @@ $(function() {
             $('<input>').attr({
                 name: 'page_name',
                 value: Socialtext.page_title
-            });
+            })
         );
 
         $('body').append(form);
