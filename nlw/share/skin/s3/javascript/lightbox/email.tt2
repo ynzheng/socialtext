@@ -51,6 +51,9 @@
         <br />
         <input name="email_page_keep_attachments" class="email_input_checkbox" type="checkbox" value="1" />
         <label>[% loc('Keep attachments?') %]</label>
+        <br />
+        <input name="email_page_send_copy" class="email_input_checkbox" type="checkbox" value="1" />
+        <label>[% loc('Send me a copy?') %]</label>
       </td>
     </tr>
   </table>

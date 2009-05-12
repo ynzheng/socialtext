@@ -15,7 +15,7 @@ BEGIN {
 
 use Socialtext::Page;
 
-plan tests => 37;
+plan tests => 48;
 
 $Socialtext::EmailSender::Base::SendClass = 'Test';
 
@@ -180,6 +180,77 @@ EOF
     like( $emails[0]->header('To'), qr/devnull3\@socialtext\.com/,
         'devnull3@socialtext.com is in recipient list' );
 }
+
+send_copy: {
+    Email::Send::Test->clear;
+
+    my $page = $pages->new_from_name($utf8_subject);
+
+    $page->send_as_email
+        ( from => 'devnull1@socialtext.com',
+          to   => [ 'devnull2@socialtext.com', 'devnull3@socialtext.com' ],
+          send_copy => 1
+        );
+
+    my @emails = Email::Send::Test->emails;
+
+    is( scalar @emails, 1,
+        'one email was sent' );
+
+    like( $emails[0]->header('To'), qr/devnull2\@socialtext\.com/,
+        'devnull2@socialtext.com is in recipient list' );
+    like( $emails[0]->header('To'), qr/devnull3\@socialtext\.com/,
+        'devnull3@socialtext.com is in recipient list' );
+    like( $emails[0]->header('To'), qr/devnull1\@socialtext\.com/,
+        'devnull1@socialtext.com is in recipient list' );
+}
+
+send_copy_one_receiver: {
+    Email::Send::Test->clear;
+
+    my $page = $pages->new_from_name($utf8_subject);
+
+    $page->send_as_email
+        ( from => 'devnull1@socialtext.com',
+          to   => 'devnull2@socialtext.com',
+          send_copy => 1
+        );
+
+    my @emails = Email::Send::Test->emails;
+
+    is( scalar @emails, 1,
+        'one email was sent' );
+
+    like( $emails[0]->header('To'), qr/devnull2\@socialtext\.com/,
+        'devnull2@socialtext.com is in recipient list' );
+    like( $emails[0]->header('To'), qr/devnull1\@socialtext\.com/,
+        'devnull1@socialtext.com is in recipient list' );
+}
+
+send_copy_duplicate_copy: {
+    Email::Send::Test->clear;
+
+    my $page = $pages->new_from_name($utf8_subject);
+
+    $page->send_as_email
+        ( from => 'devnull1@socialtext.com',
+          to   => [ 'devnull2@socialtext.com', 'devnull1@socialtext.com' ],
+          send_copy => 1
+        );
+
+    my @emails = Email::Send::Test->emails;
+
+    is( scalar @emails, 1,
+        'one email was sent' );
+
+    like( $emails[0]->header('To'), qr/devnull2\@socialtext\.com/,
+        'devnull2@socialtext.com is in recipient list' );
+    like( $emails[0]->header('To'), qr/devnull1\@socialtext\.com/,
+        'devnull1@socialtext.com is in recipient list' );
+    unlike( $emails[0]->header('To'), qr/devnull1.*devnull1/,
+        'devnull1@socialtext.com appears once in recipient list' );
+}
+
 
 {
     Email::Send::Test->clear;
