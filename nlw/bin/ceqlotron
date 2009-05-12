@@ -180,6 +180,7 @@ sub do_work {
         my $sleep_for;
 
         if (my $job = Socialtext::Jobs->find_job_for_workers()) {
+            Socialtext::Timer->Reset();
             Socialtext::Timer->Continue('work_once');
             Socialtext::Jobs->work_once($job);
             Socialtext::Timer->Pause('work_once');
