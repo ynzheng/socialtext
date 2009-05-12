@@ -68,6 +68,7 @@ sub email_page {
     my $use_intro = $self->cgi->email_page_add_note_check;
     my $attachments_p = $self->cgi->email_page_keep_attachments;
     my $page_name = $self->cgi->page_name;
+    my $send_copy = $self->cgi->email_page_send_copy;
 
     my $page = $self->hub->pages->new_from_name($page_name);
     my $sender = $self->hub->current_user;
@@ -80,6 +81,7 @@ sub email_page {
         subject => $subject,
         body_intro => $note . "\n\n",
         include_attachments => $attachments_p,
+        send_copy => $send_copy
     );
     $self->template_process('close_window.html');
 }

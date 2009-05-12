@@ -1703,6 +1703,7 @@ sub send_as_email {
         subject => { type => SCALAR, default => $self->title },
         body_intro => { type => SCALAR, default => '' },
         include_attachments => { type => BOOLEAN, default => 0 },
+        send_copy => { type => BOOLEAN, default => 0 },
     });
 
     die "Must provide at least one address via the to or cc parameters"
@@ -1711,6 +1712,15 @@ sub send_as_email {
     if ( $p{cc} and not $p{to} ) {
         $p{to} = $p{cc};
         delete $p{cc},
+    }
+
+    if ($p{send_copy}) {
+        if ((!ref($p{to})) && ($p{from} ne $p{to})) {
+            $p{to}=[$p{to}, $p{from}];
+        } elsif ((ref($p{to}) eq "ARRAY") && 
+            (! grep {$_ eq $p{from}} @{$p{to}})) {
+            push(@{$p{to}}, $p{from});
+        }
     }
 
     my $body_content;
