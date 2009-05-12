@@ -333,6 +333,21 @@ $(function() {
         return false;
     });
 
+    var page_lock_rollover = function() {
+        var img = $(this).find('img');
+        var src = img.attr('src');
+        var path = '/static/skin/s3/images/';
+
+        new_src = ( src == path + 'lock-locked.png' )
+            ? path + 'lock-unlocked.png'
+            : path + 'lock-locked.png';
+
+        img.attr('src', new_src);
+    }
+
+    $('#st-admin-lock-link').mouseover(page_lock_rollover);
+    $('#st-admin-lock-link').mouseout(page_lock_rollover);
+
     //index.cgi?action=copy_to_workspace_popup;page_name=[% page.id %]')
     $("#st-pagetools-copy").click(function () {
         get_lightbox('copy', function () {
