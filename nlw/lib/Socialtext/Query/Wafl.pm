@@ -70,7 +70,12 @@ sub _present_results {
     my $self = shift;
     my $results = shift;
     my $wafl_html;
-    if ($self->method =~ /[-_]full$/ and not $results->{error}) {
+
+    if ($results->{too_many}) {
+        $wafl_html = '';
+        $results->{error} = loc('The search term you have entered is too general. Please add additional search terms that you expect your documents contain.');
+    }
+    elsif ($self->method =~ /[-_]full$/ and not $results->{error}) {
         $wafl_html = $self->_full_page_results($results);
     }
     else {
