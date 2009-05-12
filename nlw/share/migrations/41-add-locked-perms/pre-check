@@ -1,0 +1,37 @@
+#!/usr/bin/perl
+# @COPYRIGHT@
+use strict;
+use warnings;
+use Socialtext::Migration::Utils qw/ensure_socialtext_schema/;
+use Socialtext::SQL qw/sql_singlevalue/;
+
+# This will change when we merge back to trunk!
+ensure_socialtext_schema( 57 );
+
+my $permission_id = sql_singlevalue(qq{
+ SELECT permission_id
+   FROM "Permission"
+  WHERE name = 'lock'
+});
+
+my $role_id = sql_singlevalue(qq{
+ SELECT role_id
+   FROM "Role"
+  WHERE name = 'workspace_admin'
+});
+
+my $locked_count = sql_singlevalue(qq{
+ SELECT COUNT(*)
+   FROM "WorkspaceRolePermission"
+  WHERE role_id = ?
+    AND permission_id = ?
+}, $role_id, $permission_id);
+
+
+if ( $locked_count > 0 ) {
+    print "Workspace admins already have page locking permissions, skipping.\n";
+    exit 1;
+}
+
+print "Adding page locking permissions for workspace admins.\n";
+exit 0;
