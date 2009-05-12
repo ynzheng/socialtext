@@ -455,10 +455,18 @@ Removes the current database, without dumping it.
 sub dropdb {
     my $self = shift;
     my %c = $self->connect_params();
-    disconnect_dbh();
-    sleep 2;
+
+    disconnect_dbh(); # disconnect so as not to kill self
+
+    my $sudo = _sudo('postgres');
+
+    if (-f '/usr/local/sbin/kill_pg_backends' && $> != 0) {
+        eval {
+            shell_run("sudo -u postgres /usr/local/sbin/kill_pg_backends");
+        };
+    }
+
     eval {
-        my $sudo = _sudo('postgres');
         $self->_db_shell_run("$sudo dropdb $c{db_name}");
     };
     warn "Error dropping: $@" if $@;
