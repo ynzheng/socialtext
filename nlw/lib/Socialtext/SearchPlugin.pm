@@ -133,7 +133,7 @@ sub search {
             . "num_results:" . $self->result_set->{hits}
             . ',[' . $timer->elapsed . ']');
 
-    if ($self->result_set->{hits} > 500) {
+    if ($self->result_set->{too_many}) {
         $self->screen_template('view/listview');
         return $self->render_screen(
             too_many => $self->result_set->{hits},
@@ -248,6 +248,11 @@ sub search_for_term {
             # they're not authorized to see. -mml 20070504
             $self->error_message(
                   "You are not authorized to perform the requested search." );
+        } elsif ($@->isa('Socialtext::Exception::TooManyResults')) {
+            $result_set->{hits} = $@->num_results;
+            $result_set->{search_term} = $search_term;
+            $result_set->{scope} = $scope;
+            $result_set->{too_many} = 1;
         } else {
             $self->hub->log->warning("searchdie '$@'");
         }
@@ -270,6 +275,10 @@ sub _new_search {
         sub { }     # FIXME: We'd rather message the user than ignore these.
     );
     Socialtext::Timer->Pause('search_on_behalf');
+
+    Socialtext::Exception::TooManyResults->throw(
+        num_results => scalar(@hits),
+    ) if @hits > 500;
 
     eval { $self->_load_pages_for_hits(\@hits) };
     warn $@ if $@;
