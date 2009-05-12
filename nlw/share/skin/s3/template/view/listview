@@ -3,10 +3,11 @@
 [% USE decorate %]
 [% WRAPPER layout/html id="listPage" %]
   [% INCLUDE element/listview_tabs %]
-  <div id="controls">
-    <div id="st-editing-tools-edit">
-    </div><!-- controlsLeft END -->
-    <div id="controlsRight">
+  [% IF !too_many %]
+    <div id="controls">
+      <div id="st-editing-tools-edit">
+      </div><!-- controlsLeft END -->
+      <div id="controlsRight">
         [% IF feeds.rss.page %]
             <a style="float: left; margin-top: 12px" href="[% feeds.rss.page.url %]"><img border="0" src="[% wiki.skin_uri('s3') %]/images/rss.png"/></a>
         [% END %]
@@ -15,77 +16,93 @@
                 <a style="float: left; margin-top: 12px; margin-left: 5px;" title="[% unplug_phrase %]" href="[% unplug_uri %]"><img border="0" src="[% wiki.skin_uri('s3') %]/images/plug.png"/></a>
             [% END %]
         [% END %]
-      <ul class="level1">
-        <li class="submenu">
-          <a class="export" href="#" id="st-listtools-export">[% loc('Export') %]</a>
-          <ul class="level2">
-            [% IF loc_system_lang != 'ja' %]
-            <li class="first"><a title="[% loc('Create PDF document from checked pages') %]" id="st-listview-submit-pdfexport" href="#">[% loc('Export to PDF') %]</a></li>
-            [% END %]
-            <li class="separator"><a title="[% loc('Create Word document from checked pages') %]" id="st-listview-submit-rtfexport" href="#">[% loc('Export to Word') %]</a></li>
-          </ul>
-        </li>
-      </ul>
-    </div><!-- controlsRight END -->
-  </div><!-- controls END -->
+        <ul class="level1">
+          <li class="submenu">
+            <a class="export" href="#" id="st-listtools-export">[% loc('Export') %]</a>
+            <ul class="level2">
+              [% IF loc_system_lang != 'ja' %]
+              <li class="first"><a title="[% loc('Create PDF document from checked pages') %]" id="st-listview-submit-pdfexport" href="#">[% loc('Export to PDF') %]</a></li>
+              [% END %]
+              <li class="separator"><a title="[% loc('Create Word document from checked pages') %]" id="st-listview-submit-rtfexport" href="#">[% loc('Export to Word') %]</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div><!-- controlsRight END -->
+    </div><!-- controls END -->
+  [% END %]
   <div id="contentContainer">
     <h2 class="tableTitle wrap" title="[% display_title | html %]">[% display_title | html %]</h2>
-    [% IF listview_content_actions %][% PROCESS $listview_content_actions %][% END %]
-    <form id="st-listview-form" method="post" action="index.cgi">
-    <input id="st-listview-action" name="action" value="" type="hidden">
-    <input id="st-listview-filename" name="filename" value="" type="hidden">
-    <table class="dataTable pagelist" cellspacing="0">
-      <tr>
-        <th width="30" style="border-right: 0">
-        <div class="selectall">
-        <input type="checkbox" id="st-listview-selectall"/>
+    [% IF too_many %]
+      <div id="tooManyResults">
+        <p>
+          [% loc('The search term you have entered is too general; [_1] pages and/or attachments matched your query.', too_many) %]
+        </p>
+        <p>
+          [% loc('Please add additional search terms that you expect your document contains.') %]
+        </p>
+        <br />
+        <div id="inlineSearch">
+          [% INCLUDE element/search_form %]
         </div>
-        </th>
-        <th class="toggle">
-        [% IF !hide_sort_widget %]
-        <div class="sort">
-        [% loc('Sort by:') %]
-          <select id="sort-picker" onchange="sort_by();">
-            [% IF allow_relevance %]
-              [% PROCESS sort_by_option name = loc('Relevance') field = 'Relevance' %]
-            [% END %]
-              [% PROCESS sort_by_option name = loc('Title') field = 'Subject' %]
-            [% IF show_workspace %]
-              [% PROCESS sort_by_option name = loc('Workspace') field = 'Workspace' %]
-            [% END %]
-            [% PROCESS sort_by_option name = loc('Last Edited By') field = 'username' %]
-            [% PROCESS sort_by_option name = loc('Date') field = 'Date' %]
-            [% PROCESS sort_by_option name = loc('Revisions') field = 'revision_count' %]
-        </select>
-        </div>
-        [% END %]
-        [% predicate_with_params = BLOCK %]?[% predicate %];scope=[% scope %];orig_search_term=[% search_term %];sortby=[% sortby %];direction=[% sortdir.$sortby %][%- END %]
-        <div class="toggle">
-          [% loc('Show:') %]
-          [% IF summaries %]
-             <a href="[% predicate_with_params %];summaries=0;limit=[% limit %];offset=[% offset %]" [% IF ! summaries %] class="selected" [% END %]>[% loc('Titles') %]</a> | 
-             [% loc('Summaries') %]
-          [% ELSE %]
-             [% loc('Titles') %] |
-             <a href="[% predicate_with_params %];summaries=1;limit=[% limit %];offset=[% offset %]" [% IF summaries %] class="selected" [% END %]>[% loc('Summaries') %]</a>
+      </div>
+    [% ELSE %]
+      [% IF listview_content_actions %][% PROCESS $listview_content_actions %][% END %]
+      <form id="st-listview-form" method="post" action="index.cgi">
+      <input id="st-listview-action" name="action" value="" type="hidden">
+      <input id="st-listview-filename" name="filename" value="" type="hidden">
+      <table class="dataTable pagelist" cellspacing="0">
+        <tr>
+          <th width="30" style="border-right: 0">
+          <div class="selectall">
+          <input type="checkbox" id="st-listview-selectall"/>
+          </div>
+          </th>
+          <th class="toggle">
+          [% IF !hide_sort_widget %]
+          <div class="sort">
+          [% loc('Sort by:') %]
+            <select id="sort-picker" onchange="sort_by();">
+              [% IF allow_relevance %]
+                [% PROCESS sort_by_option name = loc('Relevance') field = 'Relevance' %]
+              [% END %]
+                [% PROCESS sort_by_option name = loc('Title') field = 'Subject' %]
+              [% IF show_workspace %]
+                [% PROCESS sort_by_option name = loc('Workspace') field = 'Workspace' %]
+              [% END %]
+              [% PROCESS sort_by_option name = loc('Last Edited By') field = 'username' %]
+              [% PROCESS sort_by_option name = loc('Date') field = 'Date' %]
+              [% PROCESS sort_by_option name = loc('Revisions') field = 'revision_count' %]
+          </select>
+          </div>
           [% END %]
-          [% IF pager %]
-          &mdash;
-          [% PROCESS list_pager %] 
-          [% END %]
-        </div>
-        </th>
-        <script language="javascript">
-          var query_start = "?[% predicate %];scope=[% scope %];"
-                          + "orig_search_term=[% search_term %];"
-                          + "summaries=[% summaries %]";
-          function sort_by() {
-            var selected = jQuery('select#sort-picker').val();
-            window.location = query_start + ';' + selected;
-          }
-        </script>
-      </tr>
-      </table>
+          [% predicate_with_params = BLOCK %]?[% predicate %];scope=[% scope %];orig_search_term=[% search_term %];sortby=[% sortby %];direction=[% sortdir.$sortby %][%- END %]
+          <div class="toggle">
+            [% loc('Show:') %]
+            [% IF summaries %]
+               <a href="[% predicate_with_params %];summaries=0;limit=[% limit %];offset=[% offset %]" [% IF ! summaries %] class="selected" [% END %]>[% loc('Titles') %]</a> | 
+               [% loc('Summaries') %]
+            [% ELSE %]
+               [% loc('Titles') %] |
+               <a href="[% predicate_with_params %];summaries=1;limit=[% limit %];offset=[% offset %]" [% IF summaries %] class="selected" [% END %]>[% loc('Summaries') %]</a>
+            [% END %]
+            [% IF pager %]
+            &mdash;
+            [% PROCESS list_pager %] 
+            [% END %]
+          </div>
+          </th>
+          <script language="javascript">
+            var query_start = "?[% predicate %];scope=[% scope %];"
+                            + "orig_search_term=[% search_term %];"
+                            + "summaries=[% summaries %]";
+            function sort_by() {
+              var selected = jQuery('select#sort-picker').val();
+              window.location = query_start + ';' + selected;
+            }
+          </script>
+        </tr>
+        </table>
+      [% END %]
       [% IF ! offset; offset = 0; END %]
       [% IF ! last; last = rows.size; END %]
     <table class="dataTable pagelist" cellspacing="0">
