@@ -22,46 +22,29 @@ sub get_date_format {
     my $locale = shift;
     my $key    = shift;
 
-    my $class = 'Socialtext::Date::l10n::' . $locale;
-    eval "use $class";
-    if ($@) {
-        return Socialtext::Date::l10n::en->get_date_format($key);
-    }
-    else {
-        return $class->get_date_format($key);
-    }
+    return $self->_delegate(get_date_format => $locale, $key);
 }
 
 sub get_date_to_year_key_map {
     my $self = shift;
     my ( $key, $locale ) = @_;
 
-    my $newkey;
-    my $class = 'Socialtext::Date::l10n::' . $locale;
-    eval "use $class";
-    if ($@) {
-        $newkey = Socialtext::Date::l10n::en->get_date_to_year_key_map($key);
-    }
-    else{
-        $newkey = $class->get_date_to_year_key_map($key);
-    }
-    return $newkey;
+    return $self->_delegate(get_date_to_year_key_map => $locale, $key);
+}
+
+sub get_time_format {
+    my $self   = shift;
+    my $locale = shift;
+    my $key    = shift;
+
+    return $self->_delegate(get_time_format => $locale, $key);
 }
 
 sub get_formated_time {
     my $self = shift;
     my ( $time, $key, $locale ) = @_;
 
-    my $df;
-    my $class = 'Socialtext::Date::l10n::' . $locale;
-    eval "use $class";
-    if ($@) {
-        $df = Socialtext::Date::l10n::en->get_time_format($key);
-    }
-    else {
-        $df = $class->get_time_format($key);
-    }
-
+    my $df = $self->get_time_format($locale, $key);
     return $df->format_datetime($time);
 }
 
@@ -69,16 +52,7 @@ sub get_formated_time_sec {
     my $self = shift;
     my ( $time, $key, $locale ) = @_;
 
-    my $df;
-    my $class = 'Socialtext::Date::l10n::' . $locale;
-    eval "use $class";
-    if ($@) {
-        $df = Socialtext::Date::l10n::en->get_time_sec_format($key);
-    }
-    else {
-        $df = $class->get_time_sec_format($key);
-    }
-
+    my $df = $self->_delegate(get_time_sec_format => $locale, $key);;
     return $df->format_datetime($time);
 }
 
@@ -86,34 +60,25 @@ sub get_all_format_date {
     my $self = shift;
     my ($locale) = @_;
 
-    my @formats;
-
-    my $class = 'Socialtext::Date::l10n::' . $locale;
-    eval "use $class";
-    if ($@) {
-        @formats = Socialtext::Date::l10n::en->get_date_format_keys;
-    }
-    else {
-        @formats = $class->get_date_format_keys;
-    }
-
-    return @formats;
+    return $self->_delegate(get_date_format_keys => $locale);;
 }
 
 sub get_all_format_time {
     my $self = shift;
     my ($locale) = @_;
 
-    my @formats;
+    return $self->_delegate(get_time_format_keys => $locale);;
+}
+
+sub _delegate {
+    my $self   = shift;
+    my $method = shift;
+    my $locale = shift;
+
     my $class = 'Socialtext::Date::l10n::' . $locale;
     eval "use $class";
-    if ($@) {
-        @formats = Socialtext::Date::l10n::en->get_time_format_keys;
-    }
-    else {
-        @formats = $class->get_time_format_keys;
-    }
-    return @formats;
+    $class = 'Socialtext::Date::l10n::en' if $@;
+    return $class->$method(@_);
 }
 
 1;
