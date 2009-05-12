@@ -1,13 +1,23 @@
 | *Comment* | STARTING Test case: Tag Cloud Widget |  |
-| *Comment* | This test runs only in the test data workspace |  |
+| *Comment* | This test uses data in the test-data workspace |  |
 
 * Fixture: SocialWidgets
 
+| *Comment* | Test Case: Tag Cloud Widget. Create the workspace tags widget |  |
 | open_ok | /?dashboard | 60000 |
 | st-empty-container |  |  |
-| *Comment* | Test Case: Tag Cloud Widget |  |
-| st-add-widget | widgets/share/widgets/tag_cloud.xml | tag_cloud |
-| st_wait_for_widget_load | tag_cloud | 45000 |
+| wait_for_element_visible_ok | link=Add Content | 30000 |
+| click_ok | link=Add Content |  |
+| wait_for_element_visible_ok | link=Workspace Tags | 30000 |
+| click_ok | link=Workspace Tags |  |
+| wait_for_element_visible_ok | link=Add Content | 30000 |
+
+| *Comment* | Test Case: Tag Cloud Widget. See the tags for workspace help-en |  |
+| wait_for_text_present_ok | Tags for help-en workspace | 30000 |
+| st-name-widget | 1 | tag_cloud |
+| st-widget-title-like | tag_cloud | Tags for help-en workspace |
+
+| *Comment* | Test Case: Tag Cloud Widget. Verify the help-en tags |  |
 | st-select-widget-frame | tag_cloud |  |
 | text_like | //body | Socialtext |
 | text_like | //body | weblog |
@@ -16,13 +26,16 @@
 | text_like | //body | Dakota |
 | text_like | //body | Help |
 
-| *Comment* | Go back to container |  |
+| *Comment* | Test Case: Tag Cloud Widget. Set the widget for workspace test-data |  |
 | select-frame | relative=parent |  |
 | st-widget-settings | tag_cloud |  |
-| wait_for_element_visible_ok | st-savebutton-%%tag_cloud%% | 30000 |
-| pause | 2000 |  |
+| wait_for_element_visible_ok | up_workspace | 30000 |
 | type_ok | up_workspace | test-data |
+| wait_for_element_visible_ok | st-savebutton-%%tag_cloud%% | 30000 |
 | click_ok | st-savebutton-%%tag_cloud%% |  |
+| wait_for_element_not_visible_ok | st-savebutton-%%tag_cloud%% | 30000 |
+
+| *Comment* | Test Case: Tag Cloud Widget. Verify the test-data tags |  |
 | st-select-widget-frame | tag_cloud |  |
 | wait_for_element_visible_ok | link=Welcome | 30000 |
 | wait_for_element_visible_ok | link=jabber | 1000 |
@@ -33,4 +46,5 @@
 
 | select-frame | relative=parent |  |
 | st-empty-container |  |  |
+
 | *Comment* | Test Case: Tag Cloud Widget COMPLETED |

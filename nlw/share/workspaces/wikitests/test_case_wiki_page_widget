@@ -22,7 +22,7 @@
 | click_ok | link=Wiki Page |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 
-| *Comment* | Test Case: Wiki Page Widget. Use the widget |  |
+| *Comment* | Test Case: Wiki Page Widget. Load the widget |  |
 | st-name-widget | 1 | wikipage |
 | st-widget-title-like | wikipage | Wiki Page |
 | wait_for_element_visible_ok | //input[contains(@name,'up_workspace_name')] | 30000 |
@@ -32,10 +32,8 @@
 | click_ok | st-savebutton-%%wikipage%% |  |
 | wait_for_element_not_visible_ok | st-savebutton-%%wikipage%% | 30000 |
 
-| pause | 10000 |
-
-| click_and_wait | link=Home |  |
-
+| *Comment* | Test Case: Wiki Page Widget. Use the widget |  |
+| wait_for_text_present_ok | Wiki Page %%start_time%% | 30000 |
 | st-name-widget | 1 | wikipage |
 | st-widget-title-like | wikipage | Wiki Page %%start_time%% |
 | st-select-widget-frame | wikipage |  |
