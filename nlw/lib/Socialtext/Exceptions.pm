@@ -48,6 +48,13 @@ BEGIN {
             description => 'Data validation error'
         },
 
+        'Socialtext::Exception::TooManyResults' => {
+            isa         => 'Socialtext::Exception',
+            alias       => 'too_many_results',
+            fields      => [qw( num_results )],
+            description => 'Too many search results returned.',
+        },
+
         'Socialtext::Exception::NoSuchPage' => {
             isa         => 'Socialtext::Exception',
             alias       => 'no_such_page_error',
