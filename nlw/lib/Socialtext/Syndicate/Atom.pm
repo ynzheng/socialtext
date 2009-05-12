@@ -12,6 +12,7 @@ use XML::Atom::Entry;
 use XML::Atom::Person;
 use XML::Atom::Content;
 use Readonly;
+use Socialtext::l10n qw/loc/;
 
 $XML::Atom::DefaultVersion = "1.0";
 
@@ -114,6 +115,7 @@ sub _create_feed {
     # XXX extract
     my $modified_time = 0;
     foreach my $page (@$pages) {
+        next if $page->{error_message};
         $modified_time = $page->modified_time
           if ( $page->modified_time > $modified_time );
     }
@@ -121,6 +123,13 @@ sub _create_feed {
     $atom->updated( $self->_make_w3cdtf($modified_time) );
 
     foreach my $page (@$pages) {
+        if ($page->{error_message}) {
+            my $entry = XML::Atom::Entry->new();
+            $entry->title( loc('Feed Error') );
+            $entry->content( $page->{error_message} );
+            $atom->add_entry($entry);
+            next;
+        }
         my $entry = $self->make_entry($page);
         $atom->add_entry($entry);
     }

@@ -164,12 +164,27 @@ sub _syndicate_search {
     my $count = shift;
 
     Socialtext::Timer->Continue('_syndicate_search');
+    my $items;
+    eval { 
+        $items = $self->_search_get_items($query, $count);
+    };
+    if ($@ and $@->isa('Socialtext::Exception::TooManyResults')) {
+        $items = [ {
+            error_message =>
+                loc('The search term you have entered is too general. Please add additional search terms that you expect your documents contain.')
+        } ];
+    }
+    else {
+        $self->hub->log->warning("searchdie '$@'");
+    }
+
     my $feed = $self->_syndicate(
         title => $self->_search_feed_title($query),
         link  => $self->_search_html_link($query),
-        pages => $self->_search_get_items($query, $count),
+        pages => $items,
         type  => $type,
     );
+
     Socialtext::Timer->Pause('_syndicate_search');
     return $feed;
 }
@@ -343,6 +358,11 @@ sub _search_get_items {
                         $self->hub->current_user,
                         sub { },   # FIXME: swallowing this error for now
                         sub { } ); # FIXME: swallowing this error for now
+
+    Socialtext::Exception::TooManyResults->throw(
+        num_results => scalar(@hits),
+    ) if @hits > Socialtext::AppConfig->search_warning_threshold;
+
     eval { $self->_load_pages_for_hits(\@hits) };
     warn $@ if $@;
     $self->new_result_set();

@@ -9,6 +9,7 @@ use XML::RSS;
 use DateTime;
 use DateTime::Format::Mail;
 use Socialtext::Timer;
+use Socialtext::l10n qw/loc/;
 
 sub _New {
     my $class = shift;
@@ -25,6 +26,14 @@ sub _create_feed {
     Socialtext::Timer->Continue('_create_feed_items');
     my $feed_modified = 0;
     foreach my $page (@$pages) {
+        if ($page->{error_message}) {
+            $rss->add_item(
+                title => loc('Feed Error'),
+                description => $page->{error_message},
+            );
+            next;
+        }
+
         my $pub_date = $page->modified_time;
         $feed_modified = $pub_date if $pub_date > $feed_modified;
         my @tags = grep { $_ !~ /recent changes/i } $page->categories_sorted;
