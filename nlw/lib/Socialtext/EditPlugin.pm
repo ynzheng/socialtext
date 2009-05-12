@@ -83,7 +83,7 @@ sub edit_content {
 
     $page->load;
 
-    return $self->to_display($page)
+    return $self->_page_locked_screen($page)
         unless $self->hub->checker->can_modify_locked($page);
 
     my $append_mode = $self->cgi->append_mode || '';
@@ -187,7 +187,7 @@ sub save {
 
     $page->load;
 
-    return $self->to_display($page)
+    return $self->_page_locked_screen($page)
         unless $self->hub->checker->can_modify_locked($page);
 
     if ($self->_there_is_an_edit_contention($page, $self->cgi->revision_id)) {
@@ -253,6 +253,19 @@ sub _record_edit_contention {
         . 'workspace:' . $ws->name . '(' . $ws->workspace_id . '),'
         . 'user:' . $user->email_address . '(' . $user->user_id . '),'
         . 'page:' . $page->id
+    );
+}
+
+sub _page_locked_screen {
+    my $self = shift;
+    my $page = shift;
+
+    $self->screen_template('view/page_locked');
+    return $self->render_screen(
+        page => $page,
+        page_body => $self->html_escape($self->cgi->page_body),
+        display_title => $page->title,
+        header_display_title => $page->title,
     );
 }
 

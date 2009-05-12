@@ -1,0 +1,21 @@
+[%# @COPYRIGHT@ -%]
+[% WRAPPER layout/html content_id = 'st-editcontention' box_javascript = 0 %]
+
+[% IF page.metadata.Type == 'spreadsheet' %]
+  [% PROCESS contention_msg type="spreadsheet" %]
+  [% page.to_html %]
+[% ELSE %]
+  [% PROCESS contention_msg type="document" %]
+  <pre id="st-editcontention-text">[% page_body %]</pre>
+[% END %]
+
+[% END %]
+
+[% BLOCK contention_msg %]
+  <p class="error-message">[% loc('An administrator has locked this [_1] since you opened it for editing. You will not be able to save it.', type) %]</p>
+
+  <p>[% loc('The raw wikitext of your changes are below. You can copy your changes from here.') %]</p>
+
+  <p><a href="[% script_name %]?[% page.uri %]">[% loc('Click here to return to the [_1].', type) %]</a></p>
+  <hr />
+[% END %]
