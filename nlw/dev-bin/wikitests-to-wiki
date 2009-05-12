@@ -6,6 +6,8 @@ PORT=`perl -e 'print $> + 20000'`
 SERVER=http://`hostname`:$PORT
 DIR=$ST_CURRENT/nlw/share/workspaces/wikitests
 
+echo "Creating rescue tarball at $DIR in case you have outstanding work in /wikitests"
+
 $ST_CURRENT/nlw/bin/st-admin delete-workspace --workspace wikitests --dir $DIR
 $ST_CURRENT/nlw/bin/st-admin create-workspace --title 'Wikitests' --name wikitests --empty
 $ST_CURRENT/nlw/bin/st-admin add-workspace-admin  --email devnull1@socialtext.com --workspace wikitests
@@ -25,6 +27,6 @@ $ST_CURRENT/nlw/bin/ceq-rm .
 
 echo
 echo "Wikitests are now available at: $SERVER/wikitests"
-echo wikitests tarball is available at $ST_CURRENT/nlw/share/workspaces/wikitests for use after fdefs
+echo "Rescue tarball at $DIR in case you had outstanding work in /wikitests"
 echo
 
