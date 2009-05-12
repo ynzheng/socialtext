@@ -251,6 +251,10 @@ sub search {
         }
     }
 
+    if ($search_results->{too_many}) {
+        $error = loc('The search term you have entered is too general; [_1] pages and/or attachments matched your query. Please add additional search terms that you expect your documents contain.', $search_results->{hits});
+    }
+
     return $self->_process_template(
         $SEARCH_TEMPLATE,
         search_term    => $search_term,
