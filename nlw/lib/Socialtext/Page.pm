@@ -670,6 +670,7 @@ sub add_tags {
             $meta->add_category($tag);
         }
         $self->metadata->update( user => $self->hub->current_user );
+        $self->metadata->RevisionSummary('');
         $self->store( user => $self->hub->current_user );
         foreach my $tag (@tags) {
             Socialtext::Events->Record({
@@ -694,6 +695,7 @@ sub delete_tag {
 
     if ( $self->hub->checker->check_permission('edit') ) {
         $self->metadata->delete_category($tag);
+        $self->metadata->RevisionSummary('');
         $self->store( user => $self->hub->current_user );
     }
 }
