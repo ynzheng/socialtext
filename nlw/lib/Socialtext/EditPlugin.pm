@@ -24,7 +24,8 @@ sub register {
     my $registry = shift;
     $registry->add(action => 'edit');
     $registry->add(action => 'edit_save');
-    $registry->add(action => 'edit_lock');
+    $registry->add(action => 'lock_page');
+    $registry->add(action => 'unlock_page');
     $registry->add(action => 'edit_content');
     $registry->add(action => 'edit_start');
     $registry->add(action => 'edit_cancel');
@@ -52,8 +53,10 @@ sub _validate_pagename_length {
     }
 }
 
-sub edit_lock {
-    my $self      = shift;
+sub _set_page_lock {
+    my $self  = shift;
+    my $state = shift;
+
     my $page_name = $self->cgi->page_name;
 
     $self->_validate_pagename_length( $page_name );
@@ -64,10 +67,20 @@ sub edit_lock {
         unless $self->hub->checker->check_permission('lock')
             && $self->hub->current_workspace->allows_page_locking;
 
-    my $status = ( $page->locked ) ? 0 : 1;
-
-    $page->update_lock_status( $status );
+    $page->update_lock_status( $state );
     return $self->to_display($page)
+}
+
+sub lock_page {
+    my $self      = shift;
+
+    return $self->_set_page_lock(1);
+}
+
+sub unlock_page {
+    my $self      = shift;
+
+    return $self->_set_page_lock(0);
 }
 
 sub edit_content {
