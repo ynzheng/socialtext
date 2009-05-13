@@ -81,22 +81,22 @@
           <li class="first"><a id="st-pagetools-duplicate" href="#">[% loc('Duplicate Page') %]</a></li>
           <li><a id="st-pagetools-rename" href="#">[% loc('Rename Page') %]</a></li>
           [% END %]
+          [% IF current_user_workspace_count > 1 AND !page_locked_for_user %]
+          <li><a href="#" id="st-pagetools-copy">[% loc('Copy Page to Workspace') %]</a></li>
+          [% END %]
+          [% IF checker.check_permission('delete') AND !page_locked_for_user %]
+          <li [% not locking_enabled OR not can_lock ? "class=\"separator\"":"" %]><a href="index.cgi?[% page.id %]" id="st-pagetools-delete">[% loc('Delete Page') %]</a></li>
+          [% END %]
           [% IF locking_enabled AND can_lock %]
-            <li>
+            <li class="separator">
               <a href="index.cgi?page_name=[% page.id %];action=[% page_locked ? "unlock_page" : "lock_page" %]" id="st-pagetools-lock">
                 [% page_locked ? loc('Unlock the Page') : loc('Lock the Page') %]
               </a>
             </li>
           [% END %]
-          [% IF checker.check_permission('delete') AND !page_locked_for_user %]
-          <li [% current_user_workspace_count == 1 ? "class=\"separator\"":"" %]><a href="index.cgi?[% page.id %]" id="st-pagetools-delete">[% loc('Delete Page') %]</a></li>
-          [% END %]
-          [% IF current_user_workspace_count > 1 AND !page_locked_for_user %]
-          <li class="separator"><a href="#" id="st-pagetools-copy">[% loc('Copy Page to Workspace') %]</a></li>
-          [% END %]
           [% USE encode_mailto %]
           [% IF checker.check_permission('email_in') && page.page_type != 'spreadsheet' %]
-          <li><a href="mailto:[% wiki.email_address %]" title="[% wiki.email_address %]">[% loc('Email To This Workspace') %]</a></li>
+          <li [% page_locked_for_user ? "class=\"separator\"" : "" %]><a href="mailto:[% wiki.email_address %]" title="[% wiki.email_address %]">[% loc('Email To This Workspace') %]</a></li>
             [% IF !page_locked_for_user %]
               [% IF page.page_type == 'spreadsheet' %]
             <li class="separator"><a href="mailto:[% wiki.email_address %]?subject=[% page.title | html_encode  %]" title="To: [% wiki.email_address %] / subject: [% page.title | html_encode %]" onclick="alert(loc('Sorry, this feature is not available for spreadsheets')); return false;" >[% loc('Email To This Page') %]</a></li>
