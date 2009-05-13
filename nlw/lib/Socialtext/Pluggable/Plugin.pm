@@ -379,10 +379,25 @@ sub template_render {
     );
 }
 
+sub _get_pref_list {
+    my $self = shift;
+    my $prefs = $self->hub->preferences_object->objects_by_class;
+    my @pref_list = map {
+        $_->{title} =~ s/ /&nbsp;/g;
+        $_;
+        } grep { $prefs->{ $_->{id} } }
+        grep { $_->{id} ne 'search' } # hide search prefs screen
+        @{ $self->hub->registry->lookup->plugins };
+    return \@pref_list;
+}
+
 sub template_vars {
     my $self = shift;
     my %template_vars = $self->hub->helpers->global_template_vars;
     return {
+        pref_list => sub {
+            $self->_get_pref_list;
+        },
         share => $self->share,
         workspaces => [$self->hub->current_user->workspaces->all],
         as_json => sub {
