@@ -308,31 +308,6 @@ $(function() {
         return false;
     });
 
-    $("#st-pagetools-lockpage").click(function () {
-        var form = $('<form>').attr({
-            method: 'POST',
-            action: 'index.cgi'
-        });
-
-        form.append(
-            $('<input>').attr({
-                name: 'action',
-                value: 'edit_lock'
-            })
-        );
-
-        form.append(
-            $('<input>').attr({
-                name: 'page_name',
-                value: Socialtext.page_title
-            })
-        );
-
-        $('body').append(form);
-        form.submit();
-        return false;
-    });
-
     var page_lock_rollover = function() {
         var img = $(this).find('img');
         var src = img.attr('src');

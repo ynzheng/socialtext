@@ -30,7 +30,7 @@
     [% ELSE %]
       [% IF locking_enabled && can_lock %]
         <div id="st-page-lock-admin">
-        <a href="#" id="st-admin-lock-link">
+        <a href="index.cgi?page_name=[% page.id %];action=[% page_locked ? "unlock_page" : "lock_page" %]" id="st-admin-lock-link">
         [% IF page_locked %]
           <img src="/static/skin/s3/images/lock-locked.png" />
         [% ELSE %]
@@ -82,7 +82,11 @@
           <li><a id="st-pagetools-rename" href="#">[% loc('Rename Page') %]</a></li>
           [% END %]
           [% IF locking_enabled AND can_lock %]
-            <li><a id="st-pagetools-lockpage" href="#">[% page_locked ? loc('Unlock the Page') : loc('Lock the Page') %]</a></li>
+            <li>
+              <a href="index.cgi?page_name=[% page.id %];action=[% page_locked ? "unlock_page" : "lock_page" %]" id="st-pagetools-lock">
+                [% page_locked ? loc('Unlock the Page') : loc('Lock the Page') %]
+              </a>
+            </li>
           [% END %]
           [% IF checker.check_permission('delete') AND !page_locked_for_user %]
           <li [% current_user_workspace_count == 1 ? "class=\"separator\"":"" %]><a href="index.cgi?[% page.id %]" id="st-pagetools-delete">[% loc('Delete Page') %]</a></li>
