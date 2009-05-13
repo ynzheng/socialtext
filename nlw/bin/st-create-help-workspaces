@@ -20,8 +20,8 @@ for help in $SHAREDIR/help-*.tar.gz; do
             ACCT=`$DIR/st-default-account`
             ACCTOPT="--account $ACCT";
         fi
-        ceq-exec --timeout 300 $DIR/st-create-help-workspace $ACCTOPT $help || echo "FAILED TO LOAD $help_file"
-        echo
+        JOBID=`(ceq-exec --timeout 300 $DIR/st-create-help-workspace $ACCTOPT $help || echo "FAILED TO LOAD $help_file")`
+        echo "$JOBID running st-create-help-workspace $ACCTOPT $help"
     fi
 done
 
