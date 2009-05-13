@@ -276,10 +276,6 @@ sub _new_search {
     );
     Socialtext::Timer->Pause('search_on_behalf');
 
-    Socialtext::Exception::TooManyResults->throw(
-        num_results => scalar(@hits),
-    ) if @hits > Socialtext::AppConfig->search_warning_threshold;
-
     eval { $self->_load_pages_for_hits(\@hits) };
     warn $@ if $@;
 

@@ -15,6 +15,8 @@ use Socialtext::Search::KinoSearch::QueryParser;
 use Socialtext::Search::SimpleAttachmentHit;
 use Socialtext::Search::SimplePageHit;
 use Socialtext::Search::Utils;
+use Socialtext::AppConfig;
+use Socialtext::Exceptions;
 
 field 'analyzer';
 field 'config';
@@ -105,6 +107,10 @@ sub _process_hits {
     _debug("Processing search results");
     my @results;
     my %seen;
+
+    Socialtext::Exception::TooManyResults->throw(
+        num_results => $hits->total_hits,
+    ) if $hits->total_hits > Socialtext::AppConfig->search_warning_threshold;
 
     if ( $self->config->excerpt_text ) {
         my $highlighter = KinoSearch::Highlight::Highlighter->new(
