@@ -1,0 +1,91 @@
+* Fixture: SocialRest
+
+| set | workspace | big%%start_time%% |
+| create-workspace | %%workspace%% |
+| set | username | user%%start_time%%@ken.socialtext.net |
+| create-user | %%username%% | password |
+| add-member | %%username%% | %%workspace%% |
+| st-config | set search_warning_threshold 500 |
+| http-user-pass | %%username%% | password |
+
+| Comment | search an empty workspace |
+| get | /%%workspace%%/index.cgi?action=search&scope=_&search_term=wiki |
+| code-is | 200 |
+| body-like | Showing 1 - 0 of 0 total |
+
+| Comment | add some pages, index then search again |
+| edit_page | %%workspace%% | page1 | wiki wonderland |
+| edit_page | %%workspace%% | page2 | wiki wonderland |
+| edit_page | %%workspace%% | page3 | wiki wonderland |
+| edit_page | %%workspace%% | page4 | wiki wonderland |
+| edit_page | %%workspace%% | page5 | wiki wonderland |
+| st-process-jobs |
+| sleep | 3 |
+
+| Comment | search for some pages |
+| get | /%%workspace%%/index.cgi?action=search&scope=_&search_term=wiki |
+| code-is | 200 |
+| body-like | Showing 1 - 5 of 5 total |
+
+| Comment | test with low search threshold |
+| st-config | set search_warning_threshold 3 |
+| get | /%%workspace%%/index.cgi?action=search&scope=_&search_term=wiki |
+| code-is | 200 |
+| body-like | The search you have entered is too general; 5 pages and/or attachments matched your query. |
+
+| Comment | IWS test with low search threshold |
+| get | /%%workspace%%/index.cgi?action=search&scope=_&search_term=wiki&scope=* |
+| code-is | 200 |
+| body-like | The search you have entered is too general; 5 pages and/or attachments matched your query. |
+
+| Comment | Fetch Search RSS |
+| GET | /feed/workspace/%%workspace%%?search_term=wiki;scope=_ |
+| code-is | 200 |
+| body-like | Feed Error |
+| body-like | The search term you have entered is too general |
+
+| Comment | Fetch Search Atom |
+| GET | /feed/workspace/%%workspace%%?search_term=wiki;scope=_;type=Atom |
+| code-is | 200 |
+| body-like | Feed Error |
+| body-like | The search term you have entered is too general |
+
+| Comment | Search wafl with too many results |
+| edit_page | %%workspace%% | wafl | {search: wiki}  |
+| GET | /%%workspace%%/index.cgi?wafl |
+| code-is | 200 |
+| body-like | The search term you have entered is too general |
+
+| Comment | miki searches |
+| GET | /lite/search/%%workspace%%?search_term=wiki&search=Search |
+| code-is | 200 |
+| body-like | The search term you have entered is too general; 5 pages and/or attachments matched your query |
+
+| Comment | REST API workspace search |
+| GET | /data/workspaces/%%workspace%%/pages?q=wiki |
+| code-is | 400 |
+
+| Comment | REST API workspace search fixed scope |
+| GET | /data/workspaces/%%workspace%%/pages?q=wiki;scope=_ |
+| code-is | 400 |
+
+| Comment | REST API all workspace search |
+| GET | /data/workspaces/%%workspace%%/pages?q=wiki;scope=* |
+| code-is | 400 |
+
+| Comment | REST API all workspace search |
+| GET | /data/workspaces/%%workspace%%/pages?q=wiki+workspaces:* |
+| code-is | 400 |
+
+| Comment | REST API all workspace search JSON |
+| GET | /data/workspaces/%%workspace%%/pages?q=wiki | application/json |
+| code-is | 200 |
+| json-parse |
+| json-like | {"hit_count":5,"message":"The search term you have entered is too general."} |
+
+^^ To test
+
+* rest api search
+* rest api scope:*
+* rest api workspaces:*
+* json search
