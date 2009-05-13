@@ -62,4 +62,5 @@ div#st-editing-tools-edit ul.buttonRight {
 #st-page-lock-notification,
 #st-page-lock-admin {
     margin-top: 10px;
+    margin-bottom: -10px;
 }
