@@ -171,21 +171,24 @@ sub _searched_pages {
 
     Socialtext::Timer->Continue('searched_pages');
 
-    my @page_ids = map { $_->page_uri }
-        grep { $_->isa('Socialtext::Search::PageHit') } search_on_behalf(
-            $self->hub->current_workspace->name,
-            $search_query,
-            undef,    # undefined scope
-            $self->hub->current_user
-        );
-    if (@page_ids > Socialtext::AppConfig->search_warning_threshold) {
+    my @page_ids;
+    eval { 
+        @page_ids = map { $_->page_uri }
+            grep { $_->isa('Socialtext::Search::PageHit') } search_on_behalf(
+                $self->hub->current_workspace->name,
+                $search_query,
+                undef,    # undefined scope
+                $self->hub->current_user
+            );
+    };
+    if ($@ and $@->isa('Socialtext::Exception::TooManyResults')) {
         if ($self->{_content_type} ne 'application/json') {
             $self->rest->header(
                 -status => HTTP_400_Bad_Request,
                 -type => 'text/plain',
             );
         }
-        $self->{_too_many} = @page_ids;
+        $self->{_too_many} = $@->num_results;
         return ();
     }
 
