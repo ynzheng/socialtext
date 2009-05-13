@@ -112,8 +112,8 @@ qr{\Qsrc="path/image.png"\E},
 --- regexps
 qr{\Qhref="http://example.com/thing.html"\E}
 qr{\Q<strong><a target\E}
-qr{\Qhello<!--\E}
-qr{\Q--></a></strong>\E}
+qr{\Qhello\E}
+qr{\Q</a></strong>\E}
 
 ===
 --- text: *"hello"<http:index.cgi?ass_page>*
