@@ -35,10 +35,10 @@
     [% IF too_many %]
       <div id="tooManyResults">
         <p>
-          [% loc('The search term you have entered is too general; [_1] pages and/or attachments matched your query.', too_many) %]
+          [% loc('The search you have entered is too general; [_1] pages and/or attachments matched your query.', too_many) %]
         </p>
         <p>
-          [% loc('Please add additional search terms that you expect your document contains.') %]
+          [% loc('Please use more specific words or add more search terms.') %]
         </p>
         <br />
         <div id="inlineSearch">
