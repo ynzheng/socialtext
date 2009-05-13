@@ -419,8 +419,6 @@ $(function() {
     }
 
     Socialtext.load_editor = function () {
-        Socialtext._show_loading_animation();
-
         $.ajaxSettings.cache = true;
         if (Socialtext.page_type == 'spreadsheet' && Socialtext.wikiwyg_variables.hub.current_workspace.enable_spreadsheet) {
             $.getScript(socialcalc_uri, function () {
@@ -446,7 +444,26 @@ $(function() {
     }
 
     $("#st-edit-button-link,#st-edit-actions-below-fold-edit, #bottomButtons .editButton")
-        .one("click", Socialtext.load_editor);
+        .one("click", function(){
+	    Socialtext._show_loading_animation();
+
+	    setTimeout(
+		function() {
+		    if (editorIntervalId) {
+			clearInterval(editorIntervalId);
+			Socialtext.load_editor();
+		    }
+		}, 60000 // max. 1min wait before we start editing
+	    );
+
+	    var editorIntervalId = setInterval(function() {
+		if (Socialtext.body_loaded) {
+		    clearInterval(editorIntervalId);
+		    editorIntervalId = 0;
+		    Socialtext.load_editor();
+		}
+	    }, 100); // Poll every 0.1 seconds until all pictures finish loading
+	});
 
     if (Socialtext.double_click_to_edit) {
         var double_clicker = function() {
