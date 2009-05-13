@@ -74,9 +74,7 @@ dev-bin/link-reports
 dev-bin/link-plugins $PLUGINS
 set -e
 
-for plugin in $PLUGINS; do
-    (cd ../plugins/$plugin; make clean all);
-done
+ceq-exec --timeout 300 dev-bin/st-make-js
 
 export PGUSER=`st-config echo db_user`
 echo "Adding special dev-env SQL hacks"
@@ -91,7 +89,4 @@ else
     echo "Starting in dual-Apache mode";
     dev-bin/nlwctl start;
 fi
-
-st-widgets update-gallery --fork
-
 st-admin set-workspace-config --workspace admin skin_name s3
