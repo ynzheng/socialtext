@@ -453,7 +453,7 @@ $(function() {
 			clearInterval(editorIntervalId);
 			Socialtext.load_editor();
 		    }
-		}, 60000 // max. 1min wait before we start editing
+		}, 90000 // max. 90sec wait before we start editing
 	    );
 
 	    var editorIntervalId = setInterval(function() {
