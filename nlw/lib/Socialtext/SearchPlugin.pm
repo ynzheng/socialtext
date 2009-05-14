@@ -136,9 +136,10 @@ sub search {
     if ($self->result_set->{too_many}) {
         $self->screen_template('view/listview');
         return $self->render_screen(
+            scope => $scope,
             too_many => $self->result_set->{hits},
             error_message => 'Too many results!',
-            try_again_search_term => $search_term,
+            search_term => $uri_escaped_search_term,
         );
     }
 
