@@ -77,7 +77,7 @@
             <li id="st-wikinav-logout" class="last"><a id="logout_btn" href="/nlw/submit/logout[% IF wiki.is_public %]?redirect_to=[% wiki.uri | html %][% END %]">[% loc('Log out') %]</a></li>
             [% END %]
           </ul>
-          [% IF workspace_present || container.type == 'peoplelist' || container.type == 'profile' %]
+          [% IF !authen_page %]
           <div>
             [% INCLUDE element/search_form %]
           </div>

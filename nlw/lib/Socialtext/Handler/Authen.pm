@@ -117,6 +117,7 @@ sub handler ($$) {
         my $saved_args = $self->{saved_args} = $self->session->saved_args;
         my $repl_vars  = {
             $main->hub->helpers->global_template_vars,
+            authen_page    => 1,
             loc            => \&loc,
             errors         => [ $self->session->errors ],
             messages       => [ $self->session->messages ],
