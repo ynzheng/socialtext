@@ -39,7 +39,7 @@ Readonly my $MAX_VERSION => 1;
         die "Tarball file does not exist ($p{tarball})\n"
             unless -f $p{tarball};
 
-        my ( $old_name, $version ) = $p{tarball} =~ /([\w-]+)(\.\d+)?\.tar/
+        my ( $old_name, $version ) = $p{tarball} =~ /([\w-]+)(?:\.(\d+))?\.tar/
             or die
             "Cannot determine workspace name and version from tarball name: $p{tarball}";
         $version ||= 0;
