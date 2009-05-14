@@ -28,13 +28,15 @@
 [% END %]
 </div>
 
+[% SET num = 0 %]
 <div id="contentContainer" class="container [% container.type %]">
     <div id="contentColumns">
         [% SET lastcol = container.columns - 1 %]
         [% FOR i = [0 .. lastcol] %]
             <ul class="widgetColumn" id="col[% i %]">
             [% FOR gadget = container.gadgets.$i %]
-                [% INCLUDE 'widget/element' gadget=gadget %]
+                [% INCLUDE 'widget/element' gadget=gadget num=num %]
+                [% num = num + 1 %]
             [% END %]
             </ul>
         [% END %]

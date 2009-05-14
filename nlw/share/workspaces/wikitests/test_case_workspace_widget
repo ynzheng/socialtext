@@ -11,6 +11,7 @@
 | click_and_wait | link=Add Content |  |
 | wait_for_element_visible_ok | gallery-widget-Workspaces | 30000 |
 | click_and_wait | gallery-widget-Workspaces |  |
+| wait_for_element_visible_ok | link=Add Content | 30000 |
 
 | *Comment* | Test Case: Widgets - Workspaces Widget |  |
 | st-name-widget | 1 | myworkspace |

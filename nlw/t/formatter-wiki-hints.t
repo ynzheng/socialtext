@@ -196,7 +196,7 @@ http:index.cgi
 --- match
 <div class="wiki">
 <p>
-<a href="index.cgi?people" >People</a></p>
+<a href="index.cgi?people" wiki_page=""  >People</a></p>
 </div>
 
 === renamed wiki links
@@ -205,5 +205,5 @@ http:index.cgi
 --- match
 <div class="wiki">
 <p>
-<a href="index.cgi?people" >my todo list for today<!-- wiki-renamed-link People --></a></p>
+<a href="index.cgi?people" wiki_page="People"  >my todo list for today</a></p>
 </div>

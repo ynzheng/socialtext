@@ -7,14 +7,13 @@ use strict;
 use Test::Socialtext;
 fixtures('admin');
 
-my $renamed_hint = '<!-- wiki-renamed-link SomePage -->';
 my @tests =
     ( [ qq|"A label"[SomePage]\n| =>
-        qr(href="[^"]+SomePage[^"]*"[^>]*>A label$renamed_hint</a>) ],
+        qr(href="[^"]+SomePage[^"]*" wiki_page="SomePage"[^>]*>A label</a>) ],
       [ qq|"A label with space after" [SomePage]\n| =>
-        qr(href="[^"]+SomePage[^"]*"[^>]*>A label with space after$renamed_hint</a>) ],
+        qr(href="[^"]+SomePage[^"]*" wiki_page="SomePage"[^>]*>A label with space after</a>) ],
       [ qq|[NoLabel]\n| =>
-        qr(href="[^"]+NoLabel[^"]*"[^>]*>NoLabel</a>) ],
+        qr(href="[^"]+NoLabel[^"]*" wiki_page=""[^>]*>NoLabel</a>) ],
     );
 
 plan tests => scalar @tests;
