@@ -157,7 +157,7 @@ sub process_attachments_upload {
         unless $self->hub->checker->check_permission('attachments');
 
     return loc('You don\'t have permission to upload attachments')
-        unless $self->hub->checker->can_modify_locked($self->hub->pages->current_page);
+        unless $self->hub->checker->can_modify_locked($self->hub->pages->current);
 
     my $error = '';
     for (my $i=0; $i < $count; $i++) {
