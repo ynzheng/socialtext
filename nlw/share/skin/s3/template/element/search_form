@@ -1,11 +1,15 @@
-<form id="st-search-form" action="index.cgi" method="get" name="SearchForm">
-  <label>[% workspace_present ? loc("Search this workspace:") : loc("Search People:") %]</label>
-  [% IF workspace_present %]
-    <input type="hidden" value="search" name="action"/>
-  [% ELSE %]
-    <input type="hidden" value="search_people" name="action"/>
-  [% END %]
-    <input type="hidden" value="_" name="scope"/>
-  <input id="st-search-term" name="search_term" class="searchText" type="text" [% IF try_again_search_term %]value="[% try_again_search_term %]"[% END %] />
-  <input id="st-search-submit" class="searchButton"  type="submit" value="" />
+[%- DEFAULT 
+    sid = 'search' 
+-%]
+<form id="st-[%sid%]-form" action="index.cgi" method="get" name="SearchForm">
+
+  <select id="st-[%sid%]-action" name="action" class="searchSelect">
+    <option value="search" id="st-[%sid%]-this-ws">[% loc("Search this Workspace:") %]</option>
+    <option value="search" id="st-[%sid%]-all-ws" class="scopeStar">[% loc("Search all Workspaces:") %]</option>
+    <option value="search_people" id="st-[%sid%]-people">[% loc("Search People:") %]</option>
+  </select>
+
+  <input type="hidden" value="_" name="scope" class="searchScope"/>
+  <input id="st-[%sid%]-term" name="search_term" class="searchText" type="text" [% IF try_again_search_term %]value="[% try_again_search_term %]"[% END %] />
+  <input id="st-[%sid%]-submit" class="searchButton"  type="submit" value="" />
 </form>

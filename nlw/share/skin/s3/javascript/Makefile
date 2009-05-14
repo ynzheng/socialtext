@@ -48,6 +48,7 @@ S3_SOURCE_FILES= \
 		lookahead.js \
 		pageview.js \
 		email.js \
+		search.js \
 		s3.js \
 
 LIGHTBOX_TEMPLATES=$(wildcard lightbox/*.tt2)

@@ -42,7 +42,7 @@
         </p>
         <br />
         <div id="inlineSearch">
-          [% INCLUDE element/search_form %]
+          [% INCLUDE element/search_form sid='search-again' %]
         </div>
       </div>
     [% ELSE %]
