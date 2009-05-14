@@ -158,7 +158,7 @@ ErrorDocument 500 /static/html/500.html
         [%- IF config.ssl_only %]
             [%- server_redirect( config.ports.https, 'https' ) -%]
         [%- ELSE %]
-            [%- server_common( config.apache_perl_port, 0 ) -%]
+            [%- server_common( config.backend_ports.http, 0 ) -%]
         [%- END %]
     </VirtualHost>
 [%- ELSIF config.custom_http_port %]
@@ -173,7 +173,7 @@ ErrorDocument 500 /static/html/500.html
         [%- IF config.ssl_only %]
             [%- server_redirect( config.ports.https, 'https' ) -%]
         [%- ELSE %]
-            [%- server_common( config.apache_perl_port, 0 ) -%]
+            [%- server_common( config.backend_ports.http, 0 ) -%]
         [%- END %]
     </VirtualHost>
 [%- ELSE %]
@@ -182,7 +182,7 @@ ErrorDocument 500 /static/html/500.html
         [%- IF config.ssl_only %]
             [%- server_redirect( config.ports.https, 'https' ) -%]
         [%- ELSE %]
-            [%- server_common( config.apache_perl_port, 0 ) -%]
+            [%- server_common( config.backend_ports.http, 0 ) -%]
         [%- END %]
     </VirtualHost>
 [%- END %]
@@ -191,7 +191,7 @@ ErrorDocument 500 /static/html/500.html
     [%#- Have SSL enabled server too %]
     <VirtualHost *:[% config.ports.https %]>
         [%#- Common server setup, pointing to backend HTTPS port %]
-        [% server_common( config.apache_perl_ssl_port, 1 ) %]
+        [% server_common( config.backend_ports.https, 1 ) %]
         SSLEngine on
         SSLCertificateFile    [% config.ssl_base_dir %]/certs/[% config.nlw_server_hostname %].crt
         SSLCertificateKeyFile [% config.ssl_base_dir %]/private/[% config.nlw_server_hostname %].key
