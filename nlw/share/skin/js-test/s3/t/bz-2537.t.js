@@ -8,7 +8,7 @@ var content = '^ Fnord\n\n';
 content += '.html\n\n';
 content += '<table>\n\n';
 
-for (var i = 0 ; i < 1000 ; i++) {
+for (var i = 0 ; i < 100 ; i++) {
     content += '<tr><td><img src="/data/wafl/' + i + '.png" /></td></tr>\n';
 }
 
