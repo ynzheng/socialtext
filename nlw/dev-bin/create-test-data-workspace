@@ -28,7 +28,7 @@ if  [ -z "$TARBALL" ] || [ "$TARBALL" == "hosaka.1.tar.gz" ]; then
     if [ "$TARBALL" == "hosaka.1.tar.gz" ]; then
        TARBALL="hosaka.1.tar.gz"
     else
-       TARBALL="/tmp/test-data.$$.tar.gz"
+       TARBALL="/tmp/$$/test-data.1.tar.gz"
     fi 
     echo "Fetching $TARBALL"
     fetch-test-data-tarball $TARBALL

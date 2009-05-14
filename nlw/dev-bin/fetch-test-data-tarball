@@ -6,6 +6,8 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use Socialtext::Resting::RegressionTest;
 use Socialtext::JSON;
+use Socialtext::File qw/ensure_directory/;
+use File::Basename qw/dirname/;
 
 my $filename = shift || 'test-data.tar.gz';
 
@@ -31,6 +33,7 @@ for my $a (@$attachments) {
         die "Error downloading attachment ($attachment_id): $rc\n";
     }
 
+    ensure_directory( dirname($filename) );
     print "Saving to $filename\n";
     open(my $fh, ">$filename") or die "Can't open $filename: $!";
     binmode $fh;
