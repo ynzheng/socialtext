@@ -139,6 +139,12 @@
     Header set X-UA-Compatible IE=EmulateIE7
 [% END %][%# server_common %]
 
+[%- MACRO server_redirect(redirect_port, redirect_scheme) BLOCK %]
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} ^TRACE
+    RewriteRule .* - [F,L]
+    RewriteRule ^(.*) [% redirect_scheme %]://%{SERVER_NAME}:[% redirect_port %]$1 [R,L,NE]
+[% END %]
 
 [%# ######################################
   # Real code starts 
@@ -146,42 +152,49 @@
 ErrorDocument 502 /static/html/502.html
 ErrorDocument 500 /static/html/500.html
 
-[%- IF config.custom_http_port and !config.is_dev -%]
-Listen [% config.custom_http_port %]
-[%- END %]
+[%- IF config.is_dev %]
+    [%#- Have development environment %]
+    <VirtualHost *:[% config.ports.http %]>
+        [%- IF config.ssl_only %]
+            [%- server_redirect( config.ports.https, 'https' ) -%]
+        [%- ELSE %]
+            [%- server_common( config.apache_perl_port, 0 ) -%]
+        [%- END %]
+    </VirtualHost>
+[%- ELSIF config.custom_http_port %]
+    [%#- Have custom_http_port; redirect standard HTTP requests to that port %]
+    Listen [% config.custom_http_port %]
 
-<VirtualHost *:[% config.ports.http %]>
-[%- IF config.custom_http_port AND !config.is_dev %]
-    RewriteCond %{REQUEST_METHOD} ^TRACE
-    RewriteRule .* - [F,L]
-    RewriteRule ^(.*) http://%{SERVER_NAME}:[% config.custom_http_port %]$1 [R,L,NE]
-</VirtualHost>
+    <VirtualHost *:[% config.ports.http %]>
+        [%- server_redirect(config.custom_http_port, 'http') -%]
+    </VirtualHost>
 
-<VirtualHost *:[% config.custom_http_port %]> 
-[%- END %]
-[%- IF config.ssl_only %]
-    RewriteEngine On
-    RewriteCond %{REQUEST_METHOD} ^TRACE
-    RewriteRule .* - [F,L]
-    RewriteRule ^(.*) https://%{SERVER_NAME}:[% config.ports.https %]$1 [R,L,NE]
-</VirtualHost>
-
-<VirtualHost *:[% config.ports.https %]> 
+    <VirtualHost *:[% config.custom_http_port %]>
+        [%- IF config.ssl_only %]
+            [%- server_redirect( config.ports.https, 'https' ) -%]
+        [%- ELSE %]
+            [%- server_common( config.apache_perl_port, 0 ) -%]
+        [%- END %]
+    </VirtualHost>
 [%- ELSE %]
-[%- server_common( config.apache_perl_port, 0 ) -%]
-</VirtualHost>
-    [%- IF config.use_ssl %]
-
-<VirtualHost _default_:[% config.ports.https %]>
-    [%- END %]
+    [%#- Have regular/standard configuration; nothing fancy %]
+    <VirtualHost *:[% config.ports.http %]>
+        [%- IF config.ssl_only %]
+            [%- server_redirect( config.ports.https, 'https' ) -%]
+        [%- ELSE %]
+            [%- server_common( config.apache_perl_port, 0 ) -%]
+        [%- END %]
+    </VirtualHost>
 [%- END %]
 
-[%- IF config.ssl_only or config.use_ssl %]
-    [% server_common( config.apache_perl_ssl_port, 1 ) %]
-    SSLEngine on
-    SSLCertificateFile    [% config.ssl_base_dir %]/certs/[% config.nlw_server_hostname %].crt
-    SSLCertificateKeyFile [% config.ssl_base_dir %]/private/[% config.nlw_server_hostname %].key
-    SetEnvIf User-Agent ".*MSIE.*" ssl-unclean-shutdown force-response-1.0
-</VirtualHost>
+[%- IF config.ssl_only OR config.use_ssl %]
+    [%#- Have SSL enabled server too %]
+    <VirtualHost *:[% config.ports.https %]>
+        [%#- Common server setup, pointing to backend HTTPS port %]
+        [% server_common( config.apache_perl_ssl_port, 1 ) %]
+        SSLEngine on
+        SSLCertificateFile    [% config.ssl_base_dir %]/certs/[% config.nlw_server_hostname %].crt
+        SSLCertificateKeyFile [% config.ssl_base_dir %]/private/[% config.nlw_server_hostname %].key
+        SetEnvIf User-Agent ".*MSIE.*" ssl-unclean-shutdown force-response-1.0
+    </VirtualHost>
 [%- END %]
-
