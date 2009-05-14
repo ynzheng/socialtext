@@ -366,8 +366,8 @@ sub _update_workspace_settings {
     my %update;
     for my $f ( qw( title incoming_email_placement enable_unplugged
                     email_notify_is_enabled sort_weblogs_by_create
-                    homepage_is_dashboard ) ) {
-
+                    homepage_is_dashboard allows_page_locking )
+    ) {
         $update{$f} = $self->cgi->$f()
             if $self->cgi->defined($f);
     }
@@ -582,6 +582,7 @@ sub workspaces_permissions {
         is_appliance                => Socialtext::AppConfig->is_appliance(),
         current_permission_set_name => $set_name,
         fill_in_data                => {
+            allows_page_locking => $self->hub->current_workspace->allows_page_locking,
             permission_set_name => $set_name,
             guest_has_email_in  =>
                 $self->hub->current_workspace->permissions->role_can(
@@ -608,10 +609,8 @@ sub _set_workspace_permissions {
 
     my $set_name = $self->cgi()->permission_set_name();
 
-    return
-        unless $set_name
-        and
-        exists $Socialtext::Workspace::Permissions::PermissionSets{ $set_name };
+    return if $set_name
+        and ! $Socialtext::Workspace::Permissions::PermissionSets{ $set_name };
 
     my $ws = $self->hub()->current_workspace();
     $ws->permissions->set( set_name => $set_name );
@@ -629,6 +628,9 @@ sub _set_workspace_permissions {
         );
     }
 
+    # Page locking is a workspace setting
+    $self->_update_workspace_settings();
+
     my $message = loc('The permissions for [_1] have been set to [_2].', $ws->name(), loc($set_name));
     if ($self->cgi()->guest_has_email_in()) {
         $message .= ' ' . loc('Anyone can send email to [_1].', $ws->name());
@@ -641,6 +643,8 @@ sub _set_workspace_permissions {
             $message .= loc('Only registered users can send email to [_1].', $ws->name());
         }
     }
+    $message .= ' ';
+    $message .= $ws->allows_page_locking ? loc('Page locking is enabled.') : loc('Page locking is disabled.');
 
     $self->message( $message );
 }
@@ -676,5 +680,6 @@ cgi 'uploaded_skin';
 cgi 'skin_reset';
 cgi skin_file => '-upload';
 cgi 'clone_pages_from';
+cgi 'allows_page_locking';
 
 1;
