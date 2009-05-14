@@ -282,7 +282,8 @@ CREATE TABLE container_type (
     last_update timestamptz DEFAULT now() NOT NULL,
     "global" boolean DEFAULT false,
     columns integer DEFAULT 3,
-    title text
+    title text,
+    purge_all_on_update boolean DEFAULT false
 );
 
 CREATE SEQUENCE default_gadget_id
@@ -355,7 +356,8 @@ CREATE TABLE gadget_instance (
     "row" integer NOT NULL,
     minimized boolean DEFAULT false,
     fixed boolean DEFAULT false,
-    parent_instance_id bigint
+    parent_instance_id bigint,
+    "class" text
 );
 
 CREATE SEQUENCE gadget_instance_id
@@ -1458,4 +1460,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '59');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '60');
