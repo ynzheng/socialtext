@@ -202,6 +202,11 @@ my $SIGNAL_VIS_SQL = <<'EOSQL';
         FROM signal_account sa
         WHERE sa.signal_id = signal_id
     )
+    AND (
+        evt.person_id IS NULL
+        OR evt.person_id = viewer.user_id
+        OR evt.actor_id = viewer.user_id
+    )
 EOSQL
 
 sub visible_exists {
@@ -489,9 +494,18 @@ sub get_events_activities {
 
     if ($classes{signal}) {
         push @conditions, q{
-            event_class = 'signal' AND actor_id = ?
+            event_class = 'signal' AND (
+                actor_id = ?
+                OR (
+                    SELECT true
+                      FROM topic_signal_user
+                     WHERE topic_signal_user.signal_id = e.signal_id
+                       AND user_id = ?
+                )
+                OR person_id = ?
+            )
         };
-        $user_ids++;
+        $user_ids += 3;
     }
 
     my $cond_sql = join(' OR ', map {"($_)"} @conditions);

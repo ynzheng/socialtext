@@ -7,9 +7,10 @@
         <table width="100%">
             <tbody>
                 [% FOR event = events %]
-                <tr class="event_row">
+                [% signal = PROCESS data/event e=event out='html' %]
+                <tr class="event_row [% event.row_class %]">
                     <td class="timestamped[% IF event == events.last() %] last[% END %]">
-                        [% INCLUDE data/event e=event out='html' %]
+                        [% signal %]
                     </td>
                 </tr>
                 [% END %]
