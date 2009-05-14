@@ -106,6 +106,10 @@ Requires the following PARMS:
 Given a permission name (not an object), returns a boolean indicating
 whether the object's user has that permission for the object's workspace.
 
+=head2 $checker->can_modify_locked($page)
+
+Given a page, returns true if the page can be locked or unlocked.
+
 =head1 CACHING
 
 This object will cache the results of a lookup for a particular
