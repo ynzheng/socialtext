@@ -33,7 +33,7 @@
     [% END %]
 
     <script type="text/javascript" charset="utf-8"
-      src="[% wiki.skin_uri('s3') %]/javascript/socialtext-s3.js">
+      src="[% wiki.skin_uri('s3') %]/javascript/socialtext-s3.js.gz">
     </script>
 
     [% IF head_template %]
