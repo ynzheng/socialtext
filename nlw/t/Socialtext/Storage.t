@@ -2,11 +2,11 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::More tests => 21;
+use Test::Socialtext tests => 21;
 
 my $tempid = 'TESTING';
 
-use Socialtext::AppConfig;
+fixtures(qw( db ));
 
 use_ok 'Socialtext::Storage';
 
@@ -101,13 +101,15 @@ SEARCH: {
     $s2->set('term_1', 'value_id2_1');
     $s2->set('term_2', 'value_id2_2');
 
-    is Socialtext::Storage->Search(
+    my $rc = Socialtext::Storage->Search(
         term_1 => 'value_id1_1',
         term_2 => 'value_id1_2',
-    )->id, 'id1', 'Searching for two terms';
+    )->id;
+    is $rc, 'id1', 'Searching for two terms';
 
-    is Socialtext::Storage->Search(
+    $rc = Socialtext::Storage->Search(
         term_1 => 'value_id2_1',
-    )->id, 'id2', 'Searching for one term';
+    )->id;
+    is $rc, 'id2', 'Searching for one term';
 }
                                 

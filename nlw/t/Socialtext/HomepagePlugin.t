@@ -2,11 +2,12 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::More tests => 8;
 use mocked 'Apache::Cookie';
 use mocked 'Socialtext::Search::Config';
-use mocked 'Socialtext::User';
 use mocked 'Socialtext::Hub';
+use Test::Socialtext tests => 8;
+
+fixtures(qw( db ));
 
 BEGIN {
     use_ok 'Socialtext::HomepagePlugin';
