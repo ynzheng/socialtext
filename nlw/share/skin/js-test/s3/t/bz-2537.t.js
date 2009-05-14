@@ -5,15 +5,12 @@ t.plan(1);
 
 var content = '^ Fnord\n\n';
 
-content += '.html\n\n';
-content += '<table>\n\n';
-
-for (var i = 0 ; i < 100 ; i++) {
-    content += '<tr><td><img src="/data/wafl/' + i + '.png" /></td></tr>\n';
+for (var i = 0 ; i < 50 ; i++) {
+    content += '.html\n\n';
+    content += '<img src="/data/wafl/' + t.gensym() + '.png" />\n\n';
+    content += '.html\n\n';
+    content += '{user: ' + t.gensym() + '@example.com}\n\n';
 }
-
-content += '</table>\n\n';
-content += '.html\n\n';
 
 t.runAsync([
     function() {
@@ -47,4 +44,4 @@ t.runAsync([
         t.is( t.$('h1#fnord').length, 1, "Templates with large number of images can be created" );
         t.endAsync();
     }
-]);
+], 600000);
