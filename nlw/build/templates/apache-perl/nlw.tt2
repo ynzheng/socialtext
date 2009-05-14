@@ -150,7 +150,7 @@ PerlSetEnv  HARNESS_ACTIVE  [% ENV.HARNESS_ACTIVE %]
 [%- END %]
 [%# REVIEW - hack to make Socialtext::Workspace->uri work in devs envs %]
 [%- IF config.is_dev %]
-PerlSetEnv  NLW_FRONTEND_PORT  [% config.apache2_port %]
+PerlSetEnv  NLW_FRONTEND_PORT  [% config.frontend_ports.http %]
 PerlSetEnv  ST_APP_CONFIG [% config.appliance_config_file %]
 PerlSetEnv  NLW_DEV_MODE  1
 [%- END %]

@@ -6,9 +6,9 @@ AddModule mod_so.c
 [%- PROCESS 'apache-perl/modules.tt2' %]
   
 [%- IF config.single %]
-Port [% config.apache2_port %]
-Listen [% config.apache2_port %]
-Listen [% config.apache2_ssl_port %]
+Port   [% config.frontend_ports.http %]
+Listen [% config.frontend_ports.http %]
+Listen [% config.frontend_ports.https %]
 [%- ELSE %]
 Port   [% config.backend_ports.http %]
 Listen [% config.backend_ports.http %]
