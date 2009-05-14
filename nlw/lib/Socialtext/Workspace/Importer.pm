@@ -23,7 +23,7 @@ use Socialtext::User;
 use YAML ();
 
 # This should stay in sync with $EXPORT_VERSION in ST::Workspace.
-Readonly my $MAX_VERSION => 1;
+Readonly my $MAX_VERSION => 2;
 
 {
     Readonly my $spec => {
@@ -255,6 +255,13 @@ sub _set_permissions {
                 $self->{workspace}->workspace_id,
                 Socialtext::Role->new(name => $p->{role_name})->role_id,
                 Socialtext::Permission->new(name => $p->{permission_name})->permission_id,
+            );
+        }
+
+        if ( $self->{version} < 2 ) {
+            sql_execute( $sql, $self->{workspace}->workspace_id,
+                Socialtext::Role->new(name => 'workspace_admin')->role_id,
+                Socialtext::Permission->new(name => 'lock')->permission_id,
             );
         }
 
