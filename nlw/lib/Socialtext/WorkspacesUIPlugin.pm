@@ -400,6 +400,16 @@ sub _update_workspace_settings {
         die $@;
     }
 
+    if ( defined $update{allows_page_locking}
+        && $update{allows_page_locking} == 0
+    ) {
+        my @ids = $self->hub->pages->all_ids_locked();
+        for my $page_id ( @ids ) {
+            my $page = $self->hub->pages->new_from_name( $page_id );
+            $page->update_lock_status( 0 );
+        }
+    }
+
     return if $self->input_errors_found;
 
     $self->message(loc("Changes saved"));
