@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 
-use Test::Socialtext tests => 28;
+use Test::Socialtext tests => 32;
 fixtures( 'admin' );
 
 use File::Basename ();
@@ -22,6 +22,16 @@ Data_paths_exist: {
         '_data_dir_paths() includes plugin' );
     ok( scalar ( grep { m{user/admin} } $admin->_data_dir_paths() ),
         '_data_dir_paths() includes user' );
+}
+
+Export_includes_meta_info: {
+   $admin->_dump_meta_to_yaml_file( 't/tmp' );
+
+   my $meta_file = 't/tmp/meta.yaml';
+   ok(-f $meta_file, 'meta.yaml file exists');
+
+   my $yaml = YAML::LoadFile( $meta_file );
+   is $yaml->{version}, '2', 'version is correct';
 }
 
 Export_includes_logo_and_info: {
@@ -92,6 +102,7 @@ Export_tarball_format: {
     ok( -f "$dir/admin-info.yaml", 'workspace yaml dump file is in tarball' );
     ok( -f "$dir/admin-users.yaml", 'users yaml dump file is in tarball' );
     ok( -f "$dir/admin-permissions.yaml", 'permissions yaml dump file is in tarball' );
+    ok( -f "$dir/meta.yaml", 'Export meta file is in tarball' );
 }
 
 Export_to_different_name: {
@@ -111,4 +122,5 @@ Export_to_different_name: {
     ok( -f "$dir/monkey-info.yaml", 'workspace yaml dump file is in tarball' );
     ok( -f "$dir/monkey-users.yaml", 'users yaml dump file is in tarball' );
     ok( -f "$dir/monkey-permissions.yaml", 'permissions yaml dump file is in tarball' );
+    ok( -f "$dir/meta.yaml", 'Export meta file is in tarball' );
 }

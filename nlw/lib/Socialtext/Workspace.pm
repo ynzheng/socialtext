@@ -116,6 +116,9 @@ foreach my $column (@COLUMNS) {
     field $column;
 }
 
+# for workspace exports:
+Readonly my $EXPORT_VERSION => 2;
+
 # XXX: This is here to support the non-plugin method of checking whether
 # socialcalc is enabled or not.
 sub enable_spreadsheet {
@@ -1287,7 +1290,6 @@ sub users_with_roles {
 }
 
 {
-    Readonly my $EXPORT_VERSION => 1;
     Readonly my $spec => {
         dir  => DIR_TYPE( default     => undef ),
         name => SCALAR_TYPE( optional => 1 )
@@ -1334,6 +1336,7 @@ sub _create_export_tarball {
     $self->_dump_users_to_yaml_file($tmpdir, $name);
     $self->_dump_permissions_to_yaml_file($tmpdir, $name);
     $self->_export_logo_file($tmpdir);
+    $self->_dump_meta_to_yaml_file($tmpdir);
     local $CWD = $tmpdir;
     run "tar cf $tarball *";
 
@@ -1390,6 +1393,15 @@ sub _dump_yaml {
         or die "Cannot write to $file: $!";
     close $fh
         or die "Cannot write to $file: $!";
+}
+
+sub _dump_meta_to_yaml_file {
+    my $self      = shift;
+    my $dir       = shift;
+    my $meta_data = { version => $EXPORT_VERSION };
+    my $file      = Socialtext::File::catfile( $dir, 'meta.yaml' );
+
+    _dump_yaml( $file, $meta_data );
 }
 
 sub _dump_users_to_yaml_file {
