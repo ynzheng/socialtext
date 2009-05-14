@@ -758,6 +758,9 @@ sub standard_params {
     $config{cache_dir} = $dirs{cache};
     $config{ssl_base_dir} = $dirs{ssl_base};
 
+    $config{frontend_ports} = _frontend_ports();
+    $config{backend_ports}  = _backend_ports();
+
     $config{apache2_port}     = _frontend_ports()->{http};
     $config{apache2_ssl_port} = _frontend_ports()->{https};
 
