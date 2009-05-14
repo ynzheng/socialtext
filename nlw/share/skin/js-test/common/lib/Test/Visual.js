@@ -129,6 +129,7 @@ proto.put_page = function(params) {
         contentType: 'text/x.socialtext-wiki',
         dataType: 'text',
         data: params.content, 
+        tags: params.tags || [], 
         success: function() {
             if( $.isFunction(params.callback) )
                 self.call_callback(params.callback);
