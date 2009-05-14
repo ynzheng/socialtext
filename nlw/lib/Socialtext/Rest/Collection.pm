@@ -13,6 +13,7 @@ use Socialtext::TT2::Renderer;
 use Socialtext::URI;
 use Socialtext::Exceptions;
 use Socialtext::Base;
+use Socialtext::l10n qw/loc/;
 
 =head1 NAME
 
@@ -235,6 +236,10 @@ sub element_list_item { "<li><a href='$_[1]->{uri}'>$_[1]->{name}</a></li>\n" }
 sub resource_to_html {
     my ( $self, $resource ) = @_;
 
+    if ($self->{_too_many}) {
+        return loc('The search term you have entered is too general.');
+    }
+
     my $name = $self->collection_name;
     my $body = join '', map { $self->element_list_item($_) } @$resource;
     return (<< "END_OF_HEADER" . $body . << "END_OF_TRAILER");
@@ -254,7 +259,16 @@ END_OF_TRAILER
 
 sub resource_to_json { encode_json($_[1]) }
 sub resource_to_text { $_[0]->_resource_to_text($_[1]) }
-sub _resource_to_text { join '', map { "$_->{name}\n" } @{$_[1]} }
+sub _resource_to_text { 
+    my $self = shift;
+    my $resource = shift;
+
+    if ($self->{_too_many}) {
+        return loc('The search term you have entered is too general.');
+    }
+
+    return join '', map { "$_->{name}\n" } @$resource;
+}
 
 sub allowed_methods { 'GET, HEAD, POST' }
 

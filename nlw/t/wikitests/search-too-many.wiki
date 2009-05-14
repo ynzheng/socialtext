@@ -64,18 +64,22 @@
 | Comment | REST API workspace search |
 | GET | /data/workspaces/%%workspace%%/pages?q=wiki |
 | code-is | 400 |
+| body-like | The search term you have entered is too general |
 
 | Comment | REST API workspace search fixed scope |
 | GET | /data/workspaces/%%workspace%%/pages?q=wiki;scope=_ |
 | code-is | 400 |
+| body-like | The search term you have entered is too general |
 
 | Comment | REST API all workspace search |
 | GET | /data/workspaces/%%workspace%%/pages?q=wiki;scope=* |
 | code-is | 400 |
+| body-like | The search term you have entered is too general |
 
 | Comment | REST API all workspace search |
 | GET | /data/workspaces/%%workspace%%/pages?q=wiki+workspaces:* |
 | code-is | 400 |
+| body-like | The search term you have entered is too general |
 
 | Comment | REST API all workspace search JSON |
 | GET | /data/workspaces/%%workspace%%/pages?q=wiki | application/json |
