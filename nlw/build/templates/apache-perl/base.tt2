@@ -5,15 +5,9 @@ ClearModuleList
 AddModule mod_so.c
 [%- PROCESS 'apache-perl/modules.tt2' %]
   
-[%- IF config.single %]
-Port   [% config.frontend_ports.http %]
-Listen [% config.frontend_ports.http %]
-Listen [% config.frontend_ports.https %]
-[%- ELSE %]
 Port   [% config.backend_ports.http %]
 Listen [% config.backend_ports.http %]
 Listen [% config.backend_ports.https %]
-[%- END %]
 
 [%- PROCESS 'shared/common.tt2' %]
 

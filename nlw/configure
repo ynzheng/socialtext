@@ -201,27 +201,25 @@ EOT
     }
 
     # Proxy requires apache2
-    if ( $settings{'apache-proxy'}->{value} ) {
-        my $dir = $settings{'apache2-moduledir'}->{value};
-        if ( !$dir ) {
-            print <<'EOF';
-You're trying to use --apache-proxy, but I'm not able to find a setting
+    my $apache2_mod_dir = $settings{'apache2-moduledir'}->{value};
+    if ( !$apache2_mod_dir ) {
+        print <<'EOF';
+Need to use Apache2 as a front-end/proxy, but I'm not able to find a setting
 for --apache2-moduledir.  Try as:
 
-    $ ./configure --apache2-moduledir=/path/to/apache2/modules
+$ ./configure --apache2-moduledir=/path/to/apache2/modules
 
 EOF
-            $ok = 0;
-        } elsif ( !(-r $dir && -d $dir) ) {
-            print <<"EOF";
-The apache2 module directory "$dir" specified by --apache2-moduledir
+        $ok = 0;
+    } elsif ( !(-r $apache2_mod_dir && -d $apache2_mod_dir) ) {
+        print <<"EOF";
+The apache2 module directory "$apache2_mod_dir" specified by --apache2-moduledir
 must be a readable directory.  Try as:
 
-    \$ ./configure --apache2-moduledir=/path/to/apache2/modules
+\$ ./configure --apache2-moduledir=/path/to/apache2/modules
 
 EOF
-            $ok = 0;
-        }
+        $ok = 0;
     }
 
     # Valid Locale code

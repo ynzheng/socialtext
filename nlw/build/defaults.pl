@@ -100,11 +100,6 @@ apache-status is the hosts to which these URLs will be restricted.
 For example, --apache-status=.mydomain.com
 DOC
 
-        entry( 'apache-proxy' =>  1, <<'DOC' ),
-Configures Socialtext to include a front-end proxying Apache that proxies
-directly from the back-end Apache server that serves content.
-DOC
-
         entry( hostname => get_hostname(), <<'DOC' ),
 The fully-qualified hostname of the server on which we'll be running.
 This is required for Socialtext Open, or single-Apache setups.

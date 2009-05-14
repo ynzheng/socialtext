@@ -22,8 +22,7 @@ Usage: {
 }
 
 Dev_env: {
-    my $output = run_test("--quiet --root $test_root "
-                          . "--apache-proxy=1 --socialtext-open=0 --dev=0");
+    my $output = run_test("--quiet --root $test_root --socialtext-open=0 --dev=0");
     my @files = qw(
         apache2/nlw-apache2.conf
         apache2/auto-generated.d/nlw.conf
@@ -52,8 +51,7 @@ Dev_env: {
 # This means anything greater than 2.2G of RAM.
 Full_memory: {
     $ENV{ST_MEMTOTAL} = 8000000;
-    run_test("--quiet --root $test_root "
-        . "--apache-proxy=1 --socialtext-open=0 --dev=0");
+    run_test("--quiet --root $test_root --socialtext-open=0 --dev=0");
     check_apache_config(
         MinSpareServers     => 10,
         MaxSpareServers     => 15,
@@ -66,8 +64,7 @@ Full_memory: {
 # This means <= 2.2G of RAM.
 Less_memory: {
     $ENV{ST_MEMTOTAL} = 1024;
-    run_test("--quiet --root $test_root "
-        . "--apache-proxy=1 --socialtext-open=0 --dev=0");
+    run_test("--quiet --root $test_root --socialtext-open=0 --dev=0");
     check_apache_config(
         MinSpareServers     => 5,
         MaxSpareServers     => 9,

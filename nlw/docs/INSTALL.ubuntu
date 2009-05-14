@@ -61,7 +61,7 @@ most cases the default settings will work fine)
   
 4) Configuring and installing   This step takes around 30 minutes.
 
-sudo ./configure --socialtext-open=1 --apache-proxy=0 --hostname=yourhost.com --url=http://yourhost.com   --server-admin=defaultuser@yourhost.com   --support-address=defaultuser@yourhost.com
+sudo ./configure --socialtext-open=1 --hostname=yourhost.com --url=http://yourhost.com   --server-admin=defaultuser@yourhost.com   --support-address=defaultuser@yourhost.com
 
 You will have to answer a few questions:
 

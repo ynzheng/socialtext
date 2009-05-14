@@ -61,7 +61,6 @@ foreach my $maybe (
 
 my %passthru = (
     'socialtext-open'   => 'i',
-    'apache-proxy'      => 'i',
     'apache-status'     => 's',
     'apache2-moduledir' => 's',
     'apache-perl-moduledir' => 's',
@@ -355,11 +354,6 @@ sub sitewide_dirs {
 
 sub is_target_for {
     my @targets = @_;
-    if (!$opts{'apache-proxy'}) {
-        if (grep { $_ eq 'apache2' } @targets) {
-            return 0;
-        }
-    }
     return 1 unless $opts{target};
     return grep { lc( $opts{target} ) eq $_ } @targets;
 }
@@ -611,7 +605,6 @@ sub _static_dir {
 sub apache_perl_params {
     my %dirs = %{+shift};
 
-    my $single = !$opts{'apache-proxy'};
     my $confd  = "$dirs{apache_perl_etc}/conf.d";
 
     my %config = standard_params( \%dirs );
@@ -625,24 +618,17 @@ sub apache_perl_params {
         confd_exists    => -d $confd,
         eu_httpd_exists => -f "$confd/eu-httpd.conf",
         eu_httpsd_exists => -f "$confd/eu-httpsd.conf",
-
-        $opts{'apache-proxy'} ? () : (
-            apache2_etc_dir => $dirs{apache_perl_etc},
-            use_ssl => _use_ssl($config{nlw_server_hostname}),
-        ),
         module_dir      => get_build_setting( 'apache-perl-moduledir' ),
         nlw_config_file => File::Spec->catfile( $dirs{socialtext_etc}, 'socialtext.conf' ),
         appliance_config_file => File::Spec->catfile( $dirs{etc}, 'appliance.conf' ),
         app_prefix      => $app_prefix,
         log_prefix => 'nlw',
-        'apache-proxy' => $opts{'apache-proxy'},
-        single => $single,
         nlw_server_aliases => [],
         apache_short_name  => 'apache-perl',
         use_canonical_name => 'On',
     );
-    $config{backend_port} = $single ? $config{apache2_port} : $config{apache_perl_port};
-    $config{backend_ssl_port} = $single ? $config{apache2_ssl_port} : $config{apache_perl_ssl_port};
+    $config{backend_port} = $config{apache_perl_port};
+    $config{backend_ssl_port} = $config{apache_perl_ssl_port};
 
     $config{inc} = _get_inc();
 
@@ -741,7 +727,6 @@ sub standard_params {
         is_mac        => _bool( $^O eq 'darwin' ),
 
         socialtext_open     => _bool($socialtext_open),
-        apache_proxy        => _bool( $opts{'apache-proxy'} ),
         apache_status       => $opts{'apache-status'},
         server_admin        => get_build_setting('server-admin'),
     );
@@ -848,11 +833,6 @@ Options:
 
 --socialtext-open=[0|1]
               Configure as the open source release.
-
---apache-proxy=[0|1]
-              If 0, only generate config for apache-perl to do both front-
-              and back-end stuff.  apache2 confs will not be generated.
-              If 1, generate the apache2 confs for the front-end proxy.
 
 --target      One of: app, apache, apache2, apache-perl, ssl
                  app - generate just the YAML in /etc/Socialtext

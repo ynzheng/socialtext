@@ -56,10 +56,6 @@
     </Location>
 [%- END %]
 
-[%- IF config.single %]
-    [% PROCESS 'shared/rewrite.tt2' %]
-[%- END %]
-
     PerlCleanupHandler  +Socialtext::Handler::Cleanup
     PerlPostReadRequestHandler +Socialtext::Apache::ForwardedFor
 
@@ -94,15 +90,6 @@
     <LocationMatch "^/[^/]+/index\.cgi">
         ErrorDocument 404 /index.cgi
     </LocationMatch>
-[%- IF config.single %]
-    <Location /static>
-        # When running as a single server the rule for 
-        # passing to the REST handler can be too consuming.
-        # Use this rule for content that should be handled
-        # as files.
-        SetHandler default-handler
-    </Location>
-[%- END %]
 
 [%- END %][%# MACRO vhost_common %]
 
@@ -161,18 +148,13 @@ PerlModule  Socialtext::ModPerl
 
 
 <VirtualHost *:[% config.backend_port %]>
-[%- IF !config.apache_proxy  %]
-    ServerName [% config.nlw_server_hostname %]
-[%- END %]
 [% vhost_common( 0 ) %]
 </VirtualHost>
 
-[%- IF config.apache_proxy %]
 <VirtualHost *:[% config.backend_ssl_port %]>
     SetEnv  NLWHTTPSRedirect  1
 [% vhost_common( 1 ) %]
 </VirtualHost>
-[%- END %][%# config.apache_proxy %]
 
 [%- IF config.eu_httpd_exists %]
 <VirtualHost 10.8.0.1:[% config.backend_port %]>

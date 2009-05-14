@@ -31,7 +31,7 @@ pointers to more detailed information.
     your own from source if your distribution does not include such
     a package.
 
-* Install Apache2 if you're going to use the dual-Apache proxy setup.
+* Install Apache2; needed for the dual-Apache proxy setup.
 
     In Debian, the package to install is apache2-mpm-prefork.  Other
     distributions may have others.  It's important that it include
@@ -80,17 +80,16 @@ prebuilt packages for your OS (or the prebuilt packages are too old).
 
 Installation starts with running a simple program, "configure":
 
-    ./configure --socialtext-open=1 --apache-proxy=0
+    ./configure --socialtext-open=1
 
 These configuration options tell the configuration script that you
 are running an open source installation (which minimizes the rewrite
-rules in your apache configuration file) and that you are going to 
-run a single apache instance (not a 2-apache proxy system).
+rules in your apache configuration file).
 
 When you run it, you're presented with a list of settings that the files
 are built with:
 
-    $ ./configure --socialtext-open=1 --apache-proxy=0
+    $ ./configure --socialtext-open=1
     Configuration Settings:
              BINDIR = /usr/local/bin
            CACHEDIR = /var/cache/socialtext

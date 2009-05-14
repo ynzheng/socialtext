@@ -32,11 +32,6 @@ Apaches are running on: APP_HTTP_PORT, APP_HTTPS_PORT, PROXY_HTTP_PORT
 and PROXY_HTTPS_PORT, most likely.  Then, this test can query directly
 on the APP_HTTP_PORT and be sure of bypassing the proxy.
 
-Finally, we have to make sure that dev-bin/fresh-dev-env-from-scratch
-properly respects --apache-proxy=0 and --apache-proxy=1 so that we can
-have those parms set in a configset and the testrunner can test that we
-work both behind the proxy and not.
-
 =cut
 
 

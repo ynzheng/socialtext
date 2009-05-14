@@ -22,18 +22,12 @@ function rm_dir {
    if [ -d $DIR ]; then rm -r $DIR; fi
 }
 
-if [ "$1" = "--single" ]; then
-    FDEFS_PROXY=0
-else
-    FDEFS_PROXY=1
-fi
-
 cd $(dirname $0)/..
 
 ./dev-bin/create-skinlinks
 
 set -x
-PORT=$(($START_PORT+$UID)) ./configure --dev=1 --apache-proxy=$FDEFS_PROXY \
+PORT=$(($START_PORT+$UID)) ./configure --dev=1 \
     --server-admin=support@socialtext.com \
     --support-address='http://www.socialtext.com/customers/support_request.php'
 set +x
@@ -80,13 +74,7 @@ export PGUSER=`st-config echo db_user`
 echo "Adding special dev-env SQL hacks"
 psql -f etc/socialtext/db/dev.sql
 
-if [ $FDEFS_PROXY = 0 ]; then
-    echo "Starting in single-Apache mode";
-    dev-bin/gen-config --root=$HOME/.nlw --apache-proxy=$FDEFS_PROXY --socialtext-open=0;
-    dev-bin/nlwctl -c start;
-    dev-bin/nlwctl -1 start;
-else
-    echo "Starting in dual-Apache mode";
-    dev-bin/nlwctl start;
-fi
+echo "Starting in dual-Apache mode";
+dev-bin/nlwctl start;
+
 st-admin set-workspace-config --workspace admin skin_name s3

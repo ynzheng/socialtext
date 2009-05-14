@@ -210,7 +210,7 @@ config: install-ok \
         ssl-config
 
 osr-apache: install-ok config
-	$(GENCONFIG) --sitewide --apache-proxy=@APACHE_PROXY@ --hostname=@HOSTNAME@
+	$(GENCONFIG) --sitewide --hostname=@HOSTNAME@
 
 st-apache: install-ok config apache-config
 

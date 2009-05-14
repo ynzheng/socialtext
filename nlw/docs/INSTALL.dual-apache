@@ -30,16 +30,11 @@ and Ubuntu, this is:
 
 === Configuration ===
 
-When you configure Socialtext Open, pass the --apache-proxy=1 argument.
-For example, you might use:
+No additional configuration is required for Socialtext Open in order to
+use a dual-Apache setup.  As of May 2009, a dual-Apache setup is the
+only supported configuration for Socialtext Open.
 
-    ./configure \
-        --hostname=www.mysite.com \
-        --server-admin=root@mysite.com \
-        --support-address=support@mysite.com \
-        --apache-proxy=1
-
-Then, do your make and install as in the base INSTALL document.
+Do your make and install as in the base INSTALL document.
 
 After you've run the install, you'll have installed the following
 configuration files:
