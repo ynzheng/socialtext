@@ -4,9 +4,11 @@
 <form id="st-[%sid%]-form" action="index.cgi" method="get" name="SearchForm">
 
   <select id="st-[%sid%]-action" name="action" class="searchSelect">
+    [% IF workspace_present %]
     <option value="search" id="st-[%sid%]-this-ws">[% loc("Search this Workspace:") %]</option>
+    [% END %]
     <option value="search" id="st-[%sid%]-all-ws" class="scopeStar">[% loc("Search all Workspaces:") %]</option>
-    <option value="search_people" id="st-[%sid%]-people">[% loc("Search People:") %]</option>
+    [% FILTER decorate('search_box') %][% END %]
   </select>
 
   <input type="hidden" value="_" name="scope" class="searchScope"/>
