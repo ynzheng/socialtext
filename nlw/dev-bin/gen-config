@@ -746,9 +746,6 @@ sub standard_params {
     $config{frontend_ports} = _frontend_ports();
     $config{backend_ports}  = _backend_ports();
 
-    $config{apache2_port}     = _frontend_ports()->{http};
-    $config{apache2_ssl_port} = _frontend_ports()->{https};
-
     $config{apache_perl_port}     = _backend_ports()->{http};
     $config{apache_perl_ssl_port} = _backend_ports()->{https};
 
