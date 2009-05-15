@@ -34,6 +34,7 @@ sub update {
 
 sub is_plugin_enabled { $_[0]->{is_plugin_enabled}{$_[1]} }
 sub workspace_id { $_[0]->{workspace_id} || 1 }
+sub allows_page_locking { $_[0]->{allows_page_locking} || 1 }
 
 sub homepage_is_dashboard { $_[0]->{homepage_is_dashboard} }
 
