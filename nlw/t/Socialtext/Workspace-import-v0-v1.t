@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 
-use Test::Socialtext qw/no_plan/;
+use Test::Socialtext tests => 2;
 use Socialtext::Role;
 use Socialtext::Permission qw/ST_LOCK_PERM/;
 fixtures( 'foobar', 'destructive' );
