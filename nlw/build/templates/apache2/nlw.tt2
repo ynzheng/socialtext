@@ -189,7 +189,7 @@ ErrorDocument 500 /static/html/500.html
 
 [%- IF config.ssl_only OR config.use_ssl %]
     [%#- Have SSL enabled server too %]
-    <VirtualHost *:[% config.frontend_ports.https %]>
+    <VirtualHost _default_:[% config.frontend_ports.https %]>
         [%#- Common server setup, pointing to backend HTTPS port %]
         [% server_common( config.backend_ports.https, 1 ) %]
         SSLEngine on
