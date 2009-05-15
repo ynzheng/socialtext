@@ -402,6 +402,7 @@ div#controls div#st-editing-tools-edit h2 {
 	color: #333;
 	line-height: 44px;
 	padding-left: 10px;
+        display: inline;
 }
 
 body#listPage div#controls div#st-editing-tools-edit {
@@ -2246,6 +2247,18 @@ ul li a.followPersonButton {
     font-weight:bold;
 }
 
+div#lastsignal {
+    display:inline;
+}
+body#dashBoard div#controls div#st-editing-tools-edit div#lastsignal span {
+    font-size: 14px;
+    color: #333;
+    line-height: 44px;
+    padding-left: 10px;
+    vertical-align: baseline;
+    position: relative;
+    top: 0px;
+}
 /* Wafl Boxes */
 
 #st-page-content .wafl_container td {
