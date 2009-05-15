@@ -67,16 +67,17 @@
                   [% loc('Created by') %] [% entry.username | decorate('user_link') %] [% loc('on') %] [% entry.date_local %].
             [% END %]
 
-
-            [% IF checker.check_permission('comment') %]
-              <a href="#" id="comment_[% entry.page_uri %]" class="weblog_comment">
-                [% loc('Comment') %]
-              </a>
-              -
-            [% END %]
-            [% IF checker.check_permission('edit') %]
-              <a href="[% script_name %]?action=display;page_name=[% entry.page_uri %];caller_action=[% caller_action %];tag=[% tag | uri %];js=show_edit_div#edit">[% loc('Edit this post') %]</a>
-              -
+            [% IF !entry.page_locked_for_user %]
+              [% IF checker.check_permission('comment') %]
+                <a href="#" id="comment_[% entry.page_uri %]" class="weblog_comment">
+                  [% loc('Comment') %]
+                </a>
+                -
+              [% END %]
+              [% IF checker.check_permission('edit') %]
+                <a href="[% script_name %]?action=display;page_name=[% entry.page_uri %];caller_action=[% caller_action %];tag=[% tag | uri %];js=show_edit_div#edit">[% loc('Edit this post') %]</a>
+                -
+              [% END %]
             [% END %]
             <a href="[% script_name %]?[%entry.page_uri%]">[% loc('Permalink') %]</a>
           </em>

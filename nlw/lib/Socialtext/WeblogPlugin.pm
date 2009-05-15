@@ -451,6 +451,10 @@ sub format_page_for_entry {
     $entry->{post} = $page->to_html_or_default unless $args{no_post};
     $entry->{attachment_count} =
       scalar @{$attachments->all( page_id => $page->id )};
+    $entry->{page_locked_for_user} =  
+        $page->locked && 
+        $self->hub->current_workspace->allows_page_locking &&
+        !$self->hub->checker->check_permission('lock'),
 
     return $entry;
 }

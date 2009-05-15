@@ -34,7 +34,8 @@ sub submit_comment {
     my $self = shift;
     $self->current_page($self->hub->pages->current->load);
     $self->current_page->add_comment($self->cgi->comment)
-        if $self->hub->checker->check_permission('comment');
+        if ($self->hub->checker->check_permission('comment')
+            && $self->hub->checker->can_modify_locked($self->hub->pages->current));
 
     $self->template_process('close_window.html',
         before_window_close => q{window.opener.location='} .
