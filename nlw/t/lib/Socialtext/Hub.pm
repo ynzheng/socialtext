@@ -33,6 +33,21 @@ use unmocked 'Socialtext::Formatter::Viewer';
 
 #warn "MOCKED HUB";
 
+sub import {
+    my $class = shift;
+    return if (@_%2);
+    my %args = @_;
+    if ($args{gtv}) {
+        no warnings 'redefine';
+        if (ref($args{gtv}) eq 'CODE') {
+            *Socialtext::Helpers::global_template_vars = $args{gtv};
+        }
+        elsif ($args{gtv} eq 'empty') {
+            *Socialtext::Helpers::global_template_vars = sub { return };
+        }
+    }
+}
+
 sub init {}
 sub load {}
 
