@@ -25,7 +25,7 @@ sub filter {
     my ($self, $text, $args, $config) = @_;
 
     my $pluggable = $self->{_CONTEXT}->stash->get('pluggable');
-    my $name = $args->[0];
+    my ($name,@args) = @$args;
 
     my $cache_key = "$name.$text";
     if (defined $ActivePluggable and $ActivePluggable == 0+$pluggable) {
@@ -39,10 +39,10 @@ sub filter {
     }
 
     if ($pluggable->registered("template.$name.content")) {
-        $text = $pluggable->hook("template.$name.content", $text);
+        $text = $pluggable->hook("template.$name.content", $text, @args);
     }
-    my $prepend = $pluggable->hook("template.$name.prepend", $text);
-    my $append  = $pluggable->hook("template.$name.append", $text);
+    my $prepend = $pluggable->hook("template.$name.prepend", $text, @args);
+    my $append  = $pluggable->hook("template.$name.append", $text, @args);
 
     my $result = "${prepend}${text}${append}";
     $DecorateCache{$cache_key} = $result;
