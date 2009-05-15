@@ -112,6 +112,7 @@ WHERE (1=1) AND ((
                       FROM signal_account sa 
                       WHERE sa.signal_id = signal_id
     )
+      AND ( evt.person_id IS NULL OR evt.person_id = viewer.user_id OR evt.actor_id = viewer.user_id ) 
             )
         )
     ))
