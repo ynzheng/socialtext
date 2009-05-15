@@ -627,7 +627,6 @@ sub apache_perl_params {
         use_canonical_name => 'On',
     );
     $config{backend_port} = $config{apache_perl_port};
-    $config{backend_ssl_port} = $config{apache_perl_ssl_port};
 
     $config{inc} = _get_inc();
 
@@ -746,7 +745,6 @@ sub standard_params {
     $config{backend_ports}  = _backend_ports();
 
     $config{apache_perl_port}     = _backend_ports()->{http};
-    $config{apache_perl_ssl_port} = _backend_ports()->{https};
 
     $config{static_dir} = _static_dir();
 
