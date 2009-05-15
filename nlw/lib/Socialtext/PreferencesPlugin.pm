@@ -7,6 +7,9 @@ use base 'Socialtext::Plugin';
 
 use Class::Field qw( field );
 use Socialtext::File;
+use Socialtext::JSON qw/decode_json encode_json/;
+use Socialtext::SQL qw(:exec :txn);
+use Socialtext::Log qw/st_log/;
 
 sub class_id { 'preferences' }
 field objects_by_class => {};
@@ -42,20 +45,62 @@ sub new_for_user {
     return $self->{per_user_cache}{$email} = $self->new_preferences($values);
 }
 
+sub _load_all {
+    my $self = shift;
+    my $email = shift;
+    my $prefs = $self->_values_for_email_from_db($email);
+
+    if (!$prefs) {
+        st_log->debug("Returning prefs from disk for $email");
+        my $file = $self->_file_for_email($email);
+
+        return {} unless -f $file and -r _;
+
+        my $dump = Socialtext::File::get_contents($file);
+        return {} unless defined $dump and length $dump;
+
+        $prefs = eval $dump;
+        die $@ if $@;
+    }
+
+    return $prefs;
+}
+
 sub _values_for_email {
     my $self = shift;
     my $email = shift;
-    my $file = $self->_file_for_email($email);
 
-    return {} unless -f $file and -r _;
-
-    my $dump = Socialtext::File::get_contents($file);
-    return {} unless defined $dump and length $dump;
-
-    my $prefs = eval $dump;
-    die $@ if $@;
+    my $prefs = $self->_load_all($email);
 
     return +{ map %$_, values %$prefs };
+}
+
+sub _values_for_email_from_db {
+    my $self = shift;
+    my $email = shift;
+
+    my $user = Socialtext::User->new(email_address => $email);
+    return {} unless $user;
+
+    my $workspace_id = $self->hub->current_workspace->workspace_id;
+    my $sth = sql_execute('
+        SELECT pref_blob
+          FROM user_workspace_pref
+         WHERE user_id = ?
+           AND workspace_id = ?
+       ', $user->user_id, $workspace_id,
+    );
+    return if $sth->rows == 0;
+    st_log->debug("Returning prefs from DB for $email");
+    my $result = {};
+    {
+        local $@;
+        $result = eval { decode_json($sth->fetchrow_array()); };
+        st_log->error(
+            "failed to load prefs blob '${email}:$workspace_id': $@"
+        ) if $@;
+    }
+    return $result;
 }
 
 sub _file_for_email {
@@ -94,20 +139,29 @@ sub _prefs_file_for_email {
 
 sub store {
     my $self = shift;
-    my ($email, $class_id, $new_prefs, $user_id) = @_;
+    my ($email, $class_id, $new_prefs) = @_;
     my $prefs = $self->_load_all($email);
     $prefs->{$class_id} = $new_prefs;
-    $self->dumper_to_file($self->_prefs_file_for_email($email), $prefs);
-}
+    st_log->debug("Saving prefs for $email to database");
 
-sub _load_all {
-    my $self = shift;
-    my $prefs_file = $self->_prefs_file_for_email(@_);
-    return {} unless -e $prefs_file;
-    my $data = eval Socialtext::File::get_contents($prefs_file);
-    die $@ if $@;
-
-    return $data;
+    # save to db
+    my $user = Socialtext::User->new(email_address => $email);
+    return unless $user;
+    my $user_id = $user->user_id;
+    my @keys = ($user_id, $self->hub->current_workspace->workspace_id);
+    my $json = encode_json($prefs);
+    sql_begin_work;
+    sql_execute('
+        DELETE FROM user_workspace_pref 
+         WHERE user_id = ? AND workspace_id = ?
+         ', @keys,
+     );
+    sql_execute('
+        INSERT INTO user_workspace_pref (user_id, workspace_id, pref_blob) 
+        VALUES (?,?,?)
+        ', @keys, $json
+    );
+    sql_commit;
 }
 
 package Socialtext::Preference;
