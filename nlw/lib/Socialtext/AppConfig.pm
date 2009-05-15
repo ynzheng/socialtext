@@ -803,8 +803,8 @@ Default: 0
 
 =head2 custom_http_port
 
-Specifies NLW uses a non-standard HTTP port.  Requests to port 80
-will be forwarded to this port.  0 means no custom port.
+Specifies NLW uses a non-standard HTTP port.  No redirection is provided for
+requests sent to port 80.  0 means no custom port.
 
 Default: 0
 
