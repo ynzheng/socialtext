@@ -336,6 +336,14 @@
             'text/html':        *default
         '*':                    [Socialtext::Rest::User, bad_method]
 -
+    '/data/users/:username/shared_accounts/:otheruser':
+        'GET':
+            '*/*':     &default [Socialtext::Rest::UserSharedAccounts, GET_html]
+            'application/json': [Socialtext::Rest::UserSharedAccounts, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::UserSharedAccounts, GET_yaml]
+            'text/html':        *default
+        '*':                    [Socialtext::Rest::UserSharedAccounts, bad_method]
+-
     '/data/users':
         'POST':
             '*/*':              [Socialtext::Rest::Users, bad_type]
