@@ -147,7 +147,7 @@ PerlSetEnv  NLW_DEV_MODE  1
 PerlModule  Socialtext::ModPerl
 
 
-<VirtualHost *:[% config.backend_port %]>
+<VirtualHost *:[% config.backend_ports.http %]>
 [% vhost_common( 0 ) %]
 </VirtualHost>
 
@@ -157,7 +157,7 @@ PerlModule  Socialtext::ModPerl
 </VirtualHost>
 
 [%- IF config.eu_httpd_exists %]
-<VirtualHost 10.8.0.1:[% config.backend_port %]>
+<VirtualHost 10.8.0.1:[% config.backend_ports.http %]>
     ServerName www.eu.socialtext.net
 [% vhost_common( 1 ) %]
 </VirtualHost>
