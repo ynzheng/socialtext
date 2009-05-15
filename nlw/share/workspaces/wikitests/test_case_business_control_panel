@@ -14,6 +14,7 @@
 | open_ok | /nlw/control/account |  |
 | wait_for_element_visible_ok | st-search-by-name | 30000 |
 | text_like | Accounts |  |
+| wait_for_element_visible_ok | link=Socialtext | 30000 |
 | clickAndWait | link=Socialtext |  |
 | text_like | Socialtext account |  |
 
@@ -311,8 +312,10 @@ text_like | qr/0-sort-2-workspace1-%%start_time%%.+0-sort-3-workspace1-%%start_t
 | wait_for_element_visible_ok | todo-create | 30000 |
 
 | *Comment* | Test case: Business Control Panel invite to new workspace |  |
-| click_ok | todo-invite |  |
-| click_ok | todo-create |  |
+| check_ok | todo-invite |  |
+| is_checked_ok | todo-invite |  |
+| check_ok | todo-create |  |
+| is_checked_ok | todo-create |  |
 | select_ok | account_id | 0 sort 3 account %%start_time%% |
 
 | *Comment* | Test case: Business Control Panel create admins |  |
@@ -374,13 +377,16 @@ text_like | qr/0-sort-2-workspace1-%%start_time%%.+0-sort-3-workspace1-%%start_t
 | wait_for_element_visible_ok | field-type-select | 30000 |
 | select_ok | data-source-select | label=External |
 | select_ok | field-type-select | label=Regular |
+| wait_for_element_visible_ok | //input[@name='is_hidden' and @value='1'] | 30000 |
 | check_ok | //input[@name='is_hidden' and @value='1'] |  |
 | is_checked_ok | //input[@name='is_hidden' and @value='1'] |  |
+| wait_for_element_visible_ok | //input[@value='Save Field'] | 30000 |
 | click_and_wait | //input[@value='Save Field'] |  |
 | text_like | qr/Updated profile field.+This field is now hidden from users' profiles./ |  |
 | text_like | un-hide |  |
 
 | *Comment* | TC:BCP make new custom fields |  |
+| wait_for_element_visible_ok | link=Create New Field | 30000 |
 | click_and_wait | link=Create New Field |  |
 | wait_for_element_visible_ok | field-title-input | 30000 |
 | wait_for_element_visible_ok | field-name-input | 30000 |
@@ -390,13 +396,15 @@ text_like | qr/0-sort-2-workspace1-%%start_time%%.+0-sort-3-workspace1-%%start_t
 | wait_for_element_visible_ok | field-type-select | 30000 |
 | select_ok | data-source-select | label=External |
 | select_ok | field-type-select | label=Contact |
+| wait_for_element_visible_ok | //input[@name='is_hidden' and @value='1'] | 30000 |
 | check_ok | //input[@name='is_hidden' and @value='1'] |  |
 | is_checked_ok | //input[@name='is_hidden' and @value='1'] |  |
+| wait_for_element_visible_ok | //input[@value='Create New Field'] | 30000 |
 | click_and_wait | //input[@value='Create New Field'] |  |
 | text_like | qr/Created profile field "ft %%start_time%%".+This field is now hidden from users' profiles./ |  |
 | text_like | qr/ft %%start_time%%.+fn_%%start_time%%.*Contact.*Yes.*External.*(un-hide)/ |  |
 
-| *Comment* | Test case: Business Control Panel teardown. Let %%username%% keep accounts admin privileges. |  |
+| *Comment* | Test case: Business Control Panel TEARDOWN. Let %%username%% keep accounts admin privileges. |  |
 | st-admin | remove-system-admin --email %%email%% | no longer has system admin access |
 | st-admin | delete-workspace --workspace 0-sort-1-workspace1-%%start_time%% --no-export | workspace has been deleted |
 | st-admin | delete-workspace --workspace 0-sort-2-workspace1-%%start_time%% --no-export | workspace has been deleted |
@@ -424,6 +432,7 @@ text_like | qr/0-sort-2-workspace1-%%start_time%%.+0-sort-3-workspace1-%%start_t
 | wait_for_element_visible_ok | field-type-select | 30000 |
 | select_ok | data-source-select | label=External |
 | select_ok | field-type-select | label=Regular |
+| wait_for_element_visible_ok | //input[@name='is_hidden' and @value='1'] | 30000 |
 | check_ok | //input[@name='is_hidden' and @value='1'] |  |
 | is_checked_ok | //input[@name='is_hidden' and @value='1'] |  |
 
