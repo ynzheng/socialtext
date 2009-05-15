@@ -615,33 +615,36 @@ sub workspaces_permissions {
 }
 
 sub _set_workspace_permissions {
-    my $self = shift;
+    my $self    = shift;
+    my $ws      = $self->hub()->current_workspace();
+    my $message = '';
+
+    $self->_update_workspace_settings();
+    $message .= $ws->allows_page_locking
+        ? loc('Page locking is enabled.')
+        : loc('Page locking is disabled.');
 
     my $set_name = $self->cgi()->permission_set_name();
-
-    return if $set_name
-        and ! $Socialtext::Workspace::Permissions::PermissionSets{ $set_name };
-
-    my $ws = $self->hub()->current_workspace();
-    $ws->permissions->set( set_name => $set_name );
-
-    if ( $self->cgi()->guest_has_email_in() ) {
-        $ws->permissions->add(
-            role       => Socialtext::Role->Guest(),
-            permission => ST_EMAIL_IN_PERM,
-        );
+    if ( $set_name and
+        ! $Socialtext::Workspace::Permissions::PermissionSets{ $set_name }
+    ) {
+        $message .= '  ';
+        $message .= loc('Using Custom workspace permssions.');
     }
     else {
-        $ws->permissions->remove(
-            role       => Socialtext::Role->Guest(),
-            permission => ST_EMAIL_IN_PERM,
-        );
+        $message .= '  ';
+        $message .= loc('The permissions for [_1] have been set to [_2].', $ws->name(), loc($set_name));
+        $ws->permissions->set( set_name => $set_name );
     }
 
-    # Page locking is a workspace setting
-    $self->_update_workspace_settings();
+    # This has to go after the perm settings because ST_EMAIL_IN_PERM
+    # _is_ a perm setting.
+    my $do = $self->cgi()->guest_has_email_in() ? 'add' : 'remove';
+    $ws->permissions->$do(
+        role       => Socialtext::Role->Guest(),
+        permission => ST_EMAIL_IN_PERM,
+    );
 
-    my $message = loc('The permissions for [_1] have been set to [_2].', $ws->name(), loc($set_name));
     if ($self->cgi()->guest_has_email_in()) {
         $message .= ' ' . loc('Anyone can send email to [_1].', $ws->name());
     } else {
@@ -653,8 +656,6 @@ sub _set_workspace_permissions {
             $message .= loc('Only registered users can send email to [_1].', $ws->name());
         }
     }
-    $message .= ' ';
-    $message .= $ws->allows_page_locking ? loc('Page locking is enabled.') : loc('Page locking is disabled.');
 
     $self->message( $message );
 }
