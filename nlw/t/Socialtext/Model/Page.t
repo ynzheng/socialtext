@@ -64,6 +64,7 @@ Create_from_row: {
         revision_count => 'revision_count',
         is_spreadsheet => '',
         edit_summary => undef,
+        Locked => undef,
     };
 
     is $page->title, 'name';
@@ -87,6 +88,7 @@ Create_from_row: {
         type           => 'page_type',
         tags           => ['tag'],
         modified_time  => '1199229121',
+        locked => undef,
     };
 
     $page->add_tag('zed');
