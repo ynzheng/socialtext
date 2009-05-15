@@ -2,6 +2,12 @@
     sid = 'search'
 -%]
 <form id="st-[%sid%]-form" action="index.cgi" method="get" name="SearchForm">
+  [% IF user.is_guest %]
+
+  <input type="hidden" name="action" value="search" />
+
+  [% ELSE %]
+
   <select id="st-[%sid%]-action" name="action" class="searchSelect">
     [% IF workspace_present %]
     <option value="search" id="st-[%sid%]-this-ws" [% IF action == "search" && scope == '_' %]selected="selected" [% END %]>[% loc("Search this Workspace:") %]</option>
@@ -9,8 +15,10 @@
     <option value="search" id="st-[%sid%]-all-ws" class="scopeStar" [% IF action == "search" && scope == '*' %]selected="selected" [% END %]>[% loc("Search all Workspaces:") %]</option>
     [% FILTER decorate('search_box') %][% END %]
   </select>
-
   <input type="hidden" value="_" name="scope" class="searchScope"/>
+
+  [% END %]
+
   <input id="st-[%sid%]-term" name="search_term" class="searchText" type="text" [% IF search_term %]value="[% search_term %]"[% END %] />
   <input id="st-[%sid%]-submit" class="searchButton"  type="submit" value="" />
 </form>
