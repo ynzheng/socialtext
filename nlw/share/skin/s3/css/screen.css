@@ -1119,6 +1119,10 @@ div.widget {
 	float: right;
 }
 
+body#contentPage div.widget {
+        background: url(../images/widgetTop.png) no-repeat top left;
+}
+
 body#dashBoard div.widget.tan {
 	margin: 10px 0 0 0;
 	background:#fbf2e3 url(../images/widgetTanTop.png) no-repeat top left;
@@ -1142,7 +1146,7 @@ body#dashBoard div#contentColumns div#contentRight div.widget,body#settingsPage 
 	width: 100%;
 }
 
-div.widget.regular div.widgetHeader {
+body#contentPage div.widget div.widgetHeader {
 	height: 25px;
 	background: url(../images/widgetHeader.png) no-repeat top right;
 }
