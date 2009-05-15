@@ -410,6 +410,8 @@ sub template_vars {
             return $json;
         },
         %template_vars,
+        $self->{_action_plugin} ?
+            (action_plugin => $self->{_action_plugin}) : (),
     }
 }
 

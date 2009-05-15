@@ -9,9 +9,9 @@ use Socialtext::SQL;
 use Socialtext::Account;
 use Socialtext::User;
 use mocked 'Socialtext::Registry';
-use mocked 'Socialtext::Hub';
+use mocked 'Socialtext::Hub', gtv => 'empty';
 use Socialtext::Pluggable::Adapter;
-use Test::Socialtext tests => 43;
+use Test::Socialtext tests => 45;
 
 ###############################################################################
 # Fixtures: db
@@ -32,10 +32,16 @@ $hub->{current_user} = Socialtext::User->create(
 
 Socialtext::Account->Default->enable_plugin('fakeplugin');
 
+my $template_vars;
+
 # Setup hooks before register
 Socialtext::Pluggable::Plugin::FakePlugin->test_hooks(
     'test.name', sub { $_[0]->name },
-    'action.test_action' , sub { 'action contents' },
+    'action.test_action' , sub {
+        my $self = shift;
+        $template_vars = $self->template_vars;
+        return 'action contents';
+    },
     'wafl.test_wafl', sub { 'wafl contents' },
 );
 
@@ -58,6 +64,8 @@ is $registry->call('wafl', 'test_wafl'), 'wafl contents',
 
 is $registry->call('action', 'test_action'), 'action contents',
    "action hooks autovivify and can be called through registry";
+ok $template_vars, 'was able to get template vars';
+is $template_vars->{action_plugin}, 'fakeplugin', 'action_plugin was provided to templates';
 
 # Test plugin dependencies and optional_dependencies
 my $acct = Socialtext::Account->Default;

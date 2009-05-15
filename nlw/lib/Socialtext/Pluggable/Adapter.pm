@@ -307,6 +307,8 @@ sub hook {
             next unless $enabled;
                          
             eval {
+                local $plugin->{_action_plugin} =
+                    ($name =~ /^action\./) ? $plugin->name : undef;
                 $plugin->declined(undef);
                 my $results = $plugin->$method(@args);
                 unless ($plugin->declined) {
