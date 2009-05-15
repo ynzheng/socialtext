@@ -322,6 +322,13 @@ $(function() {
 
     $('#st-admin-lock-link').mouseover(page_lock_rollover);
     $('#st-admin-lock-link').mouseout(page_lock_rollover);
+    $('#st-admin-lock-link').click(function() {
+        $(this).unbind('mouseover');
+        $(this).unbind('mouseout');
+
+        var img = $(this).find('img');
+        img.attr('src', '/static/skin/common/images/ajax-loader.gif');
+    });
 
     //index.cgi?action=copy_to_workspace_popup;page_name=[% page.id %]')
     $("#st-pagetools-copy").click(function () {
