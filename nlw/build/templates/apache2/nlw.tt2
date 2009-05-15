@@ -152,40 +152,13 @@
 ErrorDocument 502 /static/html/502.html
 ErrorDocument 500 /static/html/500.html
 
-[%- IF config.is_dev %]
-    [%#- Have development environment %]
-    <VirtualHost *:[% config.frontend_ports.http %]>
-        [%- IF config.ssl_only %]
-            [%- server_redirect( config.frontend_ports.https, 'https' ) -%]
-        [%- ELSE %]
-            [%- server_common( config.backend_ports.http, 0 ) -%]
-        [%- END %]
-    </VirtualHost>
-[%- ELSIF config.custom_http_port %]
-    [%#- Have custom_http_port; redirect standard HTTP requests to that port %]
-    Listen [% config.custom_http_port %]
-
-    <VirtualHost *:[% config.frontend_ports.http %]>
-        [%- server_redirect(config.custom_http_port, 'http') -%]
-    </VirtualHost>
-
-    <VirtualHost *:[% config.custom_http_port %]>
-        [%- IF config.ssl_only %]
-            [%- server_redirect( config.frontend_ports.https, 'https' ) -%]
-        [%- ELSE %]
-            [%- server_common( config.backend_ports.http, 0 ) -%]
-        [%- END %]
-    </VirtualHost>
-[%- ELSE %]
-    [%#- Have regular/standard configuration; nothing fancy %]
-    <VirtualHost *:[% config.frontend_ports.http %]>
-        [%- IF config.ssl_only %]
-            [%- server_redirect( config.frontend_ports.https, 'https' ) -%]
-        [%- ELSE %]
-            [%- server_common( config.backend_ports.http, 0 ) -%]
-        [%- END %]
-    </VirtualHost>
-[%- END %]
+<VirtualHost *:[% config.frontend_ports.http %]>
+    [%- IF config.ssl_only %]
+        [%- server_redirect( config.frontend_ports.https, 'https' ) -%]
+    [%- ELSE %]
+        [%- server_common( config.backend_ports.http, 0 ) -%]
+    [%- END %]
+</VirtualHost>
 
 [%- IF config.ssl_only OR config.use_ssl %]
     [%#- Have SSL enabled server too %]
