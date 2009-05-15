@@ -35,12 +35,23 @@ WHERE
   role_id = ? AND permission_id = ?)
 }, $role_id, $permission_id);
 
-for my $ws ( @{ $sth->fetchall_arrayref } ) {
-    sql_execute(qq{
-        INSERT INTO "WorkspaceRolePermission" 
-               ( role_id, permission_id, workspace_id )
-        VALUES ( ?, ?, ? )
-    }, $role_id, $permission_id, $ws->[0]);
+
+my $txn = sql_in_transaction();
+sql_begin_work() unless $txn;
+eval {
+    for my $ws ( @{ $sth->fetchall_arrayref } ) {
+        sql_execute(qq{
+            INSERT INTO "WorkspaceRolePermission" 
+                   ( role_id, permission_id, workspace_id )
+            VALUES ( ?, ?, ? )
+        }, $role_id, $permission_id, $ws->[0]);
+    }
+};
+if (my $error = $@) {
+    sql_rollback() unless $txn;
+    print "$error\n";
+    exit 1;
 }
+sql_commit() unless $txn;
 
 exit 0;
