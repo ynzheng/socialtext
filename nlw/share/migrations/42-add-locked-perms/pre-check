@@ -18,6 +18,12 @@ my $permission_id = sql_singlevalue(qq{
   WHERE name = 'lock'
 });
 
+# if we don't have a lock perm, we need to do this migration.
+unless ( $permission_id ) {
+    print "Adding 'lock' permission and granting it to workspace admins.\n";
+    exit 1;
+}
+
 my $role_id = sql_singlevalue(qq{
  SELECT role_id
    FROM "Role"
