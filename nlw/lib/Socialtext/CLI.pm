@@ -2120,10 +2120,10 @@ sub deliver_email {
     };
 
     if ( my $e = Exception::Class->caught('Socialtext::Exception::Auth') ) {
-        die $e->error();
+        die $e->error() . "\n";
     }
     elsif ( $e = $@ ) {
-        die $e;
+        die "$e\n";
     }
 }
 
