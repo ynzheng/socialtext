@@ -2,7 +2,7 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::Socialtext qw/no_plan/;
+use Test::Socialtext tests => 32;
 use Socialtext::CLI;
 use t::Socialtext::CLITestUtils qw/expect_success expect_failure/;
 
@@ -123,7 +123,7 @@ list_locked: {
                 argv => [ qw/--workspace admin/ ]
             )->locked_pages();
         },
-        qr/\*\sadmin_wiki\s+\*\sconversations\s+\*\smember_directory/,
+        [ qr/\badmin_wiki\b/, qr/\bconversations\b/, qr/\bmember_directory\b/ ],
         'locked_pages success'
     );
 }
