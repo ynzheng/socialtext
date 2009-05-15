@@ -134,7 +134,7 @@ Page = {
     refreshTags: function () {
         var tag_url = '?action=category_display;category=';
         $.ajax({
-            url: this.pageUrl() + '/tags',
+            url: this.pageUrl() + '/tags?order=alpha',
             cache: false,
             dataType: 'json',
             success: function (tags) {
