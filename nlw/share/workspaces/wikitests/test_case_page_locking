@@ -1,0 +1,38 @@
+Test Basic Page Locking in the UI.
+
+| Comment | *Setup Variables* |                                    |
+| set     | admin             | devnull1@socialtext.com            |
+| set     | member            | m%%start_time%%@ken.socialtext.net |
+| set     | password          | password                           |
+| set     | ws                | test-data                          |
+
+| Comment             | *Setup Working Environment* |              |
+| create-user         | %%member%%                  | %%password%% |
+| add-member          | %%member%%                  | %%ws%%       |
+
+| Comment               | *Setup ws config*                               |
+| open_ok               | /%%ws%%/index.cgi?action=workspaces_permissions |
+| wait_for_page_to_load | 30000                                           |
+| text_like             | Page Locking                                    |
+| text_like             | Enable page locking. A workspace administrator  |
+| text_like             | Disable page locking. Any member who can edit   |
+| click_ok              | settings-lock-pages                             |
+| click_ok              | -savelink                                       |
+| wait_for_page_to_load | 30000                                           |
+| text_like             | Page locking is enabled.                        |
+
+| Comment               | *Check markup as admin*           |
+| open_ok               | /%%ws%%/index.cgi?action=homepage |
+| is_element_present_ok | st-page-lock-admin                |
+| is_element_present_ok | link=Lock the Page                |
+
+| Comment               | *Lock the page, check markup* |
+| click_ok              | st-pagetools-lock             |
+| wait_for_page_to_load | 30000                         |
+| is_element_present_ok | st-page-lock-admin            |
+| is_element_present_ok | link=Unlock the Page          |
+
+| Comment     | *Check markup as user*                    |              |
+| st-logoutin | %%member%%                                | %%password%% |
+| open_ok     | /%%ws%%/index.cgi?action=homepage         |              |
+| text_like   | This page is locked and cannot be edited. |              |

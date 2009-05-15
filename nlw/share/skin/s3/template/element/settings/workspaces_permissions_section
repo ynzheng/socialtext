@@ -59,11 +59,11 @@
   </dd>
   <dt><label>[% loc('Page Locking') %]</label></dt>
   <dd>
-    <input type="radio" name="allows_page_locking" [% IF fill_in_data.allows_page_locking %]checked="1"[% END %] value="1" />
+    <input type="radio" id="settings-lock-pages" name="allows_page_locking" [% IF fill_in_data.allows_page_locking %]checked="1"[% END %] value="1" />
     [% loc('Enable page locking. A workspace administrator can choose to lock any page, and only admins will be able to edit the locked page. Use carefully, since workspaces gain more participation if members can easily edit pages.') %]
   </dd>
   <dd>
-    <input type="radio" name="allows_page_locking" [% UNLESS fill_in_data.allows_page_locking %]checked="1"[% END %] value="0" />
+    <input type="radio" id="settings-unlock-pages" name="allows_page_locking" [% UNLESS fill_in_data.allows_page_locking %]checked="1"[% END %] value="0" />
     [% loc('Disable page locking. Any member who can edit pages can edit any page. If any pages were previously locked, those pages will be unlocked.') %]
   </dd>
 </dl>
