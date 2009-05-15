@@ -16,13 +16,13 @@ use File::chdir;
 use Socialtext::HTTP ':codes';
 use Module::Pluggable search_path => ['Socialtext::Pluggable::Plugin'],
                       search_dirs => \@libs,
-                      sub_name => 'plugins';
+                      sub_name => '_plugins';
 use Socialtext::Pluggable::WaflPhrase;
 use List::Util qw(first);
 use Memoize;
 
-# Cache our plugins - ignore all method args
-memoize('plugins', NORMALIZER => sub { '' } );
+sub plugins { grep !/SUPER$/, _plugins() } # grep prevents a Pluggable bug?
+memoize('plugins', NORMALIZER => sub { '' } ); # memoize ignores args
 
 # These hook types are executed only once, all other types are called as many
 # times as they are registered
