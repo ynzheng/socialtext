@@ -616,6 +616,13 @@ CREATE TABLE user_plugin_pref (
     value text NOT NULL
 );
 
+CREATE TABLE user_workspace_pref (
+    user_id bigint NOT NULL,
+    workspace_id bigint NOT NULL,
+    last_updated timestamptz DEFAULT now() NOT NULL,
+    pref_blob text NOT NULL
+);
+
 CREATE SEQUENCE users___user_id
     INCREMENT BY 1
     NO MAXVALUE
@@ -1084,6 +1091,9 @@ CREATE INDEX user_plugin_pref_idx
 CREATE INDEX user_plugin_pref_key_idx
 	    ON user_plugin_pref (user_id, plugin, "key");
 
+CREATE INDEX user_workspace_pref_idx
+	    ON user_workspace_pref (user_id, workspace_id);
+
 CREATE UNIQUE INDEX users_driver_unique_id
 	    ON users (driver_key, driver_unique_id);
 
@@ -1424,6 +1434,16 @@ ALTER TABLE ONLY user_plugin_pref
             FOREIGN KEY (user_id)
             REFERENCES users(user_id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY user_workspace_pref
+    ADD CONSTRAINT user_workspace_pref_user_fk
+            FOREIGN KEY (user_id)
+            REFERENCES users(user_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY user_workspace_pref
+    ADD CONSTRAINT user_workspace_pref_workspace_fk
+            FOREIGN KEY (workspace_id)
+            REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY "UserMetadata"
     ADD CONSTRAINT usermeta_account_fk
             FOREIGN KEY (primary_account_id)
@@ -1460,4 +1480,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '60');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '61');
