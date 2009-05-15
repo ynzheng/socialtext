@@ -117,7 +117,7 @@ foreach my $column (@COLUMNS) {
 }
 
 # for workspace exports:
-Readonly my $EXPORT_VERSION => 2;
+Readonly my $EXPORT_VERSION => 1;
 
 # XXX: This is here to support the non-plugin method of checking whether
 # socialcalc is enabled or not.
@@ -1398,7 +1398,7 @@ sub _dump_yaml {
 sub _dump_meta_to_yaml_file {
     my $self      = shift;
     my $dir       = shift;
-    my $meta_data = { version => $EXPORT_VERSION };
+    my $meta_data = { has_lock => 1 };
     my $file      = Socialtext::File::catfile( $dir, 'meta.yaml' );
 
     _dump_yaml( $file, $meta_data );

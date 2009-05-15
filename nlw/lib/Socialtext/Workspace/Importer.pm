@@ -23,7 +23,7 @@ use Socialtext::User;
 use YAML ();
 
 # This should stay in sync with $EXPORT_VERSION in ST::Workspace.
-Readonly my $MAX_VERSION => 2;
+Readonly my $MAX_VERSION => 1;
 
 {
     Readonly my $spec => {
@@ -258,7 +258,11 @@ sub _set_permissions {
             );
         }
 
-        if ( $self->{version} < 2 ) {
+
+        my $meta = {};
+        eval { $meta = $self->_load_yaml( $self->_meta_file() ); };
+
+        unless ( exists $meta->{has_lock} && $meta->{has_lock} ) {
             sql_execute( $sql, $self->{workspace}->workspace_id,
                 Socialtext::Role->new(name => 'workspace_admin')->role_id,
                 Socialtext::Permission->new(name => 'lock')->permission_id,
@@ -284,7 +288,9 @@ sub _populate_db_metadata {
     Socialtext::Timer->Pause('populate_db');
 }
 
-sub _permissions_file { $_[0]->{old_name} . '-permissions.yaml' }
+sub _permissions_file { return $_[0]->{old_name} . '-permissions.yaml' }
+
+sub _meta_file { return 'meta.yaml' }
 
 sub _import_users {
     my $self = shift;
