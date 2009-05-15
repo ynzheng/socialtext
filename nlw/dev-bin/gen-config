@@ -520,7 +520,6 @@ sub apache2_params {
         appliance_config_file => File::Spec->catfile( $dirs{etc}, 'appliance.conf' ),
         app_prefix      => $app_prefix,
         log_prefix      => 'nlw',
-        ports           => _frontend_ports(),
         nlw_server_aliases  => [],
         apache_short_name   => 'apache2',
         nlw_uri_is_ssl     => $opts{'force-ssl-login'},

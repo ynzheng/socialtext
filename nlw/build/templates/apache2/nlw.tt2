@@ -154,9 +154,9 @@ ErrorDocument 500 /static/html/500.html
 
 [%- IF config.is_dev %]
     [%#- Have development environment %]
-    <VirtualHost *:[% config.ports.http %]>
+    <VirtualHost *:[% config.frontend_ports.http %]>
         [%- IF config.ssl_only %]
-            [%- server_redirect( config.ports.https, 'https' ) -%]
+            [%- server_redirect( config.frontend_ports.https, 'https' ) -%]
         [%- ELSE %]
             [%- server_common( config.backend_ports.http, 0 ) -%]
         [%- END %]
@@ -165,22 +165,22 @@ ErrorDocument 500 /static/html/500.html
     [%#- Have custom_http_port; redirect standard HTTP requests to that port %]
     Listen [% config.custom_http_port %]
 
-    <VirtualHost *:[% config.ports.http %]>
+    <VirtualHost *:[% config.frontend_ports.http %]>
         [%- server_redirect(config.custom_http_port, 'http') -%]
     </VirtualHost>
 
     <VirtualHost *:[% config.custom_http_port %]>
         [%- IF config.ssl_only %]
-            [%- server_redirect( config.ports.https, 'https' ) -%]
+            [%- server_redirect( config.frontend_ports.https, 'https' ) -%]
         [%- ELSE %]
             [%- server_common( config.backend_ports.http, 0 ) -%]
         [%- END %]
     </VirtualHost>
 [%- ELSE %]
     [%#- Have regular/standard configuration; nothing fancy %]
-    <VirtualHost *:[% config.ports.http %]>
+    <VirtualHost *:[% config.frontend_ports.http %]>
         [%- IF config.ssl_only %]
-            [%- server_redirect( config.ports.https, 'https' ) -%]
+            [%- server_redirect( config.frontend_ports.https, 'https' ) -%]
         [%- ELSE %]
             [%- server_common( config.backend_ports.http, 0 ) -%]
         [%- END %]
@@ -189,7 +189,7 @@ ErrorDocument 500 /static/html/500.html
 
 [%- IF config.ssl_only OR config.use_ssl %]
     [%#- Have SSL enabled server too %]
-    <VirtualHost *:[% config.ports.https %]>
+    <VirtualHost *:[% config.frontend_ports.https %]>
         [%#- Common server setup, pointing to backend HTTPS port %]
         [% server_common( config.backend_ports.https, 1 ) %]
         SSLEngine on

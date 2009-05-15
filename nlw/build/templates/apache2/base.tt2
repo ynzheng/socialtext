@@ -47,10 +47,10 @@ LoadModule dir_module           [% config.module_dir %]/mod_dir.so
     SSLMutex  default 
 </IfModule>
 
-Listen [% config.ports.http %]
-Listen [% config.ports.https %]
+Listen [% config.frontend_ports.http %]
+Listen [% config.frontend_ports.https %]
 
-NameVirtualHost *:[% config.ports.http %]
+NameVirtualHost *:[% config.frontend_ports.http %]
 
 Include [% config.apache2_etc_dir %]/auto-generated.d/*.conf
 
