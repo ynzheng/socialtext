@@ -89,6 +89,9 @@ sub DELETE {
             my $attachment = eval { $self->_get_attachment(); };
             return $self->_invalid_attachment( $rest, $@ ) if $@;
 
+            return $self->not_authorized
+                unless $self->hub->checker->can_modify_locked($attachment->page);
+
             if ($attachment->temporary) {
                 $attachment->purge($attachment->page);
             }
