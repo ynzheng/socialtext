@@ -9,7 +9,7 @@ our $VERSION = '0.02';
 use Readonly;
 use Socialtext::Validate qw( validate USER_TYPE PERMISSION_TYPE WORKSPACE_TYPE );
 use Socialtext::Timer;
-use Socialtext::SQL qw/sql_singlevalue/;
+use Socialtext::SQL qw/sql_singlevalue sql_execute/;
 use Socialtext::Cache;
 use Socialtext::User::Default::Users qw(:system-user);
 
@@ -181,32 +181,39 @@ SQL
 }
 
 # Is a plugin enabled for a particular account
-sub plugin_enabled_for_account {
+sub plugins_enabled_for_account {
     my $self = shift;
     my %p = @_;
     my $account = delete $p{account};
-    my $plugin_name = delete $p{plugin_name};
-
     my $account_id = ref($account) ? $account->account_id : $account;
 
     my $cache = Socialtext::Cache->cache('authz_plugin');
-    my $cache_key = "acct:$account_id\0$plugin_name";
-    my $enabled = $cache->get($cache_key);
-    return $enabled if defined $enabled;
+    my $cache_key = "acct:$account_id\0plugins";
+    my $plugins = $cache->get($cache_key);
+    return @$plugins if defined $plugins;
 
-    my $sql = <<SQL;
-        SELECT 1 
+    Socialtext::Timer->Continue('plugins_enabled_for_account');
+    my $sth = sql_execute('
+        SELECT plugin
         FROM account_plugin
-        WHERE account_id = ? AND plugin = ? 
-        LIMIT 1
-SQL
+        WHERE account_id = ?
+    ', $account_id);
+    $plugins = [ map { $_->[0] } @{$sth->fetchall_arrayref} ];
+    Socialtext::Timer->Pause('plugins_enabled_for_account');
 
-    Socialtext::Timer->Continue('plugin_enabled_for_account');
-    $enabled = sql_singlevalue($sql, $account_id, $plugin_name) ? 1 : 0;
-    Socialtext::Timer->Pause('plugin_enabled_for_account');
+    $cache->set($cache_key, $plugins);
+    return @$plugins;
+}
 
-    $cache->set($cache_key, $enabled);
-    return ($enabled ? 1 : 0);
+sub plugin_enabled_for_account {
+    my $self = shift;
+    my %p = @_;
+    my $plugin_name = delete $p{plugin_name};
+    my @plugins = $self->plugins_enabled_for_account(%p);
+    for my $plugin (@plugins) {
+        return 1 if $plugin_name eq $plugin;
+    }
+    return 0;
 }
 
 sub plugin_enabled_for_workspace {

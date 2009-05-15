@@ -217,13 +217,8 @@ sub is_plugin_enabled {
 
 sub plugins_enabled {
     my $self = shift;
-    my $sql  = q{
-        SELECT plugin
-          FROM account_plugin
-         WHERE account_id = ?
-    };
-    my $result = sql_execute( $sql, $self->account_id );
-    return map{ $_->[0] } @{ $result->fetchall_arrayref };
+    my $authz = Socialtext::Authz->new();
+    return $authz->plugins_enabled_for_account(account => $self);
 }
 
 sub enable_plugin {

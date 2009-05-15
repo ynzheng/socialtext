@@ -323,6 +323,7 @@ sub _get_user_info {
                 map {+{
                     account_id => $_->account_id,
                     name => $_->name,
+                    plugins => [$_->plugins_enabled],
                 }} $user->accounts
             ],
         },
