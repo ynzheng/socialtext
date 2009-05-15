@@ -17,9 +17,13 @@ my $permission_id = sql_singlevalue(qq{
 });
 
 my $sth = sql_execute(qq{
-SELECT workspace_id
-  FROM "Workspace"
-});
+SELECT w.workspace_id
+FROM "Workspace" w
+WHERE
+  w.workspace_id NOT IN (
+   SELECT workspace_id FROM "WorkspaceRolePermission" WHERE
+  role_id = ? AND permission_id = ?)
+}, $role_id, $permission_id);
 
 for my $ws ( @{ $sth->fetchall_arrayref } ) {
     sql_execute(qq{

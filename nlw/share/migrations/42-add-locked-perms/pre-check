@@ -5,8 +5,12 @@ use warnings;
 use Socialtext::Migration::Utils qw/ensure_socialtext_schema/;
 use Socialtext::SQL qw/sql_singlevalue/;
 
-# This will change when we merge back to trunk!
-ensure_socialtext_schema( 57 );
+ensure_socialtext_shema( 59 );
+
+my $ws_count = sql_singlevalue(qq{
+ SELECT COUNT(*)
+   FROM "Workspace"
+});
 
 my $permission_id = sql_singlevalue(qq{
  SELECT permission_id
@@ -28,7 +32,7 @@ my $locked_count = sql_singlevalue(qq{
 }, $role_id, $permission_id);
 
 
-if ( $locked_count > 0 ) {
+if ( $locked_count == $ws_count ) {
     print "Workspace admins already have page locking permissions, skipping.\n";
     exit 1;
 }
