@@ -14,6 +14,7 @@ use Socialtext::l10n qw(loc);
 use Socialtext::Log qw( st_log );
 use Socialtext::Timer;
 use Socialtext::Pageset;
+use Socialtext::String;
 
 sub class_id { 'search' }
 const class_title => 'Search';
@@ -126,7 +127,12 @@ sub search {
         )
     );
 
-    my $uri_escaped_search_term = $self->uri_escape($search_term);
+    my %template_args = (
+        scope => $scope,
+        search_term  => $self->uri_escape($search_term),
+        html_escaped_search_term =>
+            Socialtext::String::html_escape($search_term),
+    );
 
     st_log()
         ->info( "SEARCH,WORKSPACE,term:'$search_term',"
@@ -136,19 +142,16 @@ sub search {
     if ($self->result_set->{too_many}) {
         $self->screen_template('view/listview');
         return $self->render_screen(
-            scope => $scope,
+            %template_args,
             too_many => $self->result_set->{hits},
             error_message => 'Too many results!',
-            search_term => $uri_escaped_search_term,
         );
     }
 
-    $self->display_results(
-        $self->sortdir,
+    $self->display_results($self->sortdir,
+        %template_args,
         sortby => $self->sortby,
         allow_relevance => 1,
-        search_term => $uri_escaped_search_term,
-        scope => $scope,
         show_workspace =>
             ( ($scope ne '_') || ($search_term =~ /\bworkspaces:\S+/) || 0 ),
         feeds => $self->_feeds(
@@ -157,7 +160,7 @@ sub search {
             scope => $scope,
         ),
         title => loc('Search Results'),
-        unplug_uri => "?action=unplug;search_term=$uri_escaped_search_term",
+        unplug_uri => "?action=unplug;search_term=$template_args{search_term}",
         unplug_phrase =>
             loc('Click this button to save the pages from this search to your computer for offline use'),
         Socialtext::Pageset->new(

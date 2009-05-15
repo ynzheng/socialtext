@@ -19,6 +19,6 @@
 
   [% END %]
 
-  <input id="st-[%sid%]-term" name="search_term" class="searchText" type="text" [% IF search_term %]value="[% search_term %]"[% END %] />
+  <input id="st-[%sid%]-term" name="search_term" class="searchText" type="text" [% IF html_escaped_search_term %]value="[% html_escaped_search_term %]"[% END %] />
   <input id="st-[%sid%]-submit" class="searchButton"  type="submit" value="" />
 </form>
