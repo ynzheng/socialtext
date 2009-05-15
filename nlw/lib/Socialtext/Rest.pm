@@ -351,6 +351,18 @@ sub full_url {
     return $uri;
 }
 
+sub GET_yaml {
+    require YAML;
+    require Socialtext::JSON;
+    my $self = shift;
+    my $json = $self->GET_json(@_);
+    $self->rest->header(
+        $self->rest->header,
+        -type   => 'text/plain',
+    );
+    return YAML::Dump(Socialtext::JSON::decode_json($json))
+}
+
 # Automatic getters for query parameters.
 sub AUTOLOAD {
     my $self = shift;

@@ -11,6 +11,7 @@
             '*/*':           &default [Socialtext::Rest::Jobs, GET_html]
             'text/html':              *default
             'application/json':       [Socialtext::Rest::Jobs, GET_json]
+            'text/x-yaml':            [Socialtext::Rest::Jobs, GET_yaml]
         '*':                    [Socialtext::Rest::Jobs, bad_method]
 -
     '/data/events':
@@ -18,6 +19,7 @@
             '*/*':           &default [Socialtext::Rest::Events, GET_html]
             'text/html':              *default
             'application/json':       [Socialtext::Rest::Events, GET_json]
+            'text/x-yaml':            [Socialtext::Rest::Events, GET_yaml]
             'application/atom+xml':   [Socialtext::Rest::Events, GET_atom]
             'text/plain':             [Socialtext::Rest::Events, GET_text]
 [%- IF config.is_dev_install %]
@@ -32,6 +34,7 @@
             '*/*':           &default [Socialtext::Rest::Events::Activities, GET_html]
             'text/html':              *default
             'application/json':       [Socialtext::Rest::Events::Activities, GET_json]
+            'text/x-yaml':            [Socialtext::Rest::Events::Activities, GET_yaml]
             'application/atom+xml':   [Socialtext::Rest::Events::Activities, GET_atom]
             'text/plain':             [Socialtext::Rest::Events::Activities, GET_text]
         '*':                    [Socialtext::Rest::Events::Activities, bad_method]
@@ -41,6 +44,7 @@
             '*/*':           &default [Socialtext::Rest::Events::Conversations, GET_html]
             'text/html':              *default
             'application/json':       [Socialtext::Rest::Events::Conversations, GET_json]
+            'text/x-yaml':            [Socialtext::Rest::Events::Conversations, GET_yaml]
             'application/atom+xml':   [Socialtext::Rest::Events::Conversations, GET_atom]
             'text/plain':             [Socialtext::Rest::Events::Conversations, GET_text]
         '*':                    [Socialtext::Rest::Events::Conversations, bad_method]
@@ -50,6 +54,7 @@
             '*/*':           &default [Socialtext::Rest::Events::Followed, GET_html]
             'text/html':              *default
             'application/json':       [Socialtext::Rest::Events::Followed, GET_json]
+            'text/x-yaml':            [Socialtext::Rest::Events::Followed, GET_yaml]
             'application/atom+xml':   [Socialtext::Rest::Events::Followed, GET_atom]
             'text/plain':             [Socialtext::Rest::Events::Followed, GET_text]
         '*':                    [Socialtext::Rest::Events::Followed, bad_method]
@@ -59,6 +64,7 @@
             '*/*':           &default [Socialtext::Rest::Events::Awesome, GET_html]
             'text/html':              *default
             'application/json':       [Socialtext::Rest::Events::Awesome, GET_json]
+            'text/x-yaml':            [Socialtext::Rest::Events::Awesome, GET_yaml]
             'application/atom+xml':   [Socialtext::Rest::Events::Awesome, GET_atom]
             'text/plain':             [Socialtext::Rest::Events::Awesome, GET_text]
         '*':                    [Socialtext::Rest::Events::Awesome, bad_method]
@@ -68,6 +74,7 @@
             '*/*':           &default [Socialtext::Rest::Echo, GET_html]
             'text/html':              *default
             'application/json':       [Socialtext::Rest::Echo, GET_json]
+            'text/x-yaml':            [Socialtext::Rest::Echo, GET_yaml]
             'text/xml':               [Socialtext::Rest::Echo, GET_xml]
             'text/x.socialtext-wiki': [Socialtext::Rest::Echo, GET_wikitext]
         'POST':
@@ -89,6 +96,7 @@
             '*/*':           &default [Socialtext::Rest::Events::Page, GET_html]
             'text/html':              *default
             'application/json':       [Socialtext::Rest::Events::Page, GET_json]
+            'text/x-yaml':            [Socialtext::Rest::Events::Page, GET_yaml]
             'application/atom+xml':   [Socialtext::Rest::Events::Page, GET_atom]
             'text/plain':             [Socialtext::Rest::Events::Page, GET_text]
         '*':                    [Socialtext::Rest::Events::Page, bad_method]
@@ -97,6 +105,7 @@
         'GET':   
             '*/*':     &default [Socialtext::Rest::PageTag, GET_html]
             'application/json': [Socialtext::Rest::PageTag, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::PageTag, GET_yaml]
             'text/html':        *default
             'text/plain':       [Socialtext::Rest::PageTag, GET_text]
         'PUT':    [Socialtext::Rest::PageTag, PUT]
@@ -109,6 +118,7 @@
             'text/html':        *default
             'text/plain':       [Socialtext::Rest::PageTags, GET_text]
             'application/json': [Socialtext::Rest::PageTags, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::PageTags, GET_yaml]
         'POST':
             '*/*': &default [Socialtext::Rest::PageTags, POST_text]
             'text/plain':   *default
@@ -118,6 +128,7 @@
         'GET':   
             '*/*':     &default [Socialtext::Rest::PageTagHistory, GET_html]
             'application/json': [Socialtext::Rest::PageTagHistory, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::PageTagHistory, GET_yaml]
             'text/html':        *default
             'text/plain':       [Socialtext::Rest::PageTagHistory, GET_text]
         '*':      [Socialtext::Rest::PageTag, bad_method]
@@ -128,6 +139,7 @@
             'text/html':        *default
             'text/plain':       [Socialtext::Rest::Sections, GET_text]
             'application/json': [Socialtext::Rest::Sections, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::Sections, GET_yaml]
         '*': [Socialtext::Rest::Sections, bad_method]
 -
     '/data/workspaces/:ws/pages/:pname/revisions/:revision_id':
@@ -136,12 +148,14 @@
             'text/html':              *default
             'text/x.socialtext-wiki': [Socialtext::Rest::PageRevision, GET_wikitext]
             'application/json':       [Socialtext::Rest::PageRevision, GET_json]
+            'text/x-yaml':            [Socialtext::Rest::PageRevision, GET_yaml]
         '*':      [Socialtext::Rest::PageRevision, bad_method]
 -
     '/data/workspaces/:ws/pages/:pname/revisions':
         'GET':
             '*/*':     &default [Socialtext::Rest::PageRevisions, GET_html]
             'application/json': [Socialtext::Rest::PageRevisions, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::PageRevisions, GET_yaml]
             'text/html':        *default
             'text/plain':       [Socialtext::Rest::PageRevisions, GET_text]
         '*': [Socialtext::Rest::PageRevisions, bad_method]
@@ -150,6 +164,7 @@
         'GET':
             '*/*':     &default [Socialtext::Rest::Backlinks, GET_html]
             'application/json': [Socialtext::Rest::Backlinks, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::Backlinks, GET_yaml]
             'text/html':        *default
             'text/plain':       [Socialtext::Rest::Backlinks, GET_text]
         '*': [Socialtext::Rest::Backlinks, bad_method]
@@ -158,6 +173,7 @@
         'GET':
             '*/*':     &default [Socialtext::Rest::Frontlinks, GET_html]
             'application/json': [Socialtext::Rest::Frontlinks, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::Frontlinks, GET_yaml]
             'text/html':        *default
             'text/plain':       [Socialtext::Rest::Frontlinks, GET_text]
         '*': [Socialtext::Rest::Frontlinks, bad_method]
@@ -173,6 +189,7 @@
             '*/*':     &default [Socialtext::Rest::PageAttachments, GET_html]
             'text/html':        *default
             'application/json': [Socialtext::Rest::PageAttachments, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::PageAttachments, GET_yaml]
             'text/plain':       [Socialtext::Rest::PageAttachments, GET_text]
         'POST':
             '*/*': [Socialtext::Rest::PageAttachments, POST]
@@ -184,6 +201,7 @@
             'text/html':              *default
             'text/x.socialtext-wiki': [Socialtext::Rest::Page, GET_wikitext]
             'application/json':       [Socialtext::Rest::Page, GET_json]
+            'text/x-yaml':            [Socialtext::Rest::Page, GET_yaml]
         'DELETE': [Socialtext::Rest::Page, DELETE]
         'PUT':
             'text/x.socialtext-wiki': [Socialtext::Rest::Page, PUT_wikitext]
@@ -201,6 +219,7 @@
         'GET':
             '*/*':     &default [Socialtext::Rest::BreadCrumbs, GET_html]
             'application/json': [Socialtext::Rest::BreadCrumbs, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::BreadCrumbs, GET_yaml]
             'text/html':        *default
             'text/plain':       [Socialtext::Rest::BreadCrumbs, GET_text]
         '*':      [Socialtext::Rest::BreadCrumbs, bad_method]
@@ -209,6 +228,7 @@
         'GET':
             '*/*':     &default [Socialtext::Rest::Pages, GET_html]
             'application/json': [Socialtext::Rest::Pages, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::Pages, GET_yaml]
             'text/html':        *default
             'text/plain':       [Socialtext::Rest::Pages, GET_text]
         'POST':
@@ -220,6 +240,7 @@
         'GET':
             '*/*':     &default [Socialtext::Rest::TaggedPages, GET_html]
             'application/json': [Socialtext::Rest::TaggedPages, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::TaggedPages, GET_yaml]
             'text/html':        *default
             'text/plain':       [Socialtext::Rest::TaggedPages, GET_text]
         '*': [Socialtext::Rest::TaggedPages, bad_method]
@@ -228,6 +249,7 @@
         'GET':   
             '*/*':     &default [Socialtext::Rest::WorkspaceTag, GET_html]
             'application/json': [Socialtext::Rest::WorkspaceTag, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::WorkspaceTag, GET_yaml]
             'text/html':        *default
             'text/plain':       [Socialtext::Rest::WorkspaceTag, GET_text]
         'PUT':    [Socialtext::Rest::WorkspaceTag, PUT]
@@ -240,6 +262,7 @@
             'text/html':        *default
             'text/plain':       [Socialtext::Rest::WorkspaceTags, GET_text]
             'application/json': [Socialtext::Rest::WorkspaceTags, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::WorkspaceTags, GET_yaml]
         'POST':
             '*/*': &default [Socialtext::Rest::WorkspaceTags, POST_text]
             'text/plain':   *default
@@ -262,6 +285,7 @@
             '*/*':     &default [Socialtext::Rest::WorkspaceAttachments, GET_html]
             'text/html':        *default
             'application/json': [Socialtext::Rest::WorkspaceAttachments, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::WorkspaceAttachments, GET_yaml]
             'text/plain':       [Socialtext::Rest::WorkspaceAttachments, GET_text]
         '*': [Socialtext::Rest::WorkspaceAttachments, bad_method]
 -
@@ -274,6 +298,7 @@
             '*/*':     &default [Socialtext::Rest::WorkspaceUsers, GET_html]
             'text/html':        *default
             'application/json': [Socialtext::Rest::WorkspaceUsers, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::WorkspaceUsers, GET_yaml]
         'POST':
             '*/*':              [Socialtext::Rest::WorkspaceUsers, bad_type]
             'application/json': [Socialtext::Rest::WorkspaceUsers, POST]
@@ -283,6 +308,7 @@
         'GET':   
             '*/*':     &default [Socialtext::Rest::Workspace, GET_html]
             'application/json': [Socialtext::Rest::Workspace, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::Workspace, GET_yaml]
             'text/html':        *default
         'PUT':    
             '*/*':     &default [Socialtext::Rest::Workspace, bad_type]
@@ -294,6 +320,7 @@
         'GET':
             '*/*':     &default [Socialtext::Rest::Workspaces, GET_html]
             'application/json': [Socialtext::Rest::Workspaces, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::Workspaces, GET_yaml]
             'text/html': *default
             'text/plain':       [Socialtext::Rest::Workspaces, GET_text]
         'POST':
@@ -305,6 +332,7 @@
         'GET':
             '*/*':     &default [Socialtext::Rest::User, GET_html]
             'application/json': [Socialtext::Rest::User, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::User, GET_yaml]
             'text/html':        *default
         '*':                    [Socialtext::Rest::User, bad_method]
 -
@@ -316,6 +344,7 @@
             '*/*':     &default [Socialtext::Rest::Users, GET_html]
             'text/html':        *default
             'application/json': [Socialtext::Rest::Users, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::Users, GET_yaml]
         '*':                    [Socialtext::Rest::Users, bad_method]
 -
     '/data/accounts':
@@ -332,6 +361,7 @@
             '*/*':              [Socialtext::Rest::AccountUsers, bad_type]
             'text/html':        [Socialtext::Rest::AccountUsers, GET_html]
             'application/json': [Socialtext::Rest::AccountUsers, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::AccountUsers, GET_yaml]
         '*':                    [Socialtext::Rest::AccountUsers, bad_method]
 -
     '/data/accounts/:acct/logo':
@@ -349,6 +379,7 @@
             '*/*':     &default [Socialtext::Rest::ReportAdapter, GET_html]
             'text/html':        *default
             'application/json': [Socialtext::Rest::ReportAdapter, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::ReportAdapter, GET_yaml]
         '*':                    [Socialtext::Rest::ReportAdapter, bad_method]
 -
     '/data':
@@ -358,6 +389,7 @@
         'GET':  
             '*/*': &default     [Socialtext::Rest::Settings::DefaultWorkspace, bad_type]
             'application/json': [Socialtext::Rest::Settings::DefaultWorkspace, GET_json]
+            'text/x-yaml':      [Socialtext::Rest::Settings::DefaultWorkspace, GET_yaml]
             'text/html':        [Socialtext::Rest::Settings::DefaultWorkspace, GET_html]
         '*':                    [Socialtext::Rest::Settings::DefaultWorkspace, bad_method]
 -
