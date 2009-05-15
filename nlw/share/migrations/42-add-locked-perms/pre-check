@@ -5,7 +5,7 @@ use warnings;
 use Socialtext::Migration::Utils qw/ensure_socialtext_schema/;
 use Socialtext::SQL qw/sql_singlevalue/;
 
-ensure_socialtext_shema( 59 );
+ensure_socialtext_schema( 59 );
 
 my $ws_count = sql_singlevalue(qq{
  SELECT COUNT(*)
