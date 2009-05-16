@@ -37,12 +37,12 @@ sub msg_format_user {
         return loc("Unknown Person");
     }
 
-    unless ($viewer && $user->profile_is_visible_to($viewer)) {
-        return $user->guess_real_name;
-    }
-    else {
+    if ($viewer && $user->profile_is_visible_to($viewer)) {
         return '<a href="'.$baseurl.'/?profile/' . $user->user_id 
             . '">' . $user->guess_real_name . '</a>';
+    }
+    else {
+        return $user->guess_real_name;
     }
 }
 

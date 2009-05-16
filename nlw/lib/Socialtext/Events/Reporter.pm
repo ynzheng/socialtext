@@ -151,7 +151,11 @@ sub _extract_signal {
     my $row = shift;
     return unless $row->{event_class} eq 'signal';
     my $parser = Socialtext::WikiText::Parser::Messages->new(
-       receiver => Socialtext::WikiText::Emitter::Messages::HTML->new,
+       receiver => Socialtext::WikiText::Emitter::Messages::HTML->new(
+           callbacks => {
+               viewer => $self->viewer,
+           },
+       )
     );
     $row->{context}{body} = $parser->parse($row->{context}{body});
 }
