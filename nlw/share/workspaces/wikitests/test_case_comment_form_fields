@@ -2,6 +2,8 @@
 
 | *Comment* | TODO: convert this test to S3 when comment form fields are reimplemented |
 
+| *Comment* | Test Case: Comment Form Fields COMPLETED |  |
+
 ^ END
 
 | st-admin | set-comment-form-custom-fields --workspace %%workspace%% field1 field2 |  |
