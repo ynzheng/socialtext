@@ -91,7 +91,7 @@
 | text-like | workspaces |  |
 | st-name-widget | 5 | workspaces |
 | st-select-widget-frame | workspaces |  |
-| text-like | You do not belong |  |
+| text-like | This person belongs to no workspaces |  |
 | select-frame | relative=parent |  |
 
 | *Comment* | Test Case: Verify Profile COMPLETED |  |

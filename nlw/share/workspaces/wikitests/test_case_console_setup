@@ -60,7 +60,7 @@
 
 | *Comment* | Test Case: Console Setup. Verify allow invites |  |
 | st-login |  |  |
-| text_unlike | st-wiki-subnav-left | Invite people to your network |
+| text_unlike | st-wiki-subnav-left | qr/Invite/i |
 | text_like | st-wiki-subnav-left | Workspaces |
 
 | *Comment* | Test Case: Console Setup. CANNOT FIND Support Contact |  |
@@ -88,7 +88,7 @@
 
 | *Comment* | Test Case: Console Setup. Verify reset allow invites |  |
 | st-login |  |  |
-| text_like | st-wiki-subnav-left | Invite people to your network |
+| text_like | st-wiki-subnav-left | qr/Invite/i |
 | text_like | st-wiki-subnav-left | Workspaces |
 
 | *Comment* | Test Case: Console Setup. verify CANNOT FIND Support Contact |  |
