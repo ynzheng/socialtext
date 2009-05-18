@@ -95,7 +95,7 @@ devenv_https_uri_has_port_number: {
 
 ###############################################################################
 # TEST: ENV var can be used to over-ride ":<port>" on HTTP URI
-env_var_override_port_number: {
+env_var_override_http_port_number: {
     local $ENV{NLW_FRONTEND_PORT} = 1234;
 
     my $uri  = Socialtext::URI::uri();
@@ -106,7 +106,7 @@ env_var_override_port_number: {
 
 ###############################################################################
 # TEST: Custom config can be used to over-ride ":<port>" on HTTP URI
-config_override_port_number: {
+config_override_http_port_number: {
     Socialtext::AppConfig->set(custom_http_port => 9876);
 
     my $uri  = Socialtext::URI::uri();
