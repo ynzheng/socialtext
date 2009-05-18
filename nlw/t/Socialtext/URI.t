@@ -6,7 +6,7 @@ use warnings;
 use Socialtext::Cache;
 use Socialtext::AppConfig;
 use Socialtext::URI;
-use Test::Socialtext tests => 10;
+use Test::Socialtext tests => 11;
 
 # Create a config file to test with/against
 my $config_file = Test::Socialtext->setup_test_appconfig_dir();
@@ -126,4 +126,16 @@ config_override_https_port_number: {
     my $port = Socialtext::AppConfig->ssl_port();
     my $expected = "https://$hostname\:$port/";
     is $uri, $expected, "config can over-ride port number on HTTPS URI";
+}
+
+###############################################################################
+# TEST: URI generation when "ssl_only" is enabled
+ssl_only_forces_https_urls: {
+    Socialtext::AppConfig->set(ssl_only => 1);
+    Socialtext::AppConfig->set(ssl_port => 12345);
+
+    my $uri  = Socialtext::URI::uri();
+    my $port = Socialtext::AppConfig->ssl_port();
+    my $expected = "https://$hostname\:$port/";
+    is $uri, $expected, "enabling 'ssl_only' forces HTTPS URI generation";
 }

@@ -46,9 +46,19 @@ sub _scheme_host_port {
 
 sub _scheme {
     my $scheme = $default_scheme;
+
+    # In the mod_perl back-end, we use an ENV var to see whether or not we're
+    # connected via HTTP or HTTPS, and generate an appropriate URI.
     if (_running_under_mod_perl()) {
         $scheme = $ENV{NLWHTTPSRedirect} ? 'https' : 'http';
     }
+
+    # If SSL-only is enabled, *only* generate HTTPS URIs (regardless of how
+    # we're connected to the system).
+    if (Socialtext::AppConfig->ssl_only) {
+        $scheme = 'https';
+    }
+
     return ( scheme => $scheme );
 }
 
