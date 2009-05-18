@@ -53,8 +53,7 @@ All_ids_locked: {
     my @locked = ();
     foreach (qw(Conversations meeting_agendas)) {
         my $page = $hub->pages->new_from_name($_);
-        $page->lock;
-        $page->store(user => $hub->current_user);
+        $page->update_lock_status( 1 );
     }
 
     my @ids = $hub->pages->all_ids_locked;
