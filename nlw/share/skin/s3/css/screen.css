@@ -973,20 +973,19 @@ div#contentColumns div#contentLeft h3 {
 	font-weight: normal;
 }
 
-div#contentColumns div#contentLeft h4 {
+body#dashBoard div#contentColumns div#contentLeft h4 {
 	font-size: 14px;
 	color: #0a94df;
 	line-height: 30px;
 	font-weight: normal;
 }
 
-
-div#contentColumns div#contentLeft div.widgetHeader h4 {
-color:#505156;
-float:left;
-font-size:14px;
-font-weight:normal;
-line-height:35px;
+body#dashBoard div#contentColumns div#contentLeft div.widgetHeader h4 {
+    color:#505156;
+    float:left;
+    font-size:14px;
+    font-weight:normal;
+    line-height:35px;
 }
 
 div#contentColumns div#contentLeft div.widgetContent div#myContent h4 {
@@ -1120,6 +1119,7 @@ div.widget {
 	float: right;
 }
 
+body#settingsPage div.widget,
 body#contentPage div.widget {
         background: url(../images/widgetTop.png) no-repeat top left;
 }
@@ -1129,7 +1129,6 @@ body#dashBoard div.widget.tan {
 	background:#fbf2e3 url(../images/widgetTanTop.png) no-repeat top left;
 }
 
-body#settingsPage div.widget,
 body#dashBoard div.widget.regular {
 	background: url(../images/dashWidgetTop.png) no-repeat top left;
 	margin-right: 0px;
@@ -1143,10 +1142,12 @@ body#settingsPage div#contentColumns div#contentLeft div.widget {
 	width: 100%; 
 }
 
-body#dashBoard div#contentColumns div#contentRight div.widget,body#settingsPage div#contentColumns div#contentRight div.widget {
+body#dashBoard div#contentColumns div#contentRight div.widget,
+body#settingsPage div#contentColumns div#contentRight div.widget {
 	width: 100%;
 }
 
+body#settingsPage div.widget div.widgetHeader,
 body#contentPage div.widget div.widgetHeader {
 	height: 25px;
 	background: url(../images/widgetHeader.png) no-repeat top right;
@@ -1158,8 +1159,7 @@ body#dashBoard div.widget.tan div.widgetHeader {
 	background: url(../images/widgetTanHeader.png) no-repeat top right;
 }
 
-body#dashBoard div.widget.regular div.widgetHeader,
-body#settingsPage div.widget div.widgetHeader {
+body#dashBoard div.widget.regular div.widgetHeader {
 	height: 35px;
 	background: url(../images/dashWidgetHeader.png) no-repeat top right;
 }
@@ -1171,22 +1171,17 @@ div.widget div.widgetHeader h4 {
 	margin-left: 18px;
 }
 
+body#settingsPage  div.widget div.widgetHeader h4 {
+        margin-left: 10px;
+	line-height: 25px;
+}
 
-body#dashBoard div.widget div.widgetHeader h4,body#settingsPage  div.widget div.widgetHeader h4 {
+body#dashBoard div.widget div.widgetHeader h4 {
 	line-height: 35px;
 	color: #505156;
 	font-weight: normal;
 	font-size: 14px;
 	float: left;
-}
-
-body#settingsPage  div.widget div.widgetHeader h4 {
-	line-height: 25px;
-	}
-
-
-body#settingsPage div.widget div.widgetHeader h4 {
-       margin-top: 6px;
 }
 
 body#dashBoard div.widget.tan div.widgetHeader h4 {
@@ -1197,7 +1192,8 @@ body#dashBoard div.widget.tan div.widgetHeader h4 {
 } 
 
 
-body#dashBoard div.widget div.widgetHeader h4 img,body#settingsPage div.widget div.widgetHeader h4 img {
+body#dashBoard div.widget div.widgetHeader h4 img,
+body#settingsPage div.widget div.widgetHeader h4 img {
 	vertical-align: middle;
 	margin-right: 10px;
 }
@@ -1238,9 +1234,19 @@ div.widgetContent ul.dots li {
 	margin-left: 18px;
 }
 
-body#dashBoard div.widget div.widgetContent,body#settingsPage div.widget div.widgetContent  {
+body#dashBoard div.widget div.widgetContent {
 	border-left: #c3c3c5 1px solid;
 	background: url(../images/dashWidgetRight.png) repeat-y top right;
+}
+
+body#settingsPage div.widget div.widgetContent h4 {
+    font-weight: bold;
+    margin: 0 10px;
+    color: #333;
+}
+
+body#settingsPage div.widget div.widgetContent ul {
+        margin: 4px 9px 10px !important
 }
 
 div.widget div.widgetContent ul {
@@ -1252,18 +1258,9 @@ div.widget div.widgetContent ul li {
 	line-height: 18px;
 }
 
-
-body#settingsPage div.widget div.widgetContent h4 {
-	font-weight: bold;
-	margin:20px 0 -5px 18px;
-}
-
-
 body#settingsPage div.widget div.widgetContent ul {
 	margin: 10px 0 0 28px;
-
 }
-
 
 div.widgetContent ul.leftNavList li a {
 	color: #666;
