@@ -10,9 +10,9 @@
 
   <select id="st-[%sid%]-action" name="action" class="searchSelect">
     [% IF workspace_present %]
-    <option value="search" id="st-[%sid%]-this-ws" [% IF action == "search" && scope == '_' %]selected="selected" [% END %]>[% loc("Search this Workspace:") %]</option>
+    <option value="search" id="st-[%sid%]-this-ws" [% IF action == "search" && scope == '_' %]selected="selected" [% END %]>[% loc("Search This Workspace:") %]</option>
     [% END %]
-    <option value="search" id="st-[%sid%]-all-ws" class="scopeStar" [% IF action == "search" && scope == '*' %]selected="selected" [% END %]>[% loc("Search all Workspaces:") %]</option>
+    <option value="search" id="st-[%sid%]-all-ws" class="scopeStar" [% IF action == "search" && scope == '*' %]selected="selected" [% END %]>[% loc("Search My Workspaces:") %]</option>
     [% FILTER decorate('search_box') %][% END %]
   </select>
   <input type="hidden" value="_" name="scope" class="searchScope"/>
