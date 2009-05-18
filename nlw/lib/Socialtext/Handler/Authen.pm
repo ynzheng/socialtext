@@ -147,9 +147,13 @@ sub login {
     # we'll want to redirect them to an appropriate login page.
     my $login_uri = $self->{args}{lite} ? '/lite/login' : '/nlw/login.html';
 
+    my $validname = ( Socialtext::Authen->username_is_email()
+        ? 'email address'
+        : 'username'
+    );
     my $username = $self->{args}{username} || '';
     unless ($username) {
-        $self->session->add_error(loc("You must provide a valid email address."));
+        $self->session->add_error(loc('You must provide a valid [_1].', $validname));
         return $self->_redirect($login_uri);
     }
 
@@ -159,7 +163,7 @@ sub login {
     );
 
     unless ( $user_check ) {
-        $self->session->add_error( loc('"[_1]" is not a valid email address. Please use your email address to log in.', $username) );
+        $self->session->add_error( loc('"[_1]" is not a valid [_2]. Please use your [_2] to log in.', $username, $validname) );
         $r->log_error ($username . ' is not a valid email address');
         return $self->_redirect($login_uri);
     }
@@ -178,8 +182,8 @@ sub login {
     }
 
     unless ($self->{args}{password}) {
-        $self->session->add_error(loc("Wrong email address or password - please try again."));
-        $r->log_error('Wrong email address or password for ' . $username);
+        $self->session->add_error(loc('Wrong [_1] or password - please try again', $validname));
+        $r->log_error('Wrong ' . $validname .' or password for ' . $username);
         return $self->_redirect($login_uri);
     }
 
@@ -189,8 +193,8 @@ sub login {
     );
 
     unless ($check_password) {
-        $self->session->add_error(loc("Wrong email address or password - please try again."));
-        $r->log_error('Wrong email address or password for ' . $username);
+        $self->session->add_error(loc('Wrong [_1] or password - please try again', $validname));
+        $r->log_error('Wrong ' . $validname .' or password for ' . $username);
         return $self->_redirect($login_uri);
     }
 
@@ -226,7 +230,7 @@ sub forgot_password {
     my $username = $self->{args}{username} || '';
     my $user = Socialtext::User->new( username => $username );
     unless ( $user ) {
-        $self->session->add_error(loc("[_1] is not registered as a user. Try a different email address?", $username));
+        $self->session->add_error(loc("[_1] is not registered as a user. Try a different entry?", $username));
         return $self->_redirect('/nlw/forgot_password.html');
     }
     elsif ($user->is_deactivated) {
