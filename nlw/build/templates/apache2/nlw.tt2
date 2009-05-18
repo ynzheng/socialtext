@@ -143,7 +143,7 @@
     RewriteEngine On
     RewriteCond %{REQUEST_METHOD} ^TRACE
     RewriteRule .* - [F,L]
-    RewriteRule ^(.*) [% redirect_scheme %]://%{SERVER_NAME}:[% redirect_port %]$1 [R,L,NE]
+    RewriteRule ^(.*) [% redirect_scheme %]://[% config.nlw_web_hostname %]:[% redirect_port %]$1 [R,L,NE]
 [% END %]
 
 [%# ######################################
