@@ -31,7 +31,7 @@ Export_includes_meta_info: {
    ok(-f $meta_file, 'meta.yaml file exists');
 
    my $yaml = YAML::LoadFile( $meta_file );
-   is $yaml->{version}, '2', 'version is correct';
+   is $yaml->{has_lock}, 1, 'has locks is in the yaml file.';
 }
 
 Export_includes_logo_and_info: {
