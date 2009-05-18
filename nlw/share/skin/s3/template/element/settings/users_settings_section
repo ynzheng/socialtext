@@ -55,7 +55,7 @@
   </dl>
   [% INCLUDE element/settings/stop %]
 [% ELSE %]
-  <div class="error-message">
+  <div class="error">
     <p>
       [% loc('Your user name and password cannot be changed using My Settings.') %]
       [% loc('Check with your [_1] administrator.', user.driver_name) %]

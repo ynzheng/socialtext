@@ -3448,6 +3448,7 @@ body#workspaceListPage div#controls div#controlsRight, .authentication div#contr
 }
 
 /* Errors and Messages */
+body#settingsPage .error,
 div#contentContainer div#errors-and-messages,
 div#st-system-status {
     margin: 0 20px 5px 0;
@@ -3456,6 +3457,10 @@ div#st-system-status {
     border: 1px solid #dedede;
     font-weight: bold;
     text-align: center;
+}
+
+body#settingsPage .error {
+    margin-top: 10px;
 }
 
 /* Extraneous settings pages with odd markup
