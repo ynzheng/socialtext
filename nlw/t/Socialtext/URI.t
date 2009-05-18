@@ -6,7 +6,7 @@ use warnings;
 use Socialtext::Cache;
 use Socialtext::AppConfig;
 use Socialtext::URI;
-use Test::Socialtext tests => 9;
+use Test::Socialtext tests => 10;
 
 # Create a config file to test with/against
 my $config_file = Test::Socialtext->setup_test_appconfig_dir();
@@ -113,4 +113,17 @@ config_override_http_port_number: {
     my $port = Socialtext::AppConfig->custom_http_port();
     my $expected = "http://$hostname\:$port/";
     is $uri, $expected, "config can over-ride port number on HTTP URI";
+}
+
+###############################################################################
+# TEST: Custom config can be used to over-ride ":<port>" on HTTPS URI
+config_override_https_port_number: {
+    local $ENV{MOD_PERL} = 1;           # pretend to be under Mod_Perl
+    local $ENV{NLWHTTPSRedirect} = 1;   # pretend to be HTTPS configured
+    Socialtext::AppConfig->set(ssl_port => 56789);
+
+    my $uri  = Socialtext::URI::uri();
+    my $port = Socialtext::AppConfig->ssl_port();
+    my $expected = "https://$hostname\:$port/";
+    is $uri, $expected, "config can over-ride port number on HTTPS URI";
 }
