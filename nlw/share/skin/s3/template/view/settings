@@ -22,8 +22,9 @@
           </div><!-- widgetHeader END -->
           <div class="widgetContent">
             <h4>[% loc('Users') %]</h4>
+            [% FILTER decorate('usersettings_ul') %]
             <ul class="leftNavList">
-            [% FILTER decorate('usersettings') %]
+              [% FILTER decorate('usersettings') %]
               <li><a href="?action=users_settings">[% loc('My Settings') %]</a></li>
               [% IF workspace_present %]
                 <li><a href="?action=users_listall">[% IF perm_admin %][% loc('Manage All Users') %][% ELSE %][% loc('List All Users') %][% END %]</a></li>
@@ -31,8 +32,9 @@
                   <li><a href="?action=users_invitation">[% loc('Invite New Users') %]</a></li>
                 [% END %]
               [% END %]
-            [% END %]
+              [% END %]
             </ul>
+            [% END %]
             <h4>[% loc('Workspaces') %]</h4>
             <ul class="leftNavList">
               <li><a href="?action=workspaces_listall">[% loc('My Workspaces') %]</a></li>
