@@ -2,16 +2,19 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::Socialtext tests => 27;
+use Test::Socialtext tests => 44;
 use Test::Exception;
 use Socialtext::SQL qw/:exec get_dbh/;
 
-fixtures 'db';
+fixtures('db', 'foobar');
 
 BEGIN {
     use_ok 'Socialtext::Jobs';
     use_ok 'Socialtext::JobCreator';
 }
+
+my $foobar = Socialtext::Workspace->new(name => 'foobar');
+ok $foobar, "loaded foobar workspace";
 
 my $jobs = Socialtext::Jobs->instance;
 lives_ok {
@@ -103,4 +106,90 @@ Process_a_failing_cmd_job: {
     is scalar(@failures), 1;
     is $failures[0], "rc=256";
     is $handle->exit_status, 256, 'correct exit status';
+}
+
+Workspace_does_not_exist: {
+    $jobs->clear_jobs();
+    local $Socialtext::Job::Test::Retries = 2;
+
+    my $handle = Socialtext::JobCreator->insert('Socialtext::Job::Test' => {
+        workspace_id => -2,
+        get_workspace => 1,
+    });
+
+    $jobs->can_do('Socialtext::Job::Test');
+    $jobs->work_once();
+
+    # check for permanent failure
+    my @failures = $handle->failure_log;
+    is scalar(@failures), 1, "one failure";
+    like $failures[0], qr/workspace id=-2 no longer exists/i, "builder failed";
+    is $handle->exit_status, 1, "has an exit_status";
+
+    my @jobs = Socialtext::Jobs->list_jobs(
+        funcname => 'Socialtext::Job::Test',
+    );
+    is scalar(@jobs), 0, 'perma-fail: no jobs left';
+}
+
+Page_does_not_exist: {
+    $jobs->clear_jobs();
+    local $Socialtext::Job::Test::Retries = 1;
+
+    my $handle = Socialtext::JobCreator->insert('Socialtext::Job::Test' => {
+        workspace_id => $foobar->workspace_id,
+        page_id => 'does_not_exist',
+        get_page => 1,
+    });
+
+    $jobs->can_do('Socialtext::Job::Test');
+    $jobs->work_once();
+    {
+        my @failures = $handle->failure_log;
+        is scalar(@failures), 1, "one failure";
+        like $failures[0], qr/Couldn't load page id=does_not_exist/i;
+        ok !$handle->exit_status, "job will be retried";
+
+        my @jobs = Socialtext::Jobs->list_jobs(
+            funcname => 'Socialtext::Job::Test',
+        );
+        is scalar(@jobs), 1, "not a perma-fail yet";
+    }
+
+    $jobs->can_do('Socialtext::Job::Test');
+    $jobs->work_once();
+    {
+        my @failures = $handle->failure_log;
+        is scalar(@failures), 2, "two failures";
+        like $failures[0], qr/Couldn't load page id=does_not_exist/i;
+        like $failures[1], qr/Couldn't load page id=does_not_exist/i;
+        ok $handle->exit_status, "job has failed permanently now";
+
+        my @jobs = Socialtext::Jobs->list_jobs(
+            funcname => 'Socialtext::Job::Test',
+        );
+        is scalar(@jobs), 0, 'perma-fail: no jobs left';
+    }
+}
+
+Indexer_fails_to_instantiate: {
+    $jobs->clear_jobs();
+
+    my $handle = Socialtext::JobCreator->insert('Socialtext::Job::Test' => {
+        workspace_id => $foobar->workspace_id,
+        get_workspace => 1,
+        page_id => 'foobar_wiki',
+        get_page => 1,
+        search_config => 'OMGBARF',
+        get_indexer => 1,
+    });
+
+    $jobs->can_do('Socialtext::Job::Test');
+    $jobs->work_once();
+    {
+        my @failures = $handle->failure_log;
+        is scalar(@failures), 1, "one failure";
+        like $failures[0], qr/Couldn't create an indexer:/, 'indexer fail';
+        ok $handle->exit_status, "job exited";
+    }
 }

@@ -185,20 +185,8 @@ sub do_work {
             Socialtext::Jobs->work_once($job);
             Socialtext::Timer->Pause('work_once');
 
-            my @failures = eval { $job->failure_log; };
-            push @failures, "failed to get failures: $@" if $@;
-            my $verb = (@failures) ? 'failed': 'finished';
-            st_timed_log(
-                'info', 'CEQ', "worker $verb " . $job->funcname,
-                Socialtext::User->SystemUser(),
-                {
-                    %{$job->arg},
-                    jobid => $job->jobid,
-                    failures => \@failures,
-                },
-                Socialtext::Timer->Report()
-            );
-            die "Job encountered failures" if @failures;
+            my $result = log_job($job);
+            die "Job encountered failures" unless ($result eq 'finished');
 
             next if $OnceMode;
             $jobs_remaining--;
@@ -218,6 +206,37 @@ sub do_work {
             sleep $sleep_for;
         }
     }
+}
+
+sub log_job {
+    my $job = shift;
+
+    my $verb = 'finished';
+    my @failures;
+    eval {
+        my $ex = $job->exit_status;
+        unless (defined $ex && $ex == 0) {
+            $verb = (defined $ex) ? 'failed' : 'tempfailed';
+            @failures = $job->failure_log;
+        }
+    };
+    if ($@) {
+        $verb = 'failed';
+        push @failures, "failed to get failures: $@" if $@;
+    }
+
+    st_timed_log(
+        'info', 'CEQ', "worker $verb " . $job->funcname,
+        Socialtext::User->SystemUser(),
+        {
+            %{$job->arg},
+            jobid => $job->jobid,
+            (@failures == 0) ? () : (failures => \@failures),
+        },
+        Socialtext::Timer->Report()
+    );
+
+    return $verb;
 }
 
 sub redirect_output {

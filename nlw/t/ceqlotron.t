@@ -2,7 +2,7 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::Socialtext tests => 35;
+use Test::Socialtext tests => 45;
 use Test::Exception;
 use Test::Socialtext::Ceqlotron;
 
@@ -133,7 +133,6 @@ Once_mode: {
     lives_ok {
         ceq_start('--foreground --once');
     } 'ran ceqlotron in foreground in once mode';
-
     my @lines = ceq_get_log_until(qr/master: exiting/);
 
     my @leftovers = Socialtext::Jobs->list_jobs(
@@ -145,7 +144,49 @@ Once_mode: {
     my @ended =   sort {$a<=>$b} map { /[^"]end-(\d)/   ? $1 : () } @lines;
     is scalar(@started), 10, '10 started';
     is scalar(@ended), 10, '10 ended';
+    is_deeply [grep /FAILED/, @lines], [], "no failed jobs";
+    is_deeply [grep /TEMPFAILED/, @lines], [], "no tempfailed jobs";
     is_deeply \@started, \@ended, "same jobs got started and ran to completion";
+}
+
+Fail_and_tempfail: {
+    Socialtext::Jobs->clear_jobs();
+    Socialtext::JobCreator->insert(
+        'Socialtext::Job::Test', {fail => 1}
+    );
+
+    {
+        local $ENV{TEST_JOB_RETRIES} = 1;
+        ceq_fast_forward();
+        lives_ok {
+            ceq_start('--foreground --once');
+        } 'ran ceqlotron in foreground in once mode';
+        my @lines = ceq_get_log_until(qr/master: exiting/);
+
+        my @leftovers = Socialtext::Jobs->list_jobs(
+            funcname => 'Socialtext::Job::Test'
+        );
+        is scalar(@leftovers), 1, "job will be retried";
+
+        my @tempfailed = grep /TEMPFAILED/, @lines;
+        is scalar(@tempfailed), 1, "one tempfail line";
+    }
+
+    {
+        ceq_fast_forward();
+        lives_ok {
+            ceq_start('--foreground --once');
+        } 'ran ceqlotron in foreground in once mode';
+        my @lines = ceq_get_log_until(qr/master: exiting/);
+
+        my @leftovers = Socialtext::Jobs->list_jobs(
+            funcname => 'Socialtext::Job::Test'
+        );
+        is scalar(@leftovers), 0, "job will not be retried";
+
+        my @tempfailed = grep /FAILED/, @lines;
+        is scalar(@tempfailed), 1, "one fail line";
+    }
 }
 
 exit;

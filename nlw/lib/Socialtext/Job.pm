@@ -61,12 +61,14 @@ sub _build_workspace {
 
     require Socialtext::Workspace;
 
-    if ($ws_id) {
-        return Socialtext::Workspace->new(workspace_id => $ws_id);
-    }
-    else {
-        return Socialtext::NoWorkspace->new();
-    }
+    return Socialtext::NoWorkspace->new() unless $ws_id;
+
+    my $ws = Socialtext::Workspace->new(workspace_id => $ws_id);
+    return $ws if $ws;
+
+    my $msg = "workspace id=$ws_id no longer exists";
+    $self->permanent_failure($msg);
+    die $msg;
 }
 
 sub _build_hub {
@@ -95,13 +97,15 @@ sub _build_indexer {
 
     my $indexer = eval {
         Socialtext::Search::AbstractFactory->GetFactory->create_indexer(
-            $self->workspace->name,
+            $ws->name,
             config_type => ($self->arg->{search_config} || 'live')
         );
     };
-    unless($indexer) {
-        $self->permanent_failure("Couldn't create a indexer");
-        die "Couldn't create an indexer: $@";
+    unless ($indexer) {
+        my $err = $@ || 'unknown error';
+        my $msg = "Couldn't create an indexer: $@";
+        $self->permanent_failure($msg);
+        die $msg;
     }
     return $indexer;
 }
@@ -109,7 +113,17 @@ sub _build_indexer {
 sub _build_page {
     my $self = shift;
     my $hub = $self->hub or return;
-    return $hub->pages->new_page($self->arg->{page_id});
+    my $page_id = $self->arg->{page_id};
+    return unless $page_id;
+
+    my $page = eval { $hub->pages->new_page($self->arg->{page_id}) };
+    return $page if ($page && $page->exists); # checks filesystem
+
+    my $msg = "Couldn't load page id=$page_id from the '" . 
+        $hub->current_workspace->name .
+        "' workspace: $@";
+    $self->failed($msg);
+    die $msg;
 }
 
 __PACKAGE__->meta->make_immutable;
