@@ -142,6 +142,8 @@ sub pluggable {
 
 sub check_permission { 1 }
 
+sub can_modify_locked { return 1; }
+
 sub backlinks {
     return $_[0]{backlinks} ||= Socialtext::BacklinksPlugin->new(hub => $_[0]);
 }
