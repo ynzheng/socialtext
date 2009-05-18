@@ -1286,7 +1286,7 @@ body#dashBoard div.widget.tan div.widgetBottom {
 	height: 10px;
 }
 
-body#dashBoard div.widget div.widgetBottom,body#settingsPage div.widget div.widgetBottom {
+body#dashBoard div.widget div.widgetBottom {
 	background: url(../images/dashWidgetBottom.png) no-repeat left bottom;
 }
 
@@ -1300,11 +1300,8 @@ body#dashBoard div.widget.tan div.widgetBottomRight {
 	background: url(../images/widgetTanBottomRight.png) no-repeat bottom right;
 }
 
-body#dashBoard div.widget div.widgetBottomRight,body#settingsPage div.widget div.widgetBottomRight {	
+body#dashBoard div.widget div.widgetBottomRight {
 	background: url(../images/dashWidgetBottomRight.png) no-repeat bottom right;
-}
-
-body#dashBoard div.widget div.widgetBottomRight,body#settingsPage div.widget div.widgetBottomRight {
        margin-top: -3px;
 }
 
