@@ -1,0 +1,112 @@
+| *Comment* | STARTING Test case: Signals Page |
+
+* Fixture: SocialWidgets
+
+| *Comment* | Test Case: Signals Page |  |
+
+| st-admin | update-page --workspace %%workspace%% --email %%email%% --page "Signals Page Edit Summary %%start_time%%" < %%wikitest_client_files%%wikitest_toc.txt | The "Signals Page Edit Summary %%start_time%%" page has been created. |
+
+| *Comment* | Test Case: Signals Page. Create one edit summary from signal |  |
+| open_ok | /%%workspace%%/index.cgi?Signals Page Edit Summary %%start_time%% |  |
+| wait_for_element_visible_ok | st-edit-button-link | 30000 |
+| click_ok | st-edit-button-link |  |
+| wait_for_element_visible_ok | link=Wiki Text | 30000 |
+| click_ok | link=Wiki Text |  |
+| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
+| wait_for_element_present_ok | st-edit-summary-text-area | 30000 |
+| click_ok | st-edit-summary-text-area |  |
+| type_ok | st-edit-summary-text-area | Signals Page Edit Summary %%start_time%% |
+| click_ok | st-edit-summary-signal-checkbox |  |
+| click_and_wait | st-save-button-link |  |
+
+| *Comment* | Test Case: Signals Page. Get to the Signals page |  |
+| open_ok | /?signals | 60000 |
+| wait_for_text_present_ok | Send a Signal | 30000 |
+
+| *Comment* | Test Case: Signals Page. Send four signals |  |
+| st-name-widget | 1 | signals_widget |
+| st-widget-title-like | signals_widget | Send a Signal |
+| st-select-widget-frame | signals_widget |  |
+
+| *Comment* | Test Case: Signals Page. Once Upon A Time |  |
+| selectFrame | signalFrame |  |
+| wait_for_element_visible_ok | //body | 10000 |
+| type_ok | //body | Once Upon A Time %%start_time%% |
+| select-frame | relative=parent |  |
+| wait_for_element_visible_ok | post | 10000 |
+| click_ok | post |  |
+
+| *Comment* | Test Case: Signals Page. I Remember Long Ago |  |
+| selectFrame | signalFrame |  |
+| wait_for_element_visible_ok | //body | 10000 |
+| type_ok | //body | I Remember Long Ago %%start_time%% |
+| select-frame | relative=parent |  |
+| wait_for_element_visible_ok | post | 10000 |
+| click_ok | post |  |
+
+| *Comment* | Test Case: Signals Page. Way Back In History |  |
+| selectFrame | signalFrame |  |
+| wait_for_element_visible_ok | //body | 10000 |
+| type_ok | //body | Way Back In History %%start_time%% |
+| select-frame | relative=parent |  |
+| wait_for_element_visible_ok | post | 10000 |
+| click_ok | post |  |
+
+| *Comment* | Test Case: Signals Page. I May Be Kinda Slow |  |
+| selectFrame | signalFrame |  |
+| wait_for_element_visible_ok | //body | 10000 |
+| type_ok | //body | I May Be Kinda Slow %%start_time%% |
+| select-frame | relative=parent |  |
+| wait_for_element_visible_ok | post | 10000 |
+| click_ok | post |  |
+
+| *Comment* | Test Case: Signals Page. Verify signals in page. |  |
+| select-frame | relative=parent |  |
+| wait_for_element_present_ok | //iframe[@id='9-iframe'] | 30000 |
+| st-name-widget | 3 | signal_activity |
+| st-select-widget-frame | signal_activity |  |
+
+| wait_for_text_present_ok | Once Upon A Time %%start_time%% | 120000 |
+| wait_for_text_present_ok | I Remember Long Ago %%start_time%% | 120000 |
+| wait_for_text_present_ok | Way Back In History %%start_time%% | 120000 |
+| wait_for_text_present_ok | I May Be Kinda Slow %%start_time%% | 120000 |
+| text_like | //body | qr/Signal.+Page.+Edit.+Summary.+%%start_time%%/ism |
+
+| *Comment* | Test Case: Signals widget. Wait for automatic refresh to "one minute ago" in page |  |
+| wait_for_text_present_ok | one minute ago | 120000 |
+| select-frame | relative=parent |  |
+| wait_for_element_present_ok | //iframe[@id='9-iframe'] | 30000 |
+
+| *Comment* | Test Case: Signals Page. Get a fresh signals widget |  |
+| open_ok | /?dashboard | 60000 |
+| st-empty-container |  |  |
+| wait_for_element_visible_ok | link=Add Content | 30000 |
+| click_and_wait | link=Add Content |  |
+| wait_for_element_visible_ok | link=Socialtext Signals | 30000 |
+| click_and_wait | link=Socialtext Signals |  |
+
+| *Comment* | Test case: Signals Page. Check Dashboard, then wait for auto refresh |  |
+| wait_for_text_present_ok | Socialtext Signals | 30000 |
+| st-name-widget | 1 | signals_widget |
+| st-widget-title-like | signals_widget | Signals |
+| st-select-widget-frame | signals_widget |  |
+
+| *Comment* | Test case: Signals Page. Signals should be there |  |
+| wait_for_text_present_ok | Once Upon A Time %%start_time%% | 10000 |
+| wait_for_text_present_ok | I Remember Long Ago %%start_time%% | 10000 |
+| wait_for_text_present_ok | Way Back In History %%start_time%% | 10000 |
+| wait_for_text_present_ok | I May Be Kinda Slow %%start_time%% | 10000 |
+| text_like | //body | qr/Signal.+Page.+Edit.+Summary.+%%start_time%%/ism |
+
+| *Comment* | Test case: Signals Page. wait for auto refresh to "two minutes ago" |  |
+| wait_for_text_present_ok | 2 minutes ago | 120000 |
+
+| *Comment* | Test Case: Signals Page Teardown |  |
+| select-frame | relative=parent |  |
+| st-empty-container |  |  |
+| st-admin | purge-page --w %%workspace%% --page signals_page_edit_summary_%%start_time%% | was purged |
+
+| *Comment* | Test Case: Signals Page COMPLETED |  |
+
+TODO: write a second TC that exercises all signals, signals from followers only, older, newer, newest

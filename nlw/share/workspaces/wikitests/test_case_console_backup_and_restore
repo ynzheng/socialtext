@@ -72,8 +72,8 @@ Automated backup and restore testing
 | click_and_wait | //input[@value='Restore'] |  |
 | text_like | Restore in progress |  |
 
-| *Comment* | WAIT 90 seconds FOR RESTORE TO COMPLETE |  |
-| pause | 90000 |  |
+| *Comment* | WAIT 180 seconds FOR RESTORE TO COMPLETE |  |
+| pause | 180000 |  |
 
 | *Comment* | Test Case: Console Backup and Restore: Verify that the restore completed |  |
 | st_admin | give-system-admin --e %%email%% |  |
