@@ -45,7 +45,8 @@ sub http_port {
 }
 
 sub https_port {
-    return _default_https_port();               # default
+    return _configured_https_port()             # ST::AppConfig
+        || _default_https_port();               # default
 }
 
 sub backend_http_port {
@@ -78,6 +79,9 @@ sub _default_devenv_http_port {
 
 ###############################################################################
 # Helpers: front-end HTTPS port
+sub _configured_https_port {
+    return Socialtext::AppConfig->ssl_port();
+}
 sub _default_https_port {
     return Socialtext::AppConfig->is_appliance()
         ? _default_appliance_https_port()

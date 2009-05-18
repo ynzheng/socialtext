@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 11;
+use Test::Socialtext tests => 12;
 use Socialtext::HTTP::Ports qw(:constants);
 
 ###############################################################################
@@ -95,6 +95,16 @@ configured_http_port: {
 
     my $port = Socialtext::HTTP::Ports->http_port();
     is $port, $expected, 'custom configured HTTP port';
+}
+
+###############################################################################
+# TEST: configured front-end HTTPS port
+configured_https_port: {
+    my $expected = 98765;
+    Socialtext::AppConfig->set(ssl_port => $expected);
+
+    my $port = Socialtext::HTTP::Ports->https_port();
+    is $port, $expected, 'custom configured HTTPS port';
 }
 
 ###############################################################################

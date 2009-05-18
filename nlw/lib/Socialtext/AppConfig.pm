@@ -787,9 +787,10 @@ Default: index.cgi
 
 =head2 ssl_port
 
-The port on which NLW is listening for SSL connections.
+Specifies NLW uses a non-standard HTTPS port for SSL connections.  0 means no
+custom SSL port.
 
-Default: 443
+Default: 0
 
 =for code type => POSITIVE_INT_TYPE
 
