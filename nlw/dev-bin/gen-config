@@ -374,6 +374,7 @@ sub generate_app_config {
     if ( $config{is_dev} ) {
         my $frontend_ports = _frontend_ports();
         $config{custom_http_port} = $frontend_ports->{http};
+        $config{ssl_port} = $frontend_ports->{https};
         $config{email_errors_to} =
             $ENV{NLW_EMAIL_CRASHES_TO_ME}
           ? $user->name . '@socialtext.com'
