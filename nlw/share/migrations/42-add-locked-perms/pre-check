@@ -21,7 +21,7 @@ my $permission_id = sql_singlevalue(qq{
 # if we don't have a lock perm, we need to do this migration.
 unless ( $permission_id ) {
     print "Adding 'lock' permission and granting it to workspace admins.\n";
-    exit 1;
+    exit 0;
 }
 
 my $role_id = sql_singlevalue(qq{
@@ -43,5 +43,5 @@ if ( $locked_count == $ws_count ) {
     exit 1;
 }
 
-print "Adding page locking permissions for workspace admins.\n";
+print "Adding 'lock' permissions and granting it to workspace admins.\n";
 exit 0;
