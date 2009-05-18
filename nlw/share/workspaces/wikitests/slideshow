@@ -600,7 +600,7 @@ Lightbox screens:
 | click_and_wait | link=What's New |  |
 | click_and_wait | link=My Watchlist |  |
 | click_and_wait | link=Weblogs |  |
-| click_and_wait | link=Invite Others |  |
+| click_and_wait | link=Add Members |  |
 | click_and_wait | //a[@id='workspaceName'] |  |
 
 | click_and_wait | link=Profile |  |

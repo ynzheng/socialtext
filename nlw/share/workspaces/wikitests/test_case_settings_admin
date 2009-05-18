@@ -35,7 +35,7 @@
 | text_like | contentContainer | user_%%start_time%%@ken.socialtext.net |
 | st-should-be-admin | user_%%start_time%%@ken.socialtext.net | 1 |
 | st-logoutin | user_%%start_time%%@ken.socialtext.net | 123456 |
-| text_like | Invite Others |  |
+| text_like | Add Members |  |
 | st-logoutin |  |  |
 
 | *Comment* | Test Case: Settings: Admin test Invite New Users functionality |  |

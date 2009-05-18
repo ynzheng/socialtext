@@ -201,7 +201,7 @@
             [% END %]
             <li><a href="/[% current_workspace.name %]?action=weblog_display">[% loc("Weblogs") %]</a></li>
             [% IF is_workspace_admin %]
-            <li><a href="/[% current_workspace.name %]?action=users_invitation">[% loc("Invite Others") %]</a></li>
+            <li><a href="/[% current_workspace.name %]?action=users_invitation">[% loc("Add Members") %]</a></li>
             [% END %]
             [% END %]
           </ul>

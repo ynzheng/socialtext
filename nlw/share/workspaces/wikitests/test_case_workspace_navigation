@@ -25,10 +25,10 @@
 | click_and_wait | link=Weblogs |  |
 | text_like | st-editing-tools-edit | Weblog: |
 
-| *Comment* | Test Case: Workspace Navigation test for Invite Others link |  |
+| *Comment* | Test Case: Workspace Navigation test for Add Members link |  |
 | click_and_wait | link=%%title%% |  |
-| text_like | workspaceNav | Invite Others |
-| click_and_wait | link=Invite Others |  |
+| text_like | workspaceNav | Add Members |
+| click_and_wait | link=Add Members |  |
 | text_like | Invite Other Users |  |
 | click_and_wait | link=%%title%% |  |
 
