@@ -381,6 +381,18 @@ Requires the following PARAMS:
 
 =back
 
+=head2 $authz->plugins_enabled_for_account(PARAMS)
+
+Get the plugins enabled for a specific account.
+
+Requires the following PARAM:
+
+=over 8
+
+=item * account - a C<Socialtext::Account> object
+
+=back
+
 =head1 AUTHOR
 
 Socialtext, C<< <code@socialtext.com> >>
