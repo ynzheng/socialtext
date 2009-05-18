@@ -2,15 +2,13 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Socialtext::Migration::Utils qw/ensure_socialtext_schema/;
+use Socialtext::Migration::Utils qw/socialtext_schema_version/;
 use Socialtext::SQL qw/sql_singlevalue/;
 
-ensure_socialtext_schema( 59 );
-
-my $ws_count = sql_singlevalue(qq{
- SELECT COUNT(*)
-   FROM "Workspace"
-});
+if ( socialtext_schema_version() < 59 ) {
+    print "Adding 'lock' permissions and granting it to workspace admins.\n";
+    exit 0;
+}
 
 my $permission_id = sql_singlevalue(qq{
  SELECT permission_id
@@ -23,6 +21,11 @@ unless ( $permission_id ) {
     print "Adding 'lock' permission and granting it to workspace admins.\n";
     exit 0;
 }
+
+my $ws_count = sql_singlevalue(qq{
+ SELECT COUNT(*)
+   FROM "Workspace"
+});
 
 my $role_id = sql_singlevalue(qq{
  SELECT role_id

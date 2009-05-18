@@ -2,7 +2,10 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
+use Socialtext::Migration::Utils qw/ensure_socialtext_schema/;
 use Socialtext::SQL qw/:exec/;
+
+ensure_socialtext_schema( 59 );
 
 my $role_id = sql_singlevalue(qq{
  SELECT role_id
