@@ -1,0 +1,12 @@
+#!/usr/bin/perl
+# @COPYRIGHT@
+use strict;
+use warnings;
+use Socialtext::Migration::Utils qw/ensure_socialtext_schema/;
+
+ensure_socialtext_schema(61); # Current version when this migration written
+
+# We don't want to do an expensive filesystem sweep here, so we'd rather error
+# on the side of creating extra (useless) jobs.
+
+exit 0;

@@ -48,21 +48,25 @@ sub new_for_user {
 sub _load_all {
     my $self = shift;
     my $email = shift;
-    my $prefs = $self->_values_for_email_from_db($email);
+    my $prefs = $self->_values_for_email_from_db($email)
+                || $self->_values_for_email_from_disk($email);
+    return $prefs;
+}
 
-    if (!$prefs) {
-        st_log->debug("Returning prefs from disk for $email");
-        my $file = $self->_file_for_email($email);
+sub _values_for_email_from_disk {
+    my $self = shift;
+    my $email = shift;
 
-        return {} unless -f $file and -r _;
+    st_log->debug("Returning prefs from disk for $email");
+    my $file = $self->_file_for_email($email);
 
-        my $dump = Socialtext::File::get_contents($file);
-        return {} unless defined $dump and length $dump;
+    return {} unless -f $file and -r _;
 
-        $prefs = eval $dump;
-        die $@ if $@;
-    }
+    my $dump = Socialtext::File::get_contents($file);
+    return {} unless defined $dump and length $dump;
 
+    my $prefs = eval $dump;
+    die $@ if $@;
     return $prefs;
 }
 
@@ -141,7 +145,7 @@ sub store {
     my $self = shift;
     my ($email, $class_id, $new_prefs) = @_;
     my $prefs = $self->_load_all($email);
-    $prefs->{$class_id} = $new_prefs;
+    $prefs->{$class_id} = $new_prefs if defined $class_id;
     st_log->debug("Saving prefs for $email to database");
 
     # save to db

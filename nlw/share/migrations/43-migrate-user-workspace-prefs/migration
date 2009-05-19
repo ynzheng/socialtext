@@ -1,0 +1,16 @@
+#!/usr/bin/perl
+# @COPYRIGHT@
+use strict;
+use warnings;
+use Socialtext::JobCreator;
+use Socialtext::Workspace;
+
+my $all = Socialtext::Workspace->All;
+while (my $ws = $all->next) {
+    Socialtext::JobCreator->insert(
+        'Socialtext::Job::Upgrade::MigrateUserWorkspacePrefs',
+        { workspace_id => $ws->workspace_id },
+    );
+}
+
+exit 0;
