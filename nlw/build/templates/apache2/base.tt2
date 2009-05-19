@@ -48,7 +48,10 @@ LoadModule dir_module           [% config.module_dir %]/mod_dir.so
 </IfModule>
 
 Listen [% config.frontend_ports.http %]
-Listen [% config.frontend_ports.https %]
+[%- IF config.ssl_only OR config.use_ssl %]
+  [%#- Have SSL enabled server too %]
+  Listen [% config.frontend_ports.https %]
+[%- END %]
 
 NameVirtualHost *:[% config.frontend_ports.http %]
 
