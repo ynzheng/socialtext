@@ -6,12 +6,12 @@ use warnings;
 use Carp;
 use Class::Field qw(field);
 use File::Basename ();
+use Socialtext::AppConfig;
 use Socialtext::File;
 use Socialtext::System;
 use Readonly;
 use Time::HiRes qw( sleep time );
 use User::pwent;
-use Sys::Hostname;
 
 # Set this if you want some debugging output.
 our $Verbose = 0;
@@ -239,7 +239,7 @@ sub output_urls {
 sub base_url {
     my ( $self, $ssl ) = @_;
     $ssl = $ssl ? 1 : 0;
-    my $hostname = Sys::Hostname::hostname();
+    my $hostname = Socialtext::AppConfig->web_hostname();
     my $proto = $ssl ? 'https' : 'http';
     my $port = ($self->ports)[$ssl];
     return "$proto://$hostname:$port/";
