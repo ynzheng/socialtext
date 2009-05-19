@@ -397,6 +397,10 @@ body#revisions div#controls div#st-editing-tools-edit, body#contentPage div#cont
 	padding-left: 8px;
 }
 
+div#controls div#st-editing-tools-edit select {
+        margin-top: 10px;
+}
+
 div#controls div#st-editing-tools-edit h2 {
 	font-size: 14px;
 	color: #333;
