@@ -22,9 +22,9 @@ sub do_work {
             $self->migrate_settings($user, $email);
         }
 
-        unlink $f;
+        unlink $f or warn "Could not unlink $f: $!";
         (my $pref_dir = $f) =~ s#/preferences\.dd$##;
-        rmdir $pref_dir;
+        rmdir $pref_dir or warn "Could not rmdir $pref_dir: $!";
     }
 
     $self->completed();
