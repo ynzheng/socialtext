@@ -22,9 +22,16 @@ sub do_work {
             $self->migrate_settings($user, $email);
         }
 
-        unlink $f or warn "Could not unlink $f: $!";
         (my $pref_dir = $f) =~ s#/preferences\.dd$##;
+        for my $file (glob("$pref_dir/*")) {
+            unlink $file or warn "Could not unlink $file: $!";
+        }
         rmdir $pref_dir or warn "Could not rmdir $pref_dir: $!";
+    }
+
+    my @pref_dirs = glob("$path/*/preferences");
+    for my $d (@pref_dirs) {
+        rmdir $d or warn "Could not rmdir $d $!";
     }
 
     $self->completed();
