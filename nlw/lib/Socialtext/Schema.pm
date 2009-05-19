@@ -330,7 +330,7 @@ sub dump {
     my %c    = $self->connect_params();
     my $time = time;
     my $dir  = Socialtext::Paths::storage_directory("db-backups");
-    my $file = $self->{output}
+    my $file = $self->{output};
 
     $file ||= $ENV{ST_DB_DUMPFILE}
         if $c{db_name} eq 'socialtext';
