@@ -1103,6 +1103,8 @@ div.widget {
 	float: right;
 }
 
+body#blog div.widget,
+body#settingsPage div.widget,
 body#contentPage div.widget {
         background: url(../images/widgetTop.png) no-repeat top left;
 }
@@ -1130,6 +1132,8 @@ body#dashBoard div#contentColumns div#contentRight div.widget,body#settingsPage 
 	width: 100%;
 }
 
+body#blog div.widget div.widgetHeader,
+body#settingsPage div.widget div.widgetHeader,
 body#contentPage div.widget div.widgetHeader {
 	height: 25px;
 	background: url(../images/widgetHeader.png) no-repeat top right;
