@@ -1337,6 +1337,7 @@ sub _create_export_tarball {
     $self->_dump_permissions_to_yaml_file($tmpdir, $name);
     $self->_export_logo_file($tmpdir);
     $self->_dump_meta_to_yaml_file($tmpdir);
+    $self->_dump_user_workspace_prefs($tmpdir);
     local $CWD = $tmpdir;
     run "tar cf $tarball *";
 
@@ -1402,6 +1403,25 @@ sub _dump_meta_to_yaml_file {
     my $file      = Socialtext::File::catfile( $dir, 'meta.yaml' );
 
     _dump_yaml( $file, $meta_data );
+}
+
+sub _dump_user_workspace_prefs {
+    my $self = shift;
+    my $dir  = shift;
+
+    my $ws_dir = "$dir/user/" . $self->name;
+    my $users_with_roles = $self->users_with_roles;
+    while ( my $elem = $users_with_roles->next ) {
+        my $user = $elem->[0];
+        last unless $user;
+
+        my $prefs = Socialtext::PreferencesPlugin->Prefs_for_user($user, $self);
+        next unless keys %$prefs;
+
+        my $user_dir = "$ws_dir/" . $user->email_address . '/preferences';
+        File::Path::mkpath $user_dir or die "Can't mkpath $user_dir: $!";
+        Socialtext::Base->dumper_to_file("$user_dir/preferences.dd", $prefs);
+    }
 }
 
 sub _dump_users_to_yaml_file {

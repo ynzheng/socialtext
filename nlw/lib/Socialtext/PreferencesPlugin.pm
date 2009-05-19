@@ -86,7 +86,16 @@ sub _values_for_email_from_db {
     my $user = Socialtext::User->new(email_address => $email);
     return {} unless $user;
 
-    my $workspace_id = $self->hub->current_workspace->workspace_id;
+    return $self->Prefs_for_user($user, $self->hub->current_workspace);
+}
+
+sub Prefs_for_user {
+    my $class_or_self = shift;
+    my $user          = shift;
+    my $workspace     = shift or die "workspace required";
+    my $workspace_id  = $workspace->workspace_id;
+    my $email         = $user->email_address;
+
     my $sth = sql_execute('
         SELECT pref_blob
           FROM user_workspace_pref
