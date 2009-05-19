@@ -1138,7 +1138,6 @@ body#dashBoard div.widget.regular {
 	margin-right: 0px;
 }
 
-
 body#dashBoard div#contentColumns div#contentLeft div.widget,
 body#settingsPage div#contentColumns div#contentLeft div.widget {
 	float: left;
@@ -1169,7 +1168,7 @@ body#dashBoard div.widget.regular div.widgetHeader {
 }
 
 div.widget div.widgetHeader h4 {
-	line-height: 25px;
+        line-height: 25px;
 	font-size: 11px;
 	font-weight: bold;
 	margin-left: 18px;
@@ -3540,7 +3539,8 @@ span.st-weblog-nextentries:before {
 .widgetHeaderTitle {
     height: 28px;
     overflow: hidden;
-    float: none;
+    float: left;
+    position: absolute;
 }
 
 .widgetHeaderTitle img {
@@ -4088,7 +4088,7 @@ body#dashBoard .widget.regular .widgetHeader {
 }
 
 body#dashBoard .widget.tan .widgetHeader {
-    cursor: pointer;
+    cursor: default;
 }
 
 body#dashBoard .hidden {

@@ -5,7 +5,7 @@
         <div class="widgetHeaderButtons">
         [% IF container.name == "editing" || !gadget.fixed %]
             <a class="close" href="#" onclick="gadgets.container.remove('[% gadget.id %]'); return false"></a>
-        <a class="minimize" href="#" onclick="gadgets.container.minimize('[% gadget.id %]'); return false"></a>
+            <a class="minimize" href="#" onclick="gadgets.container.minimize('[% gadget.id %]'); return false"></a>
             [% IF gadget.minimized %]
                 <script><!--
                     jQuery(function(){
@@ -16,17 +16,17 @@
                     });
                 --></script>
             [% END %]
-        [% END %]
-        [% IF gadget.has_prefs && (container.name == 'editing' || !gadget.fixed) %]
-            <a class="settings" href="#" id="st-widget-settings[% gadget.id %]" onclick="gadgets.container.toggleSetup('[% gadget.id %]'); return false"></a>
-        [% END %]
-        [% IF container.name == "editing" %]
-            <a class="fix [% gadget.fixed ? "fixed" : "unfixed" %]" href="#" onclick="gadgets.container.fix('[% gadget.id %]'); return false"></a>
+            [% IF gadget.has_prefs %]
+                <a class="settings" href="#" id="st-widget-settings[% gadget.id %]" onclick="gadgets.container.toggleSetup('[% gadget.id %]'); return false"></a>
+            [% END %]
+            [% IF container.name == "editing" %]
+                <a class="fix [% gadget.fixed ? "fixed" : "unfixed" %]" href="#" onclick="gadgets.container.fix('[% gadget.id %]'); return false"></a>
+            [% END %]
         [% END %]
         </div>
         <div class="widgetHeaderTitle">
             <h4 id="[% gadget.id %]-title" class="widgetHeaderTitleBox">
-                <img [% IF gadget.fixed %]style="display: none"[% END %] class="icon" src="[% share %]/images/[% gadget.icon %].png" />
+                [% IF !gadget.fixed %]<img class="icon" src="[% share %]/images/[% gadget.icon %].png" />[% END %]
                 <span id="[% gadget.id %]-title-text" class="widgetHeaderTitleText" title="[% gadget.title %]">
                     [% gadget.title %]
                 </span>
