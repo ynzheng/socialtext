@@ -223,18 +223,6 @@
                 })
                 .appendTo(this.lookahead);
 
-            if ($.browser.msie && $.browser.version < 7) {
-                $('<iframe src="/static/html/blank.html"></iframe>')
-                    .css({
-                        zIndex: -1,
-                        position: 'absolute',
-                        top: -1,
-                        left: -1,
-                        filter: "alpha(opacity=0)",
-                        width: (width+2) + 'px'
-                    })
-                    .appendTo(this.lookahead);
-            }
         }
 
         this.lookahead.css({
@@ -319,11 +307,6 @@
                     .css({padding: '3px 5px'}));
             this.show();
         }
-
-        // IE6 iframe hack:
-        $('iframe', this.lookahead)
-            .height(this.lookahead.height() + 2)
-            .width(this.lookahead.width() + 2);
     };
 
     Lookahead.prototype.show = function () {
@@ -334,6 +317,9 @@
                 self.allowMouseClicks();
             });
         }
+
+        // IE6 iframe hack:
+        $(this.lookahead).createSelectOverlap({ zIndex: 3000, padding: 1 });
     };
 
     Lookahead.prototype.hide = function () {
