@@ -231,18 +231,16 @@ sub maybe_test_verbose {
 }
 
 sub output_urls {
-    my $self = shift;
-    $self->maybe_warn(" URL: " . $self->base_url(0) . "\n");
-    $self->maybe_warn(" URL: " . $self->base_url(1) . "\n");
-}
-
-sub base_url {
-    my ( $self, $ssl ) = @_;
-    $ssl = $ssl ? 1 : 0;
+    my $self     = shift;
     my $hostname = Socialtext::AppConfig->web_hostname();
-    my $proto = $ssl ? 'https' : 'http';
-    my $port = ($self->ports)[$ssl];
-    return "$proto://$hostname:$port/";
+    my $scheme   = 'http';
+    foreach my $port ($self->ports) {
+        my $url = "$scheme://$hostname:$port";
+        $self->maybe_warn(" URL: $url\n");
+
+        # first port is HTTP, all others thereafter should be HTTPS
+        $scheme = 'https';
+    }
 }
 
 sub output_action {
