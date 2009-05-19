@@ -1,0 +1,151 @@
+| *Comment* | Test Case: Follow |  |
+
+* Fixture: SocialWidgets
+
+make a user called fuser
+follow user and verify all follow widgets
+unfollow user and verify all widgets
+follow again
+
+TODO: use follow/unfollow to test Signals switch on Everyone/Following
+
+| *Comment* | Test Case: Follow |  |
+
+| set | fuser | follow-%%start_time%%@ken.socialtext.net |
+| set | fFname | Follow-%%start_time%%-Me |
+
+| st-admin | enable-plugin --account %%hostname%% --p dashboard |  |
+| st-admin | enable-plugin --account %%hostname%% --p signals |  |
+
+| *Comment* | Test Case: Follow. create user in default account. Open %%fuser%% profile |  |
+| st-admin | create-user --e %%fuser%% --p %%password%% --first %%fFname%% | was created |
+| st-admin | add-member --e %%fuser%% --w %%workspace%% | is now a member |
+
+| wait_for_element_visible_ok | link=People | 30000 |
+| click_and_wait | link=People |  |
+| wait_for_element_visible_ok | st-search-term | 30000 |
+| type_ok | st-search-term | %%fuser%% |
+| click_and_wait | st-search-submit |  |
+| wait_for_element_visible_ok | link=%%fFname%% | 30000 |
+| click_and_wait | link=%%fFname%% |  |
+
+| *Comment* | Test Case: Follow. Follow %%fFname%% |  |
+| wait_for_element_visible_ok | link=Follow this person | 30000 |
+| click_ok | link=Follow this person |  |
+| wait_for_element_visible_ok | link=Stop following this person | 30000 |
+
+| *Comment* | Test Case: Follow. Verify Follow %%fFname%% in your profile |  |
+| click_and_wait | link=Profile |  |
+| st-name-widget | 4 | follow_widget |
+| st-widget-title-like | follow_widget | Colleagues |
+| st-select-widget-frame | follow_widget |  |
+| wait_for_element_visible_ok | //td[4] | 10000 |
+| click_ok | //td[4] |  |
+| wait_for_element_visible_ok | link=%%fFname%% | 10000 |
+
+| *Comment* | Test Case: Follow. Don't click the follow link since it is in the child frame |  |
+| select-frame | relative=parent |  |
+
+| *Comment* | Test Case: Follow. Verify Follow %%fFname%% in Signals Web UI |  |
+| click_and_wait | link=Signals |  |
+| wait_for_text_present_ok | Colleagues | 30000 |
+| st-name-widget | 2 | follow_widget |
+| st-widget-title-like | follow_widget | Colleagues |
+| st-select-widget-frame | follow_widget |  |
+| wait_for_element_visible_ok | //td[4] | 10000 |
+| click_ok | //td[4] |  |
+| wait_for_element_visible_ok | link=%%fFname%% | 10000 |
+| select-frame | relative=parent |  |
+
+| *Comment* | Test Case: Follow. Unfollow %%fFname%% |  |
+| wait_for_element_visible_ok | link=People | 30000 |
+| click_and_wait | link=People |  |
+| wait_for_element_visible_ok | st-search-term | 30000 |
+| type_ok | st-search-term | %%fuser%% |
+| click_and_wait | st-search-submit |  |
+
+| *Comment* | Test Case: Follow. This makes no friggin' sense, but if we wait for the link to appear the test fails. |  |
+| pause | 5000 |  |
+
+ wait_for_element_visible_ok | link=%%fFname%% | 30000 |
+
+| click_and_wait | link=%%fFname%% |  |
+| wait_for_element_visible_ok | link=Stop following this person | 30000 |
+| click_ok | link=Stop following this person |  |
+| wait_for_element_visible_ok | link=Follow this person | 30000 |
+| click_and_wait | link=Profile |  |
+
+| *Comment* | Test Case: Follow. Verify UnFollow %%fFname%% in your profile |  |
+| click_and_wait | link=Profile |  |
+| st-name-widget | 4 | follow_widget |
+| st-widget-title-like | follow_widget | Colleagues |
+| st-select-widget-frame | follow_widget |  |
+| wait_for_text_present_ok | This person Follows no one | 10000 |
+| select-frame | relative=parent |  |
+
+| *Comment* | Test Case: Follow. Verify UnFollow %%fFname%% in Signals Web UI |  |
+| click_and_wait | link=Signals |  |
+| wait_for_text_present_ok | Colleagues | 30000 |
+| st-name-widget | 2 | follow_widget |
+| st-widget-title-like | follow_widget | Colleagues |
+| st-select-widget-frame | follow_widget |  |
+| wait_for_text_present_ok | This person Follows no one | 10000 |
+| select-frame | relative=parent |  |
+
+| *Comment* | Test Case: Follow. Set up mutual following. %%username%% follows %%fuser%% |  |
+| wait_for_element_visible_ok | link=People | 30000 |
+| click_and_wait | link=People |  |
+| wait_for_element_visible_ok | st-search-term | 30000 |
+| type_ok | st-search-term | %%fuser%% |
+| click_and_wait | st-search-submit |  |
+| wait_for_element_visible_ok | link=%%fFname%% | 30000 |
+| click_and_wait | link=%%fFname%% |  |
+| wait_for_element_visible_ok | link=Follow this person | 30000 |
+| click_ok | link=Follow this person |  |
+| wait_for_element_visible_ok | link=Stop following this person | 30000 |
+
+| *Comment* | Test Case: Follow. Set up mutual following. %%fuser%% follows %%username%% |  |
+| open_ok | /%%workspace%% |  |
+| st-logout |  |  |
+| wait_for_element_visible_ok | username | 30000 |
+| type_ok | username | %%fuser%% |
+| type_ok | password | %%password%% |
+| click_and_wait | login_btn |  |
+
+| wait_for_element_visible_ok | link=People | 30000 |
+| click_and_wait | link=People |  |
+| wait_for_element_visible_ok | st-search-term | 30000 |
+| type_ok | st-search-term | %%username%% |
+| click_and_wait | st-search-submit |  |
+| wait_for_element_visible_ok | link=%%short_username%% | 30000 |
+| click_and_wait | link=%%short_username%% |  |
+| wait_for_element_visible_ok | link=Follow this person | 30000 |
+| click_ok | link=Follow this person |  |
+| wait_for_element_visible_ok | link=Stop following this person | 30000 |
+
+Does %%fuser%% follow %%username%%
+
+| click_and_wait | link=Profile |  |
+| st-name-widget | 4 | follow_widget |
+| st-widget-title-like | follow_widget | Colleagues |
+| st-select-widget-frame | follow_widget |  |
+| wait_for_element_visible_ok | //td[4] | 10000 |
+| click_ok | //td[4] |  |
+| wait_for_element_visible_ok | link=%%short_username%% | 10000 |
+| select-frame | relative=parent |  |
+
+Does %%username%% follow %%fuser%%
+
+| click_and_wait | link=People |  |
+| wait_for_element_visible_ok | link=%%short_username%% | 30000 |
+| click_and_wait | link=%%short_username%% |  |
+
+login as fuser
+fuser follow username
+verify username and fuser follow each other
+fuser unfollow username
+verify fuser no longer follows username
+
+| *Comment* | Test Case: Follow TEARDOWN |  |
+
+| *Comment* | Test Case: Follow COMPLETED |  |
