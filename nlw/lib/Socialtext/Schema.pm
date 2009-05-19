@@ -333,6 +333,9 @@ sub dump {
     my $file = $self->{output}
         || Socialtext::File::catfile($dir, "$c{db_name}-dump.$time.sql");
 
+    # This is only likely to happen if we pass an output param to new().
+    return if ( -f $file and not defined $self->{force} );
+
     my @parms = (
         'pg_dump',
         '-C',
