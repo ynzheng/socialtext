@@ -99,5 +99,6 @@ cgi 'email_page_add_note';
 cgi 'email_page_keep_attachments';
 cgi 'page_name';
 cgi 'email_page_add_note_check';
+cgi 'email_page_send_copy';
 
 1;
