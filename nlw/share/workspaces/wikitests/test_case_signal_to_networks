@@ -1,0 +1,58 @@
+| *Comment* | Test Case: Signal to Networks |  |
+
+* Fixture: SocialWidgets
+
+| *Comment* | Test Case: Signal to Networks. Set up account, ws, and member |  |
+| set | acc | signals-%%start_time%% |
+| set | ws | %%acc%% |
+| set | member | signals-%%start_time%%@ken.socialtext.net |
+
+| st-admin | create-account --name %%acc%% | was created |
+| st-admin | enable-plugin --account %%acc%% --p dashboard |  |
+| st-admin | enable-plugin --account %%acc%% --p signals |  |
+
+| st-admin | create-workspace --name %%ws%% --title %%ws%% --account %%acc%% | was created |
+| st-admin | create-user --e %%member%% --p %%password%% --account %%acc%% | was created |
+| st-admin | add-member --e %%member%% --w %%ws%% | is now a member |
+
+| *Comment* | Test Case: Signal to Networks. login to primary account |  |
+| open-ok | /%%ws%% |  |
+| type_ok | username | %%member%% |
+| type_ok | password | %%password%% |
+| click_and_wait | login_btn |  |
+| wait_for_element_visible_ok | link=Signals | 30000 |
+| click_and_wait | link=Signals |  |
+
+| *Comment* | Test Case: Signal to Networks. Verify no network selector |  |
+| wait_for_element_not_visible_ok | network-select | 30000 |
+
+| *Comment* | Test Case: Signal to Networks. Signal to primary account |  |
+| set | mark | primary |
+| include | [Test Case: Signals Page] |  |
+
+| *Comment* | Test Case: Signal to Networks. Enable signals in secondary account |  |
+| st-admin | add-member --e %%member%% --w help-en | is now a member |
+| st-admin | enable-plugin --account Socialtext --p dashboard |  |
+| st-admin | enable-plugin --account Socialtext --p signals |  |
+
+| open-ok | /%%ws%% |  |
+| wait_for_element_visible_ok | link=Signals | 30000 |
+| click_and_wait | link=Signals |  |
+
+| *Comment* | Test Case: Signal to Networks. Verify network selector |  |
+| wait_for_element_visible_ok | network-select | 30000 |
+
+| *Comment* | Test Case: Signal to Networks. Select signals to All My Networks |  |
+| select_ok | network-select | label=All my networks |
+
+| *Comment* | Test Case: Signal to Networks. Signal to All Networks |  |
+| set | mark | All |
+| include | [Test Case: Signals Page] |  |
+
+| *Comment* | Test Case: Signal to Networks TEARDOWN |  |
+| st-admin | remove-member --e %%member%% --w help-en | is no longer a member |
+| st-admin | disable-plugin --account Socialtext --p signals |  |
+| st-admin | disable-plugin --account Socialtext --p dashboard |  |
+| st-admin | delete-workspace --w %%ws%% --no-export | has been deleted |
+
+| *Comment* | Test Case: Signal to Networks COMPLETED |  |
