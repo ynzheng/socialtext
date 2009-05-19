@@ -280,15 +280,11 @@ sub get_start_command { return ($_[0]->binary, '-f', $_[0]->conf_file) }
 sub ports {
     my $self = shift;
 
-    my %ports = map {
-        $_ => 1
-    } grep {
-        defined $_
-    } map {
-        /^\s*(?:Listen|Port)\s+(?:[\d\.]*:)?(\d+)/
-            ? $1
-            : undef
-    } Socialtext::File::get_contents( $self->conf_file );
+    my %ports =
+        map { $_ => 1 }
+        grep { defined $_ }
+        map { /^\s*(?:Listen|Port)\s+(?:[\d\.]*:)?(\d+)/ ? $1 : undef }
+        Socialtext::File::get_contents($self->conf_file);
     return sort keys %ports;
 }
 
