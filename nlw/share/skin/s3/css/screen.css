@@ -3769,6 +3769,11 @@ body div#globalNav div input.searchText {
     text-transform: capitalize;
 }
 
+body#dashBoard #st-editing-tools-edit #lastsignal {
+    position: static;
+    line-height: 40px;
+}
+
 .other_buttons, .table_buttons { }
 
 #wikiwyg_toolbar img.disabled,
