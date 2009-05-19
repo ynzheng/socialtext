@@ -5,12 +5,16 @@ use warnings;
 use Socialtext::JobCreator;
 use Socialtext::Workspace;
 
+my $job_class = 'Socialtext::Job::Upgrade::MigrateUserWorkspacePrefs';
 my $all = Socialtext::Workspace->All;
+my $job_count = 0;
 while (my $ws = $all->next) {
     Socialtext::JobCreator->insert(
-        'Socialtext::Job::Upgrade::MigrateUserWorkspacePrefs',
+        $job_class,
         { workspace_id => $ws->workspace_id },
     );
+    $job_count++;
 }
 
+print "Inserted $job_count $job_class jobs\n";
 exit 0;
