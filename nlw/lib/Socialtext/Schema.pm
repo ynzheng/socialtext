@@ -326,10 +326,10 @@ Dumps out the database to a sql dump file.
 =cut
 
 sub dump {
-    my $self    = shift;
-    my %c = $self->connect_params();
-    my $time    = time;
-    my $dir     = Socialtext::Paths::storage_directory("db-backups");
+    my $self = shift;
+    my %c    = $self->connect_params();
+    my $time = time;
+    my $dir  = Socialtext::Paths::storage_directory("db-backups");
     my $file = $self->{output}
         || Socialtext::File::catfile($dir, "$c{db_name}-dump.$time.sql");
 
