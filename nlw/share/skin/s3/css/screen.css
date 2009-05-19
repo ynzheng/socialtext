@@ -402,6 +402,7 @@ div#controls div#st-editing-tools-edit h2 {
 	color: #333;
 	line-height: 44px;
 	padding-left: 10px;
+        display: inline;
 }
 
 body#listPage div#controls div#st-editing-tools-edit {
