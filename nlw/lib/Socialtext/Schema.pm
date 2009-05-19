@@ -331,6 +331,7 @@ sub dump {
     my $time = time;
     my $dir  = Socialtext::Paths::storage_directory("db-backups");
     my $file = $self->{output}
+        || $ENV{ST_DB_DUMPFILE}
         || Socialtext::File::catfile($dir, "$c{db_name}-dump.$time.sql");
 
     # This is only likely to happen if we pass an output param to new().
