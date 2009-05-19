@@ -78,6 +78,7 @@ test env properly and are not testing the test-workspace
 * [Test Case: People Dashboard Navigation]
 * [Test Case: Invite people to your network]
 * [Test Case: Servername redirect to default ws]
+* [Test Case: Page Locking]
 
 * [Edit Contention Testcases]
 
