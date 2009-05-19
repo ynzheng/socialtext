@@ -61,6 +61,7 @@
                 })
                 .appendTo('body');
 
+            $('#overlay').createSelectOverlap({zIndex: 2000});
             if ($.browser.msie && $.browser.version < 7) {
                 $('<iframe src="/static/html/blank.html"></iframe>')
                     .addClass('hack')

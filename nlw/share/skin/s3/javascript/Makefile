@@ -41,6 +41,7 @@ S3_SOURCE_FILES= \
 		jquery-patch.js \
 		jquery-plugin.js \
 		jquery.tablesorter.js \
+		jquery.selectOverlap.js \
 		Jemplate.js \
 		$(ALL_JEMPLATE_PLUGINS) \
 		loc.js \
