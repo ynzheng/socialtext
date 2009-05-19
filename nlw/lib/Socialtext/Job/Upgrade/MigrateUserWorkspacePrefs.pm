@@ -18,7 +18,7 @@ sub do_work {
         (my $email = $f) =~ s#^.+/([^/]+)/preferences/preferences\.dd$#$1#;
 
         my $user = Socialtext::User->new(email_address => $email);
-        if ($user) {
+        if ($user and $self->workspace->real) {
             $self->migrate_settings($user, $email);
         }
 
@@ -32,6 +32,10 @@ sub do_work {
     my @pref_dirs = glob("$path/*/preferences");
     for my $d (@pref_dirs) {
         rmdir $d or warn "Could not rmdir $d $!";
+
+        # Try to also delete the user dir, which may now be empty.
+        (my $user_dir = $d) =~ s#/preferences$##;
+        rmdir $user_dir;
     }
 
     $self->completed();
