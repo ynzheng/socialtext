@@ -46,6 +46,7 @@ Queue_job: {
         Socialtext::JobCreator->insert(@job_args);
     } "used the job creator interface";
 
+    sleep 1;
     @jobs = $jobs->list_jobs({
         funcname => 'Socialtext::Job::Test',
     });
