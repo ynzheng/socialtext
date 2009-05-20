@@ -24,6 +24,7 @@ sub code_base { $CODE_BASE }
 sub script_name { $SCRIPT_NAME }
 
 sub user_factories { 'Default' }
+sub group_factories { 'Default' }
 
 sub data_root_dir { '/datadir' }
 

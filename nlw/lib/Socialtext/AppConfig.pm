@@ -984,6 +984,14 @@ Default: Default
 
 =for code type => SCALAR_TYPE
 
+=head2 group_factories
+
+The semicolon-separated list of drivers to use for Group creation
+
+Default: Default
+
+=for code type => SCALAR_TYPE
+
 =head2 unauthorized_returns_forbidden
 
 If this is true, then when a user is not authorized to perform an
