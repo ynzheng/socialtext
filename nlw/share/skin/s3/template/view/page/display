@@ -25,7 +25,7 @@
     [% IF page_locked_for_user %]
       <div id="st-page-lock-notification">
         <img src="/static/skin/s3/images/lock-locked.png" />
-        [% loc('This page is locked and cannot be edited.') %]
+        [% loc('This page is locked and can only be edited by a workspace administrator.') %]
       </div>
     [% ELSE %]
       [% IF locking_enabled && can_lock %]
