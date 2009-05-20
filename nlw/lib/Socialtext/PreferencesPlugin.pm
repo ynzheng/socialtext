@@ -39,9 +39,7 @@ sub new_for_user {
     my $email = shift;
 
     return $self->{per_user_cache}{$email} if $self->{per_user_cache}{$email};
-
     my $values = $self->_values_for_email($email);
-
     return $self->{per_user_cache}{$email} = $self->new_preferences($values);
 }
 
@@ -53,29 +51,12 @@ sub _load_all {
     return $prefs;
 }
 
-sub _values_for_email_from_disk {
-    my $self = shift;
-    my $email = shift;
-
-    st_log->debug("Returning prefs from disk for $email");
-    my $file = $self->_file_for_email($email);
-
-    return {} unless -f $file and -r _;
-
-    my $dump = Socialtext::File::get_contents($file);
-    return {} unless defined $dump and length $dump;
-
-    my $prefs = eval $dump;
-    die $@ if $@;
-    return $prefs;
-}
 
 sub _values_for_email {
     my $self = shift;
     my $email = shift;
 
     my $prefs = $self->_load_all($email);
-
     return +{ map %$_, values %$prefs };
 }
 
@@ -116,14 +97,27 @@ sub Prefs_for_user {
     return $result;
 }
 
-sub _file_for_email {
+
+# XXX DELETE _values_for_email_from_disk AFTER 2009-05-22 has been released to appliances.
+# XXX See https://www2.socialtext.net/dev-tasks/?story_store_user_prefs_in_db
+sub _values_for_email_from_disk {
     my $self = shift;
     my $email = shift;
 
-    return Socialtext::File::catfile(
+    st_log->debug("Returning prefs from disk for $email");
+    my $file = Socialtext::File::catfile(
        $self->user_plugin_directory($email),
        'preferences.dd'
     );
+
+    return {} unless -f $file and -r _;
+
+    my $dump = Socialtext::File::get_contents($file);
+    return {} unless defined $dump and length $dump;
+
+    my $prefs = eval $dump;
+    die $@ if $@;
+    return $prefs;
 }
 
 sub new_preferences {
@@ -143,11 +137,6 @@ sub new_preference {
 sub new_dynamic_preference {
     my $self = shift;
     Socialtext::Preference::Dynamic->new(@_);
-}
-
-sub _prefs_file_for_email {
-    my $self = shift;
-    Socialtext::File::catfile( $self->user_plugin_directory(@_), 'preferences.dd' );
 }
 
 sub store {
