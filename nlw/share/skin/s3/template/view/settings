@@ -65,7 +65,7 @@
               <li><a href="?action=weblogs_create">[% loc('Create New Weblog') %]</a></li>
             </ul>
             [% END %]
-            [% IF workspace.real %]
+            [% IF workspace_present %]
               <h4>[% loc('Preferences') %]</h4>
               <ul class="leftNavList">
               [% FOR pref = pref_list %]
