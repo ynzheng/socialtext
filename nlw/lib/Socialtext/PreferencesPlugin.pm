@@ -157,11 +157,18 @@ sub store {
     $prefs->{$class_id} = $new_prefs if defined $class_id;
     st_log->debug("Saving prefs for $email to database");
 
-    # save to db
     my $user = Socialtext::User->new(email_address => $email);
     return unless $user;
-    my $user_id = $user->user_id;
-    my @keys = ($user_id, $self->hub->current_workspace->workspace_id);
+    $self->Store_prefs_for_user($user, $self->hub->current_workspace, $prefs);
+}
+
+sub Store_prefs_for_user {
+    my $class_or_self = shift;
+    my $user          = shift;
+    my $workspace     = shift;
+    my $prefs         = shift;
+
+    my @keys = ($user->user_id, $workspace->workspace_id);
     my $json = encode_json($prefs);
     sql_begin_work;
     sql_execute('

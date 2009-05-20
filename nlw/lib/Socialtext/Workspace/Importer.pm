@@ -9,7 +9,7 @@ use File::chdir;
 use Cwd;
 use Socialtext::File::Copy::Recursive ();
 use Readonly;
-use Socialtext::SQL qw(sql_commit sql_execute sql_begin_work sql_rollback );
+use Socialtext::SQL qw(:txn :exec);
 use Socialtext::Validate qw( validate FILE_TYPE BOOLEAN_TYPE SCALAR_TYPE );
 use Socialtext::AppConfig;
 use Socialtext::Workspace;
@@ -20,6 +20,7 @@ use Socialtext::Timer;
 use Socialtext::System qw/shell_run/;
 use Socialtext::Page::TablePopulator;
 use Socialtext::User;
+use Socialtext::PreferencesPlugin;
 use YAML ();
 
 # This should stay in sync with $EXPORT_VERSION in ST::Workspace.
@@ -87,6 +88,10 @@ sub import_workspace {
 
         my @users = $self->_import_users();
         $self->_create_workspace();
+        $self->Import_user_workspace_prefs(
+            "$CWD/user/$self->{old_name}",
+            $self->{workspace}
+        );
         $self->_import_data_dirs();
         $self->_fixup_page_symlinks();
         $self->_set_permissions();
@@ -175,6 +180,55 @@ sub _create_workspace {
 }
 
 sub _workspace_info_file { $_[0]->{old_name} . '-info.yaml' }
+
+sub Import_user_workspace_prefs {
+    my $class     = shift;
+    my $path      = shift;
+    my $workspace = shift;
+
+    my @files = glob("$path/*/preferences/preferences.dd");
+    for my $f (@files) {
+        (my $email = $f) =~ s#^.+/([^/]+)/preferences/preferences\.dd$#$1#;
+
+        my $user = Socialtext::User->new(email_address => $email);
+        if ($user and $workspace->real) {
+            my $is_in_db = sql_singlevalue('
+                SELECT 1 FROM user_workspace_pref
+                 WHERE user_id = ? AND workspace_id = ?
+                 ', $user->user_id, $workspace->workspace_id,
+            );
+            next if $is_in_db;
+
+            eval {
+                my $prefs = do $f;
+                die "can't load prefs, exception: $@" if $@;
+                die "can't load prefs: $!" unless ref($prefs) eq 'HASH';
+                Socialtext::PreferencesPlugin->Store_prefs_for_user(
+                    $user, $workspace, $prefs);
+            };
+            if ($@) {
+                st_log->error("unable to import preferences for user ".
+                    "'$email' in workspace '".$workspace->name."'".
+                    ": $@");
+            }
+        }
+
+        (my $pref_dir = $f) =~ s#/preferences\.dd$##;
+        for my $file (glob("$pref_dir/*")) {
+            unlink $file or warn "Could not unlink $file: $!";
+        }
+        rmdir $pref_dir or warn "Could not rmdir $pref_dir: $!";
+    }
+
+    my @pref_dirs = glob("$path/*/preferences");
+    for my $d (@pref_dirs) {
+        rmdir $d or warn "Could not rmdir $d $!";
+
+        # Try to also delete the user dir, which may now be empty.
+        (my $user_dir = $d) =~ s#/preferences$##;
+        rmdir $user_dir;
+    }
+}
 
 sub _load_yaml {
     my $self = shift;
