@@ -197,19 +197,20 @@ sub Import_user_workspace_prefs {
                  WHERE user_id = ? AND workspace_id = ?
                  ', $user->user_id, $workspace->workspace_id,
             );
-            next if $is_in_db;
 
-            eval {
-                my $prefs = do $f;
-                die "can't load prefs, exception: $@" if $@;
-                die "can't load prefs: $!" unless ref($prefs) eq 'HASH';
-                Socialtext::PreferencesPlugin->Store_prefs_for_user(
-                    $user, $workspace, $prefs);
-            };
-            if ($@) {
-                st_log->error("unable to import preferences for user ".
-                    "'$email' in workspace '".$workspace->name."'".
-                    ": $@");
+            if ( !$is_in_db ) {
+                eval {
+                    my $prefs = do $f;
+                    die "can't load prefs, exception: $@" if $@;
+                    die "can't load prefs: $!" unless ref($prefs) eq 'HASH';
+                    Socialtext::PreferencesPlugin->Store_prefs_for_user(
+                        $user, $workspace, $prefs);
+                };
+                if ($@) {
+                    st_log->error("unable to import preferences for user ".
+                        "'$email' in workspace '".$workspace->name."'".
+                        ": $@");
+                }
             }
         }
 
