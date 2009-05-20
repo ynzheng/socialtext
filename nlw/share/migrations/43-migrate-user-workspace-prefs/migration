@@ -4,6 +4,9 @@ use strict;
 use warnings;
 use Socialtext::JobCreator;
 use Socialtext::Workspace;
+use Socialtext::Migration::Utils qw/ensure_socialtext_schema/;
+
+ensure_socialtext_schema(61); # Current version when this migration written
 
 my $job_class = 'Socialtext::Job::Upgrade::MigrateUserWorkspacePrefs';
 my $all = Socialtext::Workspace->All;
