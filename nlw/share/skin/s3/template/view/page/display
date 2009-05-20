@@ -90,7 +90,7 @@
           [% IF locking_enabled AND can_lock %]
             <li class="separator">
               <a href="index.cgi?page_name=[% page.id %];action=[% page_locked ? "unlock_page" : "lock_page" %]" id="st-pagetools-lock">
-                [% page_locked ? loc('Unlock the Page') : loc('Lock the Page') %]
+                [% page_locked ? loc('Unlock Page') : loc('Lock Page') %]
               </a>
             </li>
           [% END %]
