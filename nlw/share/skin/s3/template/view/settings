@@ -65,13 +65,15 @@
               <li><a href="?action=weblogs_create">[% loc('Create New Weblog') %]</a></li>
             </ul>
             [% END %]
-            <h4>[% loc('Preferences') %]</h4>
-            <ul class="leftNavList">
-            [% FOR pref = pref_list %]
-              [% NEXT IF pref.id == 'email_notify' && !current_workspace.email_notify_is_enabled %]
-              <li><a href="?action=preferences_settings;preferences_class_id=[% pref.id %]">[% loc(pref.title) %]</a></li>
+            [% IF workspace.real %]
+              <h4>[% loc('Preferences') %]</h4>
+              <ul class="leftNavList">
+              [% FOR pref = pref_list %]
+                [% NEXT IF pref.id == 'email_notify' && !current_workspace.email_notify_is_enabled %]
+                <li><a href="?action=preferences_settings;preferences_class_id=[% pref.id %]">[% loc(pref.title) %]</a></li>
+              [% END %]
+              </ul>
             [% END %]
-            </ul>
             <div class="clear"></div>
           </div><!-- widgetContent -->
           <div class="widgetBottom"><div class="widgetBottomRight"></div></div><!-- widgetBottom END -->
