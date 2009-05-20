@@ -157,6 +157,8 @@ sub Store_prefs_for_user {
     my $workspace     = shift;
     my $prefs         = shift;
 
+    return unless $workspace->real;
+
     my @keys = ($user->user_id, $workspace->workspace_id);
     my $json = encode_json($prefs);
     sql_begin_work;
