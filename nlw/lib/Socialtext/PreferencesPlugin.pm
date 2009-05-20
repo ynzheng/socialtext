@@ -98,7 +98,6 @@ sub Prefs_for_user {
        ', $user->user_id, $workspace_id,
     );
     return if $sth->rows == 0;
-    st_log->debug("Returning prefs from DB for $email");
     my $result = {};
     {
         local $@;
@@ -117,7 +116,6 @@ sub _values_for_email_from_disk {
     my $self = shift;
     my $email = shift;
 
-    st_log->debug("Returning prefs from disk for $email");
     my $file = Socialtext::File::catfile(
        $self->user_plugin_directory($email),
        'preferences.dd'
@@ -157,7 +155,6 @@ sub store {
     my ($email, $class_id, $new_prefs) = @_;
     my $prefs = $self->_load_all($email);
     $prefs->{$class_id} = $new_prefs if defined $class_id;
-    st_log->debug("Saving prefs for $email to database");
 
     my $user = Socialtext::User->new(email_address => $email);
     return unless $user;
