@@ -372,8 +372,9 @@ div#controls div#st-editing-tools-edit {
 
 #st-page-lock-notification {
     font-weight: bold;
-    padding: 0 10px 0 28px;
-    line-height: 44px;
+    padding: 4px 10px;
+    width: 300px;
+    line-height: auto;
 }
 
 #st-page-lock-notification img,
