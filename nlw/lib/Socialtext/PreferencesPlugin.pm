@@ -10,9 +10,12 @@ use Socialtext::File;
 use Socialtext::JSON qw/decode_json encode_json/;
 use Socialtext::SQL qw(:exec :txn);
 use Socialtext::Log qw/st_log/;
+use Socialtext::Cache;
 
 sub class_id { 'preferences' }
 field objects_by_class => {};
+
+sub _cache { Socialtext::Cache->cache('user_workspace_prefs') }
 
 sub load {
     my $self = shift;
@@ -38,6 +41,7 @@ sub new_for_user {
     my $self = shift;
     my $email = shift;
 
+    # This caching does not seem to be well used.
     return $self->{per_user_cache}{$email} if $self->{per_user_cache}{$email};
     my $values = $self->_values_for_email($email);
     return $self->{per_user_cache}{$email} = $self->new_preferences($values);
@@ -46,8 +50,17 @@ sub new_for_user {
 sub _load_all {
     my $self = shift;
     my $email = shift;
+    my $wksp  = $self->hub->current_workspace;
+    my $cache_key = join ':', $wksp->name, $email;
+
+    my $cache = $self->_cache;
+    if (my $prefs = $cache->get($cache_key)) {
+        return $prefs;
+    }
+
     my $prefs = $self->_values_for_email_from_db($email)
                 || $self->_values_for_email_from_disk($email);
+    $cache->set($cache_key => $prefs);
     return $prefs;
 }
 
@@ -173,6 +186,8 @@ sub Store_prefs_for_user {
         ', @keys, $json
     );
     sql_commit;
+
+    $class_or_self->_cache->clear();
 }
 
 package Socialtext::Preference;
