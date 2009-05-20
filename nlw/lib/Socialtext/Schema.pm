@@ -333,7 +333,7 @@ sub dump {
     my $file = $self->{output};
 
     $file ||= $ENV{ST_DB_DUMPFILE}
-        if $c{db_name} eq 'socialtext';
+        if $c{db_name} eq 'NLW';
 
     $file ||= Socialtext::File::catfile($dir, "$c{db_name}-dump.$time.sql");
 
