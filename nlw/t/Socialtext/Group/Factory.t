@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext no_plan => 1;
+use Test::Socialtext tests => 8;
 
 ###############################################################################
 # Fixtures: base_config
