@@ -2,12 +2,14 @@
 # @COPYRIGHT@
 use warnings;
 use strict;
-use Test::More;
+use Test::Socialtext;
 use lib "$ENV{ST_SRC_BASE}/current/socialtext-reports/lib";
 
 my @modules = all_modules();
 
 plan tests => scalar @modules;
+
+fixtures(qw( db ));
 
 sub main {
     for (@modules) {
