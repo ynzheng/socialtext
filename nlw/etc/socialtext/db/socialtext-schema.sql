@@ -419,6 +419,23 @@ CREATE SEQUENCE gallery_id
     NO MINVALUE
     CACHE 1;
 
+CREATE TABLE groups (
+    group_id bigint NOT NULL,
+    driver_key text NOT NULL,
+    driver_unique_id text NOT NULL,
+    driver_group_name text NOT NULL,
+    account_id bigint NOT NULL,
+    creation_datetime timestamptz DEFAULT now() NOT NULL,
+    created_by_user_id bigint NOT NULL,
+    cached_at timestamptz DEFAULT '-infinity'::timestamptz NOT NULL
+);
+
+CREATE SEQUENCE groups___group_id
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
 CREATE TABLE job (
     jobid serial NOT NULL,
     funcid integer NOT NULL,
@@ -753,6 +770,10 @@ ALTER TABLE ONLY gallery
     ADD CONSTRAINT gallery_pk
             PRIMARY KEY (gallery_id);
 
+ALTER TABLE ONLY groups
+    ADD CONSTRAINT groups_group_id_pk
+            PRIMARY KEY (group_id);
+
 ALTER TABLE ONLY job
     ADD CONSTRAINT job_funcid_key
             UNIQUE (funcid, uniqkey);
@@ -881,6 +902,9 @@ CREATE INDEX exitstatus_funcid
 
 CREATE INDEX gallery_gadget_gadget_id_idx
 	    ON gallery_gadget (gadget_id);
+
+CREATE UNIQUE INDEX groups_driver_unique_id
+	    ON groups (driver_key, driver_unique_id);
 
 CREATE INDEX ix_container_account_id
 	    ON container (account_id);
@@ -1304,6 +1328,16 @@ ALTER TABLE ONLY gallery_gadget
             FOREIGN KEY (gadget_id)
             REFERENCES gadget(gadget_id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY groups
+    ADD CONSTRAINT groups_account_id_fk
+            FOREIGN KEY (account_id)
+            REFERENCES "Account"(account_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY groups
+    ADD CONSTRAINT groups_created_by_user_id_fk
+            FOREIGN KEY (created_by_user_id)
+            REFERENCES users(user_id) ON DELETE RESTRICT;
+
 ALTER TABLE ONLY signal
     ADD CONSTRAINT in_reply_to_fk
             FOREIGN KEY (in_reply_to_id)
@@ -1480,4 +1514,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '61');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '62');
