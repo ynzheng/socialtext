@@ -46,7 +46,7 @@ Also, you need base_dn.ldif in your wikitest_client_files directory.
 
 | *Comment* | Test case: should not be able to log in as now deleted LDAP user |  |
 | st-login | %%test_username%% | %%test_password%% |
-| st-message | Wrong email address or password - please try again. |  |
+| st-message | Wrong username or password - please try again |  |
 
 | *Comment* | Teardown: remove the user and the new page we created |  |
 | st-admin | remove-member --email %%test_email%% --workspace %%workspace%% | no longer a member |

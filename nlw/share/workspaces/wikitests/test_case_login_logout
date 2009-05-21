@@ -21,11 +21,11 @@
 | type_ok | username | mr.poopypants@socialtext.net |
 | type_ok | password | monkey |
 | click_and_wait | login_btn |  |
-| st-message | Wrong email address or password - please try again. |  |
+| st-message | Wrong email address or password - please try again |  |
 
 | *Comment* | Test Case: Login/Logout Registered addr, wrong password |  |
 | st-login | %%username%% | wrong_password |
-| st-message | Wrong email address or password - please try again. |  |
+| st-message | Wrong email address or password - please try again |  |
 
 | *Comment* | Test Case: Login/Logout Login with real admin user/pass |  |
 | st-login | %%username%% | %%password%% |
@@ -44,7 +44,7 @@
 | text_like | Socialtext password help |  |
 | type_ok | username | mr.poopypants |
 | click_and_wait | //input[@value='Submit'] |  |
-| st-message | mr.poopypants is not registered as a user. Try a different email address? |  |
+| st-message | mr.poopypants is not registered as a user. Try a different entry? |  |
 
 | *Comment* | Test Case: Login/Logout Forgotten password (good user): |  |
 | text_like | Socialtext password help |  |
@@ -100,7 +100,7 @@
 
 | *Comment* | Test Case: Login/Logout Login with old password |  |
 | st-login | %%inout_user%% | 所以那城名叫巴別 |
-| st-message | Wrong email address or password - please try again. |  |
+| st-message | Wrong email address or password - please try again |  |
 
 | *Comment* | Test Case: Login/Logout Login with new password |  |
 | st-login | %%inout_user%% | new_password |

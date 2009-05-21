@@ -65,3 +65,6 @@ div#st-editing-tools-edit ul.buttonRight {
     margin-bottom: -10px;
 }
 
+body div#mainNav ul ul.level2 {
+    overflow: hidden;
+}

@@ -28,10 +28,14 @@
 | *Comment* | Test Case: Settings: User verify settings menu |  |
 | st-admin | set-workspace-config --workspace %%workspace%% email_notify_is_enabled 1 |  |
 | click_and_wait | link=Settings |  |
+| text_like | contentLeft | Users |
 | text_like | contentLeft | My Settings |
 | text_like | contentLeft | List All Users |
-| text_like | contentLeft | Private Signals Messages |
+| text_like | contentLeft | Signals |
+| text_like | contentLeft | Private Messages |
+| text_like | contentLeft | Workspaces |
 | text_like | contentLeft | My Workspaces |
+| text_like | contentLeft | Preferences |
 | text_like | contentLeft | Unsubscribe |
 | text_like | contentLeft | Create New Weblog |
 | text_like | contentLeft | Page Editing |
@@ -149,8 +153,8 @@
 | *Comment* | Test Case: Settings: User can turn email notification on and off |  |
 | st-admin | add-member --email %%new_user%% --workspace %%workspace%% |  |
 | open_ok | /%%workspace%%/index.cgi?action=users_settings |  |
-| wait_for_element_visible_ok | link=Private Signals Messages | 10000 |
-| click_ok | link=Private Signals Messages | 10000 |
+| wait_for_element_visible_ok | link=Private Messages | 30000 |
+| click_ok | link=Private Messages | 30000 |
 | wait_for_text_present_ok | Send Socialtext Signals private messages as email: | 10000 |
 | wait_for_element_visible_ok | dm_sends_email | 10000 |
 | is_checked_ok | dm_sends_email |  |
@@ -158,7 +162,7 @@
 | click_and_wait | link=Save |  |
 | click_and_wait | link=My Workspaces |  |
 | text_like | contentContainer | %%workspace%% |
-| click_ok | link=Private Signals Messages | 10000 |
+| click_ok | link=Private Messages | 10000 |
 | wait_for_text_present_ok | Send Socialtext Signals private messages as email: | 10000 |
 | verify_value | dm_sends_email | off |
 
@@ -166,12 +170,12 @@
 | st-admin | disable-plugin --plugin signals --account %%new_account%% |  |
 | open_ok | /%%workspace%%/index.cgi?action=users_settings |  |
 | wait_for_element_present_ok | link=My Settings | 10000 |
-| wait_for_element_present_ok | link=Private Signals Messages | 10000 |
+| wait_for_element_present_ok | link=Private Messages | 10000 |
 | st-admin | remove-member --email %%new_user%% --workspace %%workspace%% |  |
 | *Comment* | Test Case: Settings: Signalsn't does appear if signals plugin is disabled for account |  |
 | open_ok | /?action=users_settings |  |
 | wait_for_element_present_ok | link=My Settings | 10000 |
-| text_unlike | //body | Private Signals Messages |
+| text_unlike | //body | Private Messages |
 
 | *Comment* | Test Case: Settings: User Teardown |  |
 | st-admin | purge-page --w %%workspace%% --p first_post_in_brackets_%%start_time%%_weblog | qr/.+ was purged .+/ |

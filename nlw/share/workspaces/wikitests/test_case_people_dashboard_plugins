@@ -19,6 +19,7 @@ This test is designed to test global navigation changes as people/dashboard is e
 | click_and_wait | link=People |  |
 | text_like | All People |  |
 | text_like | Showing 1 |  |
+| wait_for_element_visible_ok | link=Home | 30000 |
 | click_and_wait | link=Home |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | text_like | st-editing-tools-edit | Welcome |
@@ -27,6 +28,9 @@ This test is designed to test global navigation changes as people/dashboard is e
 | *Comment* | Disable people. Refresh. People links to socialtext.com |  |
 | st-admin | disable-plugin --plugin people --all-accounts | The people plugin is now disabled for all accounts |
 | open_ok | / |  |
+| wait_for_element_visible_ok | link=Home | 30000 |
+| wait_for_element_visible_ok | link=People | 30000 |
+| wait_for_element_visible_ok | link=Workspaces | 30000 |
 | click_and_wait | link=People |  |
 | location_like | `http://www.socialtext.com/products/socialnetworking.php` |  |
 
@@ -34,6 +38,7 @@ This test is designed to test global navigation changes as people/dashboard is e
 | *Comment* | Disable dashboard. Home is workspace list. |  |
 | st-admin | disable-plugin --plugin dashboard --all-accounts | The dashboard plugin is now disabled for all accounts |
 | open_ok | / |  |
+| wait_for_element_visible_ok | link=Home | 30000 |
 | text_like | contentRight | Workspaces you belong to |
 | text_like | contentRight | You have free access |
 | location_like | /?action=workspace_list |  |
@@ -41,11 +46,12 @@ This test is designed to test global navigation changes as people/dashboard is e
 | location_like | /?action=workspace_list |  |
 
 | *Comment* | Test Case: People Dashboard Plugins |  |
-| *Comment* | Enable people. Illegal configuration. No People link. Home is workspace list. |  |
+| *Comment* | Enable people. A formerly illegal configuration, which PM declared OK |  |
 | st-admin | enable-plugin --plugin people --all-accounts | The people plugin is now enabled for all accounts |
 | open_ok | / |  |
+| wait_for_element_visible_ok | link=People | 30000 |
 | text_like | contentRight | Workspaces you belong to |
-| wait_for_element_not_present_ok | link=People | 30000 |
+| wait_for_element_present_ok | link=Home | 30000 |
 | click_and_wait | link=Home |  |
 | text_like | contentRight | You have free access |
 
@@ -56,9 +62,11 @@ This test is designed to test global navigation changes as people/dashboard is e
 | open_ok | / |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | text_like | st-editing-tools-edit | Welcome |
+| wait_for_element_visible_ok | link=Home | 30000 |
 | click_and_wait | link=Home |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | text_like | st-editing-tools-edit | Welcome |
+| wait_for_element_visible_ok | link=People | 30000 |
 | click_and_wait | link=People |  |
 | location_like | `http://www.socialtext.com/products/socialnetworking.php` |  |
 
