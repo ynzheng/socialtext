@@ -818,7 +818,7 @@ sub json_array_size {
     }
     else {
         cmp_ok scalar(@$json), $comparator, $size, 
-            $self->{http}->name . " array is expected size" ;
+            $self->{http}->name . " array is $comparator $size" ;
     }
 }
 
@@ -1035,6 +1035,15 @@ sub st_process_jobs {
 sub shell_run {
     my $self = shift;
     Socialtext::System::shell_run(join ' ', @_);
+}
+
+sub body_unlike {
+    my ($self, $expected) = @_;
+    my $body = $self->{http}->response->content;
+
+    my $re_expected = $self->quote_as_regex($expected);
+    unlike $body, $re_expected,
+        $self->{http}->name() . " body-unlike $re_expected";
 }
 
 1;

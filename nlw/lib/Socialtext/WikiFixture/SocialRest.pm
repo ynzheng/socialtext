@@ -80,14 +80,6 @@ sub comment {
     $self->{http}->name(shift);
 }
 
-
-sub body_unlike {
-    my ($self, $expected) = @_;
-    my $body = $self->{http}->response->content;
-    unlike $body, $self->quote_as_regex($expected), 
-        $self->{http}->name() . " checking body-unlike";
-}
-
 =head1 AUTHOR
 
 Luke Closs, C<< <luke.closs at socialtext.com> >>
