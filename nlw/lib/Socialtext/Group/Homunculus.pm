@@ -107,13 +107,9 @@ sub _build_driver_id {
 }
 
 sub _build_account {
-    my $self = shift;
+    my $self    = shift;
     my $acct_id = $self->account_id();
-    unless ($acct_id) {
-        die "no account_id provided";
-    }
-
-    my $acct = Socialtext::Account->new(account_id => $acct_id);
+    my $acct    = Socialtext::Account->new(account_id => $acct_id);
     unless ($acct) {
         die "account id=$acct_id no longer exists";
     }
@@ -126,13 +122,9 @@ sub _build_creation_datetime_object {
 }
 
 sub _build_creator {
-    my $self = shift;
+    my $self    = shift;
     my $user_id = $self->created_by_user_id();
-    unless ($user_id) {
-        die "no created_by_user_id provided";
-    }
-
-    my $user = Socialtext::User->new(user_id => $user_id);
+    my $user    = Socialtext::User->new(user_id => $user_id);
     unless ($user) {
         die "user id=$user_id no longer exists";
     }
