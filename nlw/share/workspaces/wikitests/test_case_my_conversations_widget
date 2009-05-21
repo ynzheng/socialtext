@@ -42,8 +42,9 @@
 | type_ok | st-tags-field | %%conv_user%% tags |
 | wait_for_element_visible_ok | st-tags-plusbutton-link | 30000 |
 | click_ok | st-tags-plusbutton-link |  |
+| wait_for_element_visible_ok | link=%%conv_user%% tags | 30000 |
 
-| st-logoutin |  |  |
+| st-logoutin | %%username%% | %%password%% |
 
 | open_ok | /?dashboard | 60000 |
 | wait_for_text_present_ok | Welcome, New User | 30000 |
