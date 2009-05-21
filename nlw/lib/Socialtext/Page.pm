@@ -45,7 +45,7 @@ use File::Path;
 use Readonly;
 use Text::Autoformat;
 use Time::Duration::Object;
-use Socialtext::Validate qw(validate :types SCALAR ARRAYREF BOOLEAN POSITIVE_INT_TYPE USER_TYPE);
+use Socialtext::Validate qw(validate :types SCALAR ARRAYREF BOOLEAN POSITIVE_INT_TYPE USER_TYPE UNDEF);
 
 Readonly my $SYSTEM_EMAIL_ADDRESS       => 'noreply@socialtext.com';
 Readonly my $IS_RECENTLY_MODIFIED_LIMIT => 60 * 60; # one hour
@@ -1693,8 +1693,14 @@ sub send_as_email {
     my $self = shift;
     # REVIEW: Candidate for Socialtext::Validate
     my $ADDRESS_LIST_TYPE = {
-        type => SCALAR | ARRAYREF, default => undef,
-        callbacks => { 'has addresses' => sub { ! ref $_[0] or @{$_[0]} > 0 } }
+        type => SCALAR | ARRAYREF | UNDEF, default => undef,
+        callbacks => { 'has addresses' => sub { 
+                (
+                    (! defined($_)) 
+                    || 
+                    (! ref $_[0] or @{$_[0]} > 0 )
+                ) }
+        }
     };
     my %p = validate(@_, {
         from => SCALAR_TYPE,
@@ -1705,6 +1711,12 @@ sub send_as_email {
         include_attachments => { type => BOOLEAN, default => 0 },
         send_copy => { type => BOOLEAN, default => 0 },
     });
+    
+    # If send_copy is specified and no to address, make the
+    # to address be equal to the from address
+    if (!$p{to} && $p{send_copy}) {
+        $p{to} = $p{from};
+    }
 
     die "Must provide at least one address via the to or cc parameters"
       unless $p{to} || $p{cc};

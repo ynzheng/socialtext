@@ -8,12 +8,15 @@ ST.Email = function () {
 var proto = ST.Email.prototype = { firstAdd: true };
 
 
-proto.clearHelp = function () {
+proto.clearEmails= function () {
     if (this.firstAdd) {
         jQuery('#email_dest option').remove();
         jQuery('#email_dest').removeClass("lookahead-prompt");
-        this.firstAdd = false;
     }
+};
+proto.clearHelp = function () {
+    this.clearEmails();
+    this.firstAdd = false;
 };
 
 proto.show = function () {
@@ -104,19 +107,22 @@ proto.show = function () {
             }
         });
 
+
         jQuery('#st-email-lightbox-form').submit(function () {
             var val = jQuery('#email_recipient').val();
-            if (val.length > 0) 
+            var send_copy_checked = jQuery('input[name="email_page_send_copy"]').is(":checked");
+            if ((val.length > 0) && (!self.firstAdd)) {
                 jQuery('#email_add').click();
-
-            if (jQuery('#email_dest').get(0).length <= 0 || self.firstAdd) {
+            }
+            if ((jQuery('#email_dest').get(0).length <= 0 || self.firstAdd) && (!send_copy_checked)) {
                 alert(loc('Error: To send email, you must specify a recipient.'));
                 return false;
             }
             
             jQuery('#email_send').attr('disabled', true);
             jQuery('#email_dest option').attr('selected', true);
-
+           
+            self.clearEmails();
             var data = jQuery(this).serialize();
             jQuery.ajax({
                 type: 'post',
@@ -139,7 +145,7 @@ proto.show = function () {
         jQuery('#email_dest option').remove();
     }
 
-    $('#st-email-lightbox .submit').click(function () {
+    $('#st-email-lightbox .submit').unbind('click').click(function () {
         $(this).parents('form').submit();
     });
 
@@ -150,6 +156,7 @@ proto.show = function () {
         callback: function() {
             jQuery('input[name="email_page_subject"]').select().focus();
             jQuery('#email_send').attr('disabled', false);
+            this.firstAdd = true;
         }
     });
 }
