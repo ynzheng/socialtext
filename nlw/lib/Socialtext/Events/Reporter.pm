@@ -201,15 +201,15 @@ my $FIELDS = <<'EOSQL';
 EOSQL
 
 my $SIGNAL_VIS_SQL = <<'EOSQL';
-     AND account_id IN (
+    AND account_id IN (
         SELECT account_id
         FROM signal_account sa
-        WHERE sa.signal_id = signal_id
+        WHERE sa.signal_id = evt.signal_id
     )
     AND (
         evt.person_id IS NULL
-        OR evt.person_id = viewer.user_id
-        OR evt.actor_id = viewer.user_id
+        OR evt.person_id = ?
+        OR evt.actor_id = ?
     )
 EOSQL
 
@@ -348,7 +348,7 @@ sub _build_standard_sql {
 
         unless ($self->{_skip_visibility}) {
             $self->add_outer_condition(
-                $VISIBILITY_SQL => ($self->viewer->user_id) x 3
+                $VISIBILITY_SQL => ($self->viewer->user_id) x 5
             );
         }
 
@@ -500,11 +500,11 @@ sub get_events_activities {
         push @conditions, q{
             event_class = 'signal' AND (
                 actor_id = ?
-                OR (
-                    SELECT true
-                      FROM topic_signal_user
-                     WHERE topic_signal_user.signal_id = e.signal_id
-                       AND user_id = ?
+                OR EXISTS (
+                    SELECT 1
+                      FROM topic_signal_user tsu
+                     WHERE tsu.signal_id = e.signal_id
+                       AND tsu.user_id = ?
                 )
                 OR person_id = ?
             )
