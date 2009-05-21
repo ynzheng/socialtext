@@ -18,7 +18,7 @@ use_ok 'Socialtext::Group::Homunculus';
 ###############################################################################
 ### TEST DATA
 ###############################################################################
-my %data = (
+my %TEST_DATA = (
     group_id           => 123,
     driver_key         => 'Dummy:abc123',
     driver_unique_id   => 456,
@@ -32,32 +32,32 @@ my %data = (
 ###############################################################################
 # TEST: Group Homunculus instantiation
 instantiation: {
-    my $homey = Socialtext::Group::Homunculus->new(%data);
+    my $homey = Socialtext::Group::Homunculus->new(%TEST_DATA);
     isa_ok $homey, 'Socialtext::Group::Homunculus', 'Group Homunculus';
 
     # verify all the attributes (lazily built or otherwise) are as expected
-    is $homey->group_id, $data{group_id}, '... with group_id';
-    is $homey->driver_key, $data{driver_key}, '... with driver_key';
+    is $homey->group_id, $TEST_DATA{group_id}, '... with group_id';
+    is $homey->driver_key, $TEST_DATA{driver_key}, '... with driver_key';
     is $homey->driver_name, 'Dummy', '... ... containing driver_name';
     is $homey->driver_id, 'abc123', '... ... containing driver_id';
-    is $homey->driver_group_name, $data{driver_group_name},
+    is $homey->driver_group_name, $TEST_DATA{driver_group_name},
         '... with driver_group_name';
-    is $homey->creation_datetime->epoch, $data{creation_datetime}->epoch,
+    is $homey->creation_datetime->epoch, $TEST_DATA{creation_datetime}->epoch,
         '... with creation_datetime';
-    is $homey->cached_at->epoch, $data{cached_at}->epoch,
+    is $homey->cached_at->epoch, $TEST_DATA{cached_at}->epoch,
         '... with cached_at';
 
-    is $homey->created_by_user_id, $data{created_by_user_id},
+    is $homey->created_by_user_id, $TEST_DATA{created_by_user_id},
         '... with created_by_user_id';
     isa_ok $homey->creator, 'Socialtext::User',
         '... ... vivified User';
-    is $homey->creator->user_id, $data{created_by_user_id},
+    is $homey->creator->user_id, $TEST_DATA{created_by_user_id},
         '... ... ... with matching user_id';
 
-    is $homey->account_id, $data{account_id}, '... with account_id';
+    is $homey->account_id, $TEST_DATA{account_id}, '... with account_id';
     isa_ok $homey->account, 'Socialtext::Account',
         '... ... vivified Account';
-    is $homey->account->account_id, $data{account_id},
+    is $homey->account->account_id, $TEST_DATA{account_id},
         '... ... ... with matching account_id';
 
     ok $homey->is_system_managed, '... is system managed';
@@ -70,7 +70,7 @@ user_created_group_not_system_managed: {
     isa_ok $user, 'Socialtext::User', 'Test User';
 
     my $homey = Socialtext::Group::Homunculus->new( {
-        %data,
+        %TEST_DATA,
         created_by_user_id => $user->user_id(),
         } );
     isa_ok $homey, 'Socialtext::Group::Homunculus', 'Group Homunculus';
