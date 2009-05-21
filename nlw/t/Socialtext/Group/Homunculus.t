@@ -1,0 +1,81 @@
+#!/usr/bin/perl
+# @COPYRIGHT@
+
+use strict;
+use warnings;
+use Test::Socialtext tests => 20;
+use Socialtext::Account;
+use Socialtext::User;
+use Socialtext::SQL qw(sql_parse_timestamptz);
+
+###############################################################################
+# Fixtures: db
+# - Need a DB around, but don't care what's in it.
+fixtures(qw( db ));
+
+use_ok 'Socialtext::Group::Homunculus';
+
+###############################################################################
+### TEST DATA
+###############################################################################
+my %data = (
+    group_id           => 123,
+    driver_key         => 'Dummy:abc123',
+    driver_unique_id   => 456,
+    driver_group_name  => 'Test Group Name',
+    creation_datetime  => DateTime->from_epoch( epoch => 1234567890 ),
+    cached_at          => DateTime->from_epoch( epoch => 1234560000 ),
+    created_by_user_id => Socialtext::User->SystemUser->user_id(),
+    account_id         => Socialtext::Account->Socialtext->account_id(),
+);
+
+###############################################################################
+# TEST: Group Homunculus instantiation
+instantiation: {
+    my $homey = Socialtext::Group::Homunculus->new(%data);
+    isa_ok $homey, 'Socialtext::Group::Homunculus', 'Group Homunculus';
+
+    # verify all the attributes (lazily built or otherwise) are as expected
+    is $homey->group_id, $data{group_id}, '... with group_id';
+    is $homey->driver_key, $data{driver_key}, '... with driver_key';
+    is $homey->driver_name, 'Dummy', '... ... containing driver_name';
+    is $homey->driver_id, 'abc123', '... ... containing driver_id';
+    is $homey->driver_group_name, $data{driver_group_name},
+        '... with driver_group_name';
+    is $homey->creation_datetime->epoch, $data{creation_datetime}->epoch,
+        '... with creation_datetime';
+    is $homey->cached_at->epoch, $data{cached_at}->epoch,
+        '... with cached_at';
+
+    is $homey->created_by_user_id, $data{created_by_user_id},
+        '... with created_by_user_id';
+    isa_ok $homey->creator, 'Socialtext::User',
+        '... ... vivified User';
+    is $homey->creator->user_id, $data{created_by_user_id},
+        '... ... ... with matching user_id';
+
+    is $homey->account_id, $data{account_id}, '... with account_id';
+    isa_ok $homey->account, 'Socialtext::Account',
+        '... ... vivified Account';
+    is $homey->account->account_id, $data{account_id},
+        '... ... ... with matching account_id';
+
+    ok $homey->is_system_managed, '... is system managed';
+}
+
+###############################################################################
+# TEST: User created Group Homunuculus is not system managed
+user_created_group_not_system_managed: {
+    my $user = create_test_user();
+    isa_ok $user, 'Socialtext::User', 'Test User';
+
+    my $homey = Socialtext::Group::Homunculus->new( {
+        %data,
+        created_by_user_id => $user->user_id(),
+        } );
+    isa_ok $homey, 'Socialtext::Group::Homunculus', 'Group Homunculus';
+
+    is $homey->created_by_user_id, $user->user_id,
+        '... created by our Test User';
+    ok !$homey->is_system_managed, '... Group is not system managed';
+}
