@@ -36,6 +36,6 @@ for my $filename ( @checkers ) {
     my $text = read_file( $filename );
 
     # either of these is Ok; "use Moose" implies "use strict"
-    my $is_strict = $text =~/^use (?:strict|Moose|MooseX::Singleton);$/m;
+    my $is_strict = $text =~/^use (?:strict|Moose|Moose::Role|MooseX::Singleton);$/m;
     ok $is_strict, $filename;
 }
