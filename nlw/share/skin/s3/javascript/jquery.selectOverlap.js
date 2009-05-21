@@ -6,7 +6,7 @@
             this.each(function(){
                 var $iframe = $('iframe.iframeHack', this);
                 if ($iframe.size() == 0) {
-                    $iframe = $('<iframe src="javascript:false"></iframe>')
+                    $iframe = $('<iframe src="/static/html/blank.html"></iframe>')
                         .addClass('iframeHack')
                         .css({
                             position: 'absolute',
