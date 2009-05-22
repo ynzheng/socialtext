@@ -21,6 +21,7 @@ fixtures(qw( base_config ));
     sub Create {
         my ($self, $proto_group) = @_;
     }
+    sub Update { }
     sub _build_cache_lifetime {
         return DateTime::Duration->new(years => 10);
     }
@@ -35,6 +36,7 @@ fixtures(qw( base_config ));
     sub Create {
         my ($self, $proto_group) = @_;
     }
+    sub Update { }
     sub _build_cache_lifetime {
         return DateTime::Duration->new(years => 10);
     }

@@ -32,6 +32,7 @@ has 'cache_lifetime' => (
 
 # Methods we require Factories consuming this Role to implement:
 requires 'Create';
+requires 'Update';
 requires 'can_update_store';
 requires '_build_cache_lifetime';
 
@@ -161,10 +162,25 @@ sub _cached_group_is_fresh {
 #}
 
 # Updates the local DB using the provided Group information
-#sub UpdateGroupRecord {
-#    my ($self, $proto_group) = @_;
-#    # SANITY CHECK: $proto_group->{group_id} *MUST* be provided
-#}
+sub UpdateGroupRecord {
+    my ($self, $proto_group) = @_;
+
+    # SANITY CHECK: need to know which "group_id" we're updating
+    die "must have a group_id to update a Group record"
+        unless $proto_group->{group_id};
+
+    # set "cached_at" to "now" unless otherwise specified
+    $proto_group->{cached_at} ||= $self->Now();
+
+    # map Group attributes to SQL UPDATE args
+    my %update_args =
+        map { $_ => $proto_group->{$_} }
+        grep { exists $proto_group->{$_} }
+        @Socialtext::Group::Homunculus::all_fields;
+
+    # UPDATE the record in the DB
+    sql_update('groups', \%update_args, 'group_id');
+}
 
 # Expires a Group record in the local DB store
 sub ExpireGroupRecord {
@@ -384,6 +400,17 @@ data prior to creating the Group.
 If your Factory is read-only and is not updateable, simply implement a stub
 method which throws an exception to indicate error.
 
+=item B<$factory-E<gt>Update($group, \%proto_group)>
+
+Updates the C<$group> with the information provided in the C<\%proto_group>
+hash-ref.
+
+Factories consuming this Role B<MUST> implement this method, and are
+responsible for ensuring that they are doing proper validation/cleaning of the
+data prior to updating the underlying data store.
+
+If your Factory is read-only and is not updateable, simply implement a stub method which throws an exception to indicate error.
+
 =item B<$factory-E<gt>can_update_store()>
 
 Returns true if the data store behind this Group Factory is updateable,
@@ -401,6 +428,18 @@ The Group record found in the DB is subject to freshness checks, and if it is
 determined that the Group data is stale the Factory will be asked to refresh
 the Group from its underlying data store (and the local cached copy will be
 updated accordingly).
+
+=item B<$factory-E<gt>UpdateGroupRecord(\%proto_group)>
+
+Updates an existing Group record in the local DB store, based on the
+information provided in the C<\%proto_grup> hash-ref.
+
+This C<\%proto_group> hash-ref B<MUST> contain the C<group_id> of the Group
+record that we are updating in the DB.
+
+The C<cached_at> time for the record will be updated to "now" by default.  If
+you wish to preserve the existing C<cached_at> time, be sure to pass that in
+as part of the data in C<\%proto_group>.
 
 =item B<$factory-E<gt>ExpireGroupRecord(group_id =E<gt> $group_id)>
 
@@ -502,6 +541,8 @@ Factory, you need to provide implementations for the following methods:
 =over
 
 =item Create(\%proto_group)
+
+=item Update($group, \%proto_group)
 
 =item can_update_store()
 

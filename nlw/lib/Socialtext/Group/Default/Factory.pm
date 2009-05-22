@@ -31,6 +31,29 @@ sub Create {
     return $self->NewGroupHomunculus($proto_group);
 }
 
+# updates a Group in the data store
+sub Update {
+    my ($self, $group, $proto_group) = @_;
+
+    # validate the data we were provided
+    $self->ValidateAndCleanData($group, $proto_group);
+
+    # update the record for this Group in the DB
+    my $updates_ref = {
+        %{$proto_group},
+        group_id => $group->group_id,
+    };
+    $self->UpdateGroupRecord($updates_ref);
+
+    # merge the updates back into the Group object
+    foreach my $attr (keys %{$updates_ref}) {
+        next if ($attr eq 'group_id');      # not updateable
+        my $setter = "_$attr";
+        $group->$setter( $updates_ref->{$attr} );
+    }
+    return $group;
+}
+
 # effectively infinite cache lifetime
 sub _build_cache_lifetime {
     return DateTime::Duration->new(years => 1000);
@@ -71,6 +94,14 @@ Attempts to create a new Group based on the information provided in the
 C<\%proto_group> hash-ref.
 
 Implements C<Create()> as specified by C<Socialtext::Group::Factory>; please
+refer to L<Socialtext::Group::Factory> for more information.
+
+=item B<$factory-E<gt>Update($group, \%proto_group)>
+
+Updates the C<$group> with the information in the provided C<\%proto_group>
+hash-ref.
+
+Implements C<Update()> as specified by C<Socialtext::Group::Factory>; please
 refer to L<Socialtext::Group::Factory> for more information.
 
 =back

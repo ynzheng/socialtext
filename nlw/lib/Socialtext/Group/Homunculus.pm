@@ -177,6 +177,19 @@ sub expire {
     $self->factory->ExpireGroupRecord(group_id => $self->group_id);
 }
 
+sub update_store {
+    my ($self, $proto_group) = @_;
+    my $factory = $self->factory();
+
+    # SANITY CHECK: only if our Factory is updateable
+    unless ($factory->can_update_store) {
+        die "Cannot update read-only Group.\n";
+    }
+
+    # Have the Factory update the record
+    $factory->Update($self, $proto_group);
+}
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
@@ -273,6 +286,14 @@ Returns true if the Group is managed by a Group Factory that has an updateable
 store.  Returns false if the Group Factory is read-only.
 
 Delegated to our Factory.
+
+=item B<$group-E<gt>update_store(\%proto_group)>
+
+Updates the Group with the information provided in the given C<\%proto_group>
+hash-ref.
+
+Throws a fatal exception if the Group Factory does not have an updateable
+store.
 
 =item B<$group-E<gt>expire()>
 

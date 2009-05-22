@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 12;
+use Test::Socialtext tests => 22;
 use Socialtext::AppConfig;
 
 ###############################################################################
@@ -61,4 +61,51 @@ retrieve_default_group: {
         '... with matching created_by_user_id';
     is $retrieved->creation_datetime, $group->creation_datetime,
         '... with matching creation_datetime';
+}
+
+###############################################################################
+# TEST: update Group
+update_default_group: {
+    Socialtext::AppConfig->set( 'group_factories', 'Default' );
+
+    my $account_id = Socialtext::Account->Socialtext->account_id();
+    my $creator_id = Socialtext::User->SystemUser->user_id();
+    my $group = Socialtext::Group->Create( {
+        driver_group_name   => 'Test Group',
+        account_id          => $account_id,
+        created_by_user_id  => $creator_id,
+        } );
+    isa_ok $group, 'Socialtext::Group', 'newly created group';
+    my $cached_at = $group->cached_at();
+
+    my $new_account_id = Socialtext::Account->Unknown->account_id();
+    my $new_creator_id = Socialtext::User->Guest->user_id();
+    $group->update_store( {
+        driver_group_name   => 'Updated Group Name',
+        account_id          => $new_account_id,
+        created_by_user_id  => $new_creator_id,
+    } );
+
+    is $group->driver_group_name, 'Updated Group Name',
+        '... driver_group_name updated';
+    is $group->account_id, $new_account_id,
+        '... account_id updated';
+    is $group->created_by_user_id, $new_creator_id,
+        '... created_by_user_id updated';
+    ok $group->cached_at->hires_epoch > $cached_at->hires_epoch,
+        '... cached_at updated';
+
+    my $refreshed = Socialtext::Group->GetGroup(group_id => $group->group_id);
+    isa_ok $refreshed, 'Socialtext::Group', 'refreshed Group';
+
+    is $refreshed->driver_group_name, 'Updated Group Name',
+        '... with updated driver_group_name';
+    is $refreshed->account_id, $new_account_id,
+        '... with updated account_id';
+    is $refreshed->created_by_user_id, $new_creator_id,
+        '... with updated created_by_user_id';
+    # XXX: should be ">" instead of "!=", but we lose hi-res resolution when
+    #      the DateTime object is marshalled into the DB.
+    ok $refreshed->cached_at->hires_epoch != $cached_at->hires_epoch,
+        '... with updated cached_at';
 }
