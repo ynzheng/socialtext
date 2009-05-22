@@ -24,6 +24,7 @@ EDITOR_LIGHT_FILE_GZIP=socialtext-editor-light.js.gz
 EDITOR_LIGHT_FILES= \
 		jquery-plugin.js \
 		lookahead.js \
+		jquery.selectOverlap.js \
 		Class.js \
 		loc.js \
 		$(ST_EDITOR_LIGHT_FILE) \

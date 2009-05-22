@@ -1,4 +1,15 @@
 (function($){
+    
+    function width_height (node, opts) {
+        var w = $(node).width();
+        var h = $(node).height();
+        if (!opts.noPadding) {
+            w += 2;
+            h += 2;
+        }
+        return {width:  w, height: h};
+    }
+
     $.fn.createSelectOverlap = function() {
         var opts = {};
         if (arguments.length) opts = arguments[0];
@@ -11,23 +22,17 @@
                         .css({
                             position: 'absolute',
                             filter: "alpha(opacity=0)",
-                            top:    -1,
-                            left:   -1,
+                            top:    opts.noPadding ? 0 : -1,
+                            left:   opts.noPadding ? 0 : -1,
                             zIndex: opts.zIndex || -1
                         })
                         .appendTo(this);
                 }
 
                 $(this).mouseover(function() {
-                    $iframe.css({
-                        width:  $(this).width() + 2,
-                        height: $(this).height() + 2
-                    });
+                    $iframe.css(width_height(this, opts));
                 });
-                $iframe.css({
-                    width:  $(this).width() + 2,
-                    height: $(this).height() + 2
-                });
+                $iframe.css(width_height(this, opts));
             });
         }
         return this;
