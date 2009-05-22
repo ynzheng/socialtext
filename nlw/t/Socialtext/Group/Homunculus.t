@@ -6,7 +6,6 @@ use warnings;
 use Test::Socialtext tests => 20;
 use Socialtext::Account;
 use Socialtext::User;
-use Socialtext::SQL qw(sql_parse_timestamptz);
 
 ###############################################################################
 # Fixtures: db
