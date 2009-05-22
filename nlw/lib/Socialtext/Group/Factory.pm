@@ -65,7 +65,7 @@ sub GetGroupHomunculus {
         return $self->NewGroupHomunculus($proto_group);
     }
 
-=pod
+=begin PLACEHOLDER
 
     # cache non-existent or stale, refresh from data store
     # ... if unable to refresh, return empty-handed; we know nothing about
@@ -92,6 +92,8 @@ sub GetGroupHomunculus {
 
     # create the homunculus, returning it back to the caller
     return $self->NewGroupHomunculus($proto_group);
+
+=end PLACEHOLDER
 
 =cut
 
