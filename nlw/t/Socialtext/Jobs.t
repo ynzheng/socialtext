@@ -2,7 +2,7 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::Socialtext tests => 44;
+use Test::Socialtext tests => 48;
 use Test::Exception;
 use Socialtext::SQL qw/:exec get_dbh/;
 
@@ -13,7 +13,9 @@ BEGIN {
     use_ok 'Socialtext::JobCreator';
 }
 
-my $foobar = Socialtext::Workspace->new(name => 'foobar');
+my $hub = new_hub('foobar', 'system-user');
+ok $hub, "loaded hub";
+my $foobar = $hub->current_workspace;
 ok $foobar, "loaded foobar workspace";
 
 my $jobs = Socialtext::Jobs->instance;
@@ -193,4 +195,23 @@ Indexer_fails_to_instantiate: {
         like $failures[0], qr/Couldn't create an indexer:/, 'indexer fail';
         ok $handle->exit_status, "job exited";
     }
+}
+
+Cant_index_untitled_page_attachments: {
+    no warnings 'redefine';
+    local *Socialtext::Attachment::load = sub { die 'do not load' };
+    local *Socialtext::Attachment::temporary = sub { 1 };
+
+    my $att = Socialtext::Attachment->new(
+        hub => $hub,
+        page_id => 'untitled_page',
+        filename => 'foobar.txt',
+    );
+    ok $att, 'made attachment';
+
+    my $handle;
+    lives_ok {
+        $handle = Socialtext::JobCreator->index_attachment($att, 'live')
+    } 'fails silently';
+    ok !$handle, 'job wasn\'t created';
 }
