@@ -116,11 +116,6 @@ sub _build_account {
     return $acct;
 }
 
-sub _build_creation_datetime_object {
-    my $self = shift;
-    return sql_parse_timestamptz( $self->creation_datetime );
-}
-
 sub _build_creator {
     my $self    = shift;
     my $user_id = $self->created_by_user_id();
