@@ -3,6 +3,7 @@ package Socialtext::Group::Default::Factory;
 
 use Moose;
 use namespace::clean -except => 'meta';
+use DateTime::Duration;
 
 with 'Socialtext::Group::Factory';
 
@@ -28,6 +29,11 @@ sub Create {
 
     # create a homunculus, and return that back to the caller
     return $self->NewGroupHomunculus($proto_group);
+}
+
+# effectively infinite cache lifetime
+sub _build_cache_lifetime {
+    return DateTime::Duration->new(years => 1000);
 }
 
 __PACKAGE__->meta->make_immutable;

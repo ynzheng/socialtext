@@ -73,6 +73,24 @@ sub Create {
 }
 
 ###############################################################################
+sub GetGroup {
+    my ($class, $key, $val) = @_;
+
+    # ask all of the configured Group Factories if they know about this Group
+    my @drivers = $class->Drivers();
+    foreach my $driver_key (@drivers) {
+        my $factory = $class->Factory(driver_key => $driver_key);
+        my $homey   = $factory->GetGroupHomunculus($key => $val);
+        if ($homey) {
+            return Socialtext::Group->new(homunculus => $homey);
+        }
+    }
+
+    # nope, didn't find it
+    return;
+}
+
+###############################################################################
 # Base package for Socialtext Group infrastructure.
 sub base_package {
     return __PACKAGE__;
@@ -103,6 +121,9 @@ Socialtext::Group - Socialtext Group object
 
   # create a new Group
   $group = Socialtext::Group->Create( \%proto_group );
+
+  # retrieve an existing Group
+  $group = Socialtext::Group->GetGroup(group_id => $group_id);
 
 =head1 DESCRIPTION
 
@@ -146,6 +167,19 @@ C<Drivers()>.
 
 For more information on the required attributes for a Group, please refer to
 L<Socialtext::Group::Factory> and its C<Create()> method.
+
+=item B<Socialtext::Group-E<gt>GetGroup($key, $val)>
+
+Looks for a Group matching the given C<$key/$val> pair, and returns a
+C<Socialtext::Group> object for that Group if one exists.
+
+Valid C<$key>s include:
+
+=over
+
+=item group_id
+
+=back
 
 =item B<$group-E<gt>homunculus()>
 

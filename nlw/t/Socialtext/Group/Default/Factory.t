@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 16;
+use Test::Socialtext tests => 24;
 
 ###############################################################################
 # Fixtures: db
@@ -66,4 +66,33 @@ create_group: {
         '... created after our test started';
     ok $created_when < $test_finish,
         '... ... and before our test finished (so we must have created it)';
+}
+
+###############################################################################
+# TEST: retrieve previously created Group
+retrieve_group: {
+    my $account_id = Socialtext::Account->Socialtext->account_id();
+    my $creator_id = Socialtext::User->SystemUser->user_id();
+    my $group = Socialtext::Group->Create( {
+        driver_group_name   => 'Test Group',
+        account_id          => $account_id,
+        creator_id          => $creator_id,
+        } );
+    isa_ok $group, 'Socialtext::Group', 'newly created group';
+
+    my $retrieved = Socialtext::Group->GetGroup(group_id => $group->group_id);
+    isa_ok $retrieved, 'Socialtext::Group', 'retrieved group';
+
+    is $retrieved->group_id, $group->group_id,
+        '... with matching group_id';
+    is $retrieved->driver_key, $group->driver_key,
+        '... with matching driver_key';
+    is $retrieved->driver_group_name, $group->driver_group_name,
+        '... with matching driver_group_name';
+    is $retrieved->account_id, $group->account_id,
+        '... with matching account_id';
+    is $retrieved->created_by_user_id, $group->created_by_user_id,
+        '... with matching created_by_user_id';
+    is $retrieved->creation_datetime, $group->creation_datetime,
+        '... with matching creation_datetime';
 }

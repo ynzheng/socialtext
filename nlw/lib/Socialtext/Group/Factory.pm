@@ -6,7 +6,7 @@ use Socialtext::Date;
 use Socialtext::Exceptions qw(data_validation_error);
 use Socialtext::Group;
 use Socialtext::Group::Homunculus;
-use Socialtext::SQL qw(:time);
+use Socialtext::SQL qw(:exec :time);
 use Socialtext::SQL::Builder qw(:all);
 use Socialtext::l10n qw(loc);
 
@@ -25,9 +25,15 @@ has 'driver_id' => (
     lazy_build => 1,
 );
 
+has 'cache_lifetime' => (
+    is => 'ro', isa => 'DateTime::Duration',
+    lazy_build => 1,
+);
+
 # Methods we require Factories consuming this Role to implement:
 requires 'Create';
 requires 'can_update_store';
+requires '_build_cache_lifetime';
 
 sub _build_driver_name {
     my $self = shift;
@@ -40,6 +46,123 @@ sub _build_driver_id {
     my ($name, $id) = split /:/, $self->driver_key();
     return $id;
 }
+
+# Retrieves a Group from the DB, managed by this Factory instance, and returns
+# a Group Homunculus object for the Group back to the caller.
+my %valid_get_group_term = (
+    group_id => 1,
+);
+sub GetGroupHomunculus {
+    my ($self, $key, $val) = @_;
+
+    # SANITY CHECK: valid lookup key
+    return unless ($valid_get_group_term{$key});
+
+    # check DB for existing cached Group
+    # ... if cached copy exists and is fresh, use that
+    my $proto_group = $self->_get_cached_group($key, $val);
+    if ($proto_group && $self->_cached_group_is_fresh($proto_group)) {
+        return $self->NewGroupHomunculus($proto_group);
+    }
+
+=pod
+
+    # cache non-existent or stale, refresh from data store
+    # ... if unable to refresh, return empty-handed; we know nothing about
+    # this Group.
+    my $refreshed = $self->_lookup_group($proto_group);
+    unless ($refreshed) {
+        return;
+    }
+
+    # validate data retrieved from underlying data store
+    $self->ValidateAndCleanData($proto_group, $refreshed);
+
+    # update local cache with updated Group data
+    $self->UpdateGroupRecord( {
+        %{$refreshed},
+        group_id    => $proto_group->{group_id},
+        } );
+
+    # merge the refreshed data back into the proto_group
+    $proto_group = {
+        %{$proto_group},
+        %{$refreshed},
+    };
+
+    # create the homunculus, returning it back to the caller
+    return $self->NewGroupHomunculus($proto_group);
+
+=cut
+
+}
+
+# Looks up a Group in the DB, to see if we have a cached copy of it already.
+sub _get_cached_group {
+    my ($self, $key, $val) = @_;
+    my (@where, @bindings);
+
+    # LOOKUP: group_id
+    # - group_id lookups can only be performed if the value is numeric; if
+    #   given a non-numeric group_id return empty handed (rather than handing
+    #   the non-numeric to the DB and watching it choke)
+    if ($key eq 'group_id') {
+        return if ($val =~ /\D/);
+        @where    = ('group_id = ?');
+        @bindings = ($val);
+    }
+    # LOOKUP: anything else
+    # - all other valid Group lookups are done as "key=val" DB lookups
+    else {
+        @where    = ("$key = ?");
+        @bindings = ($val);
+    }
+
+    # Add in our specific driver key to the WHERE clause
+    unshift @where,    "driver_key = ?";
+    unshift @bindings, $self->driver_key;
+
+    # Fire the query off to the DB to find this Group in the local cache
+    my $clause = join ' AND ', @where;
+    my $sth = sql_execute(
+        qq{SELECT * FROM groups WHERE $clause},
+        @bindings
+    );
+
+    my $row = $sth->fetchrow_hashref();
+    unless ($row) {
+        # didn't find cached copy of Group; return empty-handed
+        return;
+    }
+
+    return $row;
+}
+
+# Checks to see if the cached Group data is fresh, using the cache lifetime
+# for this Group Factory.
+sub _cached_group_is_fresh {
+    my ($self, $proto_group) = @_;
+    my $now       = $self->Now();
+    my $ttl       = $self->cache_lifetime();
+    my $cached_at = sql_parse_timestamptz($proto_group->{cached_at});
+    if (($cached_at + $ttl) > $now) {
+        return 1;
+    }
+    return 0;
+}
+
+# Looks up the Group in the Factories underlying data store, and returns a new
+# $refreshed_proto_group for the Group.  The provided $proto_group should be
+# *UNTOUCHED*.
+#sub _lookup_group {
+#    my ($self, $proto_group) = @_;
+#}
+
+# Updates the local DB using the provided Group information
+#sub UpdateGroupRecord {
+#    my ($self, $proto_group) = @_;
+#    # SANITY CHECK: $proto_group->{group_id} *MUST* be provided
+#}
 
 # Expires a Group record in the local DB store
 sub ExpireGroupRecord {
@@ -238,6 +361,15 @@ C<driver_key>.
 
 The driver id indicates a specific instance of this type of Group Factory.
 
+=item B<$factory-E<gt>cache_lifetime()>
+
+The cache TTL for Groups being managed by this Group Factory, as a
+C<DateTime::Duration> object.
+
+No default cache lifetime is provided or defined; you must implement the
+C<_build_cache_lifetime()> builder method in your concrete Factory
+implementation.
+
 =item B<$factory-E<gt>Create(\%proto_group)>
 
 Attempts to create a new Group object in the data store, using the information
@@ -257,6 +389,16 @@ returning false if the data store is read-only.
 
 Factories consuming this Role B<MUST> implement this method to indicate if
 they're updateable or not.
+
+=item B<$factory-E<gt>GetGroupHomunculus(group_id =E<gt> $group_id)>
+
+Retrieves the Group record from the local DB, turns it into a Group Homunculus
+object, and returns that Group Homunculus back to the caller.
+
+The Group record found in the DB is subject to freshness checks, and if it is
+determined that the Group data is stale the Factory will be asked to refresh
+the Group from its underlying data store (and the local cached copy will be
+updated accordingly).
 
 =item B<$factory-E<gt>ExpireGroupRecord(group_id =E<gt> $group_id)>
 
@@ -360,6 +502,8 @@ Factory, you need to provide implementations for the following methods:
 =item Create(\%proto_group)
 
 =item can_update_store()
+
+=item _build_cache_lifetime()
 
 =back
 
