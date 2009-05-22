@@ -540,7 +540,17 @@ $(function() {
         $('#st-edit-mode-container, #mainWrap').addClass("expanded");
 
         $(window).trigger("resize");
-        $('body').css('overflow', 'hidden');
+
+        if ($('body').css('overflow') != 'hidden') {
+            Socialtext._originalBodyOverflow = $('body').css('overflow');
+            $('body').css('overflow', 'hidden');
+        }
+
+        if ($('html').css('overflow') != 'hidden') {
+            Socialtext._originalHTMLOverflow = $('html').css('overflow');
+            $('html').css('overflow', 'hidden');
+        }
+
         window.scrollTo(0, 0);
         return false;
     };
@@ -551,7 +561,8 @@ $(function() {
         $("iframe#st-page-editing-wysiwyg").width( $('#st-edit-mode-view').width() - 48 );
 
         $(window).trigger("resize");
-        $('body').css('overflow', 'auto');
+        $('html').css('overflow', Socialtext._originalHTMLOverflow || 'auto');
+        $('body').css('overflow', Socialtext._originalBodyOverflow || 'auto');
         return false;
     };
     Socialtext.ui_expand_setup = function() {
