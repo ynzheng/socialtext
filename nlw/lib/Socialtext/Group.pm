@@ -66,8 +66,9 @@ sub Create {
         die "No writable Group factories configured.";
     }
 
-    # ask that factory to create the Group
-    my $group = $factory->Create($proto_group);
+    # ask that factory to create the Group Homunculus
+    my $homey = $factory->Create($proto_group);
+    my $group = Socialtext::Group->new(homunculus => $homey);
     return $group;
 }
 
