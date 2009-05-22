@@ -28,6 +28,11 @@
 [% END %]
 </div>
 
+[% FILTER decorate('container_action', container.type, container.owner) %] 
+[% END %] 
+[% FILTER decorate('container_action_script', container.type) %] 
+[% END %] 
+
 [% SET num = 0 %]
 <div id="contentContainer" class="container [% container.type %]">
     <div id="contentColumns">

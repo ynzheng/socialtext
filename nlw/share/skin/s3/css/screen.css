@@ -407,7 +407,8 @@ div#controls div#st-editing-tools-edit h2 {
 	color: #333;
 	line-height: 44px;
 	padding-left: 10px;
-        display: inline;
+        font-weight:bold;
+        margin:0!important;
 }
 
 body#listPage div#controls div#st-editing-tools-edit {
@@ -2247,18 +2248,19 @@ ul li a.followPersonButton {
     font-weight:bold;
 }
 
-div#lastsignal {
-    display:inline;
-}
-body#dashBoard div#controls div#st-editing-tools-edit div#lastsignal span {
+body#dashBoard div#lastsignal {
     font-size: 14px;
-    color: #333;
-    line-height: 44px;
-    padding-left: 20px;
-    vertical-align: baseline;
-    position: relative;
-    top: 0px;
+    color: #666;
+    line-height: 38px;
+    padding: 0 20px;
+    margin:0;
+    text-align:center;
+    background:#FFFFFF url(../images/contentContainerTile.png) repeat-x scroll left top;
+    border-left: 1px solid #759FB1;
+    border-right: 1px solid #759FB1;
+    border-bottom: 1px solid #ccc;
 }
+
 /* Wafl Boxes */
 
 #st-page-content .wafl_container td {
@@ -3774,7 +3776,20 @@ body div#globalNav div input.searchText {
 
 body#dashBoard #st-editing-tools-edit #lastsignal {
     position: static;
+    display: block;
+    float:left;
     line-height: 40px;
+    font-size:14px;
+    margin-left:9px;
+    padding-left:24px;
+    font-weight:bold;
+    background-image:url(../images/asset-icons/signal-16.png);
+    background-repeat:no-repeat;
+    background-position:0 12px;
+    width:65%;
+    overflow:hidden;
+    color:#666;
+    white-space:nowrap;
 }
 
 .other_buttons, .table_buttons { }
@@ -4154,4 +4169,3 @@ body#dashBoard div#controls div#controlsRight ul {
 #tooManyResults {
   margin:1em 0 4em 0;
 }
-
