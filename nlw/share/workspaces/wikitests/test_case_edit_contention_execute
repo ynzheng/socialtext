@@ -5,13 +5,13 @@
 | set | page | Special Edit Contention Page |
 
 | open_ok | /%%workspace%%/?%%page%% |  |
-| text_like | qr/%%short_username%% opened this page for editing/i |  |
+| text_like | qr/.+ opened this page for editing/i |  |
 
 | *Comment* | Test Case: Edit Contention Execute. Warning Text should disappear on its own. We need wait_for_text_not_visible but we don't have it. |  |
 | click_ok | link=Edit |  |
 | wait_for_element_visible_ok | link=Edit Anyway | 30000 |
 | wait_for_element_visible_ok | link=Return to Page View | 30000 |
-| text_like | qr/%%short_username%% has opened this page for editing/i |  |
+| text_like | qr/.+ has opened this page for editing/i |  |
 | text_like | qr/%%atmail%%/ |  |
 
 | *Comment* | Test Case: Edit Contention Execute. Test Return to Page View and Edit Anyway |  |

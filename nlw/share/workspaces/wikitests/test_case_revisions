@@ -186,7 +186,10 @@ from Compare Revisions, click the link above the older version | older version a
 
 | *Comment* | Test Case: Revisions: Check for edit summary in revision itself |  |
 | clickAndWait | link=Revision 3 |  |
-| text_like | qr/%%short_username%%.+Edit Summary %%start_time%%/ims |  |
+| text_like | Edit Summary %%start_time%% |  |
+
+| *Comment* | Test Case: Revisions: Check for profile link, because you don't have the LDAP user name |  |
+| wait_for_element_visible_ok | //a[contains(@href,'?profile')] | 10000 |
 
 | *Comment* | Test Case: Revisions: Teardown |  |
 | st-admin | purge-page --w %%workspace%% --page test_case_revisions_%%start_time%% | was purged |
