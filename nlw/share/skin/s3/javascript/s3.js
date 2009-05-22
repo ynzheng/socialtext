@@ -540,6 +540,7 @@ $(function() {
         $('#st-edit-mode-container, #mainWrap').addClass("expanded");
 
         $(window).trigger("resize");
+        $('body').css('overflow', 'hidden');
         window.scrollTo(0, 0);
         return false;
     };
@@ -550,6 +551,7 @@ $(function() {
         $("iframe#st-page-editing-wysiwyg").width( $('#st-edit-mode-view').width() - 48 );
 
         $(window).trigger("resize");
+        $('body').css('overflow', 'auto');
         return false;
     };
     Socialtext.ui_expand_setup = function() {
