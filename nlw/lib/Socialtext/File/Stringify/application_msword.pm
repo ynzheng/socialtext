@@ -6,6 +6,8 @@ use warnings;
 use File::Temp;
 use Socialtext::File;
 use Socialtext::File::Stringify::Default;
+use Socialtext::System qw/backtick/;
+use Socialtext::Log qw/st_log/;
 
 sub to_string {
     my ( $class, $filename ) = @_;
@@ -16,13 +18,14 @@ sub to_string {
     );
 
     # If 'wvText' fails, fall back on the "any' mode.
-    my $text =
-        ( system 'wvText', $filename, $temp_filename ) == 0
-        ? Socialtext::File::get_contents_utf8($temp_filename)
-        : Socialtext::File::Stringify::Default->to_string($filename);
-
-    unlink $temp_filename;
-    return $text;
+    my $ignored = backtick('wvText', $filename, $temp_filename);
+    if (my $err = $@) {
+        st_log->warning("Failed to index $filename: $err");
+        return Socialtext::File::Stringify::Default->to_string($filename);
+    }
+    else {
+        return Socialtext::File::get_contents_utf8($temp_filename)
+    }
 }
 
 1;
