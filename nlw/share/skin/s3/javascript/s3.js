@@ -544,6 +544,7 @@ $(function() {
         $('#st-edit-mode-container, #mainWrap').addClass("expanded");
 
         $(window).trigger("resize");
+        window.scrollTo(0, 0);
         return false;
     };
     Socialtext.ui_expand_off = function() {
