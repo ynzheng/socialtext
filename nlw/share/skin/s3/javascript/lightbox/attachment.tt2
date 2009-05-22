@@ -31,3 +31,14 @@
   </form>
 </div>
 
+<div class="lightbox" id="st-attachment-delete-confirm">
+ <h3>[% loc('Delete Attachment') %]</h3>
+ <p>[% loc("Are you sure you want to delete the attachment from this page?") %]</p>
+
+ <div id="st-attachment-delete-buttons">
+ <ul class="buttons">
+  <li class="flexButton"><a href="#" id="st-attachment-delete" class="delete">[% loc('Delete') %]</a></li>
+  <li class="flexButton"><a href="#" id="st-attachment-delete-cancel" class="close">[% loc('Cancel') %]</a></li>
+ </ul>
+ </div>
+</div>
