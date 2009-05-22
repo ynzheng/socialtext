@@ -250,11 +250,15 @@ sub _set_permissions {
         my $sql =
             'INSERT INTO "WorkspaceRolePermission" (workspace_id, role_id, permission_id) VALUES (?,?,?)';
         for my $p (@$perms) {
+            my $permission = Socialtext::Permission->new(name => $p->{permission_name});
+            my $role = Socialtext::Role->new(name => $p->{role_name});
+
+            next unless $permission and $role;
             sql_execute(
                 $sql,
                 $self->{workspace}->workspace_id,
-                Socialtext::Role->new(name => $p->{role_name})->role_id,
-                Socialtext::Permission->new(name => $p->{permission_name})->permission_id,
+                $role->role_id,
+                $permission->permission_id,
             );
         }
 
