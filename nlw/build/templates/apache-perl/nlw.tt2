@@ -127,6 +127,10 @@ PerlSetVar st_max_unshared_size 278528
     [%- FOREACH dirname IN config.inc %]
             '[% dirname %]'[%- IF loop.last -%];[%- ELSE -%],[%- END -%]
     [%- END %]
+    [% IF config.is_dev %]
+    use lib '~/perl5/lib/perl5';
+    use lib '~/perl5/lib/perl5/x86_64-linux-gnu-thread-multi';
+    [% END %]
     </Perl>
 [%- END -%]
 
