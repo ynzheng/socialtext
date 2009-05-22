@@ -4061,6 +4061,7 @@ div.hidesubmit {
     line-height: 20px;
     height: 22px;
     display: block;
+    float:left;
     font-weight: bold;
     background: transparent url(../images/genericOrangeButton.png) no-repeat scroll left bottom;
 }
