@@ -11,7 +11,7 @@ sub to_string {
     my $text = Socialtext::System::backtick( "pdftotext", "-enc", "UTF-8", $file,
         "-" );
 
-    if ($ENV{HARNESS_ACTIVE} and $? or $@) {
+    if ($ENV{HARNESS_ACTIVE} and ($? or $@)) {
         warn "Error during pdftotext: \$?=($?) \$\@=($@)";
     }
     $text = Socialtext::File::Stringify::Default->to_string($file) if $? or $@;
