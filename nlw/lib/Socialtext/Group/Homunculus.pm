@@ -5,7 +5,7 @@ use Moose;
 use Socialtext::Account;
 use Socialtext::User;
 use Socialtext::Group;
-use Socialtext::SQL qw(sql_parse_timestamptz);
+use Socialtext::MooseX::Types::Pg;
 use namespace::clean -except => 'meta';
 
 our @datetime_fields = qw(
@@ -65,8 +65,9 @@ has 'account' => (
 );
 
 has 'creation_datetime' => (
-    is => 'ro', isa => 'DateTime',
+    is => 'ro', isa => 'Pg.DateTime',
     required => 1,
+    coerce => 1,
 );
 
 has 'created_by_user_id' => (
@@ -80,7 +81,8 @@ has 'creator' => (
 );
 
 has 'cached_at' => (
-    is => 'rw', isa => 'DateTime',
+    is => 'rw', isa => 'Pg.DateTime',
+    coerce => 1,
 );
 
 has 'is_system_managed' => (
