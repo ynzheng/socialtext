@@ -202,15 +202,31 @@ proto.onChangeFilename = function () {
 
 proto.showDeleteInterface = function (img) {
     var self = this;
+    var href = $(img).prevAll('a[href!=#]').attr('href');
     
+    $(Socialtext.attachments).each(function() {
+        if ( href == this.uri ) {
+            Socialtext.selected_attachment = this.name;
+        }
+    });
+
     self.process('attachment.tt2');
+
+    // We only process the popup once, so we'll only load the
+    // selected_attachment that first time. After that, we need to manually
+    // replace the value.
+    var popup = $('#st-attachment-delete-confirm');
+    popup.html(
+        popup.html().replace(/'.*'/,
+            "'" + Socialtext.selected_attachment + "'")
+    );
 
     $('#st-attachment-delete').unbind('click').click(function() {
         var loader = $('<img>').attr('src','/static/skin/common/images/ajax-loader.gif');
         var buttons = $('#st-attachment-delete-buttons');
         var content = buttons.html();
         buttons.html(loader);
-        self.delAttachment( $(img).prevAll('a[href!=#]').attr('href'), true);
+        self.delAttachment(href, true);
         $.hideLightbox();
         buttons.html(content);
     });

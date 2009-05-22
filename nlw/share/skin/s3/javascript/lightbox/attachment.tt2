@@ -33,7 +33,7 @@
 
 <div class="lightbox" id="st-attachment-delete-confirm">
  <h3>[% loc('Delete Attachment') %]</h3>
- <p>[% loc("Are you sure you want to delete the attachment from this page?") %]</p>
+ <p>[% loc("Are you sure you want to delete the attachment '[_1]' from this page?", selected_attachment) %]</p>
 
  <div id="st-attachment-delete-buttons">
  <ul class="buttons">
