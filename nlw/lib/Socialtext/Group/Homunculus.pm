@@ -2,35 +2,21 @@ package Socialtext::Group::Homunculus;
 # @COPYRIGHT@
 
 use Moose;
+use Socialtext::MooseX::SQL;
 use Socialtext::Account;
 use Socialtext::User;
 use Socialtext::Group;
 use Socialtext::MooseX::Types::Pg;
 use namespace::clean -except => 'meta';
 
-our @datetime_fields = qw(
-    creation_datetime
-    cached_at
-);
-
-our @all_fields = qw(
-    group_id
-    driver_key
-    driver_unique_id
-    driver_group_name
-    account_id
-    creation_datetime
-    created_by_user_id
-    cached_at
-);
-
-has 'group_id' => (
+has_column 'group_id' => (
     is => 'rw', isa => 'Int',
     writer => '_group_id',
     required => 1,
+    primary_key => 1,
 );
 
-has 'driver_key' => (
+has_column 'driver_key' => (
     is => 'rw', isa => 'Str',
     writer => '_driver_key',
     trigger => \&_set_driver_key,
@@ -47,19 +33,19 @@ has 'driver_id' => (
     lazy_build => 1,
 );
 
-has 'driver_unique_id' => (
+has_column 'driver_unique_id' => (
     is => 'rw', isa => 'Str',
     writer => '_driver_unique_id',
     required => 1,
 );
 
-has 'driver_group_name' => (
+has_column 'driver_group_name' => (
     is => 'rw', isa => 'Str',
     writer => '_driver_group_name',
     required => 1,
 );
 
-has 'account_id' => (
+has_column 'account_id' => (
     is => 'rw', isa => 'Int',
     writer => '_account_id',
     trigger => \&_set_account_id,
@@ -71,14 +57,14 @@ has 'account' => (
     lazy_build => 1,
 );
 
-has 'creation_datetime' => (
+has_column 'creation_datetime' => (
     is => 'rw', isa => 'Pg.DateTime',
     writer => '_creation_datetime',
     required => 1,
     coerce => 1,
 );
 
-has 'created_by_user_id' => (
+has_column 'created_by_user_id' => (
     is => 'rw', isa => 'Int',
     writer => '_created_by_user_id',
     trigger => \&_set_created_by_user_id,
@@ -90,7 +76,7 @@ has 'creator' => (
     lazy_build => 1,
 );
 
-has 'cached_at' => (
+has_column 'cached_at' => (
     is => 'rw', isa => 'Pg.DateTime',
     writer => '_cached_at',
     coerce => 1,

@@ -174,9 +174,9 @@ sub UpdateGroupRecord {
 
     # map Group attributes to SQL UPDATE args
     my %update_args =
-        map { $_ => $proto_group->{$_} }
-        grep { exists $proto_group->{$_} }
-        @Socialtext::Group::Homunculus::all_fields;
+        map { $_->column_name => $proto_group->{ $_->name } }
+        grep { exists $proto_group->{ $_->name } }
+        Socialtext::Group::Homunculus->meta->get_all_column_attributes;
 
     # UPDATE the record in the DB
     sql_update('groups', \%update_args, 'group_id');
@@ -231,13 +231,18 @@ sub NewGroupRecord {
     $proto_group->{cached_at} ||= $self->Now();
 
     # map Group attributes to SQL INSERT args
+    my @attrs = Socialtext::Group::Homunculus->meta->get_all_column_attributes;
     my %insert_args =
-        map { $_ => $proto_group->{$_} }
-        @Socialtext::Group::Homunculus::all_fields;
-
-    foreach my $field (@Socialtext::Group::Homunculus::datetime_fields) {
-        if ($insert_args{$field}) {
-            $insert_args{$field} = sql_format_timestamptz($insert_args{$field});
+        map { $_->column_name => $proto_group->{ $_->name } }
+        @attrs;
+    # ... including marshalling DateTime columns to STRs
+    foreach my $attr (@attrs) {
+        if ($attr->type_constraint->is_a_type_of('DateTime')) {
+            my $column_name = $attr->column_name;
+            if ($insert_args{$column_name}) {
+                $insert_args{$column_name} =
+                    sql_format_timestamptz($insert_args{$column_name});
+            }
         }
     }
 
@@ -317,7 +322,8 @@ sub _validate_trim_values {
     map { $p->{$_} = Socialtext::String::trim($p->{$_}) }
         grep { !ref($p->{$_}) }
         grep { defined $p->{$_} }
-        @Socialtext::Group::Homunculus::all_fields;
+        map { $_->name }
+        Socialtext::Group::Homunculus->meta->get_all_column_attributes;
     return;
 }
 
