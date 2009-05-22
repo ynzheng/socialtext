@@ -23,7 +23,7 @@ create_default_group: {
     my $group = Socialtext::Group->Create( {
         driver_group_name   => 'Test Group',
         account_id          => $account_id,
-        creator_id          => $creator_id,
+        created_by_user_id  => $creator_id,
         } );
     isa_ok $group, 'Socialtext::Group', 'newly created group';
     isa_ok $group->homunculus, 'Socialtext::Group::Default',
@@ -40,7 +40,7 @@ retrieve_default_group: {
     my $group = Socialtext::Group->Create( {
         driver_group_name   => 'Test Group',
         account_id          => $account_id,
-        creator_id          => $creator_id,
+        created_by_user_id  => $creator_id,
         } );
     isa_ok $group, 'Socialtext::Group', 'newly created group';
 
