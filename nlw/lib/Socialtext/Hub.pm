@@ -35,6 +35,7 @@ field 'checker' =>
 
 field 'current_workspace';
 field 'current_user';
+field 'last_prefs_userid' => '';
 
 use REST::Application;
 field 'rest' => -init => 'REST::Application->new()';
@@ -255,9 +256,16 @@ sub preferences_object {
     my $self = shift;
 
     return $self->{preferences_object} = shift if @_;
-    return $self->{preferences_object} if defined $self->{preferences_object};
+
+    return $self->{preferences_object} if (
+               defined $self->{preferences_object}
+        && $self->{last_prefs_userid} eq $self->current_user->user_id);
+
     $self->{preferences_object}
-        = $self->preferences->new_for_user( $self->current_user->email_address )
+               = $self->preferences->new_for_user( $self->current_user->email_address );
+    $self->last_prefs_userid($self->current_user->user_id);
+
+    return $self->{preferences_object};
 }
 
 sub best_locale {
