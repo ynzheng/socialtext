@@ -12,31 +12,33 @@ fixtures(qw( base_config ));
 
 ###############################################################################
 # Implement some Group Factories that we can test with/against
-package ReadWriteGroupFactory;
-use Moose;
-with 'Socialtext::Group::Factory';
+{
+    package ReadWriteGroupFactory;
+    use Moose;
+    with 'Socialtext::Group::Factory';
 
-sub can_update_store { 1 };
-sub Create {
-    my ($self, $proto_group) = @_;
-}
-sub _build_cache_lifetime {
-    return DateTime::Duration->new(years => 10);
-}
-
-package ReadOnlyGroupFactory;
-use Moose;
-with 'Socialtext::Group::Factory';
-
-sub can_update_store { 0 };
-sub Create {
-    my ($self, $proto_group) = @_;
-}
-sub _build_cache_lifetime {
-    return DateTime::Duration->new(years => 10);
+    sub can_update_store { 1 };
+    sub Create {
+        my ($self, $proto_group) = @_;
+    }
+    sub _build_cache_lifetime {
+        return DateTime::Duration->new(years => 10);
+    }
 }
 
-package main;
+{
+    package ReadOnlyGroupFactory;
+    use Moose;
+    with 'Socialtext::Group::Factory';
+
+    sub can_update_store { 0 };
+    sub Create {
+        my ($self, $proto_group) = @_;
+    }
+    sub _build_cache_lifetime {
+        return DateTime::Duration->new(years => 10);
+    }
+}
 
 ###############################################################################
 # TEST: instantiation
