@@ -1,7 +1,7 @@
 package Socialtext::MooseX::SQL;
 
-use Moose ();
-use Moose::Exporter ();
+use Moose;
+use Moose::Exporter;
 
 Moose::Exporter->setup_import_methods(
     with_caller => [qw(has_column)],
