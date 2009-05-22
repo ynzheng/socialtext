@@ -90,8 +90,7 @@ proto.refreshAttachments = function (cb) {
                             .attr('alt', loc('Delete this attachment'))
                             .attr('title', loc('Delete this attachment'))
                             .bind('click', function () {
-                                $(this).children('img').attr('src', '/static/skin/common/images/ajax-loader.gif');
-                                self.delAttachment(this.name, true);
+                                self.showDeleteInterface(this);
                                 return false;
                             })
                     )
@@ -201,18 +200,39 @@ proto.onChangeFilename = function () {
     $(this).attr('disabled', true);
 }
 
+proto.showDeleteInterface = function (img) {
+    var self = this;
+    
+    self.process('attachment.tt2');
+
+    $('#st-attachment-delete').unbind('click').click(function() {
+        var loader = $('<img>').attr('src','/static/skin/common/images/ajax-loader.gif');
+        var buttons = $('#st-attachment-delete-buttons');
+        var content = buttons.html();
+        buttons.html(loader);
+        self.delAttachment( $(img).prevAll('a[href!=#]').attr('href'), true);
+        $.hideLightbox();
+        buttons.html(content);
+    });
+
+    $.showLightbox({
+        content:'#st-attachment-delete-confirm',
+        close:'#st-attachment-delete-cancel'
+    })
+}
+
 proto.showUploadInterface = function () {
     var self = this;
-    if (!$('#st-attachments-attachinterface').size()) {
-        this.process('attachment.tt2');
-        $('#st-attachments-attach-filename')
-            .val('')
-            .unbind('change')
-            .bind('change', function () {
-                self.onChangeFilename(this);
-                return false;
-            });
-    }
+
+    this.process('attachment.tt2');
+    $('#st-attachments-attach-filename')
+        .val('')
+        .unbind('change')
+        .bind('change', function () {
+            self.onChangeFilename(this);
+            return false;
+        });
+
     $.showLightbox({
         content:'#st-attachments-attachinterface',
         close:'#st-attachments-attach-closebutton'

@@ -170,15 +170,11 @@ $(function() {
     });
 
     $('.delete_attachment').unbind('click').click(function () {
-        var self = this;
-        get_lightbox('attachment', function() {
-            $(self).children('img')
-                .attr('src', '/static/skin/common/images/ajax-loader.gif');
-            Attachments.delAttachment(
-                $(self).prevAll('a[href!=#]').attr('href'), true
-            );
+        var self = this
+        get_lightbox('attachment', function () {
+            Attachments.showDeleteInterface(self);
         });
-        return false
+        return false;
     });
 
     var _gz = '';
