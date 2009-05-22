@@ -3,10 +3,10 @@ package Socialtext::Group::Homunculus;
 
 use Moose;
 use Socialtext::MooseX::SQL;
+use Socialtext::MooseX::Types::Pg;
 use Socialtext::Account;
 use Socialtext::User;
 use Socialtext::Group;
-use Socialtext::MooseX::Types::Pg;
 use namespace::clean -except => 'meta';
 
 has_column 'group_id' => (
