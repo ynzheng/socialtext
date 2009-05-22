@@ -25,12 +25,15 @@ our @all_fields = qw(
 );
 
 has 'group_id' => (
-    is => 'ro', isa => 'Int',
+    is => 'rw', isa => 'Int',
+    writer => '_group_id',
     required => 1,
 );
 
 has 'driver_key' => (
-    is => 'ro', isa => 'Str',
+    is => 'rw', isa => 'Str',
+    writer => '_driver_key',
+    trigger => \&_set_driver_key,
     required => 1,
 );
 
@@ -45,17 +48,21 @@ has 'driver_id' => (
 );
 
 has 'driver_unique_id' => (
-    is => 'ro', isa => 'Str',
+    is => 'rw', isa => 'Str',
+    writer => '_driver_unique_id',
     required => 1,
 );
 
 has 'driver_group_name' => (
     is => 'rw', isa => 'Str',
+    writer => '_driver_group_name',
     required => 1,
 );
 
 has 'account_id' => (
-    is => 'ro', isa => 'Int',
+    is => 'rw', isa => 'Int',
+    writer => '_account_id',
+    trigger => \&_set_account_id,
     required => 1,
 );
 
@@ -65,13 +72,16 @@ has 'account' => (
 );
 
 has 'creation_datetime' => (
-    is => 'ro', isa => 'Pg.DateTime',
+    is => 'rw', isa => 'Pg.DateTime',
+    writer => '_creation_datetime',
     required => 1,
     coerce => 1,
 );
 
 has 'created_by_user_id' => (
-    is => 'ro', isa => 'Int',
+    is => 'rw', isa => 'Int',
+    writer => '_created_by_user_id',
+    trigger => \&_set_created_by_user_id,
     required => 1,
 );
 
@@ -82,6 +92,7 @@ has 'creator' => (
 
 has 'cached_at' => (
     is => 'rw', isa => 'Pg.DateTime',
+    writer => '_cached_at',
     coerce => 1,
 );
 
@@ -96,6 +107,13 @@ has 'factory' => (
     handles => [qw( can_update_store )],
 );
 
+sub _set_driver_key {
+    my $self = shift;
+    $self->clear_driver_name();
+    $self->clear_driver_id();
+    $self->clear_factory();
+}
+
 sub _build_driver_name {
     my $self = shift;
     my ($name, $id) = split /:/, $self->driver_key();
@@ -108,6 +126,11 @@ sub _build_driver_id {
     return $id;
 }
 
+sub _set_account_id {
+    my $self = shift;
+    $self->clear_account();
+}
+
 sub _build_account {
     my $self    = shift;
     my $acct_id = $self->account_id();
@@ -116,6 +139,12 @@ sub _build_account {
         die "account id=$acct_id no longer exists";
     }
     return $acct;
+}
+
+sub _set_created_by_user_id {
+    my $self = shift;
+    $self->clear_creator();
+    $self->clear_is_system_managed();
 }
 
 sub _build_creator {
