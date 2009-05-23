@@ -42,6 +42,8 @@
 | *Comment* | Test Case: Email attachment Deleting HTML attachment |  |
 | open_ok | /%%workspace%%/index.cgi?Email subject %%start_time%% |  |
 | click_ok | //a[contains(@title,'Delete this attachment')] |  |
+| wait_for_element_visible_ok | link=Delete | 30000 |
+| click_ok | link=Delete |  |
 
 | *Comment* | Test Case: Email attachment Search for attachment page and verify no attachment |  |
 | *Comment* | Test Case: Email attachment Pause to let TheCeq do its job |  |

@@ -25,17 +25,17 @@
 | Comment | Test Case: Page Locking Check markup as admin |
 | open_ok | /%%ws%%/?%%ppage%% |
 | is_element_present_ok | st-page-lock-admin |
-| is_element_present_ok | link=Lock the Page |
+| is_element_present_ok | link=Lock Page |
 
 | Comment | Test Case: Page Locking Lock the page, check markup |
 | click_and_wait | st-pagetools-lock |
 | is_element_present_ok | st-page-lock-admin |
-| is_element_present_ok | link=Unlock the Page |
+| is_element_present_ok | link=Unlock Page |
 
 | Comment | Test Case: Page Locking Check markup as user |  |
 | st-logoutin | %%member%% | %%password%% |
 | open_ok | /%%ws%%/?%%ppage%% |  |
-| text_like | This page is locked and cannot be edited. |  |
+| text_like | This page is locked and can only be edited by a workspace administrator |  |
 | wait_for_element_not_present_ok | st-edit-button-link | 5000 |
 | wait_for_element_not_present_ok | st-comment-button-link | 5000 |
 | wait_for_element_not_present_ok | st-edit-button-link-bottom | 5000 |

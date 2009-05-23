@@ -22,16 +22,28 @@ TODO: find a way to test user chooser
 | wait_for_element_visible_ok | st-email-lightbox | 30000 |
 | wait_for_element_visible_ok | email_recipient | 30000 |
 | wait_for_element_visible_ok | email_page_user_choices | 30000 |
+| wait_for_element_visible_ok | email_page_send_copy | 30000 |
 | verifyValue | email_recipient | Type an email address or user name |
 | text_like | email_page_user_choices | Use the Recipients box above to add recipients to this list |
+| is_checked_ok | email_page_send_copy |  |
 
 | *Comment* | Test Case: Email. No recipient, then cancel |  |
 | wait_for_element_visible_ok | email_send | 30000 |
+| wait_for_element_visible_ok | email_page_send_copy | 30000 |
+| uncheck_ok | email_page_send_copy |  |
 | click_ok | email_send |  |
 | verifyAlert | "Type an email address or user name" is not a valid email address. |  |
 | verifyAlert | Error: To send email, you must specify a recipient |  |
 | wait_for_element_visible_ok | email_cancel | 30000 |
 | click_ok | email_cancel |  |
+| wait_for_element_not_visible_ok | st-email-lightbox | 30000 |
+
+| *Comment* | Test Case: Email. Copy to me, no other recipients |  |
+| click_ok | st-pagetools-email |  |
+| wait_for_element_visible_ok | email_send | 30000 |
+| wait_for_element_visible_ok | email_page_send_copy | 30000 |
+| is_checked_ok | email_page_send_copy |  |
+| click_ok | email_send |  |
 | wait_for_element_not_visible_ok | st-email-lightbox | 30000 |
 
 | *Comment* | Test Case: Email Popup Functionality |  |

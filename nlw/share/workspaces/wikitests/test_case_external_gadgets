@@ -1,10 +1,9 @@
 | *Comment* | Test Case: External Gadgets |  |
 
-| set_timeout | 60000 | Widgets slow down open / a lot |
-| open_ok | /?action=clear_widgets |  |
+| set_timeout | 90000 | Widgets slow down open / a lot |
 
 | *Comment* | Test Case: External Gadgets. Microsoft Outlook |  |
-| open_ok | / |  |
+| open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
 | wait_for_element_visible_ok | link=Microsoft Outlook | 30000 |
@@ -18,7 +17,7 @@
 | click_and_wait | link=Google Calendar |  |
 
 | *Comment* | Test Case: External Gadgets. YouTube Video Player |  |
-| open_ok | / |  |
+| open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
 | wait_for_element_visible_ok | link=YouTube Video Player | 30000 |
@@ -32,21 +31,21 @@
 | click_and_wait | link=SlideShare Feeds |  |
 
 | *Comment* | Test Case: External Gadgets. BeTwittered |  |
-| open_ok | / |  |
+| open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
 | wait_for_element_visible_ok | link=BeTwittered | 30000 |
 | click_and_wait | link=BeTwittered |  |
 
 | *Comment* | Test Case: External Gadgets. My del.icio.us |  |
-| open_ok | / |  |
+| open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
 | wait_for_element_visible_ok | link=My del.icio.us | 30000 |
 | click_and_wait | link=My del.icio.us |  |
 
 | *Comment* | Test Case: External Gadgets. MapQuest |  |
-| open_ok | / |  |
+| open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
 | wait_for_element_visible_ok | link=MapQuest | 30000 |
@@ -60,7 +59,7 @@
 | click_and_wait | link=Wikipedia |  |
 
 | *Comment* | Test Case: External Gadgets. Flickr Photos |  |
-| open_ok | / |  |
+| open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
 | wait_for_element_visible_ok | link=Flickr Photos | 30000 |
@@ -74,7 +73,7 @@
 | click_and_wait | link=LabPixies Calculator |  |
 
 | *Comment* | Test Case: External Gadgets. Clock & Date |  |
-| open_ok | / |  |
+| open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
 | wait_for_element_visible_ok | link=Clock & Date | 30000 |
@@ -86,5 +85,8 @@
 | click_and_wait | link=Add Content |  |
 | wait_for_element_visible_ok | link=LabPixies ToDo | 30000 |
 | click_and_wait | link=LabPixies ToDo |  |
+
+| *Comment* | Test Case: External Gadgets TEARDOWN |  |
+| open_ok | /?action=clear_widgets |  |
 
 | *Comment* | Test Case: External Gadgets COMPLETED |  |

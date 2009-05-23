@@ -7,7 +7,7 @@ TODO: use follow/unfollow to test Signals switch on Everyone/Following
 | *Comment* | Test Case: Follow |  |
 
 | set | fuser | fool-%%start_time%%@ken.socialtext.net |
-| set | fFname | Fool-%%start_time%%-Me |
+| set | fFname | __Fool-%%start_time%%-Me |
 
 | st-admin | enable-plugin --account %%hostname%% --p dashboard |  |
 | st-admin | enable-plugin --account %%hostname%% --p signals |  |
