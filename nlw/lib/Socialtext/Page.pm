@@ -1696,7 +1696,7 @@ sub send_as_email {
         type => SCALAR | ARRAYREF | UNDEF, default => undef,
         callbacks => { 'has addresses' => sub { 
                 (
-                    (! defined($_)) 
+                    (! defined($_[0])) 
                     || 
                     (! ref $_[0] or @{$_[0]} > 0 )
                 ) }
