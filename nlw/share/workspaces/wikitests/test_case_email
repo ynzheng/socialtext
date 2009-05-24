@@ -32,16 +32,21 @@ TODO: find a way to test user chooser
 | wait_for_element_visible_ok | email_page_send_copy | 30000 |
 | uncheck_ok | email_page_send_copy |  |
 | click_ok | email_send |  |
-| verifyAlert | "Type an email address or user name" is not a valid email address. |  |
 | verifyAlert | Error: To send email, you must specify a recipient |  |
 | wait_for_element_visible_ok | email_cancel | 30000 |
 | click_ok | email_cancel |  |
 | wait_for_element_not_visible_ok | st-email-lightbox | 30000 |
 
+| *Comment* | Test Case: Email. Reopen the page to reset the Email UI content |  |
+| *Comment* | Test Case: Email. TODO: remove this reopen when {bz:2579} is fixed |
+| open_ok | /%%workspace%%/?Email title %%start_time%% |  |
+
 | *Comment* | Test Case: Email. Copy to me, no other recipients |  |
+| wait_for_element_visible_ok | st-pagetools-email | 30000 |
 | click_ok | st-pagetools-email |  |
 | wait_for_element_visible_ok | email_send | 30000 |
 | wait_for_element_visible_ok | email_page_send_copy | 30000 |
+| check_ok | email_page_send_copy |  |
 | is_checked_ok | email_page_send_copy |  |
 | click_ok | email_send |  |
 | wait_for_element_not_visible_ok | st-email-lightbox | 30000 |
