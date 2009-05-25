@@ -1,8 +1,8 @@
 * HighPermissions
 
-THIS VERSION OF SLIDESHOW IS FOR FIREFOX ONLY - it augments SlideShow with operations that require HighPermissions. Vanilla SlideShow is for IE and Safari. Use [FireShow] testcase to run both.
-
-TODO: refactor this to include SlideShow, then do the Plus parts. Don't maintain two nearly identical files.
+*SlideShow Plus IS FOR FIREFOX ONLY - it augments SlideShow with operations that require HighPermissions*.
+*Vanilla SlideShow is for IE and Safari*.
+*Use [FireShow] to run both*.
 
 This test case is an aid to visually observing each screen type in the application. The test case cycles through screens, printing out SEE instructions to the test person. The test person should observe the browser under test at each SEE point along the way. The test person may pause at any point to examine the screen visually using CTRL-Z to suspend the testing process and the unix command `fg` to resume it.
 
@@ -19,30 +19,6 @@ Visit in Firefox:
 
 * Enable unplugged.
 * Enable Recent Changes and Recently Viewed in Sidebar
-
-| *Comment* | SlideShow Plus: Test Edit Summaries Feature |  |
-| open_ok | /%%wiki%%/index.cgi?Advanced Getting Around |  |
-| click_ok | st-edit-button-link |  |
-| wait_for_element_visible_ok | link=Wiki Text | 30000 |
-| click_ok | link=Wiki Text |  |
-| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
-| wait_for_element_visible_ok | st-save-button-link |
-| pause | %%pt%% |  |
-| wait_for_element_visible_ok | st-edit-summary-text-area | 5000 |
-| click_ok | st-edit-summary-text-area |  |
-| type_ok | st-edit-summary-text-area | Edit Summary Typed In |
-| *Comment* | SlideShow SEE Edit Summary Typed In |  |
-| pause | %%pt%% |  |
-| pause | %%pt%% |  |
-| wait_for_element_visible_ok | st-edit-summary-text-area | 5000 |
-| click_ok | st-edit-summary-text-area |  |
-| type_ok | st-edit-summary-text-area | Edit Summary In Slideshow |
-| *Comment* | SlideShow SEE Edit Summaries full sentence "Edit Summary In Slideshow" |  |
-| pause | %%pt%% |  |
-| clickAndWait | link=Save |  |
-| clickAndWait | //a[contains(@href,'?action=revision_list')] |  |
-| *Comment* | SlideShow: SEE Revisions List |  |
-| pause | %%pt%% |  |
 
 | *Comment* | SlideShow Plus: enabling unplugged and expanding sidebar |  |
 | st-admin | set-workspace-config --workspace %%wiki%% enable_unplugged 1 |  |
@@ -142,5 +118,85 @@ Visit in Firefox:
 | click_ok | link=RSS feed |  |
 | *Comment* | SlideShow Plus SEE Updates RSS feed |  |
 | pause | %%pt%% |  |
+
+| *Comment* | SlideShow Plus setup Account Logo test |  |
+| set | logo_acc | logo-acc-%%start_time%% |
+| set | logo_ws | logo-ws-%%start_time%% |
+| set | logo_user | `logo-%%start_time%%@ken.socialtext.net` |
+
+| st-admin | create-account --name %%logo_acc%% --title %%logo_acc%% | A new account named "%%logo_acc%%" was created. |
+| st-admin | create-user --email %%logo_user%% --password %%password%% --account %%logo_acc%% | A new user with the username "%%logo_user%%" was created. |
+| st-admin | create-workspace --name %%logo_ws%% --title %%logo_ws%% --account %%logo_acc%% | A new workspace named "%%logo_ws%%" was created. |
+| st-admin | add-member --email %%logo_user%% --workspace %%logo_ws%% | %%logo_user%% is now a member of the %%logo_ws%% workspace. |
+| st-admin | add-member --email %%logo_user%% --workspace %%workspace%% | %%logo_user%% is now a member of the %%workspace%% workspace. |
+| st-admin | add-member --email %%username%% --workspace %%logo_ws%% | %%username%% is now a member of the %%logo_ws%% workspace. |
+| st-admin | give-accounts-admin --email %%logo_user%% | %%logo_user%% now has accounts admin access |
+| st-admin | enable-plugin --plugin dashboard --account %%logo_acc%% |
+
+| *Comment* | SEE: Login as %%logo_user%% |  |
+| st-logoutin | %%logo_user%% | %%password%% |
+| open_ok | /nlw/control/account |  |
+| wait_for_element_visible_ok | link=%%logo_acc%% |  |
+| click_ok | link=%%logo_acc%% |  |
+| wait_for_element_visible_ok | link=Account Logo |  |
+| click_ok | link=Account Logo |  |
+| wait_for_element_visible_ok | new_logo_file |  |
+| type_ok | new_logo_file | %%wikitest_client_files%%wikitest.jpg |
+| click_ok | design_submit |  |
+
+| *Comment* | SEE: New Logo file on Custom Logo page |  |
+| pause | %%pt%% |  |
+| open_ok | / |  |
+
+| *Comment* | SEE: New Logo file on dashboard |  |
+| pause | %%pt%% |  |
+| open_ok | /%%logo_ws%%/ |  |
+
+| *Comment* | SEE: New Logo file on a %%logo_ws%% |  |
+| pause | %%pt%% |  |
+
+| *Comment* | SEE: OLD LOGO on %%workspace%% |  |
+| open_ok | /%%workspace%%/ |  |
+| pause | %%pt%% |  |
+
+| st-logoutin |  |  |
+| open_ok | / |  |
+
+| *Comment* | SEE: %%username%%, dashboard, default logo |  |
+| pause | %%pt%% |  |
+| open_ok | /%%logo_ws%%/ |  |
+
+| *Comment* | SEE: NEW LOGO (%%username%%, workspace belongs to custom account) |  |
+| pause | %%pt%% |  |
+
+| open_ok | /%%workspace%%/ |  |
+| *Comment* | SEE: OLD LOGO (%%username%%, workspace belongs to non-custom account) |  |
+
+| st-logoutin | %%logo_user%% | %%password%% |
+
+| open_ok | /nlw/control/account |  |
+| wait_for_element_visible_ok | link=%%logo_acc%% |  |
+| click_ok | link=%%logo_acc%% |  |
+| wait_for_element_visible_ok | link=Account Logo |  |
+| click_ok | link=Account Logo |  |
+| wait_for_element_visible_ok | new_logo_file |  |
+| wait_for_element_visible_ok | use_default |  |
+
+| *Comment* | SEE: NEW LOGO on Custom Logo page |  |
+| pause | %%pt%% |  |
+| click_ok | use_default |  |
+
+| *Comment* | SEE: OLD LOGO COMES BACK! |  |
+| pause | %%pt%% |  |
+
+| *Comment* | SEE: OLD LOGO ON DASHBOARD |  |
+| open_ok | / |  |
+| pause | %%pt%% |  |
+
+| *Comment* | SEE: OLD LOGO ON %%logo_ws%% |  |
+| open_ok | /%%logo_ws%%/ |  |
+| pause | %%pt%% |  |
+
+| st-admin | delete-workspace --no-export --w %%logo_ws%% | has been deleted |
 
 | *Comment* | SlideShow Plus COMPLETED |  |
