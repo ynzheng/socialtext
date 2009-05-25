@@ -276,3 +276,14 @@ t/wikitests/signals/data_signals_sender.wiki
 lib/Socialtext/Pluggable/Plugin/Analytics.pm
 t/Socialtext/Gadgets/Gadget-thumbnail.t
 t/wikitests/signals/events_activities.wiki
+lib/Socialtext/Sheet.pm
+lib/Socialtext/SocialCalcServersideNumberFormatting.pm
+lib/Socialtext/SocialCalcServersideUtilities.pm
+lib/Socialtext/Rest/Sheet/Cell.pm
+lib/Socialtext/Sheet/Cell.pm
+t/Socialtext/Sheet.t
+t/Socialtext/Rest/Sheet/Cell.t
+t/wikitest/socialcalc/get_cell.wiki
+etc/socialtext/uri_map.d/socialcalc.yaml
+t/wikitests/socialcalc/get_cell.wiki
+t/wikitests/test-data/socialcalc/ohai.ssheet
