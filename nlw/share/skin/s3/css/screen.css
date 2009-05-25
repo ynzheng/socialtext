@@ -3148,7 +3148,8 @@ div#mainNav ul ul.level2 {
     display: none;
     border: 1px solid #313a3d;
     max-height: 168px; /* 8 lines where each line is 20px plus 1 px border- 8*21. see above */
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 div#mainNav ul ul.level2.withimage {

@@ -3,6 +3,7 @@
 * Fixture: SocialWidgets
 
 TODO: use follow/unfollow to test Signals switch on Everyone/Following
+TODO: make this run with LDAP user Dev Null Three, perhaps rename him devnull3
 
 | *Comment* | Test Case: Follow |  |
 

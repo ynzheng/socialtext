@@ -42,6 +42,7 @@
 | type_ok | st-tags-field | %%conv_user%% tags |
 | wait_for_element_visible_ok | st-tags-plusbutton-link | 30000 |
 | click_ok | st-tags-plusbutton-link |  |
+| wait_for_element_visible_ok | link=%%conv_user%% tags | 30000 |
 
 | *Comment* | Test Case: My Conversations Widget if you logout now, IE raises an authen dialog for no reason |  |
 | *Comment* | Try to find a workaround by leaving page |

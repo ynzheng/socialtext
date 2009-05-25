@@ -577,10 +577,7 @@ sub _validate_and_clean_data {
 
     if ($p->{skin_name}) {
         my $skin = Socialtext::Skin->new(name => $p->{skin_name});
-        unless ($skin->exists) {
-            push @errors, loc("The skin you specified, [_1], does not exist.",
-                $p->{skin_name});
-        }
+        delete $p->{skin_name} unless ($skin->exists);
     }
 
     if ( $is_create and not $p->{account_id} ) {

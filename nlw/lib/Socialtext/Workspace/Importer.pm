@@ -324,7 +324,6 @@ sub _set_permissions {
             );
         }
 
-
         my $meta = {};
         eval { $meta = $self->_load_yaml( $self->_meta_file() ); };
 
