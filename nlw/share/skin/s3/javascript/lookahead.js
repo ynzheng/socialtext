@@ -420,22 +420,26 @@
 
     Lookahead.prototype.selectDown = function () {
         if (!this.lookahead) return;
-        this.select_element(
-            jQuery('li.selected', this.lookahead).length
-            ? jQuery('li.selected', this.lookahead).next('li')
-            : jQuery('li:first', this.lookahead),
-            false
-        );
+        var el;
+        if (jQuery('li.selected', this.lookahead).length) {
+            el = jQuery('li.selected', this.lookahead).next('li');
+        }
+        if (! (el && el.length) ) {
+            el = jQuery('li:first', this.lookahead);
+        }
+        this.select_element(el, false);
     };
 
     Lookahead.prototype.selectUp = function () {
         if (!this.lookahead) return;
-        this.select_element(
-            jQuery('li.selected', this.lookahead).length
-            ? jQuery('li.selected', this.lookahead).prev('li')
-            : jQuery('li:last', this.lookahead),
-            false
-        );
+        var el;
+        if (jQuery('li.selected', this.lookahead).length) {
+            el = jQuery('li.selected', this.lookahead).prev('li');
+        }
+        if (! (el && el.length) ) {
+            el = jQuery('li:last', this.lookahead);
+        }
+        this.select_element(el, false);
     };
 
     Lookahead.prototype.clickCurrent = function () {
