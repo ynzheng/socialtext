@@ -154,6 +154,32 @@ sub stress_for {
     Socialtext::System::shell_run('torture', @args);
 }
 
+=head2 standard_test_setup
+
+Set up a new account, workspace and user to work with.
+
+=cut
+
+sub standard_test_setup {
+    my $self = shift;
+    my $acct_name = shift || "acct-$self->{start_time}";
+    my $wksp_name = shift || "wksp-$self->{start_time}";
+    my $user_name = shift || "user-$self->{start_time}\@ken.socialtext.net";
+    my $password  = shift || 'password';
+
+    $self->create_account($acct_name);
+    $self->create_workspace($wksp_name, $acct_name);
+    $self->create_user($user_name, $password, $acct_name);
+    $self->add_workspace_admin($user_name, $wksp_name);
+
+    $self->{account} = $acct_name;
+    $self->{workspace} = $wksp_name;
+    $self->{email_address} = $user_name;
+    $self->{username} = $user_name;
+    $self->{password} = $password;
+    $self->http_user_pass($self->{username}, $self->{password});
+}
+
 sub create_account {
     my $self = shift;
     my $name = shift;
