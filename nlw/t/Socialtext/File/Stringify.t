@@ -25,12 +25,9 @@ BEGIN {
 }
 
 for my $ext (qw(txt html doc rtf pdf ps xls ppt xml mp3 bin)) {
+    local $ENV{ST_STRINGIFY_TEST} = 1;
     my $file = $data_dir . "/test.$ext";
     my $text = Socialtext::File::Stringify->to_string($file);
-    if ($ext eq 'pdf') {
-        warn "class for pdf=" . Socialtext::File::Stringify->_get_converter_for_file($file);
-        warn "error found: ($@)" if $@;
-    }
     SKIP: {
         skip( "$ext_deps{$ext} not installed.", 3 ) if should_skip($ext);
         like( $text, qr/This file is a \"$ext\" file/, "Test $ext marker" );
