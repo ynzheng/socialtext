@@ -136,7 +136,9 @@ sub stop {
     # reset the user_factories back to the default
     my $appconfig = Socialtext::AppConfig->new();
     $appconfig->set( 'user_factories', 'Default' );
-    $appconfig->write();
+    eval {
+        $appconfig->write();
+    }
 }
 
 ###############################################################################
