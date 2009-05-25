@@ -22,7 +22,8 @@ else {
 /* Test
 === normal links
 --- html
-<a target="_blank" title="(external link)" href="http://foobar.com">A link<!-- wiki-renamed-hyperlink "A link"<http://foobar.com> --></a><br>Foobar<br class="p"><br class="p">
+<a target="_blank" title="(external link)" href="http://foobar.com">A link</a></p>
+<br>Foobar<br class="p"><br class="p">
 
 --- wikitext
 "A link"<http://foobar.com>
@@ -30,7 +31,7 @@ Foobar
 
 === rt:24622 duplicated links.
 --- html
-<a target="_blank" title="(external link)" href="http://foobar.com">A link</a><br>Foobar<br><a target="_blank" title="(external link)" href="http://foobar.com"><!-- wiki-renamed-hyperlink "A link"<http://foobar.com> --></a><br class="p"><br class="p">
+<a target="_blank" title="(external link)" href="http://foobar.com">A link</a><br>Foobar<br><a target="_blank" title="(external link)" href="http://foobar.com"></a><br class="p"><br class="p">
 
 --- wikitext
 "A link"<http://foobar.com>
