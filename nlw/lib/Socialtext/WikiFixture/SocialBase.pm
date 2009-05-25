@@ -582,6 +582,29 @@ sub put_json {
     $self->put($uri, 'Content-Type=application/json', @_);
 }
 
+=head2 put_sheet( uri, sheet_filename )
+
+Put the contents of the specified file to the URI as a spreadsheet.
+
+=cut
+
+sub put_sheet {
+    my $self     = shift;
+    my $uri      = shift;
+    my $filename = shift;
+
+    my $dir = "t/wikitests/test-data/socialcalc";
+    my $file = "$dir/$filename";
+    die "Can't find spreadsheet at $file" unless -e $file;
+    my $content = Socialtext::File::get_contents($file);
+    my $json = encode_json({
+        content => $content,
+        type => 'spreadsheet',
+    });
+
+    $self->put($uri, 'Content-Type=application/json', $json);
+}
+
 =head2 set_http_keepalive ( on_off )
 
 Enables/disables support for HTTP "Keep-Alive" connections (defaulting to I<off>).
