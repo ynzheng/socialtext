@@ -1,6 +1,8 @@
-Selenium iehta mode is broken. IE cannot use HighPermissions.
+iehta mode is broken. IE cannot use HighPermissions.
 
-THIS VERSION OF SlideShow IS FOR IE AND SAFARI. FireShow IS FOR FIREFOX.
+THIS VERSION OF SlideShow IS FOR IE AND SAFARI. It does not use High Permissions.
+SlideShow Plus does use High Permissions and works with Firefox.
+FireShow IS FOR FIREFOX. It runs both SlideShow and SlideShow Plus
 
 This test case is an aid to visually observing each screen type in the application. The test case cycles through screens, printing out SEE instructions to the test person. The test person should observe the browser under test at each SEE point along the way. The test person may pause at any point to examine the screen visually using CTRL-Z to suspend the testing process and the unix command `fg` to resume it.
 
@@ -10,6 +12,7 @@ pushing all the editor buttons ???
 Visit in IE 6 and IE 7 and Safari
 
 | *Comment* | SlideShow: automation for visual inspection of UI screens |  |
+| *Comment* | See SlideShow Plus for automation reguiring high permissions |  |
 
 | set_default | wiki | %%workspace%% | defaults to the test workspace |
 | set_default | pt | 5000 | defaults to five seconds |
@@ -308,7 +311,7 @@ Post by Email popup
 | pause | %%popup%% |  |
 | pause | %%pt%% | some extra time to close HTML window |
 
-| *Comment* | moved PDF/RTF to end because IE has problems with it |  |
+| *Comment* | moved PDF/RTF to SlideShow Plus to use high perms |  |
 
 | open_ok | /%%wiki%%/index.cgi?Advanced Getting Around |  |
 | wait_for_element_visible_ok | st-pagetools-print | 30000 |
@@ -548,10 +551,6 @@ Lightbox screens:
 | pause | %%popup%% |  |
 | pause | %%pt%% | some extra time to close HTML window |
 
-* an RSS feed
-
-| *Comment* | SlideShow cannot check RSS feeds |  |
-
 * weblogs
 
 | open_ok | /%%wiki%%/index.cgi?action=weblog_display;category=recent%20changes |  |
@@ -564,7 +563,7 @@ Lightbox screens:
 | *Comment* | SlideShow SEE NEWER ENTRIES weblog view |  |
 | pause | %%pt%% |  |
 
-* Weblog view: RSS, Unplug popup, Print popup
+* Weblog view: RSS icon, Unplug popup, Print popup
 
 | *Comment* | SlideShow SEE RSS, UNPLUGGED, PRINT icons |  |
 | pause | %%pt%% |  |
@@ -657,8 +656,7 @@ Lightbox screens:
 | click_and_wait | link=Profile |  |
 | *Comment* | SlideShow SEE user profile |  |
 | pause | %%pt%% |  |
-| wait_for_element_visible_ok | link=(Edit) | 30000 |
-| click_and_wait | link=(Edit) |  |
+| open_ok | /?edit_profile |  |
 | *Comment* | SlideShow SEE EDIT user profile |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% |  |
@@ -669,52 +667,17 @@ Lightbox screens:
 | click_ok | //input[@value='Add Tag'] |  |
 | wait_for_element_visible_ok | link=SlideShow %%start_time%% | 30000 |
 | text_like | link=SlideShow %%start_time%% | SlideShow %%start_time%% |
+
 | *Comment* | SlideShow SEE People tag SlideShow %%start_time%% |  |
 | pause | %%pt%% |  |
 | open_ok | /?action=people;tag=SlideShow%20%%start_time%% |  |
+
 | *Comment* | SlideShow SEE People tagged SlideShow %%start_time%% |  |
 | pause | %%pt%% |  |
 
-moved PDF/RTF to end because IE has problems with it
-Don't respond to IE security bar: just forget abut popups in IE
-
-* multipage PDF export dialog
-
-| open_ok | /%%wiki%%/?action=recent_changes |  |
-| clickAndWait | link=Recently Viewed |  |
-| check_ok | page_selected |  |
-| click_ok | st-listview-submit-pdfexport |  |
-| *Comment* | SlideShow CANCEL PDF Export POPUP |  |
-| *Comment* | SlideShow DON'T ENABLE POPUP IN IE |  |
-| pause | %%popup%% |  |
-| pause | %%popup%% |  |
-
-* multipage Word export dialog
-
-| click_ok | st-listview-submit-rtfexport |  |
-| *Comment* | SlideShow CANCEL RTF Export POPUP |  |
-| *Comment* | SlideShow DON'T ENABLE POPUP IN IE |  |
-| pause | %%popup%% |  |
-| pause | %%popup%% |  |
-
-| open_ok | /%%wiki%%/index.cgi?Announcements and Links |  |
-| click_ok | link=Export to PDF |  |
-| *Comment* | SlideShow CANCEL Export to PDF popup |  |
-| *Comment* | SlideShow DON'T ENABLE POPUP IN IE |  |
-| pause | %%popup%% |  |
-| pause | %%popup%% |  |
-
-| click_ok | link=Export to Word |  |
-| *Comment* | SlideShow CANCEL Export to Word popup |  |
-| *Comment* | SlideShow DON'T ENABLE POPUP IN IE |  |
-| pause | %%popup%% |  |
-| pause | %%popup%% |  |
-
-| *Comment* | INCLUDE ControlShow |  |
+| *Comment* | Account Logo testing moved to Slideshow Plus |  |
 
 | include | [ControlShow] |  |
-
-| *Comment* | Account Logo testing moved to Slideshow Plus |  |
 
 moved Edit Tips to end because FF on galena can't close it. Bug.
 
@@ -725,14 +688,19 @@ moved Edit Tips to end because FF on galena can't close it. Bug.
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | wait_for_element_visible_ok | link=(?) |  |
 | click_ok | link=(?) |  |
-| *Comment* | SlideShow Close Edit Tips |  |
+
+| *Comment* | SlideShow SEE Edit Tips |  |
 | pause | %%popup%% |  |
+| click_ok | st-ref-card-close |  |
 
 | *Comment* | moved Simple mode to end because Safari raises an alert |  |
+
+| wait_for_element_visible_ok | link=Rich Text | 30000 |
 | click_ok | link=Rich Text |  |
 | *Comment* | SEE Simple mode except Safari |  |
+| pause | %%pt%% |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_ok | st-save-button-link |  |
-| wait_for_element_visible_ok | link=Log out | 30000 |
 
 MAYBE
 
