@@ -2,33 +2,25 @@
 # @COPYRIGHT@
 use warnings FATAL => 'all';
 use strict;
-use Test::More tests => 31;
-use URI::Escape qw/uri_escape/;
-use Socialtext::JSON qw/encode_json decode_json/;
-use Socialtext::CGI::Scrubbed;
-use Socialtext::HTTP qw/:codes/;
-
 use mocked 'Socialtext::Search::Config';
 use mocked 'Apache::Cookie';
 use mocked 'Socialtext::Events', 'event_ok', 'is_event_count';
-use mocked 'Socialtext::User';
-use mocked 'Socialtext::Rest', 'is_status';
+use Test::More tests => 31;
+use URI::Escape qw/uri_escape/;
+use Socialtext::JSON qw/decode_json/;
+use Socialtext::HTTP qw/:codes/;
+use t::RestTestTools qw/do_get_json do_post_form do_post_json is_status/;
+
+
 
 BEGIN {
     use_ok 'Socialtext::Rest::Events';
 }
 
-our $actor = Socialtext::User->new(
-    user_id => 27,
-    name => 'username',
-    email => 'username@example.com',
-    first_name => 'User',
-    last_name => 'Name',
-    is_guest => 0
-);
+our $actor = t::RestTestTools->default_actor();
 
 Empty_JSON_GET: {
-    my ($rest, $result) = do_get();
+    my ($rest, $result) = do_get_json();
 
     is_status $rest, '200 OK', "request succeeded";
     my $events = decode_json($result);
@@ -55,7 +47,7 @@ JSON_GET_an_item: {
     );
     local @Socialtext::Events::Events
         = [ { item => 'first', minutes => 3, at => 9 } ];
-    my ($rest, $result) = do_get(%args);
+    my ($rest, $result) = do_get_json(%args);
 
     is_status $rest, '200 OK', "request succeeded";
     my $events = decode_json($result);
@@ -82,7 +74,7 @@ JSON_GET_an_item: {
 
 GET_without_authorized_user: {
     local $actor = Socialtext::User->new(is_guest => 1);
-    my ($rest, $result) = do_get();
+    my ($rest, $result) = do_get_json();
 
     is_status $rest, HTTP_401_Unauthorized, "request denied";
 }
@@ -158,43 +150,3 @@ POSTing_without_authorization: {
 }
 
 exit;
-
-sub do_get {
-    Socialtext::Events::clear_get_args();
-
-    my $cgi = Socialtext::CGI::Scrubbed->new({@_});
-    my $rest = Socialtext::Rest->new(undef, $cgi, user => $actor);
-    my $e = Socialtext::Rest::Events->new($rest, $cgi);
-    $e->{user} = $actor;
-    my $result = $e->GET_json($rest);
-    return ($rest,$result);
-}
-
-sub do_post_form {
-    Socialtext::Events::clear_get_args();
-    my %form = (@_);
-    my $post = '';
-    $post .= "$_=".uri_escape($form{$_}).'&' for keys %form;
-    chop $post;
-
-    my $cgi = Socialtext::CGI::Scrubbed->new($post);
-    my $rest = Socialtext::Rest->new(undef, $cgi, user => $actor);
-    my $e = Socialtext::Rest::Events->new($rest, undef, user => $actor);
-    $e->{_test_cgi} = $cgi;
-    $e->{rest} = $rest;
-    my $result = $e->POST_form($rest);
-    return ($rest,$result);
-}
-
-sub do_post_json {
-    Socialtext::Events::clear_get_args();
-    my $json = encode_json(shift);
-
-    my $cgi = Socialtext::CGI::Scrubbed->new;
-    my $rest = Socialtext::Rest->new(undef, $cgi, user => $actor);
-    my $e = Socialtext::Rest::Events->new($rest, undef, user => $actor);
-    $e->{_content} = $rest->{_content} = $json;
-    $e->{rest} = $rest;
-    my $result = $e->POST_json($rest);
-    return ($rest,$result);
-}
