@@ -282,6 +282,7 @@ sub update_from_remote {
         edit_summary     => $edit_summary,
         locked           => $locked,
         $p{date} ? ( date => $p{date} ) : (),
+        $p{type} ? ( type => $p{type} ) : (),
     );
 
     # XXX: record a lock/unlock event.
@@ -350,14 +351,15 @@ various places where this has been done in the past.
 =cut
 {
     Readonly my $spec => {
-        content          => { type => SCALAR,         default => '' },
+        content          => { type => SCALAR, default => '' },
         original_page_id => SCALAR_TYPE,
-        revision         => { type => SCALAR,         regex   => qr/^\d+$/ },
-        categories       => { type => ARRAYREF,       default => [] },
-        subject          => SCALAR_TYPE,
-        user             => USER_TYPE,
-        date             => { can  => [qw(strftime)], default => undef },
-        edit_summary     => { type => SCALAR,    default => '' },
+        revision         => { type => SCALAR,   regex   => qr/^\d+$/ },
+        type             => { type => SCALAR,   regex   => qr/^wiki|spreadsheet$/, default => undef },
+        categories       => { type => ARRAYREF, default => [] },
+        subject             => SCALAR_TYPE,
+        user                => USER_TYPE,
+        date                => { can => [qw(strftime)], default => undef },
+        edit_summary        => { type => SCALAR, default => '' },
         signal_edit_summary => { type => SCALAR, default => undef },
         locked              => { type => SCALAR, default => undef },
     };
@@ -382,6 +384,9 @@ various places where this has been done in the past.
         $metadata->RevisionSummary(Socialtext::String::trim($args{edit_summary}));
         if (defined($args{locked})) {
             $metadata->Locked($args{locked});
+        }
+        if (defined($args{type})) {
+            $metadata->Type($args{type});
         }
         $metadata->loaded(1);
         foreach (@{$args{categories}}) {

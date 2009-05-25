@@ -261,6 +261,13 @@ sub PUT_html {
     return '';
 }
 
+sub _default_page_type { 'wiki' }
+sub _acceptable_page_types {
+    my $self = shift;
+    my $type = shift;
+    return $type =~ m/^wiki|spreadsheet$/;
+}
+
 sub PUT_json {
     my ( $self, $rest ) = @_;
 
@@ -284,6 +291,10 @@ sub PUT_json {
     my $object = decode_json( $content );
     $object->{date} ||= gmtime();
 
+    if (my $t = $object->{type}) {
+        $object->{type} = undef unless $self->_acceptable_page_types($t);
+    }
+    $object->{type} ||= $self->_default_page_type;
 
     # If the user is trying to lock the page, make sure that 1) they can
     # and 2) the workspace allows page locking.
@@ -304,6 +315,7 @@ sub PUT_json {
         edit_summary => $edit_summary,
         signal_edit_summary => $signal_edit_summary,
         $object->{tags} ? (tags => $object->{tags}) : (),
+        $object->{type} ? (type => $object->{type}) : (),
         $object->{locked} ? (locked => $object->{locked}) : (),
     );
 
