@@ -441,8 +441,8 @@
     Lookahead.prototype.clickCurrent = function () {
         if (this._items.length) {
             var selitem = jQuery('li.selected a', this.lookahead);
-            if (selitem.length) {
-                selitem.triggerHandler("click"); 
+            if (selitem.length && selitem.attr('value')) {
+                this.accept(selitem.attr('value'));
             }
         }
     };
