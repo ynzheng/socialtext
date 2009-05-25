@@ -4169,3 +4169,45 @@ body#dashBoard div#controls div#controlsRight ul {
 #tooManyResults {
   margin:1em 0 4em 0;
 }
+
+/* Gadget Gallery */
+.galleryTitle {
+    font-weight: bold;
+    border-bottom: 1px solid black;
+    width: 43%;
+    float: left;
+    padding: 0 0 10px 5%;
+    font-size: 10pt;
+}
+
+.gallerySection {
+    width: 50%;
+    float: left;
+}
+
+.galleryWidget {
+    margin: 10px 0 20px 0;
+}
+
+.galleryWidget .thumbnail {
+    width: 62px;
+    float: left;
+    margin: 0 10px;
+}
+
+.galleryWidget .title {
+    font-weight: bold;
+}
+
+.galleryWidget .description {
+    padding: 5px 0;
+}
+
+.galleryWidget .description,
+.galleryWidget .widgetButton {
+    margin-left: 82px;
+}
+
+.galleryWidget.removed {
+    opacity: .5;
+}

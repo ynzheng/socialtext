@@ -409,8 +409,9 @@ CREATE TABLE gallery_gadget (
     gadget_id bigint NOT NULL,
     gallery_id bigint NOT NULL,
     "position" integer NOT NULL,
-    section text NOT NULL,
-    removed boolean DEFAULT false
+    removed boolean DEFAULT false,
+    socialtext boolean DEFAULT false,
+    "global" boolean DEFAULT false
 );
 
 CREATE SEQUENCE gallery_id
@@ -1514,4 +1515,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '62');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '63');
