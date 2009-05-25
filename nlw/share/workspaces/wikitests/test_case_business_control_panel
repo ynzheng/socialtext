@@ -373,6 +373,10 @@ text_like | qr/0-sort-2-workspace1-%%start_time%%.+0-sort-3-workspace1-%%start_t
 | wait_for_element_visible_ok | field-title-input | 30000 |
 | text_like | qr/Field Title.+Field Name.+Data Source.+Field Type.+Hidden/ |  |
 
+| *Comment* | TC:BCP can fail in IE unless you fill in the field title |  |
+| wait_for_element_visible_ok | field-title-input | 30000 |
+| type_ok | field-title-input | IE field |
+
 | wait_for_element_visible_ok | data-source-select | 30000 |
 | wait_for_element_visible_ok | field-type-select | 30000 |
 | select_ok | data-source-select | label=External |
@@ -384,6 +388,12 @@ text_like | qr/0-sort-2-workspace1-%%start_time%%.+0-sort-3-workspace1-%%start_t
 | click_and_wait | //input[@value='Save Field'] |  |
 | text_like | qr/Updated profile field.+This field is now hidden from users' profiles./ |  |
 | text_like | un-hide |  |
+
+| *Comment* | TC:BCP reopen UI to decouple from any previous failures |  |
+| click_and_wait | link=Accounts |  |
+| click_and_wait | link=0 sort 3 account %%start_time%% |  |
+| wait_for_element_visible_ok | link=Profile Fields | 30000 |
+| click_and_wait | link=Profile Fields |  |
 
 | *Comment* | TC:BCP make new custom fields |  |
 | wait_for_element_visible_ok | link=Create New Field | 30000 |

@@ -275,3 +275,4 @@ lib/Socialtext/Rest/Signals/Bookmarklet.pm
 t/wikitests/signals/data_signals_sender.wiki
 lib/Socialtext/Pluggable/Plugin/Analytics.pm
 t/Socialtext/Gadgets/Gadget-thumbnail.t
+t/wikitests/signals/events_activities.wiki

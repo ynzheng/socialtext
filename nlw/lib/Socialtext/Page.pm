@@ -1689,23 +1689,33 @@ sub rename {
     return $return;
 }
 
+# REVIEW: Candidate for Socialtext::Validate
+sub _validate_has_addresses {
+    my $self = shift;
+    return (
+        (not defined($_[0])) # May be undef
+            or
+        (not ref $_[0])      # or an address
+            or
+        (@{$_[0]} >= 1)      # or list of one or more addresses
+    );
+}
+
 sub send_as_email {
     my $self = shift;
-    # REVIEW: Candidate for Socialtext::Validate
-    my $ADDRESS_LIST_TYPE = {
-        type => SCALAR | ARRAYREF | UNDEF, default => undef,
-        callbacks => { 'has addresses' => sub { 
-                (
-                    (! defined($_)) 
-                    || 
-                    (! ref $_[0] or @{$_[0]} > 0 )
-                ) }
-        }
-    };
     my %p = validate(@_, {
         from => SCALAR_TYPE,
-        to => $ADDRESS_LIST_TYPE,
-        cc => $ADDRESS_LIST_TYPE,
+        to => {
+            type => SCALAR | ARRAYREF | UNDEF, default => undef,
+            callbacks => { 'has addresses or send_copy' => sub {
+                my ($val, $params) = @_;
+                $params->{send_copy} or $self->_validate_has_addresses(@_);
+            } }
+        },
+        cc => {
+            type => SCALAR | ARRAYREF | UNDEF, default => undef,
+            callbacks => { 'has addresses' => sub { $self->_validate_has_addresses(@_) } }
+        },
         subject => { type => SCALAR, default => $self->title },
         body_intro => { type => SCALAR, default => '' },
         include_attachments => { type => BOOLEAN, default => 0 },

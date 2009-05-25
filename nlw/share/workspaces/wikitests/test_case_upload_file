@@ -19,6 +19,7 @@
 | text_like | st-attachments-attach-limit | Maximum file size: 50MB |
 
 | *Comment* | Test Case: Close Upload file lightbox |  |
+| wait_for_element_visible_ok | st-attachments-attach-closebutton | 120000 |
 | click_ok | st-attachments-attach-closebutton |  |
 | wait_for_element_visible_ok | st-attachments-uploadbutton | 30000 |
 | click_ok | st-attachments-uploadbutton |  |
@@ -27,13 +28,13 @@
 | type_ok | st-attachments-attach-filename | %%wikitest_files%%aintnosuchfile.txt |
 
 | *Comment* | Test Case: Upload File: Selenium can't detect the file does not exist message |  |
-| wait_for_text_present_ok | Uploading | 30000 |
 | wait_for_text_not_present_ok | Uploading | 30000 |
 
 | *Comment* | Test Case: Upload File wikitest.doc |  |
 | wait_for_element_visible_ok | st-attachments-attach-filename | 30000 |
 | type_ok | st-attachments-attach-filename | %%wikitest_files%%wikitest.doc |
 | wait_for_text_present_ok | Uploaded files: wikitest.doc | 30000 |
+| wait_for_element_visible_ok | st-attachments-attach-closebutton | 120000 |
 | click_and_wait | st-attachments-attach-closebutton |  |
 
 | *Comment* | Test Case: Upload File verify doc upload |  |

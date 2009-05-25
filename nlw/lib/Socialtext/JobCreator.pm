@@ -27,6 +27,9 @@ sub index_attachment {
     my $attachment = shift;
     my $search_config = shift;
 
+    return if ($attachment->page_id eq 'untitled_page');
+    return if ($attachment->loaded && $attachment->temporary);
+
     return $self->insert(
         'Socialtext::Job::AttachmentIndex' => {
             workspace_id => $attachment->hub->current_workspace->workspace_id,
@@ -41,6 +44,8 @@ sub index_page {
     my $self = shift;
     my $page = shift;
     my $search_config = shift;
+
+    return if $page->id eq 'untitled_page';
 
     my @job_ids;
 

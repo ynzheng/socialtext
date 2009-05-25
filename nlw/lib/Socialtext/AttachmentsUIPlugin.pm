@@ -393,7 +393,7 @@ sub attachments_delete {
     my $self = shift;
     return unless $self->hub->checker->check_permission('delete');
 
-    return unless $self->hub->checker->can_modify_locked($self->hub->pages->current_page);
+    return unless $self->hub->checker->can_modify_locked($self->hub->pages->current);
 
     for my $attachment_junk ( $self->cgi->selected ) {
         my ( $page_id, $id, undef ) = map { split ',' } $attachment_junk;

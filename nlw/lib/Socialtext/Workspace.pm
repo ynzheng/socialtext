@@ -577,10 +577,7 @@ sub _validate_and_clean_data {
 
     if ($p->{skin_name}) {
         my $skin = Socialtext::Skin->new(name => $p->{skin_name});
-        unless ($skin->exists) {
-            push @errors, loc("The skin you specified, [_1], does not exist.",
-                $p->{skin_name});
-        }
+        delete $p->{skin_name} unless ($skin->exists);
     }
 
     if ( $is_create and not $p->{account_id} ) {
@@ -1459,7 +1456,6 @@ sub _dump_permissions_to_yaml_file {
     my $dir  = shift;
     my $name = shift || $self->name;
 
-    my $file = Socialtext::File::catfile( $dir, $name . '-permissions.yaml' );
 
     my $sth = sql_execute(<<EOT, $self->workspace_id);
 SELECT role_id, permission_id from "WorkspaceRolePermission"
@@ -1468,15 +1464,30 @@ EOT
     my $rows = $sth->fetchall_arrayref;
 
     my @dump;
+    my @lock_dump;
     for my $r (@$rows) {
-        push @dump, {
+        my $p = Socialtext::Permission->new(
+            permission_id => $r->[1]);
+
+        # We cannot export the lock permission in this way, because older
+        # versions of the code do not gracefully understand permissions they
+        # do not know about
+        my $array_ref = \@dump;
+        $array_ref = \@lock_dump if $p->name eq 'lock';
+        push @$array_ref, {
             role_name => Socialtext::Role->new( role_id => $r->[0] )->name,
-            permission_name => Socialtext::Permission->new(
-                permission_id => $r->[1])->name,
+            permission_name => $p->name,
         }
     }
 
+    my $file = Socialtext::File::catfile( $dir, $name . '-permissions.yaml' );
     _dump_yaml( $file, \@dump );
+
+    # Now dump the lock perms to a separate file that will only be read by
+    # code that knows about the lock perm
+    my $lock_perm_file
+        = Socialtext::File::catfile($dir, $name . '-lock-permissions.yaml');
+    _dump_yaml( $lock_perm_file, \@lock_dump );
 }
 
 sub _export_logo_file {

@@ -79,7 +79,7 @@ $(function() {
     setTimeout(function() { $('#contentWarning').hide('slow') }, 10000);
     
     // Fix the global nav for IE6
-    $('#mainNav ul.level2').createSelectOverlap();
+    $('#mainNav ul.level2').createSelectOverlap({noPadding: true});
 
     $('table.sort')
         .each(function() { Socialtext.make_table_sortable(this) });
@@ -540,6 +540,17 @@ $(function() {
         $('#st-edit-mode-container, #mainWrap').addClass("expanded");
 
         $(window).trigger("resize");
+
+        if ($('body').css('overflow') != 'hidden') {
+            Socialtext._originalBodyOverflow = $('body').css('overflow');
+            $('body').css('overflow', 'hidden');
+        }
+
+        if ($('html').css('overflow') != 'hidden') {
+            Socialtext._originalHTMLOverflow = $('html').css('overflow');
+            $('html').css('overflow', 'hidden');
+        }
+
         window.scrollTo(0, 0);
         return false;
     };
@@ -550,6 +561,8 @@ $(function() {
         $("iframe#st-page-editing-wysiwyg").width( $('#st-edit-mode-view').width() - 48 );
 
         $(window).trigger("resize");
+        $('html').css('overflow', Socialtext._originalHTMLOverflow || 'auto');
+        $('body').css('overflow', Socialtext._originalBodyOverflow || 'auto');
         return false;
     };
     Socialtext.ui_expand_setup = function() {

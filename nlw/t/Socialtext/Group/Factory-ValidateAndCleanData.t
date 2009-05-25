@@ -12,20 +12,20 @@ fixtures(qw( db ));
 
 ###############################################################################
 # Implement a Group Factory that we can test with/against
-package TestGroupFactory;
-use Moose;
-with 'Socialtext::Group::Factory';
+{
+    package TestGroupFactory;
+    use Moose;
+    with 'Socialtext::Group::Factory';
 
-sub can_update_store { 1 };
-sub Create {
-    my ($self, $proto_group) = @_;
+    sub can_update_store { 1 };
+    sub Create {
+        my ($self, $proto_group) = @_;
+    }
 }
 sub Update { }
 sub _build_cache_lifetime {
     return DateTime::Duration->new(years => 10);
 }
-
-package main;
 
 ###############################################################################
 ### TEST DATA

@@ -16,8 +16,8 @@ var doSubmitAddTagForm = function(tag) {
         t.$('#st-tags-field').val(tag);
         t.$('#st-tags-form').submit();
         t.poll(function(){
-            t.scrollTo(t.$('a.addTagButton').offset().top);
-            return t.$('a.addTagButton').is(':visible');
+            t.scrollTo(t.$('#st-tags-plusbutton-link').offset().top);
+            return t.$('#st-tags-plusbutton-link').is(':visible');
         }, function () { t.callNextStep() } );
     };
 };

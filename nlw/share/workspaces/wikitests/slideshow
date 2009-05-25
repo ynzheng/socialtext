@@ -1,6 +1,8 @@
-Selenium iehta mode is broken. IE cannot use HighPermissions.
+iehta mode is broken. IE cannot use HighPermissions.
 
-THIS VERSION OF SlideShow IS FOR IE AND SAFARI. FireShow IS FOR FIREFOX.
+THIS VERSION OF SlideShow IS FOR IE AND SAFARI. It does not use High Permissions.
+SlideShow Plus does use High Permissions and works with Firefox.
+FireShow IS FOR FIREFOX. It runs both SlideShow and SlideShow Plus
 
 This test case is an aid to visually observing each screen type in the application. The test case cycles through screens, printing out SEE instructions to the test person. The test person should observe the browser under test at each SEE point along the way. The test person may pause at any point to examine the screen visually using CTRL-Z to suspend the testing process and the unix command `fg` to resume it.
 
@@ -10,15 +12,11 @@ pushing all the editor buttons ???
 Visit in IE 6 and IE 7 and Safari
 
 | *Comment* | SlideShow: automation for visual inspection of UI screens |  |
+| *Comment* | See SlideShow Plus for automation reguiring high permissions |  |
 
 | set_default | wiki | %%workspace%% | defaults to the test workspace |
 | set_default | pt | 5000 | defaults to five seconds |
 | set_default | popup | 8000 | cancel popups in 8 seconds |
-| set | logo_acc | logo-acc-%%start_time%% |
-| set | logo_ws | logo-ws-%%start_time%% |
-| set | logo_user | `logo-%%start_time%%@ken.socialtext.net` |
-
-| include | `[Disable LDAP]` |  | disable LDAP |
 
 | *Comment* | SlideShow: enabling unplugged and expanding sidebar |  |
 | st-admin | set-workspace-config --workspace %%wiki%% enable_unplugged 1 |  |
@@ -30,11 +28,30 @@ Visit in IE 6 and IE 7 and Safari
 | check_ok | display__include_breadcrumbs |  |
 | clickAndWait | link=Save |  |
 
-| open_ok | /%%workspace%%/?action=preferences_settings;preferences_class_id=recent_changes |  |
+| open_ok | /%%wiki%%/?action=preferences_settings;preferences_class_id=recent_changes |  |
 | check_ok | recent_changes__include_in_pages |  |
 | clickAndWait | link=Save |  |
 
 | *Comment* | STARTING SlideShow |  |
+
+| *Comment* | Watch page Advanced Getting Around |  |
+
+| open_ok | /%%wiki%%/?Advanced Getting Around |  |
+| *Comment* | SlideShow: SEE Watch, then Watch |  |
+| st-watch-page | 1 |  |
+| st-is-watched | 1 |  |
+
+| *Comment* | SlideShow: SEE Stop Watching on page |  |
+| pause | %%pt%% |  |
+
+| clickAndWait | link=My Watchlist |
+| *Comment* | SlideShow: SEE Advanced Getting Around on Watchlist |
+| pause | %%pt%% |
+
+| st-watch-page | 0 | Advanced Getting Around |
+| st-is-watched | 0 | Advanced Getting Around |
+| *Comment* | SlideShow: SEE Stopped Watching from Watchlist |  |
+| pause | %%pt%% |  |
 
 * all the tabs in the list view
 
@@ -110,7 +127,6 @@ Post by Email popup
 | open_ok | /%%wiki%% |  |
 | clickAndWait | link=Settings |  |
 | clickAndWait | link=My Settings |  |
-| clickAndWait | link=Private Signals Messages |  |
 | clickAndWait | link=Manage All Users |  |
 | clickAndWait | link=Invite New Users |  |
 | clickAndWait | link=My Workspaces |  |
@@ -129,11 +145,18 @@ Post by Email popup
 | clickAndWait | link=Syndicate |  |
 | clickAndWait | link=Time |  |
 | clickAndWait | link=Watchlist |  |
-| clickAndWait | link=Weblogs |  |
+| clickAndWait | //a[contains(@href,'?action=preferences_settings;preferences_class_id=weblog')] |  |
+
 | *Comment* | SlideShow FINISHED WITH SETTINGS |  |
+
+| clickAndWait | link=Private Messages |  |
+| *Comment* | SlideShow SEE: Private Messages |  |
+| pause | %%pt%% |  |
 
 * a search result
 
+| open_ok | /%%wiki%% |  |
+| wait_for_element_visible_ok | st-search-term | 10000 |
 | type | st-search-term | wiki |
 | clickAndWait | st-search-submit |  |
 | *Comment* | SlideShow SEE search results with %%wiki%% only |  |
@@ -243,13 +266,36 @@ Post by Email popup
 
 #| verifyConfirmation | If you click 'OK', all edit changes will be lost! | |
 
-Popup and pulldown dialogs:
+| *Comment* | SlideShow: Test Edit Summaries Feature |  |
+| open_ok | /%%wiki%%/index.cgi?Advanced Getting Around |  |
+| click_ok | st-edit-button-link |  |
+| wait_for_element_visible_ok | link=Wiki Text | 30000 |
+| click_ok | link=Wiki Text |  |
+| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| wait_for_element_visible_ok | st-save-button-link |
+| wait_for_element_visible_ok | st-edit-summary-text-area | 5000 |
+| click_ok | st-edit-summary-text-area |  |
+| type_ok | st-edit-summary-text-area | Edit Summary In Slideshow at %%start_time%% |
 
-* comment popup editing box.
+| *Comment* | SlideShow SEE "Edit Summary In Slideshow" |  |
+| pause | %%pt%% |  |
+| clickAndWait | st-save-button-link |  |
+| clickAndWait | //a[contains(@href,'?action=revision_list')] |  |
+
+| *Comment* | SlideShow: SEE Revisions List with Edit Summary at %%start_time%% |  |
+| pause | %%pt%% |  |
+| click_and_wait | link=Compare Revisions |  |
+
+| *Comment* | SlideShow: SEE Revisions Compare with Edit Summary at %%start_time%% |  |
+| pause | %%pt%% |  |
+| click_and_wait | //table[@id='revision-compare-table']//tr[2]//td[2]//a |  |
+
+| *Comment* | SlideShow: SEE Revision view with Edit Summary at %%start_time%% |  |
+| pause | %%pt%% |  |
 
 | open_ok | /%%wiki%%/index.cgi?Start Here |  |
 | click_ok | link=Comment |  |
-| *Comment* | SlideShow: CANCEL comment popup with editing UI (except Safari) |  |
+| *Comment* | SlideShow: See Comment UI in page |  |
 | pause | %%popup%% |  |
 
 * all dialogs in the Tools menu EXCEPT Email
@@ -259,25 +305,26 @@ Popup and pulldown dialogs:
 | open_ok | /%%wiki%%/index.cgi?Advanced Getting Around |  |
 
 | click_ok | link=Duplicate Page |  |
-| *Comment* | SlideShow CANCEL Duplicate Page popup |  |
+| *Comment* | SlideShow: SEE Duplicate Page |  |
 | pause | %%popup%% |  |
+| click_ok | link=Cancel |  |
 
 | click_ok | link=Rename Page |  |
-| *Comment* | SlideShow CANCEL Rename Page popup |  |
+| *Comment* | SlideShow: SEE Rename Page |  |
 | pause | %%popup%% |  |
-
-| *Comment* | Skipping Delete Page - can't seem to get the popup right |  |
+| click_ok | link=Cancel |  |
 
 | click_ok | link=Copy Page to Workspace |  |
-| *Comment* | SlideShow CANCEL Copy Page popup |  |
+| *Comment* | SlideShow: SEE Copy Page |  |
 | pause | %%popup%% |  |
+| click_ok | link=Cancel |  |
 
-| click_ok | link=Export as HTML |  |
-| *Comment* | SlideShow SEE Exported HTML |  |
-| *Comment* | IF SEPARATE WINDOW, CTRL-W HTML ON WINDOWS |  |
-| *Comment* | IF SEPARATE WINDOW, APPLE-W HTML ON MAC |  |
+| click_ok | link=Delete Page |  |
+| *Comment* | SlideShow: SEE Delete Page |  |
 | pause | %%popup%% |  |
-| pause | %%pt%% | some extra time to close HTML window |
+| click_ok | link=Cancel |  |
+
+| *Comment* | moved HTML/PDF/RTF to SlideShow Plus to use high perms |  |
 
 | open_ok | /%%wiki%%/index.cgi?Advanced Getting Around |  |
 | wait_for_element_visible_ok | st-pagetools-print | 30000 |
@@ -285,10 +332,10 @@ Popup and pulldown dialogs:
 | *Comment* | SlideShow CANCEL Print popup |  |
 | pause | %%popup%% |  |
 
-| click_ok | st-pagetools-email |  |
-| *Comment* | SlideShow CANCEL Email This Page popup |  |
+| click_ok | link=Email |  |
+| *Comment* | SlideShow SEE Email This Page popup |  |
 | pause | %%popup%% |  |
-| pause | %%pt%% | extra pause for Email This Page popup |
+| click_ok | link=Cancel |  |
 
 * Email to this Workspace/Page popup (needs some sort of email client installed)
 
@@ -335,18 +382,12 @@ Popup and pulldown dialogs:
 | type_ok | st-tags-field | FOOBAR |
 | *Comment* | SlideShow: SEE FOOBAR in tag box |  |
 | pause | %%pt%% |  |
+| click_ok | st-tags-plusbutton-link |  |
+| *Comment* | SlideShow: SEE FOOBAR tag |  |
 
 * Incoming link(s)
 
 | *Comment* | SlideShow: SEE incoming links in sidebar |
-| pause | %%pt%% |
-
-| *Comment* | st_watch_page | 1 |
-| *Comment* | SlideShow: SEE Stop Watching on page |  |
-| pause | %%pt%% |  |
-| clickAndWait | link=My Watchlist |
-
-| *Comment* | SlideShow: SEE Advanced Getting Around on Watchlist |
 | pause | %%pt%% |
 
 * page revisions view
@@ -434,7 +475,7 @@ Lightbox screens:
 | open_ok | %%wiki%%?action=new_page |  |
 | wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_ok | st-save-button-link |  |
-| *Comment* | SlideShow SEE SAVE PAGE AS LIGHTBOX |  |
+| *Comment* | SlideShow: SEE SAVE PAGE AS LIGHTBOX |  |
 | *Comment* | DO NOT CANCEL |  |
 | pause | %%pt%% |  |
 | click_ok | st-newpage-save-savebutton |  |
@@ -511,10 +552,6 @@ Lightbox screens:
 | pause | %%popup%% |  |
 | pause | %%pt%% | some extra time to close HTML window |
 
-* an RSS feed
-
-| *Comment* | SlideShow cannot check RSS feeds |  |
-
 * weblogs
 
 | open_ok | /%%wiki%%/index.cgi?action=weblog_display;category=recent%20changes |  |
@@ -527,7 +564,7 @@ Lightbox screens:
 | *Comment* | SlideShow SEE NEWER ENTRIES weblog view |  |
 | pause | %%pt%% |  |
 
-* Weblog view: RSS, Unplug popup, Print popup
+* Weblog view: RSS icon, Unplug popup, Print popup
 
 | *Comment* | SlideShow SEE RSS, UNPLUGGED, PRINT icons |  |
 | pause | %%pt%% |  |
@@ -537,21 +574,22 @@ Lightbox screens:
 
 | open_ok | /%%wiki%%/index.cgi?action=weblog_display;category=recent%20changes |  |
 | click_ok | link=Comment |  |
-| *Comment* | SlideShow: CANCEL comment popup with editing UI (except Safari) |  |
+| *Comment* | SlideShow: comment popup with editing UI (except Safari) |  |
 | pause | %%popup%% |  |
+
 | click_ok | link=Edit this post |  |
 | *Comment* | SlideShow: SEE post open for editing |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% | extra pause for editing post |
+
 | open_ok | /%%wiki%%/index.cgi?action=weblog_display;category=recent%20changes |  |
 | click_ok | link=Permalink |  |
-| *Comment* | SlideShow: SEE page view |  |
+| *Comment* | SlideShow: SEE permalink page view |  |
 | pause | %%pt%% |  |
 | open_ok | /%%wiki%%/index.cgi?action=weblog_display;category=recent%20changes |  |
-| *Comment* | SlideShow: SEE (another) page view |  |
+| *Comment* | SlideShow: SEE weblog page view |  |
 | pause | %%pt%% |  |
-| open_ok | /%%wiki%%/index.cgi?action=weblog_display;category=recent%20changes |  |
-| *Comment* | click_ok | link=Print |
+| click_ok | link=Print |  |
 | *Comment* | SlideShow CANCEL WEBLOG PRINT popup |  |
 | pause | %%popup%% |  |
 
@@ -569,7 +607,7 @@ Lightbox screens:
 | pause | %%popup%% |  |
 
 | open_ok | /%%wiki%%/ |  |
-| *Comment* | SlideShow SEE Global Navigation Home People Workspaces |  |
+| *Comment* | SlideShow SEE Global Navigation Home People Workspaces Signals Invite |  |
 | pause | %%pt%% |  |
 | click_and_wait | link=Home |  |
 | *Comment* | SlideShow SEE Default widgets |  |
@@ -578,11 +616,24 @@ Lightbox screens:
 | *Comment* | SlideShow SEE default workspaces |  |
 | pause | %%pt%% |  |
 | click_and_wait | link=People |  |
-| *Comment* | SlideShow SEE Names and Summaries of People (if they exist) |  |
+| *Comment* | SlideShow SEE People Directory |  |
 | pause | %%pt%% |  |
 | type_ok | st-search-term | socialtext |
 | *Comment* | SlideShow SEE People matching socialtext |  |
 | *Comment* | SlideShow SEE pagination UI |  |
+| pause | %%pt%% |  |
+
+| click_and_wait | link=Signals |  |
+| *Comment* | SlideShow SEE Signals UI |  |
+| pause | %%pt%% |  |
+| pause | %%pt%% |  |
+
+| click_and_wait | link=Invite! |  |
+| *Comment* | SlideShow SEE Invite to WS UI |  |
+| pause | %%pt%% |  |
+
+| open_ok | /?profile/3 |  |
+| *Comment* | SlideShow SEE Profile with six widgets |  |
 | pause | %%pt%% |  |
 
 | open_ok | /%%wiki%%/ |  |
@@ -594,9 +645,9 @@ Lightbox screens:
 | pause | %%pt%% |  |
 
 | open_ok | /%%wiki%%/ |  |
-| *Comment* | SlideShow SEE Workspace Navigation |
+| *Comment* | SlideShow SEE Workspace Navigation |  |
 | pause | %%pt%% |  |
-| *Comment* | SlideShow USE Workspace Navigation |
+| *Comment* | SlideShow USE Workspace Navigation |  |
 | click_and_wait | link=What's New |  |
 | click_and_wait | link=My Watchlist |  |
 | click_and_wait | link=Weblogs |  |
@@ -606,58 +657,31 @@ Lightbox screens:
 | click_and_wait | link=Profile |  |
 | *Comment* | SlideShow SEE user profile |  |
 | pause | %%pt%% |  |
-| click_and_wait | `link=(Edit)` |  |
-| wait_for_element_present_ok | photo-upload-button | 60000 |
+| open_ok | /?edit_profile |  |
 | *Comment* | SlideShow SEE EDIT user profile |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% |  |
 
+| *Comment* | SlideShow navigate home in case previous test hangs |  |
+| open-ok | /%%wiki%% |  |
 | click_and_wait | link=Profile |  |
 | *Comment* | SlideShow SEE user tagging |  |
+
 | type_ok | new_tag | SlideShow %%start_time%% |
 | click_ok | //input[@value='Add Tag'] |  |
 | wait_for_element_visible_ok | link=SlideShow %%start_time%% | 30000 |
 | text_like | link=SlideShow %%start_time%% | SlideShow %%start_time%% |
+
 | *Comment* | SlideShow SEE People tag SlideShow %%start_time%% |  |
 | pause | %%pt%% |  |
 | open_ok | /?action=people;tag=SlideShow%20%%start_time%% |  |
+
 | *Comment* | SlideShow SEE People tagged SlideShow %%start_time%% |  |
 | pause | %%pt%% |  |
 
-moved PDF/RTF to end because IE has problems with it
-the problems seem to be due to IE popping up a spurious empty window
+| *Comment* | Account Logo testing moved to Slideshow Plus |  |
 
-* multipage PDF export dialog
-
-| open_ok | /%%wiki%%/?action=recent_changes |  |
-| clickAndWait | link=Recently Viewed |  |
-| check_ok | page_selected |  |
-| click_ok | st-listview-submit-pdfexport |  |
-| *Comment* | SlideShow CANCEL PDF Export POPUP |  |
-| *Comment* | SlideShow CANCEL WARINING IN IE |  |
-| pause | %%popup%% |  |
-| pause | %%popup%% |  |
-
-* multipage Word export dialog
-
-| click_ok | st-listview-submit-rtfexport |  |
-| *Comment* | SlideShow CANCEL RTF Export POPUP |  |
-| *Comment* | SlideShow CANCEL WARNING IN IE |  |
-| pause | %%popup%% |  |
-| pause | %%popup%% |  |
-
-| open_ok | /%%wiki%%/index.cgi?Announcements and Links |  |
-| click_ok | link=Export to PDF |  |
-| *Comment* | SlideShow CANCEL Export to PDF popup |  |
-| *Comment* | SlideShow CANCEL WARINING IN IE |  |
-| pause | %%popup%% |  |
-| pause | %%popup%% |  |
-
-| click_ok | link=Export to Word |  |
-| *Comment* | SlideShow CANCEL Export to Word popup |  |
-| *Comment* | SlideShow CANCEL WARINING IN IE |  |
-| pause | %%popup%% |  |
-| pause | %%popup%% |  |
+| include | [ControlShow] |  |
 
 moved Edit Tips to end because FF on galena can't close it. Bug.
 
@@ -668,76 +692,19 @@ moved Edit Tips to end because FF on galena can't close it. Bug.
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | wait_for_element_visible_ok | link=(?) |  |
 | click_ok | link=(?) |  |
-| *Comment* | SlideShow Close Edit Tips |  |
+
+| *Comment* | SlideShow SEE Edit Tips |  |
 | pause | %%popup%% |  |
+| click_ok | st-ref-card-close |  |
 
 | *Comment* | moved Simple mode to end because Safari raises an alert |  |
+
+| wait_for_element_visible_ok | link=Rich Text | 30000 |
 | click_ok | link=Rich Text |  |
 | *Comment* | SEE Simple mode except Safari |  |
+| pause | %%pt%% |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_ok | st-save-button-link |  |
-| wait_for_element_visible_ok | link=Log out | 30000 |
-
-| st-admin | create-account --name %%logo_acc%% --title %%logo_acc%% | A new account named "%%logo_acc%%" was created. |
-| st-admin | create-user --email %%logo_user%% --password %%password%% --account %%logo_acc%% | A new user with the username "%%logo_user%%" was created. |
-| st-admin | create-workspace --name %%logo_ws%% --title %%logo_ws%% --account %%logo_acc%% | A new workspace named "%%logo_ws%%" was created. |
-| st-admin | add-member --email %%logo_user%% --workspace %%logo_ws%% | %%logo_user%% is now a member of the %%logo_ws%% workspace. |
-| st-admin | add-member --email %%logo_user%% --workspace %%workspace%% | %%logo_user%% is now a member of the %%workspace%% workspace. |
-| st-admin | add-member --email %%username%% --workspace %%logo_ws%% | %%username%% is now a member of the %%logo_ws%% workspace. |
-| st-admin | give-accounts-admin --email %%logo_user%% | %%logo_user%% now has accounts admin access |
-| st-admin | enable-plugin --plugin dashboard --account %%logo_acc%% |
-
-| *Comment* | SEE: Login as new user |  |
-| st-logout |  |  |
-| st-login | %%logo_user%% | %%password%% |
-| open_ok | /nlw/control/account |  |
-| wait_for_element_visible_ok | link=%%logo_acc%% |  |
-| click_ok | link=%%logo_acc%% |  |
-| wait_for_element_visible_ok | link=Account Logo |  |
-| click_ok | link=Account Logo |  |
-| wait_for_element_visible_ok | new_logo_file |  |
-| type_ok | new_logo_file | %%wikitest_client_files%%wikitest.jpg |
-| click_ok | design_submit |  |
-| *Comment* | SEE: New Logo file on page |  |
-| pause | %%pt%% |  |
-| open_ok | / |  |
-| *Comment* | SEE: New Logo file on dashboard |  |
-| pause | %%pt%% |  |
-| open_ok | /%%logo_ws%%/ |  |
-| *Comment* | SEE: New Logo file on a workspace |  |
-| pause | %%pt%% |  |
-| *Comment* | SEE: OLD LOGO on %%workspace%% |  |
-| open_ok | /%%workspace%%/ |  |
-| pause | %%pt%% |  |
-| st-logout |  |  |
-| st-login |  |  |
-| open_ok | / |  |
-| *Comment* | SEE: Old user, dashboard, no logo |  |
-| pause | %%pt%% |  |
-| open_ok | /%%logo_ws%%/ |  |
-| *Comment* | SEE: NEW LOGO (Old user, workspace belongs to custom account) |  |
-| pause | %%pt%% |  |
-| open_ok | /%%workspace%%/ |  |
-| *Comment* | SEE: OLD LOGO (Old user, workspace belongs to non-custom account) |  |
-| st-logout |  |  |
-| st-login | %%logo_user%% | %%password%% |
-| open_ok | /nlw/control/account |  |
-| wait_for_element_visible_ok | link=%%logo_acc%% |  |
-| click_ok | link=%%logo_acc%% |  |
-| wait_for_element_visible_ok | link=Account Logo |  |
-| click_ok | link=Account Logo |  |
-| wait_for_element_visible_ok | new_logo_file |  |
-| wait_for_element_visible_ok | use_default |  |
-| *Comment* | SEE: NEW LOGO |  |
-| pause | %%pt%% |  |
-| click_ok | use_default |  |
-| *Comment* | SEE: OLD LOGO IS BACK! |  |
-| open_ok | / |  |
-| *Comment* | SEE: OLD LOGO ON DASHBOARD |  |
-| pause | %%pt%% |  |
-| *Comment* | SEE: OLD LOGO ON WORKSPACE |  |
-| open_ok | /%%logo_ws%%/ |  |
-| st-logout |  |  |
-| st-login |  |  |
 
 MAYBE
 

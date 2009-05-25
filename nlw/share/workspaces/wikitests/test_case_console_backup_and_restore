@@ -1,5 +1,6 @@
 Automated backup and restore testing
 *NOTE: THIS TEST RELIES ON HAVING VERY FEW WORKSPACES ON THE APPLIANCE AND WILL TIMEOUT OTHERWISE AND FAIL*
+*NOTE: test-data, wikitests, and the default workspaces will be on the appliance when this test runs*
 
 | *Comment* | Test Case: Console Backup and Restore: Test Case: Console Backup and Restore |  |
 
@@ -25,6 +26,7 @@ Automated backup and restore testing
 | click_and_wait | link=Backup Restore %%start_time%% |  |
 | wait_for_element_visible_ok | st-page-titletext | 30000 |
 | text_like | st-page-titletext | Backup Restore %%start_time%% |
+| text_like | contentContainer | Backup Restore content %%start_time%% |
 
 | *Comment* | Test Case: Console Backup and Restore: Create a new empty workspace |  |
 | st_admin | create-workspace --name empty-%%start_time%% --title "Empty %%start_time%%" --empty |
@@ -54,8 +56,8 @@ Automated backup and restore testing
 | click_and_wait | //input[@value='Backup'] |  |
 | text_like | Backup is in progress |  |
 
-| *Comment* | WAIT 30 seconds FOR BACKUP TO COMPLETE |  |
-| pause | 30000 |  |
+| *Comment* | WAIT 90 seconds FOR BACKUP TO COMPLETE and hope it is long enough |  |
+| pause | 90000 |  |
 
 | *Comment* | Test Case: Console Backup and Restore: create a second test page in admin. It should be gone after restore. |  |
 | st_admin | update-page --w admin --e %%email%% --page --page "Backup Restore Page 2 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "Backup Restore Page 2 %%start_time%%" page has been created. |
@@ -72,8 +74,8 @@ Automated backup and restore testing
 | click_and_wait | //input[@value='Restore'] |  |
 | text_like | Restore in progress |  |
 
-| *Comment* | WAIT 180 seconds FOR RESTORE TO COMPLETE |  |
-| pause | 180000 |  |
+| *Comment* | WAIT 300 seconds FOR RESTORE TO COMPLETE and hope it is enough |  |
+| pause | 300000 |  |
 
 | *Comment* | Test Case: Console Backup and Restore: Verify that the restore completed |  |
 | st_admin | give-system-admin --e %%email%% |  |
@@ -118,7 +120,7 @@ Automated backup and restore testing
 | click_and_wait | st-save-button-link |  |
 | open_ok | /admin/index.cgi?action=recent_changes |  |
 | click_and_wait | link=Backup Restore 3 %%start_time%% |  |
-| text_like | contentContainer | Backup Restore 3 %%start_time%% |
+| text_like | contentContainer | Backup Restore 3 content %%start_time%% |
 
 | *Comment* | Test Case: Console Backup and Restore: People and Dashboard |  |
 | click_and_wait | link=Home |  |
@@ -130,6 +132,19 @@ Automated backup and restore testing
 | click_and_wait | link=Workspaces |  |
 | text_like | Workspace Title |  |
 | text_like | Workspace Name |  |
+
+| *Comment* | Test Case: Console Backup and Restore: Verify this workspace came back |  |
+| open_ok | /%%workspace%%/index.cgi?action=new_page |  |
+| wait_for_element_visible_ok | link=Wiki Text | 30000 |
+| click_ok | link=Wiki Text |  |
+| wait_for_element_visible_ok | st-newpage-pagename-edit | 30000 |
+| type_ok | st-newpage-pagename-edit | Backup Restore %%workspace%% %%start_time%% |
+| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| type_ok | wikiwyg_wikitext_textarea | Backup Restore %%workspace%% content %%start_time%% |
+| click_and_wait | st-save-button-link |  |
+| open_ok | /%%workspace%%/index.cgi?action=recent_changes |  |
+| click_and_wait | link=Backup Restore %%workspace%% %%start_time%% |  |
+| text_like | contentContainer | Backup Restore %%workspace%% content %%start_time%% |
 
 | *Comment* | Test Case: Console Backup and Restore: Teardown |  |
 | st-admin | delete-workspace --no-export --w empty-%%start_time%% | The empty-%%start_time%% workspace has been deleted. |

@@ -119,7 +119,7 @@ proto.show = function () {
                 return false;
             }
             
-            jQuery('#email_send').attr('disabled', true);
+            jQuery('#email_send').parent('li').addClass('disabled');
             jQuery('#email_dest option').attr('selected', true);
            
             self.clearEmails();
@@ -133,7 +133,7 @@ proto.show = function () {
                 },
                 error: function() {
                     alert(loc('Error: Failed to send email.'));
-                    jQuery('#email_send').attr('disabled', false);
+                    jQuery('#email_send').parent('li').removeClass('disabled');
                     jQuery('#email_dest option').attr('selected', false);
                 }
             })
@@ -155,7 +155,7 @@ proto.show = function () {
         width: '580px',
         callback: function() {
             jQuery('input[name="email_page_subject"]').select().focus();
-            jQuery('#email_send').attr('disabled', false);
+            jQuery('#email_send').parent('li').removeClass('disabled');
             this.firstAdd = true;
         }
     });

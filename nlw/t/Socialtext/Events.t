@@ -22,7 +22,7 @@ my $user = Socialtext::User->new(
     name => 'tiffany'
 );
 my $viewer = $user;
-my @viewer_args = ($viewer->user_id) x 4;
+my @viewer_args = ($viewer->user_id) x 6;
 my $ws = Socialtext::Workspace->new(
     workspace_id => 348798,
     name => 'forbao',
@@ -110,9 +110,9 @@ WHERE (1=1) AND ((
                   AND account_id IN (
                       SELECT account_id 
                       FROM signal_account sa 
-                      WHERE sa.signal_id = signal_id
+                      WHERE sa.signal_id = evt.signal_id
     )
-      AND ( evt.person_id IS NULL OR evt.person_id = viewer.user_id OR evt.actor_id = viewer.user_id ) 
+      AND ( evt.person_id IS NULL OR evt.person_id = ? OR evt.actor_id = ? )
             )
         )
     ))
@@ -229,7 +229,7 @@ EOSQL
         Socialtext::Events->Get($viewer, before => 'now');
         sql_ok( 
             sql => "$base_select AND (at < ?::timestamptz) $tail_select $decorate_sql",
-            args => [$viewer_args[0], 'now', @viewer_args[1,2,3]],
+            args => [$viewer_args[0], 'now', @viewer_args[1,2,3,4,5]],
         );
         ok_no_more_sql();
     }
@@ -238,7 +238,7 @@ EOSQL
         Socialtext::Events->Get($viewer, after => 'now');
         sql_ok( 
             sql => "$base_select AND (at > ?::timestamptz) $tail_select $decorate_sql",
-            args => [$viewer_args[0], 'now', @viewer_args[1,2,3]],
+            args => [$viewer_args[0], 'now', @viewer_args[1,2,3,4,5]],
         );
         ok_no_more_sql();
     }
@@ -249,7 +249,7 @@ EOSQL
         sql_ok( 
             sql => "$base_select AND (at < ?::timestamptz)
                                  AND (at > ?::timestamptz) $tail_select $decorate_sql",
-            args => [$viewer_args[0], 'then', 'now', @viewer_args[1,2,3]],
+            args => [$viewer_args[0], 'then', 'now', @viewer_args[1,2,3,4,5]],
         );
         ok_no_more_sql();
     }
@@ -258,7 +258,7 @@ EOSQL
         Socialtext::Events->Get($viewer,  action => 'View' );
         sql_ok( 
             sql => "$base_select AND (e.action = ?) $tail_select $decorate_sql",
-            args => [$viewer_args[0], 'View', @viewer_args[1,2,3]],
+            args => [$viewer_args[0], 'View', @viewer_args[1,2,3,4,5]],
         );
         ok_no_more_sql();
     }
@@ -268,7 +268,7 @@ EOSQL
         sql_ok( 
             sql => "$base_select AND (e.event_class = ?) AND (e.action = ?)
                     $tail_select $decorate_sql",
-            args => [$viewer_args[0], 'thingers', 'View', @viewer_args[1,2,3]],
+            args => [$viewer_args[0], 'thingers', 'View', @viewer_args[1,2,3,4,5]],
         );
         ok_no_more_sql();
     }
@@ -278,7 +278,7 @@ EOSQL
         sql_ok( 
             sql => "$base_select AND (at < ?::timestamptz) AND (e.action = ?)
                     $tail_select $decorate_sql",
-            args => [$viewer_args[0], 'then', 'View', @viewer_args[1,2,3]],
+            args => [$viewer_args[0], 'then', 'View', @viewer_args[1,2,3,4,5]],
         );
         ok_no_more_sql();
     }
@@ -290,7 +290,7 @@ EOSQL
             name => 'Get_action_and_before_events_with_count',
             sql => "$base_select AND (at < ?::timestamptz) AND (e.action = ?)
                     $tail_select LIMIT ? $decorate_sql",
-            args => [$viewer_args[0], 'then', 'view', @viewer_args[1,2,3], 5],
+            args => [$viewer_args[0], 'then', 'view', @viewer_args[1,2,3,4,5], 5],
         );
         ok_no_more_sql();
     }
@@ -305,7 +305,7 @@ EOSQL
                      $tail_select LIMIT ? $decorate_sql",
             args => [
                 $viewer_args[0], 'then', 'page', 'view',
-                @viewer_args[1,2,3], 5
+                @viewer_args[1,2,3,4,5], 5
             ],
         );
         ok_no_more_sql();

@@ -294,6 +294,13 @@ sub _set_permissions {
 
     my $perms = $self->_load_yaml( $self->_permissions_file() );
 
+    # Also look for lock permissions
+    my $lock_perm_file = $self->_lock_permissions_file;
+    if (-e $lock_perm_file) {
+        my $lock_perms = $self->_load_yaml($lock_perm_file);
+        push @$perms, @$lock_perms;
+    }
+
     eval {
         sql_begin_work();
 
@@ -305,14 +312,17 @@ sub _set_permissions {
         my $sql =
             'INSERT INTO "WorkspaceRolePermission" (workspace_id, role_id, permission_id) VALUES (?,?,?)';
         for my $p (@$perms) {
+            my $permission = Socialtext::Permission->new(name => $p->{permission_name});
+            my $role = Socialtext::Role->new(name => $p->{role_name});
+
+            next unless $permission and $role;
             sql_execute(
                 $sql,
                 $self->{workspace}->workspace_id,
-                Socialtext::Role->new(name => $p->{role_name})->role_id,
-                Socialtext::Permission->new(name => $p->{permission_name})->permission_id,
+                $role->role_id,
+                $permission->permission_id,
             );
         }
-
 
         my $meta = {};
         eval { $meta = $self->_load_yaml( $self->_meta_file() ); };
@@ -344,6 +354,7 @@ sub _populate_db_metadata {
 }
 
 sub _permissions_file { return $_[0]->{old_name} . '-permissions.yaml' }
+sub _lock_permissions_file { return $_[0]->{old_name} . '-lock-permissions.yaml' }
 
 sub _meta_file { return 'meta.yaml' }
 

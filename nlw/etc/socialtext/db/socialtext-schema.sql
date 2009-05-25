@@ -295,7 +295,7 @@ CREATE SEQUENCE default_gadget_id
 CREATE TABLE error (
     error_time integer NOT NULL,
     jobid bigint NOT NULL,
-    message varchar(255) NOT NULL,
+    message text NOT NULL,
     funcid integer DEFAULT 0 NOT NULL
 );
 
@@ -1515,4 +1515,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '63');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '64');

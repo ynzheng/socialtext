@@ -29,7 +29,15 @@ t.runAsync([
         t.scrollTo(200);
         t.win.Page.setPageContent('Replace me');
         t.$('#st-attachment-listing li:first a').click();
-        t.callNextStep(10000);
+
+        t.poll(function() {
+            return t.$('#st-attachment-delete').is(':visible');
+        }, function() {t.callNextStep(1500);});
+    },
+
+    function() {
+        t.$('#st-attachment-delete').click();
+        t.callNextStep(7500);
     },
 
     function() { 
