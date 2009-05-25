@@ -410,7 +410,8 @@ CREATE TABLE gallery_gadget (
     gallery_id bigint NOT NULL,
     "position" integer NOT NULL,
     removed boolean DEFAULT false,
-    socialtext boolean DEFAULT false
+    socialtext boolean DEFAULT false,
+    "global" boolean DEFAULT false
 );
 
 CREATE SEQUENCE gallery_id
