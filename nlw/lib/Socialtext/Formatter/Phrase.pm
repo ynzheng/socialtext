@@ -186,9 +186,7 @@ sub html {
         = $self->hub->pages->title_to_disposition($page_title);
 
     if ($page_uri) {
-        my $escaped_page_title = $page_title;
-        $escaped_page_title =~ s/-/=-/g;
-        my $page = defined $label ? $escaped_page_title : '';
+        my $page = defined $label ? $page_title : '';
         $label = $page_title unless defined $label;
 
         $self->_freelink_url($page_uri, $page_disposition, $label, $page);
