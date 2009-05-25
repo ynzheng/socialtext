@@ -341,7 +341,7 @@
         // Enabling the select overlap breaks clicking on the lookahead if the
         // lookahead is inserted into a different window.
         if (window === this.window)
-            this.lookahead.createSelectOverlap({ zIndex: 3000, padding: 1 });
+            this.lookahead.createSelectOverlap({ noPadding: true });
     };
 
     Lookahead.prototype.hide = function () {
