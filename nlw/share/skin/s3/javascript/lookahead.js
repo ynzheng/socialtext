@@ -317,10 +317,10 @@
             this.show();
         }
         else {
-            lookaheadList.append(
-                jQuery("<li></li>")
-                    .append("No matches for '"+$(this.input).val()+"'")
-                    .css({padding: '3px 5px'}));
+            lookaheadList.html('<li></li>');
+            $('li', lookaheadList)
+                .text("No matches for '"+$(this.input).val()+"'")
+                .css({padding: '3px 5px'});
             this.show();
         }
     };
