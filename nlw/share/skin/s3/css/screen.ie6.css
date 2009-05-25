@@ -75,3 +75,9 @@ body .container.edit_profile #col0 {
     margin-left: 5%;
     margin-right: 0%;
 }
+
+div#controls div#controlsRight ul li a.export {
+    background-position-x: 5px; /* really only for ie6 but doesn't hurt others */
+    margin-left: 15px;
+}
+
