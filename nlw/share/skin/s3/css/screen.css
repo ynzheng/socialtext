@@ -855,6 +855,8 @@ div#controls div#controlsRight div.goTo a.newPostButton {
 div#controls div#controlsRight ul li a.export {
 	background: url(../images/exportIcon.png) no-repeat center left;
 	padding:0 10px 0 26px;
+        height: 38px;
+        line-height: 38px;
 }
 
 div#controls div#controlsRight ul li a.print {
