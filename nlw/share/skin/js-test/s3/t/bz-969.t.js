@@ -14,6 +14,10 @@ t.runAsync([
     },
 
     function() {
+        if (t.$('#contentColumns').hasClass('hidebox')) {
+            t.$('#st-page-boxes-toggle-link').click();
+        }
+
         t.elements_do_not_overlap(
             t.$('#st-weblog-newpost-button'),
             t.$('#page-control-category-selector'),

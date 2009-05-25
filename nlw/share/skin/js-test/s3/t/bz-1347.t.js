@@ -8,6 +8,10 @@ t.runAsync([
     ),
 
     function() { 
+        if (t.$('#contentColumns').hasClass('hidebox')) {
+            t.$('#st-page-boxes-toggle-link').click();
+        }
+
         t.is(
             t.$('#contentLeft').css('overflow'),
             'visible',

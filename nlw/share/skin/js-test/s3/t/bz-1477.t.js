@@ -15,6 +15,10 @@ t.runAsync([
     ),
 
     function() { 
+        if (t.$('#contentColumns').hasClass('hidebox')) {
+            t.$('#st-page-boxes-toggle-link').click();
+        }
+
         var clWidth = t.$('#contentLeft').width();
 
         t.$('#st-page-boxes-toggle-link').click();
