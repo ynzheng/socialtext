@@ -69,6 +69,7 @@
     [% PROCESS image_cache cache_name="avatar" rest_pattern="^/data/people/([^/]+)/small_photo" file_suffix="-small.png" alias=1 %]
     [% PROCESS image_cache cache_name="wafl" rest_pattern="^/data/wafl/(.*)" file_suffix=".png" alias=1 %]
     [% PROCESS image_cache cache_name="account_logo" rest_pattern="^/data/accounts/([^/]+)/logo" file_suffix=".png" alias=1 %]
+    [% PROCESS image_cache cache_name="widget_thumbnail" rest_pattern="^/data/gadgets/gadget/([^/]+)/thumbnail" file_suffix=".png" alias=1 %]
 
 [%# The rewrite file must come before any of the redirect confs below %]
 [% PROCESS 'shared/rewrite.tt2' %]
