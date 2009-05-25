@@ -141,7 +141,7 @@ proto.wikitext_to_html = function(wikitext) {
 proto.template_vars = function(content) {
     return content.replace(
         /\[\%BASE_URL\%\]/g,
-        'http://talc.socialtext.net:21002/static/1.1.1.1/js-test/run'
+        (window.location + '').replace(/\/static\/.*/, '/')
     ).replace(
         /\[\%THIS_URL\%\]/g,
         window.location
