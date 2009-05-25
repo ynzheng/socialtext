@@ -12,15 +12,15 @@ t.runAsync([
     function() { 
         var minHeight = 300;
         t.ok(
-            t.$('#leftList').height() >= minHeight,
+            t.$('#col0').height() >= minHeight,
             "Left list is at least 300 pixels high"
         );
         t.ok(
-            t.$('#middleList').height() >= minHeight,
+            t.$('#col1').height() >= minHeight,
             "Middle list is at least 300 pixels high"
         );
         t.ok(
-            t.$('#rightList').height() >= minHeight,
+            t.$('#col2').height() >= minHeight,
             "Right list is at least 300 pixels high"
         );
         t.endAsync();
