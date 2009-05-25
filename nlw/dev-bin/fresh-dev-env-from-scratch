@@ -50,6 +50,7 @@ fi
 # Create the basic dev-env
 rm -rf $HOME/.nlw/
 st-make-all @clean all
+dev-bin/link-plugins socialcalc
 dev-bin/make-test-fixture --home_dir $HOME --fixture clean
 dev-bin/make-test-fixture --home_dir $HOME --preserve --fixture base_config
 dev-bin/make-test-fixture --home_dir $HOME --preserve --fixture ALL
