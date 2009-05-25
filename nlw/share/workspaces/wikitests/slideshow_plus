@@ -100,6 +100,13 @@ Visit in Firefox:
 | pause | %%popup%% |  |
 | pause | %%popup%% |  |
 
+| click_ok | link=Export as HTML |  |
+| *Comment* | SlideShow SEE Exported HTML |  |
+| *Comment* | IF SEPARATE WINDOW, CTRL-W HTML ON WINDOWS |  |
+| *Comment* | IF SEPARATE WINDOW, APPLE-W HTML ON MAC |  |
+| pause | %%popup%% |  |
+| pause | %%pt%% | some extra time to close HTML window |
+
 | *Comment* | SlideShow Plus setup Account Logo test |  |
 | set | logo_acc | logo-acc-%%start_time%% |
 | set | logo_ws | logo-ws-%%start_time%% |
