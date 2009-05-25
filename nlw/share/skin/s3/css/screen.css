@@ -4210,4 +4210,5 @@ body#dashBoard div#controls div#controlsRight ul {
 
 .galleryWidget.removed {
     opacity: .5;
+    filter: alpha(opacity = 50);
 }
