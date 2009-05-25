@@ -922,6 +922,10 @@ div#contentContainer div#contentTitle h2.tableTitle {
 	float: left;
 }
 
+h2.inlineTitle {
+	display: inline;
+}
+
 div.tableClear {
 	height: 20px;
 }
