@@ -340,8 +340,10 @@
         // IE6 iframe hack:
         // Enabling the select overlap breaks clicking on the lookahead if the
         // lookahead is inserted into a different window.
+        // NOTE: We cannot have "zIndex:" here, otherwise elements in the
+        // lookahead become unclickable and causes {bz: 2597}.
         if (window === this.window)
-            this.lookahead.createSelectOverlap({ noPadding: true });
+            this.lookahead.createSelectOverlap({ padding: 1 });
     };
 
     Lookahead.prototype.hide = function () {
