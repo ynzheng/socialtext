@@ -11,16 +11,15 @@ t.runAsync([
             url: "/?action=clear_widgets",
             async: false
         });
-        t.open_iframe("/", t.nextStep());
+        t.open_iframe("/?action=gallery;type=dashboard", t.nextStep());
     },
 
     function () {
-        var containerID = t.$('#containerID').val();
-        $.ajax({
-            url: "/?action=add_widget;type=dashboard;src=file:widgets/share/widgets/recent_conversations.xml;container_id=" + containerID,
-            async: false
-        });
-        t.open_iframe("/", t.nextStep());
+        t.open_iframe(
+            t.$('a:contains(Recent Conversations)').attr('href').replace(
+                /^\/*/, '/'
+            ), t.nextStep()
+        );
     },
             
     function() { 
