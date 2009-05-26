@@ -66,10 +66,14 @@ Automated backup and restore testing
 | st_admin | create-workspace --name empty-2-%%start_time%% --title "Empty 2 %%start_time%%" --empty |
 
 | *Comment* | Test Case: Console Backup and Restore: Do the Restore |  |
+| *Comment* | Test Case: Console Backup and Restore: Navigate away and come back to Backup page |  |
+| open_ok | /console/index.cgi?rm=Setup |  |
 | open_ok | /console/index.cgi?rm=Backup |  |
-| wait_for_element_visible_ok | restore_id | 30000 |
+| wait_for_element_visible_ok | link=Refresh file list | 30000 |
+| click_and_wait | link=Refresh file list |  |
 
 | *Comment* | Test Case: Console Backup and Restore: Select most recent element |  |
+| wait_for_element_visible_ok | restore_id | 30000 |
 | select_ok | restore_id | index=0 |
 | click_and_wait | //input[@value='Restore'] |  |
 | text_like | Restore in progress |  |
@@ -79,9 +83,11 @@ Automated backup and restore testing
 
 | *Comment* | Test Case: Console Backup and Restore: Verify that the restore completed |  |
 | st_admin | give-system-admin --e %%email%% |  |
+| *Comment* | Test Case: Console Backup and Restore: Navigate away again come back to Backup page |  |
+| open_ok | /console/index.cgi?rm=Setup |  |
 | open_ok | /console/index.cgi?rm=Backup |  |
+| wait_for_element_visible_ok | link=Refresh file list | 30000 |
 | text_unlike | //body | Restore in progress |
-| text_like | link=Refresh file list | Refresh file list |
 
 | *Comment* | Test Case: Console Backup and Restore: help-en is there with reasonable content |  |
 | open_ok | /help-en |  |
