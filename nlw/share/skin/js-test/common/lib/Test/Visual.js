@@ -227,12 +227,19 @@ proto.poll = function(test, callback, interval, maximum) {
 };
 
 proto.setup_one_widget = function(params, callback) {
-    var url = typeof(params) == 'string' ? params : params.url;
+    var name = typeof(params) == 'string' ? params : params.name;
     if (typeof(params) == 'string') params = {};
     var self = this;
+
+    $.ajax({
+        url: "/?action=clear_widgets",
+        async: false
+    });
+
+
     var setup_widget = function() {
-        self.iframe.contentWindow.location = url;
-        $("input.iframe_location").val(url);
+        var url = self.$('a:contains(' + name + ')').attr('href').replace( /^\/*/, '/' );
+
         $(self.iframe).one("load", function() {
             var widget = self._get_widget();
             if (params.noPoll) {
@@ -246,8 +253,12 @@ proto.setup_one_widget = function(params, callback) {
             );
 
         });
+
+        self.iframe.contentWindow.location = url;
+        $("input.iframe_location").val(url);
     }
-    this.open_iframe("/?action=clear_widgets", setup_widget);
+
+    self.open_iframe("/?action=gallery;type=dashboard", setup_widget);
 }
 
 proto.getWidget = function(widget_name, callback) {
