@@ -39,10 +39,10 @@
       [% FOREACH row = rows %]
         [% IF loop.count % 2 %]<tr class="oddRow">[% ELSE %]<tr>[% END %]
         <td>
-          [% IF ! row.page_is_locked %]
-            <input name="selected" value="[% row.page_uri %],[% row.id %]" type="checkbox" />
-          [% ELSE %]
+          [% IF row.page_is_locked AND ! row.user_can_modify %]
             <img src="/static/skin/s3/images/lock-locked.png" />
+          [% ELSE %]
+            <input name="selected" value="[% row.page_uri %],[% row.id %]" type="checkbox" />
           [% END %]
         </td>
         <td colspan="2">

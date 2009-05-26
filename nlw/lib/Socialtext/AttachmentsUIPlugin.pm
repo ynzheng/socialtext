@@ -262,6 +262,7 @@ sub _table_rows {
             human_readable_size =>
                 $self->_human_readable_size( $att->{length} ),
             page_is_locked => $page->locked,
+            user_can_modify => $self->hub->checker->can_modify_locked( $page ),
         };
     }
 
