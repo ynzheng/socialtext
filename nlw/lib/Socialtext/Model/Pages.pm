@@ -176,7 +176,7 @@ sub _fetch_pages {
     }
 
     my $limit = '';
-    if ( $p{limit} ) {
+    if ( $p{limit}  && $p{limit} != -1) {
         $limit = 'LIMIT ?';
         push @{ $p{bind} }, $p{limit};
     }
