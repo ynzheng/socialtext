@@ -171,7 +171,6 @@ sub new_changes {
         $pages_ref = Socialtext::Model::Pages->All_active(
             hub => $self->hub,
             workspace_id => $self->hub->current_workspace->workspace_id,
-            limit => -1,
         );
     }
     else {
