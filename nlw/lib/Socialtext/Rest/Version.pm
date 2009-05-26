@@ -15,7 +15,8 @@ use Readonly;
 # 5: iteration-2009-04-10 (release-3.5.2): recipient, desktop_* in accounts
 # 6: iteration-2009-04-27 
 # 7: iteration-2009-05-22 (release-3.5.5): limit search results
-Readonly our $API_VERSION => 6;
+# 8: iteration-2009-06-05 (release-3.5.6): spreadsheetin'
+Readonly our $API_VERSION => 8;
 Readonly our $MTIME       => ( stat(__FILE__) )[9];
 
 sub allowed_methods {'GET, HEAD'}
