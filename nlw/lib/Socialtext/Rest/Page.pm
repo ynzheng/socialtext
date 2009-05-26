@@ -34,6 +34,13 @@ sub make_GETter {
                     );
                     return $self->pname . ' not found';
                 }
+                elsif ( !$self->_page_type_is_valid ) {
+                    $rest->header(
+                        -status => HTTP_409_Conflict,
+                        -type   => 'text/plain'
+                    );
+                    return $self->pname . ' is not the correct type';
+                }
                 else {
                     $self->hub->pages->current($page);
                     my @etag = ();
@@ -74,6 +81,9 @@ sub make_GETter {
         );
     };
 }
+
+
+sub _page_type_is_valid { 1 }
 
 {
     no warnings 'once';
@@ -118,6 +128,14 @@ sub GET_json {
 
             my $link_dictionary = $self->_link_dictionary($rest);
             my $page = $self->page;
+
+            if ( !$self->_page_type_is_valid ) {
+                $rest->header(
+                    -status => HTTP_409_Conflict,
+                    -type   => 'text/plain'
+                );
+                return $self->pname . ' is not the correct type';
+            }
 
             if ($page->active) {
                 $rest->header(
