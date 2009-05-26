@@ -20,13 +20,7 @@ t.runAsync([
             cache: false
         });
 
-        var widget = WID = t.setup_one_widget(
-            {
-                url: "/?action=add_widget;type=dashboard;src=file:widgets/share/widgets/tag_cloud.xml",
-                noPoll: true
-            },
-            t.nextStep()
-        );
+        t.setup_one_widget('Workspace Tags', t.nextStep());
     },
 
     function(widget) {
