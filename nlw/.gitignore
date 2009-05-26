@@ -287,3 +287,5 @@ t/wikitest/socialcalc/get_cell.wiki
 etc/socialtext/uri_map.d/socialcalc.yaml
 t/wikitests/socialcalc/get_cell.wiki
 t/wikitests/test-data/socialcalc/ohai.ssheet
+t/wikitests/socialcalc/rest.wiki
+lib/Socialtext/Rest/Sheet.pm
