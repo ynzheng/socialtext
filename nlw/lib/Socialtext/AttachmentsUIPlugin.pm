@@ -391,13 +391,17 @@ sub _attachment_download_link {
 }
 
 sub attachments_delete {
-    my $self = shift;
-    return unless $self->hub->checker->check_permission('delete');
+    my $self    = shift;
+    my $checker = $self->hub->checker;
 
-    return unless $self->hub->checker->can_modify_locked($self->hub->pages->current);
+    return unless $checker->check_permission('delete');
 
     for my $attachment_junk ( $self->cgi->selected ) {
         my ( $page_id, $id, undef ) = map { split ',' } $attachment_junk;
+
+        next unless $checker->can_modify_locked(
+            $self->hub->pages->new_page( $page_id ) );
+
         my $attachment = $self->hub->attachments->new_attachment(
             id      => $id,
             page_id => $page_id,
