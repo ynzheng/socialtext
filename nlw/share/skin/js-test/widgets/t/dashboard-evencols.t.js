@@ -22,12 +22,12 @@ t.runAsync([
         var always_even = true;
         for (var width = WIDTH_MIN; width <= WIDTH_MAX; width += WIDTH_INT) {
             $(t.iframe).width(width);
-            t.scrollTo(t.$('#leftList').offset().top, width);
+            t.scrollTo(t.$('#col0').offset().top, width);
 
-            always_even = ( t.$('#leftList').offset().top ==
-                            t.$('#middleList').offset().top ) &&
-                          ( t.$('#middleList').offset().top ==
-                            t.$('#rightList').offset().top );
+            always_even = ( t.$('#col0').offset().top ==
+                            t.$('#col1').offset().top ) &&
+                          ( t.$('#col1').offset().top ==
+                            t.$('#col2').offset().top );
             if (!always_even) break;
         }
 
