@@ -25,7 +25,7 @@ use Socialtext::Validate qw( validate SCALAR_TYPE OPTIONAL_INT_TYPE HANDLE_TYPE 
 
         my $file = $p{filename} || die "Filename is required";
 
-        ($p{img_width}, $p{img_height}) = split ' ', `identify -format '\%w \%h' $file`;
+        ($p{img_width}, $p{img_height}) = get_dimensions($file);
         my ($new_width, $new_height) = get_proportions(%p);
 
         if ($new_width and $new_height) {
@@ -50,6 +50,11 @@ sub shrink {
     return ($w,$h);
 }
 
+sub get_dimensions {
+    my $file = shift;
+    return split ' ', `identify -format '\%w \%h \%n' $file`;
+}
+
 # crop an image using an internal, centered rectangle of the desired size
 sub extract_rectangle {
     my %p = @_;
@@ -61,7 +66,7 @@ sub extract_rectangle {
     my ($max_w, $max_h) = @p{qw(width height)};
     die "must supply width and height" unless $max_w && $max_h;
 
-    my ($w, $h, $scenes) = split ' ', `identify -format '\%w \%h \%n' $img`;
+    my ($w, $h, $scenes) = get_dimensions($img);
 
     die "Can't resize animated images" unless ($scenes == 1);
     die "Bad dimensions"
