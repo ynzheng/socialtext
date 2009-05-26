@@ -274,3 +274,5 @@ t/Socialtext/People/helpers.t
 lib/Socialtext/Rest/Signals/Bookmarklet.pm
 t/wikitests/signals/data_signals_sender.wiki
 t/wikitests/signals/events_activities.wiki
+lib/Socialtext/SocialCalcServersideNumberFormatting.pm
+lib/Socialtext/SocialCalcServersideUtilities.pm

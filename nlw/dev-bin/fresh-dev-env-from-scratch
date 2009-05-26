@@ -68,8 +68,6 @@ dev-bin/link-reports
 dev-bin/link-plugins $PLUGINS
 set -e
 
-ceq-exec --timeout 300 dev-bin/st-make-js
-
 export PGUSER=`st-config echo db_user`
 echo "Adding special dev-env SQL hacks"
 psql -f etc/socialtext/db/dev.sql
@@ -78,3 +76,5 @@ echo "Starting in dual-Apache mode";
 dev-bin/nlwctl start;
 
 st-admin set-workspace-config --workspace admin skin_name s3
+ceq-exec --timeout 300 st-make-all clean all
+ceq-exec --timeout 300 st-widgets update-gallery

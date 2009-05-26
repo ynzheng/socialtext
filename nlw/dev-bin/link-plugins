@@ -67,9 +67,6 @@ while (my $plugin = shift) {
     link_directory($plugin_dir, "$FindBin::Bin/..", 'bin');
     link_directory($plugin_dir, "$FindBin::Bin/..", 't');
     link_directory($plugin_dir, "$ENV{HOME}/.nlw", 'etc/socialtext/uri_map.d');
-
-    local $Socialtext::System::SILENT_RUN = 1;
-    shell_run("cd $plugin_dir && make") if -f "$plugin_dir/Makefile";
 }
 
 exit;

@@ -23,15 +23,16 @@ sub handler {
         if ($r->uri !~ m{^/data}) {
             my $stamp_file = Socialtext::Paths::storage_directory('make_ran');
             my $mod = (stat $stamp_file)[9] || 0;
+            local $Socialtext::System::SILENT_RUN = 1;
             if ($mod < time - 5) {
                 open M, "> $stamp_file";
                 print M time();
                 close M;
-                Socialtext::Pluggable::Adapter->make;
-                _regen_combined_js($r);
+                shell_run '-st-make-all @all; st-widgets update-all';
             }
-            local $Socialtext::System::SILENT_RUN = 1;
-            shell_run '-st-widgets update-all';
+            else {
+                shell_run '-st-widgets update-all';
+            }
         }
     }
 
