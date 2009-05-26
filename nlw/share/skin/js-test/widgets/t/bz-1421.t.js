@@ -13,9 +13,9 @@ t.runAsync([
     },
 
     function() {
-        var widget = WID = t.setup_one_widget(
+        t.setup_one_widget(
             {
-                url: "/?action=add_widget;type=dashboard;src=file:widgets/share/widgets/my_workspaces.xml",
+                name: 'Workspaces',
                 noPoll: true
             },
             t.nextStep()

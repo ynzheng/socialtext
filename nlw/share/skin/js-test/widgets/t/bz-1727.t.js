@@ -13,9 +13,9 @@ t.runAsync([
     },
 
     function() {
-        var widget = WID = t.setup_one_widget(
+        t.setup_one_widget(
             {
-                url: "/?action=add_widget;type=dashboard;src=http%3A%2F%2Fwww.labpixies.com%2Fcampaigns%2Ftodo%2Ftodo.xml",
+                name: 'LabPixies ToDo',
                 noPoll: true
             },
             t.nextStep()
