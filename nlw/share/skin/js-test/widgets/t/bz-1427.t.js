@@ -13,9 +13,9 @@ t.runAsync([
     },
 
     function() {
-        var widget = WID = t.setup_one_widget(
+        t.setup_one_widget(
             {
-                url: "/?action=add_widget;type=dashboard;src=file:widgets/share/widgets/tag_cloud.xml",
+                name: 'Workspace Tags',
                 noPoll: true
             },
             t.nextStep()
@@ -32,7 +32,7 @@ t.runAsync([
             "VeryLongNameVeryLongNameVeryLongNameVeryLongName"
         );
         t.ok(
-            (t.$('ul#leftList').width() >= t.$('div.widgetContent select').width()),
+            (t.$('ul#col0').width() >= t.$('div.widgetContent select').width()),
             "Long workspace names should not cause overflow"
         );
 
