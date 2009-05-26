@@ -542,6 +542,11 @@ $(function() {
 
     Socialtext.ui_expand_on = function() {
         $("#st-edit-pagetools-expand,#st-pagetools-expand").attr("title", loc("Return edit area to normal view")).text(loc("Normal")).addClass("contract");
+
+        if ($.browser.msie && $.browser.version < 7) {
+            $('#globalNav select').css('visibility', 'hidden');
+        }
+
         $('#st-edit-mode-container, #mainWrap').addClass("expanded");
 
         $(window).trigger("resize");
@@ -561,6 +566,11 @@ $(function() {
     };
     Socialtext.ui_expand_off = function() {
         $("#st-edit-pagetools-expand,#st-pagetools-expand").attr("title", loc("Expand edit area to fill browser window")).text(loc("Expand")).removeClass("contract");
+
+        if ($.browser.msie && $.browser.version < 7) {
+            $('#globalNav select').css('visibility', 'visible');
+        }
+
         $('#st-edit-mode-container, #mainWrap').removeClass("expanded");
 
         $("iframe#st-page-editing-wysiwyg").width( $('#st-edit-mode-view').width() - 48 );
