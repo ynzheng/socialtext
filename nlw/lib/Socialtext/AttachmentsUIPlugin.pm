@@ -248,8 +248,7 @@ sub _table_rows {
     for my $att (@$attachments) {
         my $page = $self->hub->pages->new_page( $att->{page_id} );
 
-        push @rows,
-            {
+        push @rows, {
             link      => $self->_attachment_download_link($att),
             id        => $att->{id},
             filename  => $att->{filename},
@@ -262,7 +261,8 @@ sub _table_rows {
             size                => $att->{length},
             human_readable_size =>
                 $self->_human_readable_size( $att->{length} ),
-            };
+            page_is_locked => $page->locked,
+        };
     }
 
     return $self->sorted_result_set( \@rows );

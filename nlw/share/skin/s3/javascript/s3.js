@@ -518,7 +518,12 @@ $(function() {
     });
 
     $('#st-listview-selectall').click(function () {
-        $('input[type=checkbox]').attr('checked', this.checked);
+        var self = this;
+        $('input[type=checkbox]').each(function() {
+            if ( ! $(this).attr('disabled') ) {
+                $(this).attr('checked', self.checked);
+            }
+        });
         return true;
     });
 
