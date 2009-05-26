@@ -240,7 +240,10 @@ proto.showDeleteInterface = function (img) {
 proto.showUploadInterface = function () {
     var self = this;
 
-    this.process('attachment.tt2');
+    if (!$('#st-attachments-attachinterface').size()) {
+        this.process('attachment.tt2');
+    }
+
     $('#st-attachments-attach-filename')
         .val('')
         .unbind('change')
