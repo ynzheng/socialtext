@@ -2064,11 +2064,12 @@ proto.format_a = function(elem) {
     }
 
     this.check_start_of_block(elem);
-    var label = Wikiwyg.htmlUnescape(elem.innerHTML);
+    var label = elem.innerHTML;
     label = label.replace(/<[^>]*>/g, ' ');
     label = label.replace(/\s+/g, ' ');
     label = label.replace(/^\s+/, '');
     label = label.replace(/\s+$/, '');
+    label = Wikiwyg.htmlUnescape(elem.innerHTML);
 
     var href = elem.href;
 
