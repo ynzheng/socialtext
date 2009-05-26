@@ -1759,7 +1759,6 @@ proto.get_offset_top = function (e) {
     return offset.top;
 }
 
-// XXX - Hardcoded until we can get height of Save/Preview/Cancel buttons
 proto.get_edit_height = function() {
     var available_height = jQuery(window).height();
 
@@ -1770,7 +1769,8 @@ proto.get_edit_height = function() {
                       this.footer_offset;
 
         if (!this.wikiwyg.config.noToolbar) {
-            edit_height += this.wikiwyg.toolbarObject.div.offsetHeight;
+            /* Substract the edit area's height by toolbar's height. */
+            edit_height -= this.wikiwyg.toolbarObject.div.offsetHeight;
         }
         if (edit_height < 100) edit_height = 100;
     }
