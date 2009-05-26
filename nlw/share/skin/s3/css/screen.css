@@ -4175,10 +4175,14 @@ body#dashBoard div#controls div#controlsRight ul {
 .galleryTitle {
     font-weight: bold;
     border-bottom: 1px solid black;
-    width: 43%;
+    width: 50%;
     float: left;
-    padding: 0 0 10px 5%;
+    padding: 0 0 10px 0;
     font-size: 10pt;
+}
+
+.galleryTitle span {
+    margin-left: 82px;
 }
 
 .gallerySection {
