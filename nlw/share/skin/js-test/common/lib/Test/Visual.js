@@ -238,7 +238,7 @@ proto.setup_one_widget = function(params, callback) {
 
 
     var setup_widget = function() {
-        var url = self.$('a:contains(' + name + ')').attr('href').replace( /^\/*/, '/' );
+        var url = self.$('div.widgetTitle a:contains(' + name + ')').attr('href').replace( /^\/*/, '/' );
 
         $(self.iframe).one("load", function() {
             var widget = self._get_widget();
@@ -271,8 +271,15 @@ proto.getWidget = function(widget_name, callback) {
 }
 
 proto._get_widget = function(widget_name) {
-    var query = widget_name ? 'iframe.' + widget_name : 'iframe';
-    var iframe = this.$(query).get(0);
+    var iframe;
+    if (widget_name) {
+        iframe = this.$('.widgetHeaderTitle span[title=' + widget_name + ']')
+                     .parents('div.widgetHeader').next('div.widgetContent')
+                     .find('iframe.widgetWindow').get(0);
+    }
+    else {
+        iframe = this.$('iframe').get(0);
+    }
     if (! iframe) throw("getWidget failed");
     var widget = {
         'iframe': iframe,

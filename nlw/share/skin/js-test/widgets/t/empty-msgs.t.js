@@ -10,23 +10,25 @@ var steps = [
 var testData = [
     {
         type: "one_widget",
-        url: "/?action=add_widget;type=dashboard;src=file:widgets/share/widgets/my_workspaces.xml",
-        regex: /You do not belong to any workspaces yet\./,
+        name: "Workspaces",
+        regex: /This person belongs to no workspaces|You do not belong to any workspaces yet/,
         desc: "Empty My Workspaces message is correct"
     },
     {
+        type: "open_iframe",
+        widget: "Tags",
+        url: "/?profile/7",
+        regex: /This person has no tags/,
+        desc: "Empty message for another user's profile tags is present and correct"
+    }
+    /*
+    {
         type: "one_widget",
-        url: "/?action=add_widget;type=dashboard;src=file:people/share/profile_tags.xml",
+        name: "All People Tags",
         regex: /You don't have any tags yet. Click <b>Add tag<\/b> to add one now./,
         desc: "Empty message for profile tags is present and correct"
     },
-    {
-        type: "open_iframe",
-        widget: "tags",
-        url: "/?profile/7",
-        regex: /This person doesn't have any tags yet. Click <b>Add tag<\/b> to add one now./,
-        desc: "Empty message for another user's profile tags is present and correct"
-    }
+    */
     /*,
     {
         type: "one_widget",
@@ -75,7 +77,7 @@ for (var i = 0, l = testData.length; i < l; i++) {
         var step1 = (d.type == 'one_widget')
         ? function() {
             t.setup_one_widget(
-                d.url,
+                d.name,
                 t.nextStep()
             );
         }
