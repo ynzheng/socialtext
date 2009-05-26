@@ -329,6 +329,20 @@ sub add_member {
     diag "Added user $email to $workspace";
 }
 
+sub remove_member {
+    my $self = shift;
+    my $email = shift;
+    my $workspace = shift;
+
+    my $ws = Socialtext::Workspace->new(name => $workspace);
+    die "No such workspace $workspace" unless $ws;
+    my $user = Socialtext::User->Resolve($email);
+    die "No such user $email" unless $user;
+
+    $ws->remove_user( user => $user );
+    diag "Added user $email to $workspace";
+}
+
 sub add_workspace_admin {
     my $self = shift;
     my $email = shift;
