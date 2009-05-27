@@ -289,3 +289,9 @@ t/wikitests/socialcalc/get_cell.wiki
 t/wikitests/test-data/socialcalc/ohai.ssheet
 t/wikitests/socialcalc/rest.wiki
 lib/Socialtext/Rest/Sheet.pm
+t/wikitests/socialcalc/render.wiki
+t/wikitests/test-data/render-test.wiki
+t/wikitests/test-data/socialcalc/render-test.ssheet
+t/Socialtext/Sheet/Renderer.t
+lib/Socialtext/Sheet/Renderer.pm
+t/wikitests/test-data/socialcalc/render-test-no-html.ssheet
