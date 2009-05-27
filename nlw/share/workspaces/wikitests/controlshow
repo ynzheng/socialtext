@@ -1,9 +1,9 @@
 This is the slideshow for the control and console UIs
 It is strictly for clicking and viewing, not functional testing.
 
-This test case is an aid to visually observing each screen type in the application. The test case cycles through screens, printing out SEE instructions to the test person. The test person should observe the browser under test at each SEE point along the way. The test person may pause at any point to examine the screen visually using CTRL-Z to suspend the testing process and the unix command `fg` to resume it.
+This test case is an aid to visually observing each screen type in the application. The test case cycles through screens, printing outSEE instructions to the test person. The test person should observe the browser under test at eachSEE point along the way. The test person may pause at any point to examine the screen visually using CTRL-Z to suspend the testing process and the unix command `fg` to resume it.
 
-| *Comment* | ControlShow: automation for visual inspection of control and console UI screens |  |
+| *Comment* |  automation for visual inspection of control and console UI screens |  |
 
 | set_default | wiki | %%workspace%% | defaults to the test workspace |
 | set_default | wikititle | %%title%% | defaults to the test workspace |
@@ -15,210 +15,210 @@ This test case is an aid to visually observing each screen type in the applicati
 | open_ok | /nlw/control/account |  |
 
 | click_and_wait | link=Workspaces |  |
-| *Comment* | ControlShow: SEE Workspaces |  |
+| *Comment* | SEE Workspaces |  |
 | pause | %%pt%% |  |
 
 | type_ok | name | %%workspace%% |
 | st-submit |  |  |
-| *Comment* | ControlShow: SEE WS search result |  |
+| *Comment* | SEE WS search result |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Users |  |
-| *Comment* | ControlShow: SEE Users |  |
+| *Comment* | SEE Users |  |
 | pause | %%pt%% |  |
 
 | type_ok | username | %%username%% |
 | st-submit |  |  |
-| *Comment* | ControlShow: SEE Users search result |  |
+| *Comment* | SEE Users search result |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Accounts |  |
-| *Comment* | ControlShow: SEE Accounts |  |
+| *Comment* | SEE Accounts |  |
 | pause | %%pt%% |  |
 
 | type_ok | name | %%hostname%% |
 | st-submit |  |  |
-| *Comment* | ControlShow: SEE ACCT search result |  |
+| *Comment* | SEE ACCT search result |  |
 | pause | %%pt%% |  |
 
-| *Comment* | ControlShow: ACCOUNT INSPECTION |  |
+| *Comment* |  ACCOUNT INSPECTION |  |
 | click_and_wait | link=%%hostname%% |  |
 
-| *Comment* | ControlShow: SEE /Rename Account/Enable Export User Data |  |
-| *Comment* | ControlShow: SEE /Profile Fields/Disable Invitation to Network |  |
+| *Comment* | SEE /Rename Account/Enable Export User Data |  |
+| *Comment* | SEE /Profile Fields/Disable Invitation to Network |  |
 | pause | %%pt%% |  |
 
-| *Comment* | ControlShow: SEE Reports |  |
-| *Comment* | ControlShow: SEE /Usage Reports/Growth Reports |  |
+| *Comment* | SEE Reports |  |
+| *Comment* | SEE /Usage Reports/Growth Reports |  |
 | pause | %%pt%% |  |
 
-| *Comment* | ControlShow: SEE Features And Skins |  |
-| *Comment* | ControlShow: SEE Account Logo/Custom Desktop Skin |  |
-| *Comment* | ControlShow: SEE Optional modules installed: |  |
-| *Comment* | ControlShow: SEE Custom Skins |  |
+| *Comment* | SEE Features And Skins |  |
+| *Comment* | SEE Account Logo/Custom Desktop Skin |  |
+| *Comment* | SEE Optional modules installed: |  |
+| *Comment* | SEE Custom Skins |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% |  |
 
-| *Comment* | ControlShow: SCROLL DOWN TO |  |
-| *Comment* | ControlShow: SEE Workspaces and Users |  |
-| *Comment* | ControlShow: SEE Add User/Add Users |  |
+| *Comment* |  SCROLL DOWN TO |  |
+| *Comment* | SEE Workspaces and Users |  |
+| *Comment* | SEE Add User/Add Users |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Rename Account |  |
-| *Comment* | ControlShow: SEE Rename ACCT UI |  |
+| *Comment* | SEE Rename ACCT UI |  |
 | pause | %%pt%% |  |
 | click_and_wait | link=Back |  |
 
 | click_ok | link=Enable Export User Data |  |
 | click_ok | link=Disable Invitation to Network |  |
 | *Comment* | ` ` |  |
-| *Comment* | ControlShow: SEE Disable Export User Data |  |
-| *Comment* | ControlShow: SEE Enable Invitation to Network |  |
+| *Comment* | SEE Disable Export User Data |  |
+| *Comment* | SEE Enable Invitation to Network |  |
 | *Comment* | ` ` |  |
 | pause | %%pt%% |  |
 
 | click_ok | link=Disable Export User Data |  |
 | click_ok | link=Enable Invitation to Network |  |
 | *Comment* | ` ` |  |
-| *Comment* | ControlShow: SEE Enable Export User Data |  |
-| *Comment* | ControlShow: SEE Disable Invitation to Network |  |
+| *Comment* | SEE Enable Export User Data |  |
+| *Comment* | SEE Disable Invitation to Network |  |
 | *Comment* | ` ` |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Profile Fields |  |
-| *Comment* | ControlShow: SEE Profile Fields |  |
+| *Comment* | SEE Profile Fields |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Create New Field |  |
-| *Comment* | ControlShow: SEE Create New Field |  |
+| *Comment* | SEE Create New Field |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Back to Account Fields |  |
-| *Comment* | ControlShow: SEE Profile Fields |  |
+| *Comment* | SEE Profile Fields |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Back |  |
-| *Comment* | ControlShow: SEE Usage Reports/Growth Reports |  |
+| *Comment* | SEE Usage Reports/Growth Reports |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Usage Reports |  |
-| *Comment* | ControlShow: SEE %%hostname%% Usage Reports Page |  |
-| *Comment* | ControlShow: SEE Usage ending midnight of UI |  |
-| *Comment* | ControlShow: SEE Printer Friendly Report |  |
-| *Comment* | ControlShow: SEE Export summary data as CSV |  |
-| *Comment* | ControlShow: SEE Export user data as CSV |  |
+| *Comment* | SEE %%hostname%% Usage Reports Page |  |
+| *Comment* | SEE Usage ending midnight of UI |  |
+| *Comment* | SEE Printer Friendly Report |  |
+| *Comment* | SEE Export summary data as CSV |  |
+| *Comment* | SEE Export user data as CSV |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Back to the account page |  |
 | click_and_wait | link=Growth Reports |  |
 
-| *Comment* | ControlShow: SEE %%hostname%% Account Growth Report |  |
-| *Comment* | ControlShow: SEE Printer Friendly Report |  |
-| *Comment* | ControlShow: SEE Export data as CSV |  |
+| *Comment* | SEE %%hostname%% Account Growth Report |  |
+| *Comment* | SEE Printer Friendly Report |  |
+| *Comment* | SEE Export data as CSV |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Back to the account page |  |
 | click_and_wait | link=Account Logo |  |
 
-| *Comment* | ControlShow: SEE Account Logo Page |  |
+| *Comment* | SEE Account Logo Page |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Back |  |
 | click_and_wait | link=Custom Desktop Skin |  |
 
-| *Comment* | ControlShow: SEE Custom Desktop Skin Page |  |
+| *Comment* | SEE Custom Desktop Skin Page |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Back |  |
 | click_and_wait | link=Add User |  |
 
-| *Comment* | ControlShow: SEE Add User Page |  |
+| *Comment* | SEE Add User Page |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Back |  |
 | click_and_wait | link=Add Users |  |
 
-| *Comment* | ControlShow: SEE Add Users Page |  |
+| *Comment* | SEE Add Users Page |  |
 | pause | %%pt%% |  |
 | click_and_wait | link=Back |  |
 
-| *Comment* | ControlShow: WORKSPACE INSPECTION |  |
+| *Comment* |  WORKSPACE INSPECTION |  |
 | click_and_wait | link=%%workspace%% |  |
 
-| *Comment* | ControlShow: SEE Reports |  |
-| *Comment* | ControlShow: SEE /Usage Reports/Growth Reports |  |
+| *Comment* | SEE Reports |  |
+| *Comment* | SEE /Usage Reports/Growth Reports |  |
 | pause | %%pt%% |  |
 
-| *Comment* | ControlShow: SEE Account |  |
-| *Comment* | ControlShow: SEE URI |  |
-| *Comment* | ControlShow: SEE Assign to a new account: |  |
-| *Comment* | ControlShow: SEE Created: |  |
-| *Comment* | ControlShow: SEE Created by: |  |
-| *Comment* | ControlShow: SEE Optional modules installed: |  |
+| *Comment* | SEE Account |  |
+| *Comment* | SEE URI |  |
+| *Comment* | SEE Assign to a new account: |  |
+| *Comment* | SEE Created: |  |
+| *Comment* | SEE Created by: |  |
+| *Comment* | SEE Optional modules installed: |  |
 | pause | %%pt%% |  |
 
-| *Comment* | ControlShow: SCROLL DOWN TO |  |
-| *Comment* | ControlShow: SEE Users |  |
+| *Comment* |  SCROLL DOWN TO |  |
+| *Comment* | SEE Users |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Usage Reports |  |
-| *Comment* | ControlShow: SEE %%workspace%% Usage Reports Page |  |
-| *Comment* | ControlShow: SEE Usage ending midnight of UI |  |
-| *Comment* | ControlShow: SEE Printer Friendly Report |  |
-| *Comment* | ControlShow: SEE Export summary data as CSV |  |
-| *Comment* | ControlShow: SEE Export user data as CSV |  |
+| *Comment* | SEE %%workspace%% Usage Reports Page |  |
+| *Comment* | SEE Usage ending midnight of UI |  |
+| *Comment* | SEE Printer Friendly Report |  |
+| *Comment* | SEE Export summary data as CSV |  |
+| *Comment* | SEE Export user data as CSV |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Back to the workspace page |  |
 | click_and_wait | link=Growth Reports |  |
 
-| *Comment* | ControlShow: SEE %%workspace%% Workspace Growth Report |  |
-| *Comment* | ControlShow: SEE Printer Friendly Report |  |
-| *Comment* | ControlShow: SEE Export data as CSV |  |
+| *Comment* | SEE %%workspace%% Workspace Growth Report |  |
+| *Comment* | SEE Printer Friendly Report |  |
+| *Comment* | SEE Export data as CSV |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Back to the workspace page |  |
-| *Comment* | ControlShow: SEE WS Page |  |
+| *Comment* | SEE WS Page |  |
 | pause | %%pt%% |  |
 
-| *Comment* | ControlShow: USER INSPECTION |  |
+| *Comment* |  USER INSPECTION |  |
 
-| *Comment* | ControlShow: need to search for the user who may be on the last pagination |  |
+| *Comment* |  need to search for the user who may be on the last pagination |  |
 | click_and_wait | link=Users |  |
 | type_ok | username | %%username%% |
 | st-submit |  |  |
 | click_and_wait | link=%%username%% |  |
 
-| *Comment* | ControlShow: SEE %%username%% |  |
-| *Comment* | ControlShow: SEE Created: DATE |  |
-| *Comment* | ControlShow: SEE Deactivate user button |  |
+| *Comment* | SEE %%username%% |  |
+| *Comment* | SEE Created: DATE |  |
+| *Comment* | SEE Deactivate user button |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% |  |
 
-| *Comment* | ControlShow: SEE Last login: DATE |  |
-| *Comment* | ControlShow: SEE Invited by: USER |  |
-| *Comment* | ControlShow: SEE User is confirmed |  |
+| *Comment* | SEE Last login: DATE |  |
+| *Comment* | SEE Invited by: USER |  |
+| *Comment* | SEE User is confirmed |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% |  |
 
-| *Comment* | ControlShow: SEE Primary Account: %%hostname%% |  |
-| *Comment* | ControlShow: SEE Assign to a new primary account: |  |
+| *Comment* | SEE Primary Account: %%hostname%% |  |
+| *Comment* | SEE Assign to a new primary account: |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% |  |
 
-| *Comment* | ControlShow: SEE Socialtext Accounts Access? yes |  |
-| *Comment* | ControlShow: SEE Remove Access to Socialtext Accounts button |  |
-| *Comment* | ControlShow: SEE Socialtext System Management Access? yes |  |
-| *Comment* | ControlShow: SEE Remove Access to Socialtext System Management button |  |
+| *Comment* | SEE Socialtext Accounts Access? yes |  |
+| *Comment* | SEE Remove Access to Socialtext Accounts button |  |
+| *Comment* | SEE Socialtext System Management Access? yes |  |
+| *Comment* | SEE Remove Access to Socialtext System Management button |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% |  |
 
-| *Comment* | ControlShow: SCROLL DOWN TO |  |
-| *Comment* | ControlShow: SEE Workspaces |  |
+| *Comment* |  SCROLL DOWN TO |  |
+| *Comment* | SEE Workspaces |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% |  |
 
