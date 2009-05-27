@@ -11,14 +11,14 @@ pushing all the editor buttons ???
 
 Visit in IE 6 and IE 7 and Safari
 
-| *Comment* | SlideShow: automation for visual inspection of UI screens |  |
+| *Comment* |  automation for visual inspection of UI screens |  |
 | *Comment* | See SlideShow Plus for automation reguiring high permissions |  |
 
 | set_default | wiki | %%workspace%% | defaults to the test workspace |
 | set_default | pt | 5000 | defaults to five seconds |
 | set_default | popup | 8000 | cancel popups in 8 seconds |
 
-| *Comment* | SlideShow: enabling unplugged and expanding sidebar |  |
+| *Comment* |  enabling unplugged and expanding sidebar |  |
 | st-admin | set-workspace-config --workspace %%wiki%% enable_unplugged 1 |  |
 | st-admin | set-workspace-config --workspace %%wiki%% allows_skin_upload 1 |  |
 
@@ -37,20 +37,20 @@ Visit in IE 6 and IE 7 and Safari
 | *Comment* | Watch page Advanced Getting Around |  |
 
 | open_ok | /%%wiki%%/?Advanced Getting Around |  |
-| *Comment* | SlideShow: SEE Watch, then Watch |  |
+| *Comment* |  SEE Watch, then Watch |  |
 | st-watch-page | 1 |  |
 | st-is-watched | 1 |  |
 
-| *Comment* | SlideShow: SEE Stop Watching on page |  |
+| *Comment* |  SEE Stop Watching on page |  |
 | pause | %%pt%% |  |
 
 | clickAndWait | link=My Watchlist |
-| *Comment* | SlideShow: SEE Advanced Getting Around on Watchlist |
+| *Comment* |  SEE Advanced Getting Around on Watchlist |
 | pause | %%pt%% |
 
 | st-watch-page | 0 | Advanced Getting Around |
 | st-is-watched | 0 | Advanced Getting Around |
-| *Comment* | SlideShow: SEE Stopped Watching from Watchlist |  |
+| *Comment* |  SEE Stopped Watching from Watchlist |  |
 | pause | %%pt%% |  |
 
 * all the tabs in the list view
@@ -71,20 +71,20 @@ Click on a tag in a page to get tag list
 
 | open_ok | /%%wiki%%/?Start Here |  |
 | clickAndWait | link=Welcome |  |
-| *Comment* | SlideShow SEE Tag:Welcome |  |
+| *Comment* | SEE Tag:Welcome |  |
 | pause | %%pt%% |  |
 
 Click on a tag in All Tags to get tag list
 
 | clickAndWait | link=What's New |  |
 | clickAndWait | link=All Tags |  |
-| *Comment* | SlideShow SEE All Tags |  |
+| *Comment* | SEE All Tags |  |
 | pause | %%pt%% |  |
 
 Click on a tag in the tag list to get pages with that tag
 
 | clickAndWait | link=Welcome |  |
-| *Comment* | SlideShow SEE Tag:Welcome |  |
+| *Comment* | SEE Tag:Welcome |  |
 | pause | %%pt%% |  |
 
 Click on Post to this tag by Email to get email popup
@@ -97,20 +97,20 @@ Click on Post to this tag by Email to get email popup
 Click on View As Weblog to see weblog view of tag
 
 | clickAndWait | link=Welcome as a weblog |  |
-| *Comment* | SlideShow SEE Weblog:Welcome |  |
+| *Comment* | SEE Weblog:Welcome |  |
 | pause | %%pt%% |  |
 
 New Post
 
 | clickAndWait | link=New Post |  |
-| *Comment* | SlideShow SEE Untitled Page open for editing |  |
+| *Comment* | SEE Untitled Page open for editing |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% | extra pause for editing |
 | click_ok | link=Expand |  |
-| *Comment* | SlideShow SEE Untitled Page - Expanded and open for editing |  |
+| *Comment* | SEE Untitled Page - Expanded and open for editing |  |
 | pause | %%pt%% |  |
 | click_ok | link=Normal |  |
-| *Comment* | SlideShow SEE Untitled Page - Normal and open for editing |  |
+| *Comment* | SEE Untitled Page - Normal and open for editing |  |
 | pause | %%pt%% |  |
 
 Post by Email popup
@@ -150,7 +150,7 @@ Post by Email popup
 | *Comment* | SlideShow FINISHED WITH SETTINGS |  |
 
 | clickAndWait | link=Private Messages |  |
-| *Comment* | SlideShow SEE: Private Messages |  |
+| *Comment* | SEE: Private Messages |  |
 | pause | %%pt%% |  |
 
 * a search result
@@ -159,14 +159,14 @@ Post by Email popup
 | wait_for_element_visible_ok | st-search-term | 10000 |
 | type | st-search-term | wiki |
 | clickAndWait | st-search-submit |  |
-| *Comment* | SlideShow SEE search results with %%wiki%% only |  |
+| *Comment* | SEE search results with %%wiki%% only |  |
 | pause | %%pt%% |  |
 
 * an interwiki search result
 
 | type | st-search-term | `wiki workspaces:*` |
 | clickAndWait | st-search-submit |  |
-| *Comment* | SlideShow SEE interwiki search results with multiple workspace names |  |
+| *Comment* | SEE interwiki search results with multiple workspace names |  |
 | pause | %%pt%% |  |
 
 * Mobile
@@ -182,64 +182,64 @@ Post by Email popup
 
 | clickAndWait | link=Mobile |
 | clickAndWait | link=Home |
-| *Comment* | SlideShow SEE MIKI Home |
+| *Comment* | SEE MIKI Home |
 | pause | %%pt%% |
 
 | clickAndWait | link=Recent Changes |
-| *Comment* | SlideShow SEE MIKI Recent Changes |
+| *Comment* | SEE MIKI Recent Changes |
 | pause | %%pt%% |
 
 | clickAndWait | link=Filter by category |
-| *Comment* | SlideShow SEE MIKI Filter by category |
+| *Comment* | SEE MIKI Filter by category |
 | pause | %%pt%% |
 
 | clickAndWait | link=Welcome |
-| *Comment* | SlideShow SEE MIKI Recent changes in welcome category |
+| *Comment* | SEE MIKI Recent changes in welcome category |
 | pause | %%pt%% |
 
 | clickAndWait | link=Recent changes in Welcome category |
-| *Comment* | SlideShow SEE Recent changes in welcome |
+| *Comment* | SEE Recent changes in welcome |
 | pause | %%pt%% |
 
 | clickAndWait | link=All Pages in Welcome |
-| *Comment* | SlideShow SEE MIKI ALL pagesges in Welcome category |
+| *Comment* | SEE MIKI ALL pagesges in Welcome category |
 | pause | %%pt%% |
 
 | clickAndWait | link=Search |
-| *Comment* | SlideShow SEE MIKI Search Box |
+| *Comment* | SEE MIKI Search Box |
 | pause | %%pt%% |
 
 | type_ok | search_term | wiki |
 | clickAndWait | search |  |
-| *Comment* | SlideShow SEE MIKI search results for "wiki" |  |
+| *Comment* | SEE MIKI search results for "wiki" |  |
 | pause | %%pt%% |  |
 
 | clickAndWait | link=Announcements and Links |
-| *Comment* | SlideShow SEE MIKI Announcements and Links |
+| *Comment* | SEE MIKI Announcements and Links |
 | pause | %%pt%% |
 
 | clickAndWait | link=Edit |
-| *Comment* | SlideShow SEE MIKI Edit |
+| *Comment* | SEE MIKI Edit |
 | pause | %%pt%% |
 
 | clickAndWait | link=Cancel Edit |
-| *Comment* | SlideShow SEE MIKI Edit Cancelled |
+| *Comment* | SEE MIKI Edit Cancelled |
 | pause | %%pt%% |
 
 | clickAndWait | link=Edit |
-| *Comment* | SlideShow SEE MIKI Edit again |
+| *Comment* | SEE MIKI Edit again |
 | pause | %%pt%% |
 
 | clickAndWait | document.editform.elements[5] |
-| *Comment* | SlideShow SEE MIKI Save |
+| *Comment* | SEE MIKI Save |
 | pause | %%pt%% |
 
 | clickAndWait | link=start here |
-| *Comment* | SlideShow SEE MIKI Start Here |
+| *Comment* | SEE MIKI Start Here |
 | pause | %%pt%% |
 
 | clickAndWait | link=Log out |
-| *Comment* | SlideShow SEE MIKI Log out |
+| *Comment* | SEE MIKI Log out |
 | pause | %%pt%% |
 
 | st_login |  |
@@ -251,22 +251,22 @@ Post by Email popup
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
-| *Comment* | SlideShow SEE Wiki Text Mode |  |
+| *Comment* | SEE Wiki Text Mode |  |
 | pause | %%pt%% |  |
 
 | click_ok | link=Preview |  |
-| *Comment* | SlideShow SEE Preview Mode |  |
+| *Comment* | SEE Preview Mode |  |
 | pause | %%pt%% |  |
 
 | click_ok | link=Edit More |  |
-| *Comment* | SlideShow SEE Wiki Text Mode |  |
+| *Comment* | SEE Wiki Text Mode |  |
 | pause | %%pt%% |  |
 
 | click_ok | link=Cancel |  |
 
 #| verifyConfirmation | If you click 'OK', all edit changes will be lost! | |
 
-| *Comment* | SlideShow: Test Edit Summaries Feature |  |
+| *Comment* |  Test Edit Summaries Feature |  |
 | open_ok | /%%wiki%%/index.cgi?Advanced Getting Around |  |
 | click_ok | st-edit-button-link |  |
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |
@@ -277,25 +277,25 @@ Post by Email popup
 | click_ok | st-edit-summary-text-area |  |
 | type_ok | st-edit-summary-text-area | Edit Summary In Slideshow at %%start_time%% |
 
-| *Comment* | SlideShow SEE "Edit Summary In Slideshow" |  |
+| *Comment* | SEE "Edit Summary In Slideshow" |  |
 | pause | %%pt%% |  |
 | clickAndWait | st-save-button-link |  |
 | clickAndWait | //a[contains(@href,'?action=revision_list')] |  |
 
-| *Comment* | SlideShow: SEE Revisions List with Edit Summary at %%start_time%% |  |
+| *Comment* |  SEE Revisions List with Edit Summary at %%start_time%% |  |
 | pause | %%pt%% |  |
 | click_and_wait | link=Compare Revisions |  |
 
-| *Comment* | SlideShow: SEE Revisions Compare with Edit Summary at %%start_time%% |  |
+| *Comment* |  SEE Revisions Compare with Edit Summary at %%start_time%% |  |
 | pause | %%pt%% |  |
 | click_and_wait | //table[@id='revision-compare-table']//tr[2]//td[2]//a |  |
 
-| *Comment* | SlideShow: SEE Revision view with Edit Summary at %%start_time%% |  |
+| *Comment* |  SEE Revision view with Edit Summary at %%start_time%% |  |
 | pause | %%pt%% |  |
 
 | open_ok | /%%wiki%%/index.cgi?Start Here |  |
 | click_ok | link=Comment |  |
-| *Comment* | SlideShow: See Comment UI in page |  |
+| *Comment* |  See Comment UI in page |  |
 | pause | %%popup%% |  |
 
 * all dialogs in the Tools menu EXCEPT Email
@@ -305,22 +305,22 @@ Post by Email popup
 | open_ok | /%%wiki%%/index.cgi?Advanced Getting Around |  |
 
 | click_ok | link=Duplicate Page |  |
-| *Comment* | SlideShow: SEE Duplicate Page |  |
+| *Comment* |  SEE Duplicate Page |  |
 | pause | %%popup%% |  |
 | click_ok | link=Cancel |  |
 
 | click_ok | link=Rename Page |  |
-| *Comment* | SlideShow: SEE Rename Page |  |
+| *Comment* |  SEE Rename Page |  |
 | pause | %%popup%% |  |
 | click_ok | link=Cancel |  |
 
 | click_ok | link=Copy Page to Workspace |  |
-| *Comment* | SlideShow: SEE Copy Page |  |
+| *Comment* |  SEE Copy Page |  |
 | pause | %%popup%% |  |
 | click_ok | link=Cancel |  |
 
 | click_ok | link=Delete Page |  |
-| *Comment* | SlideShow: SEE Delete Page |  |
+| *Comment* |  SEE Delete Page |  |
 | pause | %%popup%% |  |
 | click_ok | link=Cancel |  |
 
@@ -333,20 +333,20 @@ Post by Email popup
 | pause | %%popup%% |  |
 
 | click_ok | link=Email |  |
-| *Comment* | SlideShow SEE Email This Page popup |  |
+| *Comment* | SEE Email This Page popup |  |
 | pause | %%popup%% |  |
 | click_ok | link=Cancel |  |
 
 * Email to this Workspace/Page popup (needs some sort of email client installed)
 
 | click_ok | link=Email To This Workspace |  |
-| *Comment* | SlideShow SEE Email popup with %%wiki%% in TO field |  |
+| *Comment* | SEE Email popup with %%wiki%% in TO field |  |
 | *Comment* | SlideShow CANCEL Email popup |  |
 | *Comment* | SlideShow SWITCH BACK TO MAIN WINDOW IF NEEDED |  |
 | pause | %%popup%% |  |
 
 | click_ok | link=Email To This Page |  |
-| *Comment* | SlideShow SEE Email popup with title in SUBJECT |  |
+| *Comment* | SEE Email popup with title in SUBJECT |  |
 | *Comment* | SlideShow CANCEL Email popup |  |
 | *Comment* | SlideShow SWITCH BACK TO MAIN WINDOW IF NEEDED |  |
 | pause | %%popup%% |  |
@@ -355,7 +355,7 @@ Post by Email popup
 
 | open_ok | /%%wiki%%/?Start here |  |
 
-| *Comment* | SlideShow SEE WHAT'S NEW and RECENTLY VIEWED |  |
+| *Comment* | SEE WHAT'S NEW and RECENTLY VIEWED |  |
 | pause | %%pt%% |  |
 
 * page view
@@ -376,18 +376,18 @@ Post by Email popup
 | open_ok | /%%wiki%%/index.cgi?Advanced Getting Around |  |
 | wait_for_element_visible_ok | st-tags-addlink | 30000 |
 | click_ok | st-tags-addlink |  |
-| *Comment* | SlideShow: SEE add tag box open |  |
+| *Comment* |  SEE add tag box open |  |
 | pause | %%pt%% |  |
 | wait_for_element_visible_ok | st-tags-field | 30000 |
 | type_ok | st-tags-field | FOOBAR |
-| *Comment* | SlideShow: SEE FOOBAR in tag box |  |
+| *Comment* |  SEE FOOBAR in tag box |  |
 | pause | %%pt%% |  |
 | click_ok | st-tags-plusbutton-link |  |
-| *Comment* | SlideShow: SEE FOOBAR tag |  |
+| *Comment* |  SEE FOOBAR tag |  |
 
 * Incoming link(s)
 
-| *Comment* | SlideShow: SEE incoming links in sidebar |
+| *Comment* |  SEE incoming links in sidebar |
 | pause | %%pt%% |
 
 * page revisions view
@@ -400,61 +400,61 @@ Post by Email popup
 | wait_for_element_visible_ok | st-save-button-link |
 | clickAndWait | link=Save |  |
 | clickAndWait | //a[contains(@href,'?action=revision_list')] |  |
-| *Comment* | SlideShow: SEE Revisions List |  |
+| *Comment* |  SEE Revisions List |  |
 | pause | %%pt%% |  |
 
 compare two revisions view unformatted
 
 | clickAndWait | link=Compare Revisions |
-| *Comment* | SlideShow: SEE two UNFORMATTED Revisions |
+| *Comment* |  SEE two UNFORMATTED Revisions |
 | pause | %%pt%% |
 
 compare two revisions view formatted
 
 | clickAndWait | link=View Formatted |
-| *Comment* | SlideShow: SEE two FORMATTED Revisions with IMAGE |
+| *Comment* |  SEE two FORMATTED Revisions with IMAGE |
 | pause | %%pt%% |
 
 compare two revisions view unformatted
 
 | clickAndWait | //a[contains(@href,'mode=source')] |
-| *Comment* | SlideShow: SEE two UNFORMATTED Revisions |
+| *Comment* |  SEE two UNFORMATTED Revisions |
 | pause | %%pt%% |
 
 single revision view formatted
 
 | clickAndWait | //a[contains(@href,'action=revision_view')] |
-| *Comment* | SlideShow: SEE one previous FORMATTED Revision |
+| *Comment* |  SEE one previous FORMATTED Revision |
 | pause | %%pt%% |
 
 single revision view unformatted
 
 | click_ok | link=Source View |
-| *Comment* | SlideShow: SEE one previous SOURCE Revision |
+| *Comment* |  SEE one previous SOURCE Revision |
 | pause | %%pt%% |
 
 back to current revision view
 
 | clickAndWait | link=Back To Current Revision |
-| *Comment* | SlideShow: SEE CURRENT Revision |
+| *Comment* |  SEE CURRENT Revision |
 | pause | %%pt%% |
 
 * login screen
 
 | st_logout |  |  |
-| *Comment* | SlideShow SEE LOGIN PAGE |  |
+| *Comment* | SEE LOGIN PAGE |  |
 | pause | %%pt%% |  |
 
 * forgot password screen
 
 | clickAndWait | link=I don't know my password. |  |
-| *Comment* | SlideShow SEE PASSWORD RESET PAGE |  |
+| *Comment* | SEE PASSWORD RESET PAGE |  |
 | pause | %%pt%% |  |
 
 * register screen
 
 | open_ok | /nlw/register.html |  |
-| *Comment* | SlideShow SEE REGISTER PAGE |  |
+| *Comment* | SEE REGISTER PAGE |  |
 | pause | %%pt%% |  |
 | st_login |  |  |
 
@@ -462,7 +462,7 @@ back to current revision view
 
 | open_ok | /%%wiki%% |  |
 | clickAndWait | link=Announcements and Links |  |
-| *Comment* | SlideShow SEE RSS AND UNPLUGGED ICON AND FOOTER |  |
+| *Comment* | SEE RSS AND UNPLUGGED ICON AND FOOTER |  |
 | *Comment* | SCROLL DOWN. |  |
 | pause | %%popup%% |  |
 | pause | %%popup%% |  |
@@ -475,7 +475,7 @@ Lightbox screens:
 | open_ok | %%wiki%%?action=new_page |  |
 | wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_ok | st-save-button-link |  |
-| *Comment* | SlideShow: SEE SAVE PAGE AS LIGHTBOX |  |
+| *Comment* |  SEE SAVE PAGE AS LIGHTBOX |  |
 | *Comment* | DO NOT CANCEL |  |
 | pause | %%pt%% |  |
 | click_ok | st-newpage-save-savebutton |  |
@@ -486,12 +486,12 @@ Lightbox screens:
 | wait_for_element_visible_ok | st-newpage-pagename-edit | 30000 |
 | type_ok | st-newpage-pagename-edit | Announcements and Links |
 | click_ok | st-save-button-link |  |
-| *Comment* | SlideShow SEE PAGE ALREADY EXISTS LIGHTBOX |  |
+| *Comment* | SEE PAGE ALREADY EXISTS LIGHTBOX |  |
 | pause | %%pt%% |  |
 | wait_for_element_visible_ok | st-newpage-duplicate-option-different | 30000 |
 | check_ok | st-newpage-duplicate-option-different |  |
 | click_ok | st-newpage-duplicate-okbutton |  |
-| *Comment* | SlideShow SEE ALREADY A PAGE emphasis LIGHTBOX |  |
+| *Comment* | SEE ALREADY A PAGE emphasis LIGHTBOX |  |
 | pause | %%pt%% |  |
 | click_ok | st-newpage-duplicate-cancelbutton |  |
 | *Comment* | SlideShow GOODBYE ALREADY A PAGE LIGHTBOX |  |
@@ -512,7 +512,7 @@ Lightbox screens:
 | wait_for_element_visible_ok | st-edit-mode-uploadbutton | 30000 |
 | click_ok | st-edit-mode-uploadbutton |  |
 
-| *Comment* | SlideShow SEE EDIT Upload Files LIGHTBOX |  |
+| *Comment* | SEE EDIT Upload Files LIGHTBOX |  |
 | *Comment* | DO NOT CANCEL |  |
 | pause | %%pt%% |  |
 | click_ok | st-attachments-attach-closebutton |  |
@@ -523,7 +523,7 @@ Lightbox screens:
 
 | *Comment* | SlideShow tag while editing |  |
 | click_ok | st-edit-mode-tagbutton |  |
-| *Comment* | SlideShow SEE EDIT Add Tags LIGHTBOX |  |
+| *Comment* | SEE EDIT Add Tags LIGHTBOX |  |
 | pause | %%pt%% |  |
 | click_ok | st-tagqueue-close |  |
 | *Comment* | SlideShow GOODBYE EDIT Add Tags LIGHTBOX |  |
@@ -537,7 +537,7 @@ Lightbox screens:
 
 | wait_for_element_visible_ok | st-attachments-uploadbutton | 30000 |
 | click_ok | st-attachments-uploadbutton |  |
-| *Comment* | SlideShow SEE Upload Files LIGHTBOX |  |
+| *Comment* | SEE Upload Files LIGHTBOX |  |
 | pause | %%pt%% |  |
 | click_ok | st-attachments-attach-closebutton |  |
 | *Comment* | SlideShow GOODBYE Upload Files LIGHTBOX |  |
@@ -546,7 +546,7 @@ Lightbox screens:
 * Help but not via link since Safari can't click it
 
 | open_ok | /help |  |
-| *Comment* | SlideShow SEE HELP |  |
+| *Comment* | SEE HELP |  |
 | *Comment* | IF SEPARATE WINDOW, CTRL-W HTML ON WINDOWS |  |
 | *Comment* | IF SEPARATE WINDOW, APPLE-W HTML ON MAC |  |
 | pause | %%popup%% |  |
@@ -555,18 +555,18 @@ Lightbox screens:
 * weblogs
 
 | open_ok | /%%wiki%%/index.cgi?action=weblog_display;category=recent%20changes |  |
-| *Comment* | SlideShow SEE WEBLOG Recent Changes |  |
+| *Comment* | SEE WEBLOG Recent Changes |  |
 | pause | %%pt%% |  |
 | clickAndWait | link=Older entries |  |
-| *Comment* | SlideShow SEE OLDER ENTRIES weblog view |  |
+| *Comment* | SEE OLDER ENTRIES weblog view |  |
 | pause | %%pt%% |  |
 | clickAndWait | link=Newer entries |  |
-| *Comment* | SlideShow SEE NEWER ENTRIES weblog view |  |
+| *Comment* | SEE NEWER ENTRIES weblog view |  |
 | pause | %%pt%% |  |
 
 * Weblog view: RSS icon, Unplug popup, Print popup
 
-| *Comment* | SlideShow SEE RSS, UNPLUGGED, PRINT icons |  |
+| *Comment* | SEE RSS, UNPLUGGED, PRINT icons |  |
 | pause | %%pt%% |  |
 | pause | %%popup%% |  |
 
@@ -574,20 +574,20 @@ Lightbox screens:
 
 | open_ok | /%%wiki%%/index.cgi?action=weblog_display;category=recent%20changes |  |
 | click_ok | link=Comment |  |
-| *Comment* | SlideShow: comment popup with editing UI (except Safari) |  |
+| *Comment* |  comment popup with editing UI (except Safari) |  |
 | pause | %%popup%% |  |
 
 | click_ok | link=Edit this post |  |
-| *Comment* | SlideShow: SEE post open for editing |  |
+| *Comment* |  SEE post open for editing |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% | extra pause for editing post |
 
 | open_ok | /%%wiki%%/index.cgi?action=weblog_display;category=recent%20changes |  |
 | click_ok | link=Permalink |  |
-| *Comment* | SlideShow: SEE permalink page view |  |
+| *Comment* |  SEE permalink page view |  |
 | pause | %%pt%% |  |
 | open_ok | /%%wiki%%/index.cgi?action=weblog_display;category=recent%20changes |  |
-| *Comment* | SlideShow: SEE weblog page view |  |
+| *Comment* |  SEE weblog page view |  |
 | pause | %%pt%% |  |
 | click_ok | link=Print |  |
 | *Comment* | SlideShow CANCEL WEBLOG PRINT popup |  |
@@ -607,45 +607,45 @@ Lightbox screens:
 | pause | %%popup%% |  |
 
 | open_ok | /%%wiki%%/ |  |
-| *Comment* | SlideShow SEE Global Navigation Home People Workspaces Signals Invite |  |
+| *Comment* | SEE Global Navigation Home People Workspaces Signals Invite |  |
 | pause | %%pt%% |  |
 | click_and_wait | link=Home |  |
-| *Comment* | SlideShow SEE Default widgets |  |
+| *Comment* | SEE Default widgets |  |
 | pause | %%pt%% |  |
 | click_and_wait | link=Workspaces |  |
-| *Comment* | SlideShow SEE default workspaces |  |
+| *Comment* | SEE default workspaces |  |
 | pause | %%pt%% |  |
 | click_and_wait | link=People |  |
-| *Comment* | SlideShow SEE People Directory |  |
+| *Comment* | SEE People Directory |  |
 | pause | %%pt%% |  |
 | type_ok | st-search-term | socialtext |
-| *Comment* | SlideShow SEE People matching socialtext |  |
-| *Comment* | SlideShow SEE pagination UI |  |
+| *Comment* | SEE People matching socialtext |  |
+| *Comment* | SEE pagination UI |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Signals |  |
-| *Comment* | SlideShow SEE Signals UI |  |
+| *Comment* | SEE Signals UI |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% |  |
 
 | click_and_wait | link=Invite! |  |
-| *Comment* | SlideShow SEE Invite to WS UI |  |
+| *Comment* | SEE Invite to WS UI |  |
 | pause | %%pt%% |  |
 
 | open_ok | /?profile/3 |  |
-| *Comment* | SlideShow SEE Profile with six widgets |  |
+| *Comment* | SEE Profile with six widgets |  |
 | pause | %%pt%% |  |
 
 | open_ok | /%%wiki%%/ |  |
-| *Comment* | SlideShow SEE search box |  |
+| *Comment* | SEE search box |  |
 | pause | %%pt%% |  |
 | type_ok | st-search-term | link |
 | click_and_wait | st-search-submit |  |
-| *Comment* | SlideShow SEE search result |  |
+| *Comment* | SEE search result |  |
 | pause | %%pt%% |  |
 
 | open_ok | /%%wiki%%/ |  |
-| *Comment* | SlideShow SEE Workspace Navigation |  |
+| *Comment* | SEE Workspace Navigation |  |
 | pause | %%pt%% |  |
 | *Comment* | SlideShow USE Workspace Navigation |  |
 | click_and_wait | link=What's New |  |
@@ -655,28 +655,28 @@ Lightbox screens:
 | click_and_wait | //a[@id='workspaceName'] |  |
 
 | click_and_wait | link=Profile |  |
-| *Comment* | SlideShow SEE user profile |  |
+| *Comment* | SEE user profile |  |
 | pause | %%pt%% |  |
 | open_ok | /?edit_profile |  |
-| *Comment* | SlideShow SEE EDIT user profile |  |
+| *Comment* | SEE EDIT user profile |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% |  |
 
 | *Comment* | SlideShow navigate home in case previous test hangs |  |
 | open-ok | /%%wiki%% |  |
 | click_and_wait | link=Profile |  |
-| *Comment* | SlideShow SEE user tagging |  |
+| *Comment* | SEE user tagging |  |
 
 | type_ok | new_tag | SlideShow %%start_time%% |
 | click_ok | //input[@value='Add Tag'] |  |
 | wait_for_element_visible_ok | link=SlideShow %%start_time%% | 30000 |
 | text_like | link=SlideShow %%start_time%% | SlideShow %%start_time%% |
 
-| *Comment* | SlideShow SEE People tag SlideShow %%start_time%% |  |
+| *Comment* | SEE People tag SlideShow %%start_time%% |  |
 | pause | %%pt%% |  |
 | open_ok | /?action=people;tag=SlideShow%20%%start_time%% |  |
 
-| *Comment* | SlideShow SEE People tagged SlideShow %%start_time%% |  |
+| *Comment* | SEE People tagged SlideShow %%start_time%% |  |
 | pause | %%pt%% |  |
 
 | *Comment* | Account Logo testing moved to Slideshow Plus |  |
@@ -693,7 +693,7 @@ moved Edit Tips to end because FF on galena can't close it. Bug.
 | wait_for_element_visible_ok | link=(?) |  |
 | click_ok | link=(?) |  |
 
-| *Comment* | SlideShow SEE Edit Tips |  |
+| *Comment* | SEE Edit Tips |  |
 | pause | %%popup%% |  |
 | click_ok | st-ref-card-close |  |
 
