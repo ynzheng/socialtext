@@ -1,3 +1,4 @@
+[% USE decorate %]
 [% WRAPPER layout/html 
     id="dashBoard"
     head_template="element/container_head"
