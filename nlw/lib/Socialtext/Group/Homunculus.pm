@@ -176,6 +176,13 @@ sub update_store {
     $factory->Update($self, $proto_group);
 }
 
+# Delete the Group Homunculus from the system.
+sub delete {
+    my $self = shift;
+    my $factory = $self->factory();
+    $factory->Delete($self);
+}
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
@@ -280,6 +287,12 @@ hash-ref.
 
 Throws a fatal exception if the Group Factory does not have an updateable
 store.
+
+=item B<$group-E<gt>delete()>
+
+Deletes the Group from the local DB store.
+
+This is simply a helper method, calling C<$self-E<gt>factory-E<gt>Delete($self)>.
 
 =item B<$group-E<gt>expire()>
 

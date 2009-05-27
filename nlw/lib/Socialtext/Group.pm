@@ -31,6 +31,7 @@ has 'homunculus' => (
         expire
         can_update_store
         update_store
+        delete
     )],
 );
 
@@ -288,6 +289,10 @@ Delegated to C<Socialtext::Group::Homunculus>.
 Delegated to C<Socialtext::Group::Homunculus>.
 
 =item B<$group-E<gt>update_store()>
+
+Delegated to C<Socialtext::Group::Homunculus>.
+
+=item B<$group-E<gt>delete()>
 
 Delegated to C<Socialtext::Group::Homunculus>.
 
