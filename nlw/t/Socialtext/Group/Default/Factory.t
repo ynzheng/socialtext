@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 21;
+use Test::Socialtext tests => 25;
 
 ###############################################################################
 # Fixtures: db
@@ -94,4 +94,25 @@ delete_group: {
     # retrieve Group should return empty-handed
     $queried = $factory->GetGroupHomunculus( group_id => $group->group_id );
     ok !$queried, "... and which can't be queried after deletion";
+}
+
+###############################################################################
+# TEST: cannot delete non-existent Group
+delete_nonexistent_group: {
+    my $factory = Socialtext::Group::Default::Factory->new();
+    isa_ok $factory, 'Socialtext::Group::Default::Factory';
+
+    # create a Group that we can monkey with
+    my $account_id = Socialtext::Account->Socialtext->account_id();
+    my $creator_id = Socialtext::User->SystemUser->user_id();
+    my $group = $factory->Create( {
+        driver_group_name   => 'Test Group',
+        account_id          => $account_id,
+        created_by_user_id  => $creator_id,
+    } );
+    isa_ok $group, 'Socialtext::Group::Default';
+
+    # delete Group
+    ok  $factory->Delete($group), '... which can be deleted';
+    ok !$factory->Delete($group), '... ... but only once';
 }
