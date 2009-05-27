@@ -1,0 +1,31 @@
+Test permissions - right now, tests the new join-to-edit permission set and self-join permission, along with script to migrate an account to use self-join instead of edit-controls (maybe)
+
+* Fixture: SocialRest
+
+| comment       | set up |
+| set | ws_name  | %%start_time%%-ws                   |
+| set | ws_title | %%start_time%%-Workspace            |
+| set | admin    | %%start_time%%-admin@socialtext.com |
+| st-admin  | create-workspace --name %%ws_name%% --title %%ws_title%%      |
+| st-admin  | create-user --email %%admin%% --password password             |
+| st-admin  | add-workspace-admin --email %%admin%% --workspace %%ws_name%% |
+| st-config | set default_workspace %%ws_name%%                             |
+
+Set up workspace permissions to new join-to-edit and make sure public-join-to-edit and self-join unsets edit-controls 
+
+| comment | Test that setting public-join-to-edit unsets edit_controls| 
+| add-workspace-permission | %%ws_name%% | Guest |  edit_controls |
+| set-ws-permissions | %%ws_name%% | public-join-to-edit |
+| st-admin | show-acls --workspace %%ws_name%% | qr/. edit_controls   .       ./ |
+| st-admin | show-acls --workspace %%ws_name%% | qr/. self_join       .   X   ./ |
+
+| comment | Test that setting self_join unsets edit_controls| 
+| add-workspace-permission | %%ws_name%% | Guest |  edit_controls |
+| remove-workspace-permission | %%ws_name%% | Guest |  self_join |
+| st-admin | show-acls --workspace %%ws_name%% | qr/. edit_controls   .   X   ./ |
+| st-admin | show-acls --workspace %%ws_name%% | qr/. self_join       .       ./ |
+| add-workspace-permission | %%ws_name%% | Guest |  self_join |
+| st-admin | show-acls --workspace %%ws_name%% | qr/. edit_controls   .       ./ |
+| st-admin | show-acls --workspace %%ws_name%% | qr/. self_join       .   X   ./ |
+
+

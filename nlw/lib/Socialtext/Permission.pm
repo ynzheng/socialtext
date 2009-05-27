@@ -19,7 +19,7 @@ field 'name';
 # FIXME: This belongs elsewhere, in fixture creation code, perhaps
 Readonly my @RequiredPermissions => qw(
     read edit attachments comment delete email_in email_out edit_controls
-    admin_workspace request_invite impersonate lock
+    admin_workspace request_invite impersonate lock self_join
 );
 sub EnsureRequiredDataIsPresent {
     my $class = shift;
@@ -38,7 +38,7 @@ sub _setup_exports {
 
     Readonly my @ExportedPermissions => qw(
         read edit attachments comment delete email_in email_out edit_controls
-        request_invite admin_workspace lock
+        request_invite admin_workspace lock self_join
     );
 
     foreach my $name (@ExportedPermissions) {
@@ -178,6 +178,8 @@ to access the permissions you need.
 
 =head2 ST_LOCK_PERM
 
+=head2 ST_SELF_JOIN_PERM
+
 =head1 CLASS METHODS
 
 =over 4
@@ -238,6 +240,10 @@ Send email via the application.
 Show edit page and new page links/buttons/etc, this simply shows the
 controls, but does not actually allow the user to edit. Many controls
 are still hidden, and only shown to users with "edit" permissions.
+
+=item * self_join 
+
+Allow a non-authenticated user to kick off the "self join" email workflow.
 
 =item * request_invite
 

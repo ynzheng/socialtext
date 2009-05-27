@@ -2758,7 +2758,7 @@ Socialtext::CLI - Provides the implementation for the st-admin CLI script
 
   set-permissions --workspace --permissions
     [public | member-only | authenticated-user-only | public-read-only
-    | public-comment-only | public-authenticate-to-edit | intranet]
+    | public-comment-only | public-join-to-edit | intranet]
 
   add-permission --workspace --role --permission
   remove-permission --workspace --role --permission
@@ -2990,7 +2990,7 @@ permission set. Valid set names are:
 
 =item * public-comment-only
 
-=item * public-authenticate-to-edit
+=item * public-join-to-edit
 
 =item * intranet
 

@@ -13,7 +13,7 @@ EMAIL_OFF=$(SST) set-workspace-config --workspace $(WS) email_notify_is_enabled 
 
 clean:	
 	cd /tmp && sudo rm member-only.*.tar.gz  authenticated-user-only.*.tar.gz  public-read-only.*.tar.gz  fully-public.*.tar.gz || true
-	cd /tmp && sudo rm public-comment-only.*.tar.gz  public-authenticate-to-edit.*.tar.gz  intranet.*.tar.gz || true
+	cd /tmp && sudo rm public-comment-only.*.tar.gz  public-join-to-edit.*.tar.gz  intranet.*.tar.gz || true
 	cd /tmp && sudo rm test-drkw.*.tar.gz  test-symantec.*.tar.gz  test-lp.*.tar.gz  test-referencemd.*.tar.gz || true
 
 
@@ -41,7 +41,7 @@ dev: spaces
 
 spaces: publics skins
 
-publics: member-only authenticated-user-only public-read-only fully-public public-comment-only public-authenticate-to-edit intranet
+publics: member-only authenticated-user-only public-read-only fully-public public-comment-only public-join-to-edit intranet
 
 skins: drkw symantec loanperformance referencemd
 
@@ -90,10 +90,10 @@ public-comment-only:
 	${SETUP_ADMIN}
 	$(SET_PERMISSIONS)
 
-public-authenticate-to-edit: WS=public-authenticate-to-edit
-public-authenticate-to-edit: PERMS=public-authenticate-to-edit
-public-authenticate-to-edit: TITLE=Public Authenticate to Edit
-public-authenticate-to-edit:
+public-join-to-edit: WS=public-join-to-edit
+public-join-to-edit: PERMS=public-join-to-edit
+public-join-to-edit: TITLE=Public Join to Edit
+public-join-to-edit:
 	$(DELETE)
 	${CREATE}
 	${SETUP_ADMIN}

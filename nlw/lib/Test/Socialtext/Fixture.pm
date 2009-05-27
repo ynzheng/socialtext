@@ -281,7 +281,7 @@ sub _generate_subfixtures {
 
 my %PermsForName = (
     public          => 'public',
-    'auth-to-edit'  => 'public-authenticate-to-edit',
+    'auth-to-edit'  => 'public-join-to-edit',
 );
 sub _generate_workspaces {
     my $self = shift;

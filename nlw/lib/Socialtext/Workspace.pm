@@ -2428,7 +2428,7 @@ Check whether spreadsheets are enabled or not.
 
 =back
 
-=item * public-authenticate-to-edit
+=item * public-authenticate-to-edit ( Deprecated, do not use. )
 
 =over 8
 
@@ -2442,6 +2442,19 @@ Check whether spreadsheets are enabled or not.
 
 =back
 
+=item * public-join-to-edit
+
+=over 8
+
+=item o guest - read, self_join 
+
+=item o authenticated_user - read, edit, attachments, comment, delete, email_in, email_out
+
+=item o member - read, edit, attachments, comment, delete, email_in, email_out
+
+=item o workspace_admin - read, edit, attachments, comment, delete, email_in, email_out
+
+=back
 =item * intranet
 
 =over 8

@@ -17,7 +17,7 @@ fixtures(qw( clean db ));
             authenticated-user-only
             public-read-only
             public-comment-only
-            public-authenticate-to-edit
+            public-join-to-edit
             intranet
           )
         ) {

@@ -396,7 +396,7 @@ sub set_permissions {
     my $config = shift;
 
     my $set_name =
-          $config->{is_self_register} || $config->{edit_login_label} ? 'public-authenticate-to-edit'
+          $config->{is_self_register} || $config->{edit_login_label} ? 'public-join-to-edit'
         : $config->{comment_only_workspace} ? 'public-comment-only'
         : $config->{view_only_workspace} ? 'public-read-only'
         : $config->{all_members} ? 'authenticated-user-only'

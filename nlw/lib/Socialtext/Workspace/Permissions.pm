@@ -10,7 +10,7 @@ use Socialtext::Validate qw(
     HANDLE_TYPE URI_TYPE USER_TYPE ROLE_TYPE PERMISSION_TYPE FILE_TYPE
     DIR_TYPE UNDEF_TYPE
 );
-use Socialtext::Permission qw( ST_EMAIL_IN_PERM ST_READ_PERM );
+use Socialtext::Permission qw( ST_EMAIL_IN_PERM ST_READ_PERM ST_EDIT_CONTROLS_PERM );
 use Socialtext::l10n qw(loc system_locale);
 use Socialtext::Exceptions qw( rethrow_exception );
 
@@ -56,8 +56,8 @@ our %PermissionSets = (
         workspace_admin    => [ qw( read edit attachments comment delete
                                     email_in email_out admin_workspace lock ) ],
     },
-    'public-authenticate-to-edit' => {
-        guest              => [ qw( read edit_controls ) ],
+    'public-join-to-edit' => {
+        guest              => [ qw( read self_join) ],
         authenticated_user => [ qw( read edit attachments comment delete
                                     email_in email_out ) ],
         member             => [ qw( read edit attachments comment delete
@@ -77,7 +77,19 @@ our %PermissionSets = (
     },
 );
 
-my @PermissionSetsLocalize = (loc('public'), loc('member-only'), loc('authenticated-user-only'), loc('public-read-only'), loc('public-comment-only'), loc('public-authenticate-to-edit') ,loc('intranet'));
+my %DeprecatedPermissions = (
+    'public-authenticate-to-edit' => {
+        guest              => [ qw( read edit_controls ) ],
+        authenticated_user => [ qw( read edit attachments comment delete
+                                    email_in email_out ) ],
+        member             => [ qw( read edit attachments comment delete
+                                    email_in email_out ) ],
+        workspace_admin    => [ qw( read edit attachments comment delete
+                                    email_in email_out admin_workspace lock ) ],
+    },
+);
+
+my @PermissionSetsLocalize = (loc('public'), loc('member-only'), loc('authenticated-user-only'), loc('public-read-only'), loc('public-comment-only'), loc('public-authenticate-to-edit') ,loc('public-join-to-edit'), loc('intranet'));
 
 # Impersonators should be able to do everything members can do, plus
 # impersonate.
@@ -256,6 +268,12 @@ EOSQL
         my $wksp = $self->{wksp};
         my %p = validate( @_, $spec );
 
+        if ($p{permission}->name() eq  "self_join") {
+            $self->remove(
+                permission => ST_EDIT_CONTROLS_PERM, 
+                role => $p{role}
+            );
+        }
         eval {
             sql_execute('INSERT INTO "WorkspaceRolePermission" VALUES (?,?,?)',
                 $wksp->workspace_id, $p{role}->role_id,
@@ -493,7 +511,7 @@ C<impersonate> to the C<impersonator> role.
 
 =back
 
-=item * public-authenticate-to-edit
+=item * public-authenticate-to-edit ( Deprecated, do not use. )
 
 =over 8
 
@@ -507,6 +525,19 @@ C<impersonate> to the C<impersonator> role.
 
 =back
 
+=item * public-join-to-edit
+
+=over 8
+
+=item o guest - read, self_join
+
+=item o authenticated_user - read, edit, attachments, comment, delete, email_in, email_out
+
+=item o member - read, edit, attachments, comment, delete, email_in, email_out
+
+=item o workspace_admin - read, edit, attachments, comment, delete, email_in, email_out, lock
+
+=back
 =item * intranet
 
 =over 8
