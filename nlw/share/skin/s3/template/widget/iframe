@@ -7,7 +7,7 @@
     [% scrolling = "yes" %]
 [% END %]
 <iframe src="[% gadget.href %]"
-        name="[% num %]"
+        name="widget_[% num %]"
         class="widgetWindow"
         noresize="noresize"
         frameborder="0"

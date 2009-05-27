@@ -77,7 +77,7 @@ Socialtext.make_table_unsortable = function(table) {
 
 $(function() {
     setTimeout(function() { $('#contentWarning').hide('slow') }, 10000);
-    
+
     // Fix the global nav for IE6
     $('#mainNav ul.level2').createSelectOverlap({noPadding: true});
 
