@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 28;
+use Test::Socialtext tests => 31;
 
 ###############################################################################
 # Fixtures: db
@@ -115,6 +115,17 @@ delete_nonexistent_group: {
     # delete Group
     ok  $factory->Delete($group), '... which can be deleted';
     ok !$factory->Delete($group), '... ... but only once';
+}
+
+###############################################################################
+# TEST: trying to delete Group without Group object throws error
+delete_group_without_group_object: {
+    my $factory = Socialtext::Group::Default::Factory->new();
+    isa_ok $factory, 'Socialtext::Group::Default::Factory';
+
+    my $rc = eval { $factory->Delete() };
+    ok !$rc, 'delete Group fails with no Group provided';
+    ok $@, '... and it throws an exception (regardless of how ugly it may be)';
 }
 
 ###############################################################################
