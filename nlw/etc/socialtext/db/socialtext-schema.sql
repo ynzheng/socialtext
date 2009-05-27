@@ -627,6 +627,12 @@ CREATE VIEW user_account AS
    LEFT JOIN "Workspace" w USING (workspace_id)
   ORDER BY u.user_id, u.driver_key, u.driver_unique_id, u.driver_username, um.created_by_user_id, um.creation_datetime, um.primary_account_id, w.account_id, u.is_profile_hidden;
 
+CREATE TABLE user_group_role (
+    user_id bigint NOT NULL,
+    role_id integer NOT NULL,
+    group_id bigint NOT NULL
+);
+
 CREATE TABLE user_plugin_pref (
     user_id bigint NOT NULL,
     plugin text NOT NULL,
@@ -1464,6 +1470,21 @@ ALTER TABLE ONLY topic_signal_user
             FOREIGN KEY (user_id)
             REFERENCES users(user_id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY user_group_role
+    ADD CONSTRAINT user_group_role_group_fk
+            FOREIGN KEY (group_id)
+            REFERENCES groups(group_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY user_group_role
+    ADD CONSTRAINT user_group_role_role_fk
+            FOREIGN KEY (role_id)
+            REFERENCES "Role"(role_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY user_group_role
+    ADD CONSTRAINT user_group_role_user_fk
+            FOREIGN KEY (user_id)
+            REFERENCES users(user_id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY user_plugin_pref
     ADD CONSTRAINT user_plugin_pref_user_fk
             FOREIGN KEY (user_id)
@@ -1515,4 +1536,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '64');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '65');
