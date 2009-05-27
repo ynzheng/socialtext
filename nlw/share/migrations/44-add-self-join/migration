@@ -2,10 +2,8 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Socialtext::Migration::Utils qw/ensure_socialtext_schema/;
 use Socialtext::SQL qw/sql_execute/;
 
-ensure_socialtext_schema(64); # Current version when this migration written
 
 sql_execute( q{ 
                 INSERT INTO "Permission" (permission_id, name)
