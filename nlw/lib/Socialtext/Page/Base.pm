@@ -60,16 +60,8 @@ sub to_html {
     my $page = shift;
     $content = '' unless defined $content;
     return $self->is_spreadsheet
-        ? $self->spreadsheet_to_html($content, $self)
+        ? $self->hub->pluggable->hook('render.sheet.html', \$content, $self)
         : $self->hub->viewer->process($content, $page);
-}
-
-sub spreadsheet_to_html {
-    my $self = shift;
-    my $content = shift;
-    $content =~ s/.*\n__SPREADSHEET_HTML__\n//s;
-    $content =~ s/\n__SPREADSHEET_\w+__.*/\n/s;
-    return $content;
 }
 
 sub exists {
