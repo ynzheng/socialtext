@@ -4,6 +4,9 @@ package Socialtext::Group;
 use Moose;
 use List::Util qw(first);
 use Socialtext::AppConfig;
+use Socialtext::MultiCursor;
+use Socialtext::Timer;
+use Socialtext::SQL qw(:exec);
 use namespace::clean -except => 'meta';
 
 ###############################################################################
@@ -35,6 +38,40 @@ has 'homunculus' => (
 sub Drivers {
     my $drivers = Socialtext::AppConfig->group_factories();
     return split /;/, $drivers;
+}
+
+###############################################################################
+sub ByAccountId {
+    my $class   = shift;
+    my %p       = @_;
+    my $acct_id = $p{account_id};
+    my $sql = qq{
+        SELECT group_id
+          FROM groups
+         WHERE account_id = ?
+         ORDER BY driver_group_name;
+    };
+    return $class->_GroupCursor(
+        $sql, [qw( account_id )], %p
+    );
+}
+
+sub _GroupCursor {
+    my ($class, $sql, $interpolations, %p) = @_;
+
+    Socialtext::Timer->Continue('group_cursor');
+
+    my $sth    = sql_execute($sql, @p{ @{$interpolations} });
+    my $cursor = Socialtext::MultiCursor->new(
+        iterables => [ $sth->fetchall_arrayref ],
+        apply => sub {
+            my $row = shift;
+            return Socialtext::Group->GetGroup(group_id => $row->[0]);
+        },
+    );
+
+    Socialtext::Timer->Pause('group_cursor');
+    return $cursor;
 }
 
 ###############################################################################
@@ -180,6 +217,11 @@ Valid C<$key>s include:
 =item group_id
 
 =back
+
+=item B<Socialtext::Group-E<gt>ByAccountId(account_id=>$acct_id)>
+
+Returns a C<Socialtext::MultiCursor> containing a list of all of the Groups
+that exist within the given Account, ordered by "Group Name".
 
 =item B<$group-E<gt>homunculus()>
 
