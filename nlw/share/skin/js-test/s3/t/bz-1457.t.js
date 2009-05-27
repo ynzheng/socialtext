@@ -10,6 +10,10 @@ t.runAsync([
     },
             
     function() { 
+        if (t.$('#contentColumns').hasClass('hidebox')) {
+            t.$('#st-page-boxes-toggle-link').click();
+        }
+
         t.scrollTo(
             t.$('a.weblog_comment:first').offset().top
         );

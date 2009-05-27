@@ -45,6 +45,7 @@ for my $schema_config_file (@schemas) {
         %$schema_config,
         verbose => delete $opts{verbose},
         output  => delete $opts{output},
+        force   => $opts{force},
     );
 
     my @args;

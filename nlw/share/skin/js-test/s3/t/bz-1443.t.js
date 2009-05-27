@@ -17,6 +17,10 @@ t.runAsync([
     },
             
     function() { 
+        if (t.$('#contentColumns').hasClass('hidebox')) {
+            t.$('#st-page-boxes-toggle-link').click();
+        }
+
         t.ok(
             t.$('table.dataTable').width() < t.$('#contentContainer').width(),
             "Long contents in search results should be truncated automatically"

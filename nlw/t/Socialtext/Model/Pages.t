@@ -2,7 +2,7 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::More tests => 70;
+use Test::More tests => 78;
 use mocked 'Socialtext::SQL', qw/sql_ok/;
 use mocked 'Socialtext::Page';
 use mocked 'Socialtext::User';
@@ -411,6 +411,66 @@ $COMMON_SELECT
     LIMIT ?
 EOT
             args => [0,0,20],
+        );
+    }
+    NoLimit: {
+        local @Socialtext::SQL::RETURN_VALUES = (
+            {
+                return => [{workspace_id => 9, page_id => 'page_id'}],
+            },
+        );
+        Socialtext::Model::Pages->All_active(
+            hub => 'hub',
+            workspace_id => 9,
+        );
+        sql_ok(
+            name => 'all_active',
+            sql => <<EOT,
+$COMMON_SELECT
+    WHERE page.deleted = ?::bool 
+      AND page.workspace_id = ? 
+    LIMIT ?
+EOT
+            args => [0,9,500],
+        );
+        sql_ok(
+            name => 'all_active',
+            sql => <<EOT,
+SELECT workspace_id, page_id, tag 
+    FROM page_tag 
+    WHERE page_tag.workspace_id = ?
+EOT
+            args => [9],
+        );
+    }
+    Unlimited: {
+        local @Socialtext::SQL::RETURN_VALUES = (
+            {
+                return => [{workspace_id => 9, page_id => 'page_id'}],
+            },
+        );
+        Socialtext::Model::Pages->All_active(
+            hub => 'hub',
+            count => -1,
+            workspace_id => 9,
+        );
+        sql_ok(
+            name => 'all_active',
+            sql => <<EOT,
+$COMMON_SELECT
+    WHERE page.deleted = ?::bool 
+      AND page.workspace_id = ? 
+EOT
+            args => [0,9],
+        );
+        sql_ok(
+            name => 'all_active',
+            sql => <<EOT,
+SELECT workspace_id, page_id, tag 
+    FROM page_tag 
+    WHERE page_tag.workspace_id = ?
+EOT
+            args => [9],
         );
     }
 }

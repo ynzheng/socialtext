@@ -77,7 +77,7 @@ Socialtext.make_table_unsortable = function(table) {
 
 $(function() {
     setTimeout(function() { $('#contentWarning').hide('slow') }, 10000);
-    
+
     // Fix the global nav for IE6
     $('#mainNav ul.level2').createSelectOverlap({noPadding: true});
 
@@ -518,7 +518,12 @@ $(function() {
     });
 
     $('#st-listview-selectall').click(function () {
-        $('input[type=checkbox]').attr('checked', this.checked);
+        var self = this;
+        $('input[type=checkbox]').each(function() {
+            if ( ! $(this).attr('disabled') ) {
+                $(this).attr('checked', self.checked);
+            }
+        });
         return true;
     });
 

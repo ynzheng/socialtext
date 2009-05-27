@@ -25,7 +25,7 @@ if(Wikiwyg.is_safari) {
 /* Test
 === Except for this failure chunk
 --- wikitext
-"Name of this Link"<[%THIS_URL%]?page_name>
+"Name of this Link"<[%BASE_URL%]/admin/index.cgi?page_name>
 
 */
 

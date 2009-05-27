@@ -38,7 +38,13 @@
       </tr>
       [% FOREACH row = rows %]
         [% IF loop.count % 2 %]<tr class="oddRow">[% ELSE %]<tr>[% END %]
-        <td><input name="selected" value="[% row.page_uri %],[% row.id %]" type="checkbox" /></td>
+        <td>
+          [% IF row.page_is_locked AND ! row.user_can_modify %]
+            <img src="/static/skin/s3/images/lock-locked.png" />
+          [% ELSE %]
+            <input name="selected" value="[% row.page_uri %],[% row.id %]" type="checkbox" />
+          [% END %]
+        </td>
         <td colspan="2">
           [% row.link %] ([% row.human_readable_size %]), [% loc('attached to') %] <span class="[% row.style %]-row-title-attached-to query-results-row-title-attached-to">[% row.page_link %]</span>
         [% loc('Uploaded by') %]

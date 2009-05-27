@@ -26,8 +26,8 @@ Visit in Firefox:
 
 | open_ok | /%%wiki%%/index.cgi?Advanced Getting Around |  |
 | click_ok | //img[contains(@src,'rss.png')] |  |
-| *Comment* | SlideShow Plus SEE page RSS feed |  |
-| *Comment* | SlideShow Plus SEE Creator, Tags (if tags exist), Attachments(if attachments exist) |  |
+| *Comment* | SEE page RSS feed |  |
+| *Comment* | Plus SEE Creator, Tags (if tags exist), Attachments(if attachments exist) |  |
 | pause | %%popup%% |  |
 | pause | %%popup%% |  |
 
@@ -35,7 +35,7 @@ Visit in Firefox:
 
 | open_ok | /%%wiki%% |  |
 | click_ok | //img[contains(@src,'plug.png')] |  |
-| *Comment* | SlideShow Plus CANCEL UNPLUG popup |  |
+| *Comment* | CANCEL UNPLUG popup |  |
 | pause | %%popup%% |  |
 | pause | %%popup%% |  |
 
@@ -43,7 +43,7 @@ Visit in Firefox:
 
 | click_and_wait | link=What's New |  |
 | click_ok | //img[contains(@src,'rss.png')] |  |
-| *Comment* | SlideShow Plus SEE What's New RSS feed |  |
+| *Comment* | SEE What's New RSS feed |  |
 | pause | %%popup%% |  |
 | pause | %%popup%% |  |
 
@@ -52,19 +52,19 @@ Visit in Firefox:
 | open_ok | /%%wiki%% |  |
 | open_ok | /%%wiki%%/index.cgi?action=weblog_display;category=recent%20changes |  |
 | click_ok | link=Subscribe to Feed |  |
-| *Comment* | SlideShow Plus SEE WEBLOG RSS |  |
+| *Comment* | SEE WEBLOG RSS |  |
 | pause | %%popup%% |  |
 | pause | %%popup%% |  |
 
 | open_ok | /%%wiki%% |  |
 | open_ok | /%%wiki%%/index.cgi?action=weblog_display;category=recent%20changes |  |
 | click_ok | link=Print |  |
-| *Comment* | SlideShow Plus CANCEL WEBLOG PRINT popup |  |
+| *Comment* | CANCEL WEBLOG PRINT popup |  |
 | pause | %%popup%% |  |
 | pause | %%popup%% |  |
 
 | click_ok | link=Save the 50 most recent pages |  |
-| *Comment* | SlideShow Plus CANCEL WEBLOG UNPLUG popup |  |
+| *Comment* | CANCEL WEBLOG UNPLUG popup |  |
 | pause | %%popup%% |  |
 | pause | %%popup%% |  |
 
@@ -74,14 +74,14 @@ Visit in Firefox:
 | clickAndWait | link=Recently Viewed |  |
 | check_ok | page_selected |  |
 | click_ok | st-listview-submit-pdfexport |  |
-| *Comment* | SlideShow Plus CANCEL PDF Export POPUP |  |
+| *Comment* | CANCEL PDF Export POPUP |  |
 | pause | %%popup%% |  |
 | pause | %%popup%% |  |
 
 * multipage Word export dialog
 
 | click_ok | st-listview-submit-rtfexport |  |
-| *Comment* | SlideShow Plus CANCEL RTF Export POPUP |  |
+| *Comment* | CANCEL RTF Export POPUP |  |
 | pause | %%popup%% |  |
 | pause | %%popup%% |  |
 
@@ -89,14 +89,14 @@ Visit in Firefox:
 
 | open_ok | /%%wiki%%/index.cgi?Announcements and Links |  |
 | click_ok | link=Export to PDF |  |
-| *Comment* | SlideShow Plus CANCEL Export to PDF popup |  |
+| *Comment* | CANCEL Export to PDF popup |  |
 | pause | %%popup%% |  |
 | pause | %%popup%% |  |
 
 * single page Word export
 
 | click_ok | link=Export to Word |  |
-| *Comment* | SlideShow Plus CANCEL Export to Word popup |  |
+| *Comment* | CANCEL Export to Word popup |  |
 | pause | %%popup%% |  |
 | pause | %%popup%% |  |
 
@@ -107,7 +107,7 @@ Visit in Firefox:
 | pause | %%popup%% |  |
 | pause | %%pt%% | some extra time to close HTML window |
 
-| *Comment* | SlideShow Plus setup Account Logo test |  |
+| *Comment* | setup Account Logo test |  |
 | set | logo_acc | logo-acc-%%start_time%% |
 | set | logo_ws | logo-ws-%%start_time%% |
 | set | logo_user | `logo-%%start_time%%@ken.socialtext.net` |

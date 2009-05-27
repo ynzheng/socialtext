@@ -1,7 +1,7 @@
 #!perl
 # @COPYRIGHT@
 use mocked qw(Socialtext::l10n system_locale); # Has to come firstest.
-use Test::Socialtext tests => 122;
+use Test::Socialtext tests => 120;
 use Test::Exception;
 use strict;
 use warnings;
@@ -796,8 +796,4 @@ sub check_errors {
             my $errors = join ', ', $e->messages;
             like $errors, $regex, "got error message matching $regex";
     }
-
-    my $regex = qr/skin you specified/;
-    ok( ( grep {/$regex/} $e->messages ),
-        "got error message matching $regex" );
 }

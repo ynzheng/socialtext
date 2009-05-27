@@ -68,3 +68,16 @@ div#st-editing-tools-edit ul.buttonRight {
 body div#mainNav ul ul.level2 {
     overflow: hidden;
 }
+
+/* Special rule for {bz: 2589} as IE6 calculate margins rather differently. */
+body .container.edit_profile #col0 {
+    width: 80%;
+    margin-left: 5%;
+    margin-right: 0%;
+}
+
+div#controls div#controlsRight ul li a.export {
+    background-position-x: 5px; /* really only for ie6 but doesn't hurt others */
+    margin-left: 15px;
+}
+

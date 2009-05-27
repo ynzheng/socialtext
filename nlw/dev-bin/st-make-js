@@ -1,10 +1,3 @@
 #!/bin/bash
-
-MAKEFILES="$ST_CURRENT/nlw/share/skin/Makefile $ST_CURRENT/plugins/socialcalc/share/javascript/Makefile $ST_CURRENT/plugins/people/Makefile $ST_CURRENT/plugins/widgets/Makefile $ST_CURRENT/plugins/signals/Makefile"
-
-# REMOVED MAKING JS-TEST SINCE IT SEEMS TO BREAK SUBSEQUENT rb COMMANDS:
-# $ST_CURRENT/nlw/share/skin/js-test/Makefile
-
-for i in $MAKEFILES ; do echo Making $i ; pushd `dirname $i` ; make clean all ; popd ; done ;
-ceq-exec --timeout 300 st-widgets update-gallery
-
+st-make-all clean all
+st-widgets update-gallery --fork

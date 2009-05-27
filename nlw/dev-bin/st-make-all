@@ -1,0 +1,87 @@
+#!/usr/bin/perl
+# @COPYRIGHT@
+use strict;
+use warnings;
+use IPC::Run qw(start finish);
+use Pod::Usage;
+use Term::ANSIColor 'color';
+
+my @dirs = qw(
+    nlw/share/skin
+    plugins/socialcalc/share/javascript
+    plugins/widgets
+    plugins/signals
+);
+
+pod2usage() unless (@ARGV);
+
+# See if we're supposed to be running quietly.
+my $quiet = $ARGV[0] =~ s/^@//;
+my $nodie = $ARGV[0] =~ s/^-//;
+
+# Its a "git" command we're running.
+$| = 1;
+print "++";
+
+# Run the command against all repos.
+unshift @ARGV, 'make';
+my $st_current = $ENV{ST_CURRENT};
+my $overall_err = 0;
+my %proc;
+foreach my $dir (@dirs) {
+    my $out = '';
+    chdir "$st_current/$dir";
+
+    # run the command against this repo.
+    $proc{$dir} = {
+        handle => start(\@ARGV, \*STDIN, \$out, \$out),
+        output => \$out,
+    };
+}
+
+while (my $dir = shift @dirs) {
+    my $handle = $proc{$dir}{handle};
+    color_print('green'," $dir");
+    unless ($handle) {
+        color_print('red', "\nDir doesn't exist.\n");
+        next;
+    }
+    my $success = $handle->finish;
+    my $err = $?>>8;
+    color_print('red',"!(exit:$err)") unless $success;
+
+    my $out = ${$proc{$dir}{output}};
+    chomp $out;
+    print "\n$out\n" unless $quiet || $out eq '';
+    $overall_err |= $err; # yes, bitwise
+    unless ($nodie || $success) {
+        foreach my $remaining (@dirs) {
+            $handle->kill_kill();
+        }
+        exit $err;
+    }
+}
+
+print "\n";
+
+exit $overall_err;
+
+sub color_print {
+    my $color = shift;
+    my $msg = shift;
+    print color($color), $msg, color('reset');
+}
+
+=head1 NAME
+
+st-make-all - Runs all makes in Socialtext
+
+=head1 SYNOPSIS
+
+  st-make-all [@][-][command] <options>
+
+  Example:
+    st-git-all clean
+    st-git-all clean all
+
+=cut
