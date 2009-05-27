@@ -273,7 +273,7 @@ sub create_workspace {
         return
     }
 
-    Socialtext::Workspace->create(
+    $ws = Socialtext::Workspace->create(
         name => $name, title => $name,
         (
             $account
@@ -283,6 +283,7 @@ sub create_workspace {
         ),
         skip_default_pages => 1,
     );
+    $ws->enable_plugin($_) for qw/socialcalc/;
     diag "Created workspace $name";
 }
 
