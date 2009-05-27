@@ -161,6 +161,33 @@ sub _cached_group_is_fresh {
 #    my ($self, $proto_group) = @_;
 #}
 
+# Delete a Group object from the local DB.
+sub Delete {
+    my ($self, $group) = @_;
+    $self->DeleteGroupRecord( { group_id => $group->group_id } );
+}
+
+# Deletes a Group record from the local DB.
+sub DeleteGroupRecord {
+    my ($self, $proto_group) = @_;
+    my $group_id = $proto_group->{group_id};
+
+    # SANITY CHECK: need to know which "group_id" we're deleting
+    die "must have a group_id to delete a Group record" unless $group_id;
+
+    # map Group Id attribute to SQL DELETE args
+    my $group_column_name = Socialtext::Group::Homunculus->meta
+        ->get_attribute('group_id')
+        ->column_name();
+
+    # DELETE the record in the DB
+    my $sth = sql_execute(
+        qq{ DELETE FROM groups WHERE $group_column_name = ? },
+        $group_id
+    );
+    return $sth->rows();
+}
+
 # Updates the local DB using the provided Group information
 sub UpdateGroupRecord {
     my ($self, $proto_group) = @_;
@@ -446,6 +473,29 @@ record that we are updating in the DB.
 The C<cached_at> time for the record will be updated to "now" by default.  If
 you wish to preserve the existing C<cached_at> time, be sure to pass that in
 as part of the data in C<\%proto_group>.
+
+=item B<$factory-E<gt>Delete($group)>
+
+Deletes a Group object from the local DB store.
+
+This is just a helper method which calls C<$factory-E<gt>DeleteGroupRecord()>
+under the hood.
+
+=item B<$factory-E<gt>DeleteGroupRecord(\%proto_group)>
+
+Deletes a Group record from the local DB store, based on the informaiton
+provided in the C<\%proto_group> hash-ref.
+
+This C<\%proto_group> hash-ref B<MUST> contain the C<group_id> of the Group
+record that we are deleting in the DB.
+
+Deletion is B<ONLY> performed for the local DB representation of the Group.
+In the case of externally sourced Groups (e.g. LDAP), B<no> deletion is pushed
+out to the external data store.  This allows for us to delete the local
+representation of the Group, without actually destroying the original external
+Group definition.
+
+This method returns true on success, false on failure.
 
 =item B<$factory-E<gt>ExpireGroupRecord(group_id =E<gt> $group_id)>
 

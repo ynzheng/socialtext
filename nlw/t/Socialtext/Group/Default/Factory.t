@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 16;
+use Test::Socialtext tests => 21;
 
 ###############################################################################
 # Fixtures: db
@@ -66,4 +66,32 @@ create_group: {
         '... created after our test started';
     ok $created_when < $test_finish,
         '... ... and before our test finished (so we must have created it)';
+}
+
+###############################################################################
+# TEST: delete a Group object
+delete_group: {
+    my $factory = Socialtext::Group::Default::Factory->new();
+    isa_ok $factory, 'Socialtext::Group::Default::Factory';
+
+    # create a Group that we can monkey with
+    my $account_id = Socialtext::Account->Socialtext->account_id();
+    my $creator_id = Socialtext::User->SystemUser->user_id();
+    my $group = $factory->Create( {
+        driver_group_name   => 'Test Group',
+        account_id          => $account_id,
+        created_by_user_id  => $creator_id,
+    } );
+    isa_ok $group, 'Socialtext::Group::Default';
+
+    # retrieve Group; it should be there
+    my $queried = $factory->GetGroupHomunculus( group_id => $group->group_id );
+    isa_ok $queried, 'Socialtext::Group::Homunculus', '... queried Homunculus';
+
+    # delete Group
+    ok $factory->Delete($queried), '... which can be deleted';
+
+    # retrieve Group should return empty-handed
+    $queried = $factory->GetGroupHomunculus( group_id => $group->group_id );
+    ok !$queried, "... and which can't be queried after deletion";
 }
