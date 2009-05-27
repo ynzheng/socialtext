@@ -198,6 +198,14 @@ sub workspace_count {
     return $count;
 }
 
+sub groups {
+    my $self = shift;
+    return Socialtext::Group->ByAccountId(
+        account_id => $self->account_id,
+        @_
+    );
+}
+
 sub group_count {
     my $self  = shift;
     my $sql   = 'SELECT COUNT(*) FROM groups WHERE account_id = ?';
@@ -951,6 +959,11 @@ workspace name.
 =item $account->group_count()
 
 Returns a count of Groups that exist within this Account.
+
+=item $account->groups()
+
+Returns a cursor of the Groups that exist within this Account, ordered by
+Group name.
 
 =item $account->user_count([ $primary_only ], [ $exclude_hidden_people ])
 
