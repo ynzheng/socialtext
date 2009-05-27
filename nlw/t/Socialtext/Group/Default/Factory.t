@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 25;
+use Test::Socialtext tests => 28;
 
 ###############################################################################
 # Fixtures: db
@@ -115,4 +115,16 @@ delete_nonexistent_group: {
     # delete Group
     ok  $factory->Delete($group), '... which can be deleted';
     ok !$factory->Delete($group), '... ... but only once';
+}
+
+###############################################################################
+# TEST: trying to delete a Group Record without Group Id throws error
+delete_group_record_without_id: {
+    my $factory = Socialtext::Group::Default::Factory->new();
+    isa_ok $factory, 'Socialtext::Group::Default::Factory';
+
+    my $rc = eval { $factory->DeleteGroupRecord() };
+    ok !$rc, 'deleting Group record fails when no group_id';
+    like $@, qr/must have a group_id/,
+        '... throwing exception about no group_id';
 }
