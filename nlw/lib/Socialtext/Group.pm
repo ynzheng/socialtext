@@ -175,7 +175,7 @@ This class provides methods for dealing with Groups.
 
 Returns a list of registered Group factories/drivers back to the caller, as a
 list of their "driver_key"s.  These "driver_key"s can be used to instantiate a
-gactory by calling C<Socialtext::Group-E<gt>Factory()>.
+factory by calling C<Socialtext::Group-E<gt>Factory()>.
 
 =item B<Socialtext::Group-E<gt>Factory(%opts)>
 

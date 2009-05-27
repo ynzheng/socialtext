@@ -465,7 +465,7 @@ updated accordingly).
 =item B<$factory-E<gt>UpdateGroupRecord(\%proto_group)>
 
 Updates an existing Group record in the local DB store, based on the
-information provided in the C<\%proto_grup> hash-ref.
+information provided in the C<\%proto_group> hash-ref.
 
 This C<\%proto_group> hash-ref B<MUST> contain the C<group_id> of the Group
 record that we are updating in the DB.
