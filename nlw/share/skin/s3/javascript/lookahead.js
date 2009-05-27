@@ -82,6 +82,12 @@
         if (!opts.url) throw new Error("url missing");
         if (!opts.linkText) throw new Error("linkText missing");
 
+        var targetWindow = opts.getWindow && opts.getWindow();
+        if (targetWindow) {
+            this.window = targetWindow;
+            this.$ = targetWindow.$;
+        }
+
         this._items = [];
         this.input = input;
         this.opts = $.extend(true, {}, DEFAULTS, opts); // deep extend
@@ -166,7 +172,10 @@
         return this;
     };
 
-    Lookahead.prototype = {};
+    Lookahead.prototype = {
+        'window': window,
+        '$': window.$
+    };
 
     Lookahead.prototype.allowMouseClicks = function() { 
         var self = this;
@@ -202,8 +211,15 @@
         var top = $(this.input).offset().top + $(this.input).height() + 10;
         var width = $(this.input).width();
 
+        if (this.window !== window) {
+            // XXX: container specific
+            var offset = this.$('iframe[name='+window.name+']').offset();
+            left += offset.left;
+            top += offset.top;
+        }
+
         if (!this.lookahead) {
-            this.lookahead = $('<div></div>')
+            this.lookahead = this.$('<div></div>')
                 .hide()
                 .css({
                     textAlign: 'left',
@@ -216,7 +232,7 @@
                 })
                 .prependTo('body');
 
-            $('<ul></ul>')
+            this.$('<ul></ul>')
                 .css({
                     listStyle: 'none',
                     padding: '0'
@@ -235,7 +251,7 @@
     };
 
     Lookahead.prototype.getLookaheadList = function () {
-        return $('ul', this.getLookahead());
+        return this.$('ul', this.getLookahead());
     };
 
     Lookahead.prototype.linkTitle = function (item) {
@@ -283,10 +299,10 @@
         if (data.length) {
             $.each(data, function (i) {
                 var item = this || {};
-                var li = $('<li></li>')
+                var li = self.$('<li></li>')
                     .css({ padding: '3px 5px' })
                     .appendTo(lookaheadList);
-                $('<a href="#"></a>')
+                self.$('<a href="#"></a>')
                     .html(item.bolded_title)
                     .attr('value', i)
                     .click(function() {
@@ -315,11 +331,17 @@
         if (!lookahead.is(':visible')) {
             lookahead.fadeIn(function() {
                 self.allowMouseClicks();
+                if ($.isFunction(self.opts.onShow)) {
+                    self.opts.onShow();
+                }
             });
         }
 
         // IE6 iframe hack:
-        $(this.lookahead).createSelectOverlap({ zIndex: 3000, padding: 1 });
+        // Enabling the select overlap breaks clicking on the lookahead if the
+        // lookahead is inserted into a different window.
+        if (window === this.window)
+            this.lookahead.createSelectOverlap({ zIndex: 3000, padding: 1 });
     };
 
     Lookahead.prototype.hide = function () {
@@ -497,8 +519,11 @@
             },
             error: function (xhr, textStatus, errorThrown) {
                 self._loading_lookahead = false;
-                var $error = $('<span class="st-suggestion-warning"></span>');
-                $('<li></li>').append($error).appendTo(self.getLookaheadList());
+                var $error = this.$('<span"></span>')
+                    .addClass("st-suggestion-warning");
+                this.$('<li></li>')
+                    .append($error)
+                    .appendTo(self.getLookaheadList());
 
                 if (textStatus == 'parsererror') {
                     $error.html(loc("Error parsing data"));
