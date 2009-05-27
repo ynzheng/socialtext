@@ -198,6 +198,13 @@ sub workspace_count {
     return $count;
 }
 
+sub group_count {
+    my $self  = shift;
+    my $sql   = 'SELECT COUNT(*) FROM groups WHERE account_id = ?';
+    my $count = sql_singlevalue($sql, $self->account_id);
+    return $count;
+}
+
 sub to_hash {
     my $self = shift;
     my $hash = {
@@ -940,6 +947,10 @@ Change the skin for the account and its workspaces.
 
 Returns a cursor of the workspaces for this account, ordered by
 workspace name.
+
+=item $account->group_count()
+
+Returns a count of Groups that exist within this Account.
 
 =item $account->user_count([ $primary_only ], [ $exclude_hidden_people ])
 
