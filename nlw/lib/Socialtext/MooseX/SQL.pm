@@ -63,6 +63,11 @@ sub has_column {
     has 'primary_key' => (
         is => 'ro', isa => 'Bool',
     );
+
+    sub is_primary_key {
+        my $self = shift;
+        return $self->primary_key;
+    }
 }
 
 1;
