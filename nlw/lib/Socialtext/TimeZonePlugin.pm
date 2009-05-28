@@ -343,10 +343,14 @@ sub get_dateonly_user {
     );
 }
 
+# Time needs to be UTC
 sub get_date {
     my $self       = shift;
     my $time       = shift;
     my $components = shift || $self->dcDATETIME;
+
+    # We futz with the time object later on, so let's use our own
+    $time = $time->clone();
 
     my $prefs = $self->preferences;
 
@@ -447,13 +451,9 @@ sub _get_time_sec {
     return $time_str;
 }
 
-# No sence fetching now more than once per request, eh?
 sub _now {
     my $self = shift;
-    unless ($self->{_now}) {
-        $self->{_now} = Socialtext::Date->now( timezone => 'UTC' );
-    }
-    return $self->{_now};
+    return Socialtext::Date->now( timezone => 'UTC' );
 }
 
 sub timezone_seconds {
