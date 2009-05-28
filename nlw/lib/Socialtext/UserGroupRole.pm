@@ -91,6 +91,12 @@ sub _build_role {
     return $role;
 }
 
+sub update {
+    my ($self, $proto_ugr) = @_;
+    require Socialtext::UserGroupRoleFactory;
+    Socialtext::UserGroupRoleFactory->Update($self, $proto_ugr);
+}
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
@@ -101,11 +107,15 @@ Socialtext::UserGroupRole - A User's Role in a specific Group
 
 =head1 SYNOPSIS
 
+  # create a brand new UGR
   $ugr = Socialtext::UserGroupRoleFactory->Create( {
       user_id   => $user_id,
       group_id  => $group_id,
       role_id   => $role_id,
   } );
+
+  # update an existing UGR
+  $ugr->update( { role_id => $new_role_id } );
 
 =head1 DESCRIPTION
 
@@ -143,6 +153,14 @@ The Role Id.
 =item B<$ugr-E<gt>role()>
 
 A C<Socialtext::Role> object.
+
+=item B<$ugr-E<gt>update(\%proto_ugr)>
+
+Updates the UGR based on the information in the provided C<\%proto_ugr>
+hash-ref.
+
+This is simply a helper method which calls
+C<Socialtext::UserGroupRoleFactory->Update($ugr,\%proto_ugr)>
 
 =back
 
