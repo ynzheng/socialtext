@@ -74,19 +74,38 @@
 | text_like | contentRight | st-logo-symbol.jpg |
 | text_like | contentRight | publictests-2-2.xls |
 
-| *Comment* | Test Case: Manage Files Deleting pdf, doc, txt, and zip |  |
 | *Comment* | NOTE: for reasons Ken does not understand, the following code works if you don't reopen the page but fails to find the Delete links if you do. ??? |  |
+
+| *Comment* | Test Case: Manage Files Deleting pdf |  |
 | click_ok | //a[contains(@title,'Delete this attachment')] |  |
-| pause | 5000 |
+| wait_for_element_visible_ok | st-attachment-delete-confirm | 30000 |
+| wait_for_element_visible_ok | st-attachment-delete | 30000 |
+| click_ok | st-attachment-delete |  |
+| wait_for_element_not_visible_ok | st-attachment-delete-confirm | 30000 |
 | text_unlike | contentRight | wikitest.pdf |
+
+| *Comment* | Test Case: Manage Files Deleting doc |  |
 | click_ok | //a[contains(@title,'Delete this attachment')] |  |
-| pause | 5000 |
+| wait_for_element_visible_ok | st-attachment-delete-confirm | 30000 |
+| wait_for_element_visible_ok | st-attachment-delete | 30000 |
+| click_ok | st-attachment-delete |  |
+| wait_for_element_not_visible_ok | st-attachment-delete-confirm | 30000 |
 | text_unlike | contentRight | wikitest.doc |
+
+| *Comment* | Test Case: Manage Files Deleting txt |  |
 | click_ok | //a[contains(@title,'Delete this attachment')] |  |
-| pause | 5000 |
+| wait_for_element_visible_ok | st-attachment-delete-confirm | 30000 |
+| wait_for_element_visible_ok | st-attachment-delete | 30000 |
+| click_ok | st-attachment-delete |  |
+| wait_for_element_not_visible_ok | st-attachment-delete-confirm | 30000 |
 | text_unlike | contentRight | wikitest.txt |
+
+| *Comment* | Test Case: Manage Files Deleting zip |  |
 | click_ok | //a[contains(@title,'Delete this attachment')] |  |
-| pause | 5000 |
+| wait_for_element_visible_ok | st-attachment-delete-confirm | 30000 |
+| wait_for_element_visible_ok | st-attachment-delete | 30000 |
+| click_ok | st-attachment-delete |  |
+| wait_for_element_not_visible_ok | st-attachment-delete-confirm | 30000 |
 | text_unlike | contentRight | wikitestzip.zip |
 
 | *Comment* | Test Case: Manage Files test extracted txt file |  |

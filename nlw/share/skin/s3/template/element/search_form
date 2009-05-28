@@ -17,7 +17,7 @@
     <option value="search" id="st-[%sid%]-all-ws" class="scopeStar" [% IF action == "search" && scope == '*' %]selected="selected" [% END %]>[% loc("Search My Workspaces:") %]</option>
     [% FILTER decorate('search_box') %][% END %]
   </select>
-  <input type="hidden" value="_" name="scope" class="searchScope"/>
+  <input type="hidden" value="[% scope %]" name="scope" class="searchScope"/>
 
   [% END %]
 

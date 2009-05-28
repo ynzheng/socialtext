@@ -73,23 +73,25 @@
 
 | *Comment* | Test Case: Verify Profile. Verify Updates present. |  |
 | click_and_wait | link=Profile |  |
+| wait_for_text_present_ok | Activity | 30000 |
 | text-like | Activity |  |
-| st-name-widget | 3 | updates |
+| st-name-widget | 4 | updates |
 | st-select-widget-frame | updates |  |
 | text-like | %%fname%% %%lname%% edited their own profile |  |
 | text-like | %%fname%% %%lname%% tagged themself VPT %%start_time%% |  |
 | select-frame | relative=parent |  |
 
-| *Comment* | Test Case: Verify Profile. See if Networks is there. Can't do much else. |  |
-| st-name-widget | 4 | networks |
-| st-select-widget-frame | networks |  |
+| *Comment* | Test Case: Verify Profile. See if Colleagues is there. Can't do much else. |  |
+| wait_for_text_present_ok | Colleagues | 30000 |
+| st-name-widget | 5 | colleagues |
+| st-select-widget-frame | colleagues |  |
 | text_like | Follows |  |
 | text_like | Followers |  |
 | select-frame | relative=parent |  |
 
 | *Comment* | Test Case: Verify Profile. Verify Workspaces present. |  |
-| text-like | workspaces |  |
-| st-name-widget | 5 | workspaces |
+| wait_for_text_present_ok | Workspaces | 30000 |
+| st-name-widget | 6 | workspaces |
 | st-select-widget-frame | workspaces |  |
 | text-like | This person belongs to no workspaces |  |
 | select-frame | relative=parent |  |

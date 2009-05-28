@@ -39,6 +39,7 @@ sub search_on_behalf {
 
     my @workspaces = _enumerate_workspaces($scope, $user, $ws_name, \$query);
 
+    my $total_hits = 0;
     for my $workspace (@workspaces) {
         eval {
             push @hits,
@@ -52,13 +53,23 @@ sub search_on_behalf {
                                                          : undef;
             if (defined $handler) {
                 $handler->($except);
-            } elsif (ref $except) {
-                $except->rethrow;
+            } elsif (my $type = ref $except) {
+                if ($type eq 'Socialtext::Exception::TooManyResults') {
+                    $total_hits += $except->{num_results};
+                }
+                else {
+                    $except->rethrow;
+                }
             } else {
                 die $except;
             }
         }
     }
+
+    $total_hits += @hits;
+    Socialtext::Exception::TooManyResults->throw(
+        num_results => $total_hits,
+    ) if $total_hits > Socialtext::AppConfig->search_warning_threshold;
 
     # Re-rank all hits by the raw_hit's score (this bleeds some implementation)
     return sort { $b->hit->{score} cmp $a->hit->{score} } @hits;
