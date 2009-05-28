@@ -3,6 +3,7 @@ package Socialtext::UserGroupRoleFactory;
 
 use MooseX::Singleton;
 use Carp qw(croak);
+use Socialtext::Events;
 use Socialtext::SQL qw/:exec/;
 use Socialtext::SQL::Builder qw(:all);
 use Socialtext::Role;
@@ -53,6 +54,8 @@ sub NewUGRRecord {
 
     # INSERT the new record into the DB
     sql_insert('user_group_role', \%insert_args);
+
+    $self->_emit_event($proto_ugr, 'create_role');
 }
 
 sub Create {
@@ -74,7 +77,10 @@ sub UpdateRecord {
         grep { exists $proto_ugr->{ $_->name } }
         Socialtext::UserGroupRole->meta->get_all_column_attributes;
 
-    sql_update('user_group_role', \%update_args, [keys %pkey]);
+    my $sth = sql_update('user_group_role', \%update_args, [keys %pkey]);
+
+    $self->_emit_event($proto_ugr, 'update_role')
+        if ($sth && $sth->rows);
 }
 
 sub Update {
@@ -112,6 +118,10 @@ sub DeleteRecord {
 
     my $sql = qq{DELETE FROM user_group_role WHERE $clause};
     my $sth = sql_execute($sql, @bindings);
+
+    $self->_emit_event($proto_ugr, 'delete_role')
+        if ($sth->rows);
+
     return $sth->rows();
 }
 
@@ -121,6 +131,26 @@ sub Delete {
         user_id  => $ugr->user_id,
         group_id => $ugr->group_id,
         } );
+}
+
+sub _emit_event {
+    my ($self, $proto_ugr, $action) = @_;
+
+    # System managed groups are acted on by the System User.
+    #
+    # non-system managed groups are currently unscoped/unsupported.
+    my $group = Socialtext::Group->GetGroup(group_id => $proto_ugr->{group_id});
+    my $actor = $group->is_system_managed()
+                ? Socialtext::User->SystemUser()
+                : die "unable to determine event actor";
+
+    # Record the event
+    Socialtext::Events->Record( {
+        event_class => 'group',
+        action      => $action,
+        actor       => $actor,
+        context     => $proto_ugr,
+    } );
 }
 
 sub _ensure_pkey {
