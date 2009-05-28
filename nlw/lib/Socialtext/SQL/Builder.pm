@@ -3,6 +3,7 @@ package Socialtext::SQL::Builder;
 use strict;
 use base 'Exporter';
 use Socialtext::SQL qw(:exec get_dbh);
+use List::MoreUtils qw(any);
 use Carp qw/croak cluck/;
 
 our @EXPORT = ();
@@ -80,16 +81,21 @@ sub sql_update {
     die "invalid key name" unless $pk_key;
     die "nothing to update" unless ($p and %$p);
 
-    my $pk_val = $p->{$pk_key};
-    die "no pk value" unless defined $pk_val;
+    my @where_keys = ( ref($pk_key) eq 'ARRAY' ) ? sort @$pk_key : ( $pk_key );
+    my @where_values = (map {$p->{$_}} @where_keys);
+    my $where_params = join(' AND ', map {"$_ = ?"} @where_keys);
 
-    my @keys = sort grep {$_ ne $pk_key} keys %$p;
-    my $set_params = join(', ', map {"$_ = ?"} @keys);
+    die "pk has missing value(s)"
+        if any {!defined($_)} @where_values;
 
-    my $sql = "UPDATE $table SET $set_params WHERE $pk_key = ?";
+    my %keys_seen = map { $_ => 1 } @where_keys;
 
+    my @set_keys = sort grep {!$keys_seen{$_}} keys %$p;
+    my $set_params = join(', ', map {"$_ = ?"} @set_keys);
+
+    my $sql = "UPDATE $table SET $set_params WHERE $where_params";
     local $Socialtext::SQL::Level = $Socialtext::SQL::Level + 1;
-    return sql_execute($sql, (map {$p->{$_}} @keys), $pk_val);
+    return sql_execute( $sql, (map {$p->{$_}} @set_keys), @where_values);
 }
 
 =head2 sql_insert ($table, $hashref)

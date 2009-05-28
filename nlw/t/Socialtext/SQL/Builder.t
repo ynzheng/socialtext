@@ -3,7 +3,7 @@
 use strict;
 use warnings FATAL => 'all';
 
-use Test::More tests => 33;
+use Test::More tests => 36;
 use Test::Exception;
 use mocked 'Socialtext::SQL', ':test';
 
@@ -49,6 +49,24 @@ update_works: {
         sql => q{UPDATE mytable_1 SET baz = ?, this = ? WHERE foo = ?},
         args => ['quxx', 'that', 'bar'],
         name => 'sql_update works',
+    );
+    ok !@Socialtext::SQL::SQL, 'no more sql';
+}
+
+update_works_with_composite_key: {
+    sql_update(
+        'mytable',
+        {
+            one   => '1',
+            two   => '2',
+            three => '3',
+        },
+        [ 'one', 'two' ],
+    );
+    sql_ok(
+        sql  => q{UPDATE mytable SET three = ? WHERE one = ? AND two = ?},
+        args => [ '3', '1', '2' ],
+        name => 'update works with composite key'
     );
     ok !@Socialtext::SQL::SQL, 'no more sql';
 }
