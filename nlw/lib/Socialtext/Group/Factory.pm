@@ -442,7 +442,8 @@ Factories consuming this Role B<MUST> implement this method, and are
 responsible for ensuring that they are doing proper validation/cleaning of the
 data prior to updating the underlying data store.
 
-If your Factory is read-only and is not updateable, simply implement a stub method which throws an exception to indicate error.
+If your Factory is read-only and is not updateable, simply implement a stub
+method which throws an exception to indicate error.
 
 =item B<$factory-E<gt>can_update_store()>
 
