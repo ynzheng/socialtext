@@ -2,6 +2,7 @@ package Socialtext::UserGroupRoleFactory;
 # @COPYRIGHT@
 
 use MooseX::Singleton;
+use Carp qw(croak);
 use Socialtext::SQL qw/:exec/;
 use Socialtext::SQL::Builder qw(:all);
 use Socialtext::Role;
@@ -10,8 +11,11 @@ use namespace::clean -except => 'meta';
 
 sub GetUserGroupRole {
     my ($self, %p) = @_;
-    my $user_id  = $p{user_id}  || die "no user_id";
-    my $group_id = $p{group_id} || die "no group_id";
+
+    # make sure we have all primary key values; can't query without them
+    $self->_ensure_pkey(\%p);
+    my $user_id  = $p{user_id};
+    my $group_id = $p{group_id};
 
     # map the attributes to their DB columns
     my $meta = Socialtext::UserGroupRole->meta;
@@ -65,19 +69,15 @@ sub Create {
 
 sub UpdateRecord {
     my ($self, $proto_ugr) = @_;
-    my @attrs = Socialtext::UserGroupRole->meta->get_all_column_attributes;
 
     # SANITY CHECK: need to know which UG* we're updating
-    die "must have a user_id to update a UserGroupRole record"
-        unless ($proto_ugr->{user_id});
-    die "must have a group_id to update a UserGroupRole record"
-        unless ($proto_ugr->{group_id});
+    $self->_ensure_pkey($proto_ugr);
 
     # map UGR attributes to SQL UPDATE args
     my %update_args =
         map { $_->column_name => $proto_ugr->{ $_->name } }
         grep { exists $proto_ugr->{ $_->name } }
-        @attrs;
+        Socialtext::UserGroupRole->meta->get_all_column_attributes;
 
     sql_update('user_group_role', \%update_args, [qw/user_id group_id/]);
 }
@@ -104,6 +104,18 @@ sub Update {
         $user_group_role->$setter( $updates_ref->{$attr} );
     }
     return $user_group_role;
+}
+
+sub _ensure_pkey {
+    my ($self, $proto_ugr) = @_;
+    my @attrs = Socialtext::UserGroupRole->meta->get_all_column_attributes;
+    foreach my $attr (@attrs) {
+        next unless $attr->is_primary_key();
+        my $attr_name = $attr->name();
+        unless ($proto_ugr->{$attr_name}) {
+            croak "missing required primary key attribute '$attr_name'";
+        }
+    }
 }
 
 sub DefaultRoleId {
