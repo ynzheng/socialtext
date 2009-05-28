@@ -1493,8 +1493,11 @@ sub show_acls {
     my @perms = Socialtext::Permission->All()->all();
 
     my $msg = "ACLs for " . $ws->name . " workspace\n\n";
+    my $setname = $ws->permissions->current_set_name();
     $msg .= "  permission set name: "
-        . $ws->permissions->current_set_name() . "\n\n";
+        . $setname . 
+        ($Socialtext::Workspace::Permissions::DeprecatedPermissionSets{ $setname } ? " (deprecated)" : ""  ).
+        "\n\n";
 
     my $first_col = '<' x List::Util::max( map { length $_->name } @perms );
 

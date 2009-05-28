@@ -22,9 +22,11 @@ Set up workspace permissions to new join-to-edit and make sure public-join-to-ed
 | comment | Test that setting self_join unsets edit_controls| 
 | add-workspace-permission | %%ws_name%% | Guest |  edit_controls |
 | remove-workspace-permission | %%ws_name%% | Guest |  self_join |
+| st-admin | show-acls --workspace %%ws_name%% | qr/public-authenticate-to-edit \(deprecated\)/ |
 | st-admin | show-acls --workspace %%ws_name%% | qr/. edit_controls   .   X   ./ |
 | st-admin | show-acls --workspace %%ws_name%% | qr/. self_join       .       ./ |
 | add-workspace-permission | %%ws_name%% | Guest |  self_join |
+| st-admin | show-acls --workspace %%ws_name%% | qr/public-join-to-edit/ |
 | st-admin | show-acls --workspace %%ws_name%% | qr/. edit_controls   .       ./ |
 | st-admin | show-acls --workspace %%ws_name%% | qr/. self_join       .   X   ./ |
 
