@@ -853,6 +853,10 @@ ALTER TABLE ONLY topic_signal_user
     ADD CONSTRAINT topic_signal_user_pk
             PRIMARY KEY (signal_id, user_id);
 
+ALTER TABLE ONLY user_group_role
+    ADD CONSTRAINT user_group_role_pk
+            PRIMARY KEY (user_id, group_id);
+
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey
             PRIMARY KEY (user_id);

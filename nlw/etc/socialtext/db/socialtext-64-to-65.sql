@@ -22,6 +22,9 @@ ALTER TABLE user_group_role
     FOREIGN KEY ( role_id )
     REFERENCES "Role"( role_id ) ON DELETE CASCADE;
 
+ALTER TABLE ONLY user_group_role
+    ADD CONSTRAINT user_group_role_pk
+            PRIMARY KEY ( user_id, group_id );
 
 UPDATE "System"
     SET value = '65'
