@@ -6,9 +6,9 @@ use warnings;
 use Test::Socialtext tests => 12;
 
 ###############################################################################
-# Fixtures: base_config
-# - need config around, but don't care what's in it
-fixtures(qw( base_config ));
+# Fixtures: db
+# - need DB, but don't care what's in it
+fixtures(qw( db ));
 
 use_ok 'Socialtext::Group';
 
