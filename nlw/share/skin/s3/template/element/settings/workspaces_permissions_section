@@ -13,6 +13,12 @@
     <input type="radio" name="permission_set_name" [% IF current_permission_set_name == "member-only" %]checked="1"[% END %] value="member-only" />
     <strong>[% loc('Private') %]</strong> - [% loc('only invited users can access the workspace') %]
   </dd>
+[% IF current_permission_set_name == "public-authenticate-to-edit" %]
+  <dd>
+    <input type="radio" name="permission_set_name" [% IF current_permission_set_name == "public-authenticate-to-edit" %]checked="1"[% END %] value="public-authenticate-to-edit" />
+    <strong>[% loc('Public login-to-edit') %]</strong> - <b>[% loc('(deprecated)') %]</b>  [% loc('anyone can see the workspace, users can register to be able to edit.') %] <b>[% loc('Note:') %]</b> [% loc('Registered users will not become members of this workspace''s network; they will not appear in a directory and will not receive change notifications. If you''d like members to join the network and receive notifications, choose Public join-to-edit') %]
+  </dd>
+[% END %]
   <dd>
     <input type="radio" name="permission_set_name" [% IF current_permission_set_name == "public-join-to-edit" %]checked="1"[% END %] value="public-join-to-edit" />
     <strong>[% loc('Public join-to-edit') %]</strong> - [% loc('anyone can see the workspace. People may become members. Existing users become members of this workspace. New users join the workspace and have their primary network set to this workspace''s network') %]

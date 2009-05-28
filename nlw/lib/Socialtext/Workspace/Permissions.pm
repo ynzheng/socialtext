@@ -71,13 +71,13 @@ our %PermissionSets = (
         authenticated_user => [ qw( read edit attachments comment delete
                                     email_in email_out ) ],
         member             => [ qw( read edit attachments comment delete
-                                    email_in email_out ) ],
+                                    email_in email_out ) ], 
         workspace_admin    => [ qw( read edit attachments comment delete
                                     email_in email_out admin_workspace lock ) ],
     },
 );
 
-my %DeprecatedPermissions = (
+our %DeprecatedPermissionSets = (
     'public-authenticate-to-edit' => {
         guest              => [ qw( read edit_controls ) ],
         authenticated_user => [ qw( read edit attachments comment delete
@@ -94,7 +94,7 @@ my @PermissionSetsLocalize = (loc('public'), loc('member-only'), loc('authentica
 # Impersonators should be able to do everything members can do, plus
 # impersonate.
 $_->{impersonator} = [ 'impersonate', @{ $_->{member} } ]
-    for values %PermissionSets;
+    for (values %PermissionSets, values %DeprecatedPermissionSets);
 
 
 sub new {
@@ -194,10 +194,13 @@ EOSQL
 {
     # This is just caching to make current_set_name run at a
     # reasonable speed.
-    my %SetsAsStrings =
-        map { $_ => _perm_set_as_string( $PermissionSets{$_} ) }
-        keys %PermissionSets;
-
+    my %SetsAsStrings = (
+        ( map { $_ => _perm_set_as_string( $PermissionSets{$_} ) }
+          keys %PermissionSets
+        ),
+        ( map { $_ => _perm_set_as_string( $DeprecatedPermissionSets{$_} ) }
+          keys %DeprecatedPermissionSets
+        ) );
     sub current_set {
         my $self = shift;
         my $perms_with_roles = $self->permissions_with_roles();
@@ -223,7 +226,6 @@ EOSQL
         my $self = shift;
 
         my %set = $self->current_set;
-
         my $set_string = _perm_set_as_string( \%set );
         for my $name ( keys %SetsAsStrings ) {
             return $name if $SetsAsStrings{$name} eq $set_string;

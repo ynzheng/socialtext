@@ -626,11 +626,17 @@ sub _set_workspace_permissions {
 
     my $set_name = $self->cgi()->permission_set_name();
     if ( $set_name and
-        ! $Socialtext::Workspace::Permissions::PermissionSets{ $set_name }
+        (! $Socialtext::Workspace::Permissions::PermissionSets{ $set_name })
+            and
+        (! $Socialtext::Workspace::Permissions::DeprecatedPermissionSets{ $set_name })
     ) {
         $message .= '  ';
-        $message .= loc('Using Custom workspace permssions.');
+        $message .= loc('Using Custom workspace permissions.');
     }
+    elsif ( $set_name and $Socialtext::Workspace::Permissions::DeprecatedPermissionSets{ $set_name }) {
+        $message .= '  ';
+        $message .= loc('The permissions for [_1] ([_2]) is deprecated.', $ws->name(), loc($set_name));
+    }        
     else {
         $message .= '  ';
         $message .= loc('The permissions for [_1] have been set to [_2].', $ws->name(), loc($set_name));
