@@ -1,5 +1,6 @@
 [%# vim: set et sts=2 sw=2: %]
 [%# @COPYRIGHT@ -%]
+[% USE decorate %]
 [% USE JSON %]
 <script charset="utf-8" type="text/javascript">
 
@@ -49,6 +50,9 @@ Socialtext.box_javascript = false;
 Socialtext.double_click_to_edit = false;
 [% IF wikiwyg_double %]
 Socialtext.double_click_to_edit = true;
+[% END %]
+
+[% FILTER decorate('js-bootstrap') %]
 [% END %]
 
 function nlw_make_s2_path(rest) {
