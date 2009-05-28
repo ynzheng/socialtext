@@ -3,8 +3,6 @@ package Test::Socialtext::Account;
 
 use strict;
 use warnings;
-use Carp qw(croak);
-use Class::Field qw(const);
 
 sub delete_recklessly {
     my ($class, $account) = @_;
