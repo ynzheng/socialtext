@@ -7,7 +7,7 @@ use unmocked 'Exporter::Heavy';
 use unmocked 'Test::More';
 use base 'Exporter';
 use base 'Socialtext::MockBase';
-our @EXPORT_OK = qw/event_ok is_event_count/;
+our @EXPORT_OK = qw/clear_events event_ok is_event_count/;
 
 our @Events;
 our @GetArgs;
@@ -42,6 +42,11 @@ sub is_event_count {
 
 sub clear_get_args {
     #warn "clearing Get args";
+    @GetArgs = ();
+}
+
+sub clear_events {
+    @Events  = ();
     @GetArgs = ();
 }
 
