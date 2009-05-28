@@ -212,7 +212,8 @@ __PACKAGE__->meta->make_immutable;
 
 =head1 DESCRIPTION
 
-C<Socialtext::UserGroupRoleFactory> is used to manipulate the DB store for C<Socialtext::UserGroupRole> objects.
+C<Socialtext::UserGroupRoleFactory> is used to manipulate the DB store for
+C<Socialtext::UserGroupRole> objects.
 
 =head1 METHODS
 
@@ -236,7 +237,8 @@ PARAMS I<must> be:
 
 =item $factory-E<gt>CreateRecord($proto_ugr)
 
-Create a new entry in the user_group_role table, if possible, and return the corresponding C<Socialtext::UserGroupRole> object on success.
+Create a new entry in the user_group_role table, if possible, and return the
+corresponding C<Socialtext::UserGroupRole> object on success.
 
 C<$proto_ugr> I<must> include the following:
 
