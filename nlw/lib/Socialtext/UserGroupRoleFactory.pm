@@ -36,7 +36,7 @@ sub GetUserGroupRole {
     } );
 }
 
-sub NewUGRRecord {
+sub CreateRecord {
     my ($self, $proto_ugr) = @_;
     my @attrs = Socialtext::UserGroupRole->meta->get_all_column_attributes;
 
@@ -61,7 +61,7 @@ sub NewUGRRecord {
 sub Create {
     my ($self, $proto_ugr) = @_;
     $proto_ugr->{role_id} ||= $self->DefaultRoleId();
-    $self->NewUGRRecord($proto_ugr);
+    $self->CreateRecord($proto_ugr);
     return $self->GetUserGroupRole(%{$proto_ugr});
 }
 
@@ -234,7 +234,7 @@ PARAMS I<must> be:
 
 =back
 
-=item $factory-E<gt>NewUGRRecord($proto_ugr)
+=item $factory-E<gt>CreateRecord($proto_ugr)
 
 Create a new entry in the user_group_role table, if possible, and return the corresponding C<Socialtext::UserGroupRole> object on success.
 
@@ -253,7 +253,7 @@ C<$proto_ugr> I<must> include the following:
 =item $factory-E<gt>Create($proto_ugr)
 
 Create a new entry in the user_group_role table, a simplfied wrapper around
-C<NewUGRRecord>.
+C<CreateRecord>.
 
 C<$proto_ugr> I<must> include the following:
 
