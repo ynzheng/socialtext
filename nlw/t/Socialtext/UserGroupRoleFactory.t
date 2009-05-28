@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 16;
+use Test::Socialtext tests => 28;
 use Test::Exception;
 
 ###############################################################################
@@ -92,4 +92,98 @@ create_duplicate_ugr: {
             group_id => $group->group_id,
         } );
     } 'creating a duplicate record dies.';
+}
+
+###############################################################################
+# TEST: update a UGR
+update_a_ugr: {
+    my $user        = create_test_user();
+    my $group       = create_test_group();
+    my $member_role = Socialtext::Role->new(name => 'member');
+    my $guest_role  = Socialtext::Role->new(name => 'guest');
+    my $factory     = Socialtext::UserGroupRoleFactory->instance();
+
+    # create the UGR
+    my $ugr   = $factory->Create( {
+        user_id  => $user->user_id,
+        group_id => $group->group_id,
+        role_id  => $member_role->role_id,
+        } );
+    isa_ok $ugr, 'Socialtext::UserGroupRole', 'created UGR';
+
+    # update the UGR
+    my $rc = $factory->Update($ugr, { role_id => $guest_role->role_id } );
+    ok $rc, 'updated UGR';
+    is $ugr->role_id, $guest_role->role_id, '... with updated role_id';
+
+    # make sure the updates are reflected in the DB
+    my $queried = $factory->GetUserGroupRole(
+        user_id  => $user->user_id,
+        group_id => $group->group_id,
+    );
+    is $queried->role_id, $guest_role->role_id, '... which is reflected in DB';
+}
+
+###############################################################################
+# TEST: ignores updates to "user_id" primary key
+ignore_update_to_user_id_pkey: {
+    my $user_one = create_test_user();
+    my $user_two = create_test_user();
+    my $group    = create_test_group();
+    my $factory  = Socialtext::UserGroupRoleFactory->instance();
+
+    # create the UGR
+    my $ugr   = $factory->Create( {
+        user_id  => $user_one->user_id,
+        group_id => $group->group_id,
+        } );
+    isa_ok $ugr, 'Socialtext::UserGroupRole', 'created UGR';
+
+    # update the UGR
+    my $rc = $factory->Update($ugr, { user_id => $user_two->user_id } );
+    ok $rc, 'updated UGR';
+    is $ugr->user_id, $user_one->user_id, '... UGR has original user_id';
+}
+
+###############################################################################
+# TEST: ignores updates to "group_id" primary key
+ignore_update_to_group_id_pkey: {
+    my $user      = create_test_user();
+    my $group_one = create_test_group();
+    my $group_two = create_test_group();
+    my $factory   = Socialtext::UserGroupRoleFactory->instance();
+
+    # create the UGR
+    my $ugr   = $factory->Create( {
+        user_id  => $user->user_id,
+        group_id => $group_one->group_id,
+        } );
+    isa_ok $ugr, 'Socialtext::UserGroupRole', 'created UGR';
+
+    # update the UGR
+    my $rc = $factory->Update($ugr, { group_id => $group_two->group_id } );
+    ok $rc, 'updated UGR';
+    is $ugr->group_id, $group_one->group_id, '... UGR has original group_id';
+}
+
+###############################################################################
+# TEST: update a non-existing UGR
+update_non_existing_ugr: {
+    my $ugr = Socialtext::UserGroupRole->new( {
+        user_id  => 987654321,
+        group_id => 987654321,
+        role_id  => 987654321,
+        } );
+    isa_ok $ugr, 'Socialtext::UserGroupRole';
+
+    # Updating a non-existing UGR fails silently; it *looks like* it was ok,
+    # but nothing actually got updated in the DB.
+    #
+    # This mimics the behaviour of ST::User and for ST::UserWorkspaceRole.
+    lives_ok {
+        Socialtext::UserGroupRoleFactory->Update(
+            $ugr,
+            { role_id => Socialtext::UserGroupRoleFactory->DefaultRoleId() },
+        );
+    } 'updating an non-existing UGR lives (but updates nothing)';
 }

@@ -63,6 +63,49 @@ sub Create {
     return $self->GetUserGroupRole(%{$proto_ugr});
 }
 
+sub UpdateRecord {
+    my ($self, $proto_ugr) = @_;
+    my @attrs = Socialtext::UserGroupRole->meta->get_all_column_attributes;
+
+    # SANITY CHECK: need to know which UG* we're updating
+    die "must have a user_id to update a UserGroupRole record"
+        unless ($proto_ugr->{user_id});
+    die "must have a group_id to update a UserGroupRole record"
+        unless ($proto_ugr->{group_id});
+
+    # map UGR attributes to SQL UPDATE args
+    my %update_args =
+        map { $_->column_name => $proto_ugr->{ $_->name } }
+        grep { exists $proto_ugr->{ $_->name } }
+        @attrs;
+
+    sql_update('user_group_role', \%update_args, [qw/user_id group_id/]);
+}
+
+sub Update {
+    my ($self, $user_group_role, $proto_ugr) = @_;
+
+    # update the record for this UGR in the DB
+    my $updates_ref = {
+        %{$proto_ugr},
+        user_id  => $user_group_role->user_id,
+        group_id => $user_group_role->group_id,
+    };
+    $self->UpdateRecord($updates_ref);
+
+    # merge the updates back into the UGR object
+    foreach my $attr (keys %{$updates_ref}) {
+        # can't update pkey attrs
+        my $meta_attr = $user_group_role->meta->get_attribute($attr);
+        next if ($meta_attr->is_primary_key());
+
+        # update non pkey attrs
+        my $setter = "_$attr";
+        $user_group_role->$setter( $updates_ref->{$attr} );
+    }
+    return $user_group_role;
+}
+
 sub DefaultRoleId {
     Socialtext::Role->new( name => 'member' )->role_id();
 }
@@ -91,6 +134,8 @@ __PACKAGE__->meta->make_immutable;
 C<Socialtext::UserGroupRoleFactory> is used to manipulate the DB store for C<Socialtext::UserGroupRole> objects.
 
 =head1 METHODS
+
+=over
 
 =item $factory-E<gt>GetUserGroupRole(PARAMS)
 
@@ -150,9 +195,30 @@ It can I<optionally> include:
 If C<$role_id> is not included, we will use a default role. See the
 C<DefaultRoleId> sub for details.
 
+=item $factory-E<gt>UpdateRecord(\%proto_ugr)
+
+Updates an existing user_group_role record in the DB, based on the information
+provided in the C<\%proto_ugr> hash-ref.
+
+This C<\%proto_ugr> hash-ref B<MUST> contain the C<user_id> and C<group_id> of
+the UGR that we are updating in the DB.
+
+If you attempt to update a non-existing UGR, this method fails silently; no
+exception is thrown, B<but> no data is updated/inserted in the DB (as it
+didn't exist there in the first place).
+
+=item $factory-E<gt>Update($ugr, \%proto_ugr)
+
+Updates the given C<$ugr> object with the information provided in the
+C<\%proto_ugr> hash-ref.
+
+Returns the updated C<$ugr> object back to the caller.
+
 =item $factory-E<gt>DefaultRoleId()
 
 Get the ID for the default Role being  used.
+
+=back
 
 =head1 AUTHOR
 
