@@ -14,8 +14,8 @@
     <strong>[% loc('Private') %]</strong> - [% loc('only invited users can access the workspace') %]
   </dd>
   <dd>
-    <input type="radio" name="permission_set_name" [% IF current_permission_set_name == "public-authenticate-to-edit" %]checked="1"[% END %] value="public-authenticate-to-edit" />
-    <strong>[% loc('Public login-to-edit') %]</strong> - [% loc('anybody can see the workspace, users can register to be able to edit') %]
+    <input type="radio" name="permission_set_name" [% IF current_permission_set_name == "public-join-to-edit" %]checked="1"[% END %] value="public-join-to-edit" />
+    <strong>[% loc('Public join-to-edit') %]</strong> - [% loc('anyone can see the workspace. People may become members. Existing users become members of this workspace. New users join the workspace and have their primary network set to this workspace''s network') %]
   </dd>
   <dd>
     <input type="radio" name="permission_set_name" [% IF current_permission_set_name == "public-read-only" %]checked="1"[% END %] value="public-read-only" />
