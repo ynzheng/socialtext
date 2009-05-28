@@ -9,6 +9,7 @@ use Socialtext::Exceptions;
 use Socialtext::Permission 'ST_READ_PERM';
 use Socialtext::Search::Config;
 use Socialtext::Search::Set;
+use Socialtext::System ();
 
 our @EXPORT_OK = qw( search_on_behalf );
 
@@ -38,16 +39,24 @@ sub search_on_behalf {
 
     my @workspaces = _enumerate_workspaces($scope, $user, $ws_name, \$query);
     my $hit_threshold = Socialtext::AppConfig->search_warning_threshold || 500;
-    my $total_hits = 0;
 
+    # workspace search thunks hold open filehandles, so we need to impose a
+    # safety limit.
+    my $fh_threshold = Socialtext::System::open_filehandle_limit();
+    $fh_threshold *= 0.75;
+
+    my $total_hits = 0;
+    my @hits;
     my @hit_thunks;
+
     # sorting workspaces hopefully prevents KS deadlocks:
     for my $workspace (sort @workspaces) {
         eval {
             my ($thunk, $ws_hits) =
                 _search_workspace($user, $workspace, $query);
-            push @hit_thunks, $thunk;
             $total_hits += $ws_hits;
+            # don't track any more thunks if we've exceeded the threshold
+            push @hit_thunks, $thunk if ($total_hits <= $hit_threshold);
         };
         if (my $e = $@) {
             die $e unless ref $e;
@@ -67,15 +76,27 @@ sub search_on_behalf {
             }
         }
 
-        last if $total_hits > $hit_threshold;
+        if ($total_hits > $hit_threshold) {
+            # Throw away the results; we won't display them.
+            # Keep searching to get the grand total, however.
+            @hit_thunks = @hits = ();
+        }
+        elsif (Socialtext::System::open_filehandles() > $fh_threshold) {
+            # Evaluate the thunks to free up file handles
+            push @hits, map { @{ $_->() || [] } } @hit_thunks;
+            @hit_thunks = ();
+        }
     }
 
     Socialtext::Exception::TooManyResults->throw(
         num_results => $total_hits,
     ) if $total_hits > $hit_threshold;
 
-    # Now that we're sure that the results are of reasonable size
-    my @hits = map { @{ $_->() || [] } } @hit_thunks;
+    # Evaluate the thunks now that we're sure that the results are of
+    # reasonable size
+    push @hits, map { @{ $_->() || [] } } @hit_thunks;
+    @hit_thunks = ();
+
     # Re-rank all hits by the raw_hit's score (this bleeds some implementation)
     return sort { $b->hit->{score} cmp $a->hit->{score} } @hits;
 }
@@ -117,10 +138,10 @@ sub _enumerate_workspaces {
 }
 
 sub _search_workspace {
-    my ($user, $ws_name, $query) = @_;
+    my ($user, $workspace, $query) = @_;
 
     my $factory = Socialtext::Search::AbstractFactory->GetFactory();
-    my $searcher = $factory->create_searcher($ws_name);
+    my $searcher = $factory->create_searcher($workspace);
     my $authorizer = _make_authorizer($user);
 
     my ($thunk, $ws_hits);
