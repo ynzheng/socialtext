@@ -21,10 +21,10 @@ fixtures(qw( db ));
     sub Create {
         my ($self, $proto_group) = @_;
     }
-}
-sub Update { }
-sub _build_cache_lifetime {
-    return DateTime::Duration->new(years => 10);
+    sub Update { }
+    sub _build_cache_lifetime {
+        return DateTime::Duration->new(years => 10);
+    }
 }
 
 ###############################################################################
