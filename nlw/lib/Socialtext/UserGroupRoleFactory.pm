@@ -198,17 +198,32 @@ __PACKAGE__->meta->make_immutable;
 
 =head1 NAME
 
+Socialtext::UserGroupRoleFactory - Factory for ST::UserGroupRole objects
+
 =head1 SYNOPSIS
 
   use Socialtext::UserGroupRoleFactory;
 
   $factory = Socialtext::UserGroupRoleFactory->instance();
 
+  # create a new UGR
   $ugr = $factory->Create( {
       user_id   => $user_id,
       group_id  => $group_id,
       role_id   => $role_id,
   } );
+
+  # retrieve a UGR
+  $ugr = $factory->GetUserGroupRole(
+      user_id  => $user_id,
+      group_id => $group_id,
+  );
+
+  # update a UGR
+  $factory->Update($ugr, \%updates_ref);
+
+  # delete a UGR
+  $factory->Delete($ugr);
 
 =head1 DESCRIPTION
 
@@ -219,15 +234,15 @@ C<Socialtext::UserGroupRole> objects.
 
 =over
 
-=item $factory-E<gt>GetUserGroupRole(PARAMS)
+=item B<$factory-E<gt>GetUserGroupRole(PARAMS)>
 
 Looks for an existing record in the user_group_role table matching PARAMS and
 returns a C<Socialtext::UserGroupRole> representing that row, or undef if it
 can't find a match.
 
-PARAMS I<must> be:
+PARAMS I<must> contain:
 
-=over 8
+=over
 
 =item * user_id =E<gt> $user_id
 
@@ -235,14 +250,14 @@ PARAMS I<must> be:
 
 =back
 
-=item $factory-E<gt>CreateRecord($proto_ugr)
+=item B<$factory-E<gt>CreateRecord(\%proto_ugr)>
 
 Create a new entry in the user_group_role table, if possible, and return the
 corresponding C<Socialtext::UserGroupRole> object on success.
 
-C<$proto_ugr> I<must> include the following:
+C<\%proto_ugr> I<must> include the following:
 
-=over 8
+=over
 
 =item * user_id =E<gt> $user_id
 
@@ -252,14 +267,14 @@ C<$proto_ugr> I<must> include the following:
 
 =back
 
-=item $factory-E<gt>Create($proto_ugr)
+=item B<$factory-E<gt>Create(\%proto_ugr)>
 
 Create a new entry in the user_group_role table, a simplfied wrapper around
 C<CreateRecord>.
 
-C<$proto_ugr> I<must> include the following:
+C<\%proto_ugr> I<must> include the following:
 
-=over 8
+=over
 
 =item * user_id =E<gt> $user_id
 
@@ -269,16 +284,16 @@ C<$proto_ugr> I<must> include the following:
 
 It can I<optionally> include:
 
-=over 8
+=over
 
 =item * role_id =E<gt> $role_id
 
 =back
 
-If C<$role_id> is not included, we will use a default role. See the
-C<DefaultRoleId> sub for details.
+If no C<$role_id> is provided, a default role will be used instead.  Refer to
+C<DefaultRoleId()> for details.
 
-=item $factory-E<gt>UpdateRecord(\%proto_ugr)
+=item B<$factory-E<gt>UpdateRecord(\%proto_ugr)>
 
 Updates an existing user_group_role record in the DB, based on the information
 provided in the C<\%proto_ugr> hash-ref.
@@ -290,27 +305,27 @@ If you attempt to update a non-existing UGR, this method fails silently; no
 exception is thrown, B<but> no data is updated/inserted in the DB (as it
 didn't exist there in the first place).
 
-=item $factory-E<gt>Update($ugr, \%proto_ugr)
+=item B<$factory-E<gt>Update($ugr, \%proto_ugr)>
 
 Updates the given C<$ugr> object with the information provided in the
 C<\%proto_ugr> hash-ref.
 
 Returns the updated C<$ugr> object back to the caller.
 
-=item $factory-E<gt>DeleteRecord(\%proto_ugr)
+=item B<$factory-E<gt>DeleteRecord(\%proto_ugr)>
 
 Deletes the user_group_role record from the DB, as described by the provided
 C<\%proto_ugr> hash-ref.
 
 Returns true if a record was deleted, false otherwise.
 
-=item $factory-E<gt>Delete($ugr)
+=item B<$factory-E<gt>Delete($ugr)>
 
-Deletes the C<ugr> from the DB.
+Deletes the C<$ugr> from the DB.
 
 Helper method which calls C<DeleteRecord()>.
 
-=item $factory-E<gt>DefaultRoleId()
+=item B<$factory-E<gt>DefaultRoleId()>
 
 Get the ID for the default Role being  used.
 
@@ -325,4 +340,3 @@ Socialtext, Inc.,  C<< <code@socialtext.com> >>
 Copyright 2009 Socialtext, Inc.,  All Rights Reserved.
 
 =cut
-
