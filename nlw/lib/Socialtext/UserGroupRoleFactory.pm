@@ -101,6 +101,28 @@ sub Update {
     return $user_group_role;
 }
 
+sub DeleteRecord {
+    my ($self, $proto_ugr) = @_;
+
+    # SANITY CHECK: need to know which UG* we're updating
+    my %pkey = $self->_ensure_pkey($proto_ugr);
+
+    # map UGR attributes to SQL DELETE args
+    my ($clause, @bindings) = $self->_pkey_where_clause(%pkey);
+
+    my $sql = qq{DELETE FROM user_group_role WHERE $clause};
+    my $sth = sql_execute($sql, @bindings);
+    return $sth->rows();
+}
+
+sub Delete {
+    my ($self, $ugr) = @_;
+    $self->DeleteRecord( {
+        user_id  => $ugr->user_id,
+        group_id => $ugr->group_id,
+        } );
+}
+
 sub _ensure_pkey {
     my ($self, $proto_ugr) = @_;
     my @attrs = Socialtext::UserGroupRole->meta->get_all_column_attributes;
@@ -242,6 +264,19 @@ Updates the given C<$ugr> object with the information provided in the
 C<\%proto_ugr> hash-ref.
 
 Returns the updated C<$ugr> object back to the caller.
+
+=item $factory-E<gt>DeleteRecord(\%proto_ugr)
+
+Deletes the user_group_role record from the DB, as described by the provided
+C<\%proto_ugr> hash-ref.
+
+Returns true if a record was deleted, false otherwise.
+
+=item $factory-E<gt>Delete($ugr)
+
+Deletes the C<ugr> from the DB.
+
+Helper method which calls C<DeleteRecord()>.
 
 =item $factory-E<gt>DefaultRoleId()
 

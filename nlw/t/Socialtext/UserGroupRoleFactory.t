@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 28;
+use Test::Socialtext tests => 33;
 use Test::Exception;
 
 ###############################################################################
@@ -186,4 +186,46 @@ update_non_existing_ugr: {
             { role_id => Socialtext::UserGroupRoleFactory->DefaultRoleId() },
         );
     } 'updating an non-existing UGR lives (but updates nothing)';
+}
+
+###############################################################################
+# TEST: delete an UGR
+delete_ugr: {
+    my $user    = create_test_user();
+    my $group   = create_test_group();
+    my $factory = Socialtext::UserGroupRoleFactory->instance();
+
+    # create the UGR
+    my $ugr   = $factory->Create( {
+        user_id  => $user->user_id,
+        group_id => $group->group_id,
+        } );
+    isa_ok $ugr, 'Socialtext::UserGroupRole', 'created UGR';
+
+    # delete the UGR
+    my $rc = $factory->Delete($ugr);
+    ok $rc, 'deleted the UGR';
+
+    # make sure the delete was reflected in the DB
+    my $queried = $factory->GetUserGroupRole(
+        user_id  => $user->user_id,
+        group_id => $group->group_id,
+    );
+    ok !$queried, '... which is reflected in DB';
+}
+
+###############################################################################
+# TEST: delete a non-existing UGR
+delete_non_existing_ugr: {
+    my $ugr = Socialtext::UserGroupRole->new( {
+        user_id  => 987654321,
+        group_id => 987654321,
+        role_id  => 987654321,
+        } );
+    isa_ok $ugr, 'Socialtext::UserGroupRole';
+
+    # Deleting a non-existing UGR fails, without throwing an exception
+    my $factory = Socialtext::UserGroupRoleFactory->instance();
+    my $rc      = $factory->Delete($ugr);
+    ok !$rc, 'cannot delete a non-existing UGR';
 }
