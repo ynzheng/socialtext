@@ -71,6 +71,9 @@ B<Caution:> No validation is done on the table name or the keys in the hashref.
 If your table has a composite key, you can pass the column names in as an
 arrayref for your C<$pk_key> arg.
 
+This method returns I<before> hitting the DB, if it determines that no actual
+update to the DB would be performed.
+
 =cut
 
 sub sql_update {
@@ -93,6 +96,7 @@ sub sql_update {
 
     my @set_keys = sort grep {!$keys_seen{$_}} keys %$p;
     my $set_params = join(', ', map {"$_ = ?"} @set_keys);
+    return unless @set_keys;
 
     my $sql = "UPDATE $table SET $set_params WHERE $where_params";
     local $Socialtext::SQL::Level = $Socialtext::SQL::Level + 1;
