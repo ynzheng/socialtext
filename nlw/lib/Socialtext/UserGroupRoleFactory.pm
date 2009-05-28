@@ -12,30 +12,25 @@ use namespace::clean -except => 'meta';
 sub GetUserGroupRole {
     my ($self, %p) = @_;
 
-    # make sure we have all primary key values; can't query without them
-    $self->_ensure_pkey(\%p);
-    my $user_id  = $p{user_id};
-    my $group_id = $p{group_id};
+    # make sure we have all primary key values, and build up the SQL to search
+    # for that specific key
+    my %pkey = $self->_ensure_pkey(\%p);
 
-    # map the attributes to their DB columns
-    my $meta = Socialtext::UserGroupRole->meta;
-    my $user_id_column  = $meta->get_attribute('user_id')->column_name();
-    my $group_id_column = $meta->get_attribute('group_id')->column_name();
+    # map UGR attributes to DB columns
+    my ($clause, @bindings) = $self->_pkey_where_clause(%pkey);
 
     # fetch the UGR from the DB
     my $sql = qq{
         SELECT role_id
           FROM user_group_role
-         WHERE $user_id_column = ?
-           AND $group_id_column = ?
+         WHERE $clause;
     };
-    my $role_id = sql_singlevalue($sql, $user_id, $group_id);
+    my $role_id = sql_singlevalue($sql, @bindings);
     return undef unless $role_id;
 
     # create the UGR object
     return Socialtext::UserGroupRole->new( {
-        user_id  => $user_id,
-        group_id => $group_id,
+        %pkey,
         role_id  => $role_id,
     } );
 }
@@ -71,7 +66,7 @@ sub UpdateRecord {
     my ($self, $proto_ugr) = @_;
 
     # SANITY CHECK: need to know which UG* we're updating
-    $self->_ensure_pkey($proto_ugr);
+    my %pkey = $self->_ensure_pkey($proto_ugr);
 
     # map UGR attributes to SQL UPDATE args
     my %update_args =
@@ -79,7 +74,7 @@ sub UpdateRecord {
         grep { exists $proto_ugr->{ $_->name } }
         Socialtext::UserGroupRole->meta->get_all_column_attributes;
 
-    sql_update('user_group_role', \%update_args, [qw/user_id group_id/]);
+    sql_update('user_group_role', \%update_args, [keys %pkey]);
 }
 
 sub Update {
@@ -109,13 +104,35 @@ sub Update {
 sub _ensure_pkey {
     my ($self, $proto_ugr) = @_;
     my @attrs = Socialtext::UserGroupRole->meta->get_all_column_attributes;
+    my %pkey;
     foreach my $attr (@attrs) {
         next unless $attr->is_primary_key();
         my $attr_name = $attr->name();
         unless ($proto_ugr->{$attr_name}) {
             croak "missing required primary key attribute '$attr_name'";
         }
+        $pkey{$attr_name} = $proto_ugr->{$attr_name};
     }
+    return %pkey;
+}
+
+sub _pkey_where_clause {
+    my ($self, %pkey) = @_;
+
+    my $meta = Socialtext::UserGroupRole->meta;
+    my %args =
+        map { $_->column_name => $pkey{ $_->name } }
+        map { $meta->get_attribute($_) }
+        keys %pkey;
+
+    # build the SQL to do the DELETE
+    my $clause =
+        join ' AND ',
+        map { "$_ = ?" }
+        keys %args;
+    my @bindings = values %args;
+
+    return ($clause, @bindings);
 }
 
 sub DefaultRoleId {
