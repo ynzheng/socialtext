@@ -33,52 +33,51 @@ sub _make_authorizer {
 
 sub search_on_behalf {
     my ( $ws_name, $query, $scope, $user, $no_such_ws_handler, $authz_handler ) = @_;
-    my @hits;
 
     $scope ||= '_';
 
     my @workspaces = _enumerate_workspaces($scope, $user, $ws_name, \$query);
-
+    my $hit_threshold = Socialtext::AppConfig->search_warning_threshold || 500;
     my $total_hits = 0;
-    for my $workspace (@workspaces) {
+
+    my @hit_thunks;
+    # sorting workspaces hopefully prevents KS deadlocks:
+    for my $workspace (sort @workspaces) {
         eval {
-            push @hits,
-                _search_for_query_in_workspace_for_user( $query, $workspace,
-                $user );
+            my ($thunk, $ws_hits) =
+                _search_workspace($user, $workspace, $query);
+            push @hit_thunks, $thunk;
+            $total_hits += $ws_hits;
         };
-        if ( my $except = $@ ) {
-            my $handler =
-  $except->isa('Socialtext::Exception::NoSuchWorkspace') ? $no_such_ws_handler
-: $except->isa('Socialtext::Exception::Auth')            ? $authz_handler
-                                                         : undef;
-            if (defined $handler) {
-                $handler->($except);
-            } elsif (my $type = ref $except) {
-                if ($type eq 'Socialtext::Exception::TooManyResults') {
-                    $total_hits += $except->{num_results};
-                }
-                else {
-                    $except->rethrow;
-                }
-            } else {
-                die $except;
+        if (my $e = $@) {
+            die $e unless ref $e;
+            if ($e->isa('Socialtext::Exception::NoSuchWorkspace')) {
+                $e->rethrow unless defined $no_such_ws_handler;
+                $no_such_ws_handler->($e);
+            }
+            elsif ($e->isa('Socialtext::Exception::Auth')) {
+                $e->rethrow unless defined $authz_handler;
+                $authz_handler->($e) if defined $authz_handler;
+            }
+            elsif ($e->isa('Socialtext::Exception::TooManyResults')) {
+                $total_hits += $e->{num_results};
+            }
+            else {
+                $e->rethrow;
             }
         }
+
+        last if $total_hits > $hit_threshold;
     }
 
-    $total_hits += @hits;
     Socialtext::Exception::TooManyResults->throw(
         num_results => $total_hits,
-    ) if $total_hits > Socialtext::AppConfig->search_warning_threshold;
+    ) if $total_hits > $hit_threshold;
 
+    # Now that we're sure that the results are of reasonable size
+    my @hits = map { @{ $_->() || [] } } @hit_thunks;
     # Re-rank all hits by the raw_hit's score (this bleeds some implementation)
     return sort { $b->hit->{score} cmp $a->hit->{score} } @hits;
-}
-
-sub _search_for_query_in_workspace_for_user {
-    my ( $query, $ws_name, $user ) = @_;
-    return Socialtext::Search::AbstractFactory->GetFactory->create_searcher(
-        $ws_name)->search( $query, _make_authorizer($user) );
 }
 
 sub _enumerate_workspaces {
@@ -116,6 +115,28 @@ sub _enumerate_workspaces {
 
     return @workspaces;
 }
+
+sub _search_workspace {
+    my ($user, $ws_name, $query) = @_;
+
+    my $factory = Socialtext::Search::AbstractFactory->GetFactory();
+    my $searcher = $factory->create_searcher($ws_name);
+    my $authorizer = _make_authorizer($user);
+
+    my ($thunk, $ws_hits);
+    if ($searcher->can('begin_search')) {
+        ($thunk, $ws_hits) =
+            $searcher->begin_search($query, $authorizer);
+    }
+    else {
+        my @one_ws_hits = $searcher->search($query, $authorizer);
+        $thunk = sub { \@one_ws_hits };
+        $ws_hits = @one_ws_hits;
+    }
+
+    return ($thunk, $ws_hits);
+}
+
 
 sub _all_workspaces {
     my ($user, $current_workspace) = @_;
