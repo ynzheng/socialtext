@@ -1,3 +1,10 @@
 #!/bin/bash
-st-make-all clean all
+
+echo Making clean all in known directories
+st-make-all -clean all
+
+echo Updating widget gallery --fork
 st-widgets update-gallery --fork
+
+echo Done
+
