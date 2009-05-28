@@ -13,6 +13,7 @@ has_column 'user_id' => (
     writer => '_user_id',
     trigger => \&_set_user_id,
     required => 1,
+    primary_key => 1,
 );
 
 has 'user' => (
@@ -25,6 +26,7 @@ has_column 'group_id' => (
     writer => '_group_id',
     trigger => \&_set_group_id,
     required => 1,
+    primary_key => 1,
 );
 
 has 'group' => (
