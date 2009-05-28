@@ -68,7 +68,8 @@ except for the C<$pk_key> field, which cannot be updated with this function.
 
 B<Caution:> No validation is done on the table name or the keys in the hashref.
 
-Currently tables with composite unique keys are not supported.
+If your table has a composite key, you can pass the column names in as an
+arrayref for your C<$pk_key> arg.
 
 =cut
 
