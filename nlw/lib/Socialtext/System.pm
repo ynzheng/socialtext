@@ -10,6 +10,7 @@ our $SILENT_RUN = 0;
 our $TIMEOUT = 0;
 
 use IPC::Run qw(run timeout);
+use POSIX ();
 use namespace::clean;
 
 
@@ -70,6 +71,23 @@ sub quote_args {
         }
     }
     return join ' ', @_;
+}
+
+# this is the POSIX-y way of saying `ulimit -n`
+sub open_filehandle_limit {
+#     warn "artificial filehandle limit\n";
+#     return 30;
+    my $fh_threshold = eval {POSIX::sysconf(POSIX::_SC_OPEN_MAX)};
+    $fh_threshold = 1024 unless ($fh_threshold && $fh_threshold > 0);
+    return $fh_threshold;
+}
+
+sub open_filehandles {
+    opendir my $dh, "/proc/$$/fd" or return 0;
+    my @open = readdir($dh);
+    my $num = @open - 2;
+    closedir $dh;
+    return $num;
 }
 
 1;
