@@ -27,7 +27,7 @@ sub load_pages_from_disk {
     for my $f (@files) {
         my $data = decode_json(Socialtext::File::get_contents_utf8($f));
         (my $content_file = $f) =~ s/\.json$//;
-        my $content = Socialtext::File::get_contents_utf8($content_file),
+        my $content = Socialtext::File::get_contents_utf8($content_file);
 
         print "  Creating $data->{name}\n";
         Socialtext::Page->new(hub => $hub)->create(
