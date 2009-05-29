@@ -106,7 +106,8 @@ sub _get_cached_group {
     my ($self, $key, $val) = @_;
 
     # Figure out what DB column is used for the lookup key
-    my $meta_attr = Socialtext::Group::Homunculus->meta->get_attribute($key);
+    my $meta_attr = Socialtext::Group::Homunculus->meta
+        ->find_attribute_by_name($key);
     unless ($meta_attr) {
         # unknown lookup key; be defensive here and choke hard (we *shouldn't*
         # get here unless %valid_get_group_term is out of sync with the DB
@@ -184,7 +185,7 @@ sub DeleteGroupRecord {
 
     # map Group Id attribute to SQL DELETE args
     my $group_column_name = Socialtext::Group::Homunculus->meta
-        ->get_attribute('group_id')
+        ->find_attribute_by_name('group_id')
         ->column_name();
 
     # DELETE the record in the DB

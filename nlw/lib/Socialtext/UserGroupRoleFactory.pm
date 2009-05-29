@@ -97,7 +97,7 @@ sub Update {
     # merge the updates back into the UGR object
     foreach my $attr (keys %{$updates_ref}) {
         # can't update pkey attrs
-        my $meta_attr = $user_group_role->meta->get_attribute($attr);
+        my $meta_attr = $user_group_role->meta->find_attribute_by_name($attr);
         next if ($meta_attr->is_primary_key());
 
         # update non pkey attrs
@@ -231,7 +231,7 @@ sub _pkey_where_clause {
     my $meta = Socialtext::UserGroupRole->meta;
     my %args =
         map { $_->column_name => $pkey{ $_->name } }
-        map { $meta->get_attribute($_) }
+        map { $meta->find_attribute_by_name($_) }
         keys %pkey;
 
     # build the SQL to do the DELETE
