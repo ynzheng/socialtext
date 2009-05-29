@@ -2,8 +2,8 @@ package Socialtext::Group::Default::Factory;
 # @COPYRIGHT@
 
 use Moose;
-use namespace::clean -except => 'meta';
 use DateTime::Duration;
+use namespace::clean -except => 'meta';
 
 with 'Socialtext::Group::Factory';
 
