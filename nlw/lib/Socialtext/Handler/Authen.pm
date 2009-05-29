@@ -165,7 +165,7 @@ sub login {
 
     unless ( $user_check ) {
         $self->session->add_error( loc('"[_1]" is not a valid [_2]. Please use your [_2] to log in.', $username, $validname) );
-        $r->log_error ($username . ' is not a valid email address');
+        $r->log_error ($username . ' is not a valid ' . $validname);
         return $self->_redirect($login_uri);
     }
     my $auth = Socialtext::Authen->new;
