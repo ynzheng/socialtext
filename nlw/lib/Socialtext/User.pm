@@ -1436,7 +1436,7 @@ sub send_confirmation_completed_email {
 
     my $ws;
     if ($workspace_name) {
-        $ws = Socialtext::Workspace(name => $workspace_name);
+        $ws = Socialtext::Workspace->new(name => $workspace_name);
     } else {
         $ws = $self->workspaces->next();
     }
