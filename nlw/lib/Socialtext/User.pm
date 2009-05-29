@@ -1391,7 +1391,7 @@ sub send_confirmation_email {
     my $workspace_name;
 
     if ($self->confirmation_workspace_id) {
-        my $ws = new Socialtext::Workspace(workspace_id => $self->confirmatino_workspace_id));
+        my $ws = new Socialtext::Workspace(workspace_id => $self->confirmatino_workspace_id);
         $workspace_name = $ws->name;
     }
     my %vars = (
@@ -1434,10 +1434,10 @@ sub send_confirmation_completed_email {
 
     my $renderer = Socialtext::TT2::Renderer->instance();
 
-    my $ws 
+    my $ws;
     if ($workspace_name) {
         $ws = Socialtext::Workspace(name => $workspace_name);
-    } else
+    } else {
         $ws = $self->workspaces->next();
     }
 
