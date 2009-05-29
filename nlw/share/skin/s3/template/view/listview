@@ -38,6 +38,9 @@
           [% loc('The search you have entered is too general; [_1] pages and/or attachments matched your query.', too_many) %]
         </p>
         <p>
+          [% loc('Searches are limited to [_1] results.' , appconfig.search_warning_threshold) %]
+        </p>
+        <p>
           [% loc('Please use more specific words or add more search terms.') %]
         </p>
         <br />

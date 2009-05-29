@@ -27,9 +27,13 @@ my $workspace;
 my $username;
 my $sortby = 'Relevance';
 my $verbose;
+my $global;
+my $scope;
 my ($help, $man);
 GetOptions(
     'workspace=s'   => \$workspace,
+    'global'        => \$global,
+    'scope=s'       => \$scope,
     'username=s'    => \$username,
     'sortby=s'      => \$sortby,
     'verbose'       => \$verbose,
@@ -39,10 +43,14 @@ GetOptions(
 my $term = join ' ', @ARGV;
 
 pod2usage(1) if ($help);
-pod2usage(1) unless ($workspace);               # required option
+pod2usage(1) unless ($workspace || $global);    # required option
 pod2usage(1) unless ($term);                    # search term required
 pod2usage(1) unless ($sort_types{$sortby});     # must be valid sort option
 pod2usage( -exitstatus=>0, -verbose=>2 ) if ($man);
+
+if ($global) {
+    $scope ||= '*';
+}
 
 ###############################################################################
 # Grab the user that we're running searches as (default, System User)
@@ -56,7 +64,9 @@ verbose( "searching as user: " . $user->username() );
 
 ###############################################################################
 # Instantiate the Workspace to search in
-my $ws = Socialtext::Workspace->new(name => $workspace);
+my $ws = ($workspace) ?
+    Socialtext::Workspace->new(name => $workspace) :
+    Socialtext::NoWorkspace->new();
 unless ($ws) {
     die "can't find workspace '$workspace'; aborting search\n";
 }
@@ -84,7 +94,7 @@ my $timer = Socialtext::Timer->new;
     $search->sortby( $sortby );
     $search->search_for_term(
         search_term => $term,
-        scope       => '_',
+        scope       => $scope,
     );
     $result_set = $search->result_set( $search->sorted_result_set(\%sortdir) );
 }
@@ -124,6 +134,8 @@ st-search - Basic search script
   st-search [options] <search term>
 
   Options:
+    --scope=<string>        Use this search scope (default: _)
+    --global                Alias for `--scope=*`
     --workspace=<ws>        Workspace name to search in
     --username=<username>   Username to run search as (default "system-user")
     --sortby=<sortby>       Sort criteria (default "Relevance")
@@ -154,6 +166,13 @@ Specifies the name of the workspace that the search is to be performed in.
 
 Specifies the name of the user that the search should be run as.  Defaults to
 "system-user".
+
+=item B<--scope=E<lt>stringE<gt>>
+
+Use this scope for the search.  A '_', the default, means just search the
+current workspace.  A '*' will search all workspaces that the user belongs to.
+Any other string will use that named scope (which is, in theory, a set of
+workspaces).
 
 =item B<--sortby=E<lt>sortbyE<gt>>
 

@@ -11,6 +11,7 @@ my @dirs = qw(
     plugins/socialcalc/share/javascript
     plugins/widgets
     plugins/signals
+    plugins/dashboard
 );
 
 pod2usage() unless (@ARGV);
@@ -78,10 +79,12 @@ st-make-all - Runs all makes in Socialtext
 
 =head1 SYNOPSIS
 
-  st-make-all [@][-][command] <options>
+  st-make-all [@][-][command]
 
   Example:
-    st-git-all clean
-    st-git-all clean all
+    st-make-all clean
+    st-make-all clean all
+    quiet: st-make-all @clean all
+    quite, nodie: st-make-all @-clean all
 
 =cut

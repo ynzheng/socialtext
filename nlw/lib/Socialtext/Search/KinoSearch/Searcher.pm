@@ -41,12 +41,32 @@ sub new {
 
 # Perform a search and return the results.
 sub search {
+    my $self = shift;
+    my ($thunk, $num_hits) = $self->begin_search(@_);
+    return @{ $thunk->() || [] };
+}
+
+# Start a search, but don't process the results.  Return a thunk and a number
+# of hits.  The thunk returns an arrayref of processed results.
+sub begin_search {
     my ( $self, $query_string, $authorizer ) = @_;
     $self->_init_searcher();
-    _debug("Searching with query: $query_string");
+    _debug("Searching ".$self->ws_name." with query: $query_string");
+
     my $hits = $self->_search( $query_string, $authorizer );
-    my $hits_processor_method = $self->config->hits_processor_method;
-    return $self->$hits_processor_method($hits);
+    return (sub {}, 0) unless $hits->total_hits;
+
+    my $thunk = sub {
+        _debug("Processing ".$self->ws_name." thunk");
+        Socialtext::Timer->Continue('ks_process');
+        my $hits_processor_method = $self->config->hits_processor_method;
+        my $results = eval { [$self->$hits_processor_method($hits)] };
+        my $err = $@;
+        Socialtext::Timer->Continue('ks_process');
+        die $err if $err;
+        return $results;
+    };
+    return ($thunk, $hits->total_hits);
 }
 
 # Load up the Searcher.
@@ -71,13 +91,25 @@ sub _init_searcher {
 # Parses the query string and returns the raw KinoSearch hit results.
 sub _search {
     my ( $self, $query_string, $authorizer ) = @_;
+
     my $query_parser_method = $self->config->query_parser_method;
     my $query = $self->$query_parser_method($query_string);
     $self->_authorize( $query, $authorizer );
-    _debug("Performing actual search for query");
+    _debug("Performing actual search for query in ".$self->ws_name);
+
     Socialtext::Timer->Continue('ks_raw');
     my $hits = $self->searcher->search( query => $query );
+    # XXX: calling total_hits may actualize part of the KS result.
+    # Keep it here between the timers - stash
+    my $num_hits = $hits->total_hits;
     Socialtext::Timer->Pause('ks_raw');
+
+    _debug("Found $num_hits matches");
+    my $hit_limit = Socialtext::AppConfig->search_warning_threshold;
+    Socialtext::Exception::TooManyResults->throw(
+        num_results => $num_hits
+    ) if $num_hits > $hit_limit;
+
     return $hits;
 }
 
@@ -88,8 +120,10 @@ sub _authorize {
 
     return unless defined $authorizer;
 
-    Socialtext::Exception::Auth->throw
-        unless $authorizer->( $self->ws_name );
+    unless ($authorizer->( $self->ws_name )) {
+        _debug("authorizer failed for ".$self->ws_name);
+        Socialtext::Exception::Auth->throw;
+    }
 }
 
 # Munge the query to our liking, parse the query and return a query object.
@@ -107,10 +141,6 @@ sub _process_hits {
     _debug("Processing search results");
     my @results;
     my %seen;
-
-    Socialtext::Exception::TooManyResults->throw(
-        num_results => $hits->total_hits,
-    ) if $hits->total_hits > Socialtext::AppConfig->search_warning_threshold;
 
     if ( $self->config->excerpt_text ) {
         my $highlighter = KinoSearch::Highlight::Highlighter->new(
