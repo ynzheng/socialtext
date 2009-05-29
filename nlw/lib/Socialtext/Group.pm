@@ -134,6 +134,14 @@ sub base_package {
     return __PACKAGE__;
 }
 
+sub users {
+    my $self = shift;
+    return Socialtext::UserGroupRoleFactory->ByGroupId(
+        $self->group_id,
+        sub { shift->user(); },
+    );
+}
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
