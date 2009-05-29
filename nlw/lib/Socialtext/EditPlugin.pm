@@ -133,18 +133,17 @@ sub edit_content {
     if (@tags) {
         $page->add_tags(@tags); # add_tags auto saves
     }
-    else {
-        $page->store(
-            user => $self->hub->current_user,
-            signal_edit_summary => scalar($self->cgi->signal_edit_summary),
-            edit_summary => $edit_summary,
-        );
-        Socialtext::Events->Record({
-            event_class => 'page',
-            action => 'edit_save',
-            page => $page,
-        });
-    }
+
+    $page->store(
+        user => $self->hub->current_user,
+        signal_edit_summary => scalar($self->cgi->signal_edit_summary),
+        edit_summary => $edit_summary,
+    );
+    Socialtext::Events->Record({
+        event_class => 'page',
+        action => 'edit_save',
+        page => $page,
+    });
 
     # Move attachments uploaded to 'Untitled Page' to the actual page
     my @attach = $self->cgi->attachment;
