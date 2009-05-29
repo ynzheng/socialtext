@@ -32,17 +32,20 @@ backup: {
     my $plugin = Socialtext::Pluggable::Plugin::Groups->new();
     my $ref = $plugin->export_groups_for_account($account);
 
-    # tests
-    is @$ref, 1, 'backed up one group.';
-    is $ref->[0]{driver_group_name}, $group_one->driver_group_name,
-        '... with right name';
-    is $ref->[0]{created_by_username}, $def_user->username, 
-        '... with correct creator';
-    is @{ $ref->[0]{users} }, 1, '... backed up one user';
-    is $ref->[0]{users}[0]{username}, $user_one->username,
-        '... ... user has correct username';
-    is $ref->[0]{users}[0]{role_name}, $def_role->name,
-        '... ... user has correct role name';
+    my $expected = [
+        {
+            'users' => [
+                {
+                    'role_name' => $def_role->name,
+                    'username'  => $user_one->username,
+                } 
+            ],
+            'created_by_username' => $def_user->username,
+            'driver_group_name'   => $group_one->driver_group_name,
+        } 
+    ];
+
+    is_deeply $ref, $expected, 'correct export data structure';
 }
 
 ################################################################################

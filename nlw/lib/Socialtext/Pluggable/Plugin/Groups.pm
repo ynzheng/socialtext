@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use base 'Socialtext::Pluggable::Plugin';
 use Socialtext::Group;
+use Socialtext::l10n qw/loc/;
 use Socialtext::UserGroupRoleFactory;
 
 sub register {
@@ -24,12 +25,9 @@ sub export_groups_for_account {
         Socialtext::Group->ByAccountId(account_id => $acct->account_id);
 
     while ( my $group = $groups->next() ) {
-        my $creator = 
-            Socialtext::User->new(user_id => $group->created_by_user_id);
-
         my $group_data = {
            driver_group_name => $group->driver_group_name,
-           created_by_username =>  $creator->username,
+           created_by_username =>  $group->creator->username,
         };
         $group_data->{users} = $self->_get_ugrs_for_export( $group );
         push @groups, $group_data;
