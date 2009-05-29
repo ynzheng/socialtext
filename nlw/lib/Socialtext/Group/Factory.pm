@@ -2,6 +2,7 @@ package Socialtext::Group::Factory;
 # @COPYRIGHT@
 
 use Moose::Role;
+use Carp qw(croak);
 use Socialtext::Date;
 use Socialtext::Exceptions qw(data_validation_error);
 use Socialtext::Group;
@@ -103,7 +104,17 @@ sub GetGroupHomunculus {
 # Looks up a Group in the DB, to see if we have a cached copy of it already.
 sub _get_cached_group {
     my ($self, $key, $val) = @_;
-    my (@where, @bindings);
+
+    # Figure out what DB column is used for the lookup key
+    my $meta_attr = Socialtext::Group::Homunculus->meta->get_attribute($key);
+    unless ($meta_attr) {
+        # unknown lookup key; be defensive here and choke hard (we *shouldn't*
+        # get here unless %valid_get_group_term is out of sync with the DB
+        # schema.
+        croak "invalid group lookup key: $key";
+    }
+
+    my $column = $meta_attr->column_name();
 
     # LOOKUP: group_id
     # - group_id lookups can only be performed if the value is numeric; if
@@ -111,15 +122,11 @@ sub _get_cached_group {
     #   the non-numeric to the DB and watching it choke)
     if ($key eq 'group_id') {
         return if ($val =~ /\D/);
-        @where    = ('group_id = ?');
-        @bindings = ($val);
     }
-    # LOOKUP: anything else
-    # - all other valid Group lookups are done as "key=val" DB lookups
-    else {
-        @where    = ("$key = ?");
-        @bindings = ($val);
-    }
+
+    # Build the WHERE clause and bindings for the lookup column
+    my @where    = ("$column = ?");
+    my @bindings = ($val);
 
     # Add in our specific driver key to the WHERE clause
     unshift @where,    "driver_key = ?";
