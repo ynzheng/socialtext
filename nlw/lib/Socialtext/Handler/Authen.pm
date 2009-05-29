@@ -21,6 +21,7 @@ use Socialtext::User;
 use Socialtext::Session;
 use Socialtext::Helpers;
 use Socialtext::Workspace;
+use Socialtext::Permission qw( ST_SELF_JOIN_PERM );
 use Socialtext::l10n qw( loc loc_lang system_locale );
 use URI::Escape qw(uri_escape_utf8);
 
@@ -273,7 +274,7 @@ sub register {
 
     if ($target_ws_name) {
         eval {
-            my $ws = Socialtext::Workspace->new( $name => $target_ws_name);
+            my $ws = Socialtext::Workspace->new( name => $target_ws_name);
             my $perms = $ws->permissions;
             if (!$perms->role_can( 
                     role => Socialtext::Role->Guest(),
