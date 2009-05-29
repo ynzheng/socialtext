@@ -18,7 +18,7 @@ sub export_groups_for_account {
     my $data_ref = shift;
     my @groups   = ();
 
-    print "Exporting all groups for account '" . $acct->name . "'...\n";
+    print loc("Exporting all groups for account '[_1]'...", $acct->name ), "\n";
 
     my $groups = 
         Socialtext::Group->ByAccountId(account_id => $acct->account_id);
