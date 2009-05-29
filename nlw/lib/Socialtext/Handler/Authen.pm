@@ -106,6 +106,9 @@ sub handler ($$) {
             }
         }
 
+        if ($self->{args}{workspace_name}) {
+            $vars->{target_workspace} = Socialtext::Workspace->new(name => $self->{args}{workspace_name});
+        }
         my @errors;
         if ($r->prev) {
             @errors = split /\n/, $r->prev->pnotes('error') || '';
@@ -261,15 +264,32 @@ sub register {
     my $self = shift;
     my $r = $self->r;
 
+    my $target_ws_name = $self->{args}{workspace_name};
+    my $redirect_target = $target_ws_name ?  '/nlw/join.html?workspace_name='.$self->{args}{workspace_name}.';redirect_to='.$self->{args}{redirect_to} : '/nlw/register.html';
     unless (Socialtext::AppConfig->self_registration()) {
         $self->session->add_error(loc("Registration is disabled."));
-        return $self->_redirect('/nlw/login.html');
+        return $self->_redirect($redirect_target);
+    }
+
+    if ($target_ws_name) {
+        eval {
+            my $ws = Socialtext::Workspace->new( $name => $target_ws_name);
+            my $perms = $ws->permissions;
+            if (!$perms->role_can( 
+                    role => Socialtext::Role->Guest(),
+                    permission => ST_SELF_JOIN_PERM
+                )) {
+                    $self->session->add_error(loc("Self-join is disabled for")." ".$target_ws_name);
+                    return $self->_redirect($redirect_target);
+                }
+            };
+        die $@ if $@;
     }
 
     my $email_address = $self->{args}{email_address};
     unless ( $email_address ) {
         $self->session->add_error(loc("Please enter an email address."));
-        return $self->_redirect('/nlw/register.html');
+        return $self->_redirect($redirect_target);
     }
 
     my $user = Socialtext::User->new( email_address => $email_address );
@@ -281,7 +301,7 @@ sub register {
             $self->session->add_message(loc("A user with this email address ([_1]) already exists.", $email_address));
             $self->session->save_args( email_address => $email_address );
 
-            return $self->_redirect("/nlw/register.html");
+            return $self->_redirect($redirect_target);
         }
     }
 
@@ -323,10 +343,11 @@ sub register {
     if ( $self->session->has_errors ) {
         my $redirect = delete $self->{args}{redirect_to};
         $self->session->save_args( %{ $self->{args} } );
-        return $self->_redirect("/nlw/register.html");
+        return $self->_redirect($redirect_target);
     }
 
-    $user->set_confirmation_info;
+
+    $user->set_confirmation_info(workspace_name => $target_ws_name);
     $user->send_confirmation_email;
 
     $self->session->add_message(loc("An email confirming your registration has been sent to [_1].", $email_address));
@@ -366,6 +387,10 @@ sub confirm_email {
 
     $user->confirm_email_address();
 
+    if ( my $wsid = $user->confirmation_workspace_id) {
+        my $workspace = Socialtext::Workspace(workspace_id => $wsid);
+        $workspace->add_user(user => $user);
+    }
     my $address = $user->email_address;
     $self->session->add_message(loc("Your email address, [_1], has been confirmed. Please login.", $address));
     $self->session->save_args( username => $user->username );

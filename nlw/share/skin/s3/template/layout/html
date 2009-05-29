@@ -70,7 +70,7 @@
               [% IF self_registration %]
                 <li id="st-wikinav-login"><a href="/challenge?[% wiki.uri | html %]">[% loc('Log in') %]</a></li>
                 [% IF workspace_present AND checker.check_permission('self_join') %]
-                  <li id="st-wikinav-register" class="last"><a href="/nlw/join.html?workspace=[% current_workspace.name%];redirect_to=[% current_workspace.uri %]">[% loc('Join') %]</a></li>
+                  <li id="st-wikinav-register" class="last"><a href="/nlw/join.html?workspace_name=[% current_workspace.name%];redirect_to=[% current_workspace.uri %]">[% loc('Join') %]</a></li>
                 [% ELSE %]
                   <li id="st-wikinav-register" class="last"><a href="/nlw/register.html?redirect_to=[% hub.current_workspace.uri %]">[% loc('Register') %]</a></li>
                 [% END %]
@@ -242,7 +242,7 @@
                 [% IF self_registration %]
                   <li><a id="st-footer-link-login" href="/challenge?[% wiki.uri | html %]">[% loc('Log in') %]</a></li>
                     [% IF workspace_present AND checker.check_permission('self_join') %]
-                      <li id="st-wikinav-register" class="last"><a href="/nlw/join.html?workspace=[% current_workspace.name%];redirect_to=[% current_workspace.uri %]">[% loc('Join') %]</a></li>
+                      <li id="st-wikinav-register" class="last"><a href="/nlw/join.html?workspace_name=[% current_workspace.name%];redirect_to=[% current_workspace.uri %]">[% loc('Join') %]</a></li>
                     [% ELSE %]
                       <li class="last"><a id="st-footer-link-register" href="/nlw/register.html?redirect_to=[% hub.current_workspace.uri %]">[% loc('Register') %]</a></li>
                     [% END %]

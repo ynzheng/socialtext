@@ -1,6 +1,10 @@
-Welcome to [% PROCESS system_name %].
+[% loc('Welcome to')%] [% IF is_workspace_self_join%][% loc("the [_1] Workspace in the [_2] Network at ", title, account_name) %][% END %][% PROCESS system_name %].
 
+[% IF is_workspace_self_join %]
+[% loc('Your profile has been added to the [_1] directory.', account_name) %]
+[% ELSE %]
 [% loc('Your profile has been added to the people directory.') %]
+[% END %]
 [% loc('Please follow this link to confirm your address and update your information:') %]
 
   [% confirmation_uri %]

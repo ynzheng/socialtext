@@ -2,18 +2,28 @@
 [% PROCESS system_name %]
 <html>
 <head>
- <title>[% loc('Welcome to the [_1] community - please confirm your email address to join', account_name) %]</title>
+ <title>
+ [% IF is_workspace_self_join%]
+ [% loc('Welcome to the Socialtext community - please confirm your email address to join')%]
+ [% ELSE %]
+ [% loc('Welcome to the [_1] community - please confirm your email address to join', account_name) %]
+ [% END %]
+ </title>
 </head>
 
         
 <body>
 
 <p>
-Welcome to [% PROCESS system_name %].
+[% loc('Welcome to')%] [% IF is_workspace_self_join%][% loc("the [_1] Workspace in the [_2] Network at ", title, account_name) %][% END %][% PROCESS system_name %].
 </p>
 
 <p>
+[% IF is_workspace_self_join %]
+[% loc('Your profile has been added to the [_1] directory.', account_name) %]
+[% ELSE %]
 [% loc('Your profile has been added to the people directory.') %]
+[% END %]
 [% loc('Please follow <a href="[_1]">this link to confirm your email address</a>. and update your information.', confirmation_uri) %]
 </p>
 

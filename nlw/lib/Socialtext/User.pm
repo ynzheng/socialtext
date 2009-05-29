@@ -6,7 +6,7 @@ use warnings;
 our $VERSION = '0.01';
 
 use Socialtext::Exceptions qw( data_validation_error param_error );
-use Socialtext::Validate qw( validate SCALAR_TYPE BOOLEAN_TYPE ARRAYREF_TYPE WORKSPACE_TYPE USER_TYPE);
+use Socialtext::Validate qw( validate SCALAR_TYPE BOOLEAN_TYPE ARRAYREF_TYPE WORKSPACE_TYPE USER_TYPE SCALAR UNDEF);
 use Socialtext::AppConfig;
 use Socialtext::Log qw(st_log);
 use Socialtext::MultiCursor;
@@ -1341,7 +1341,14 @@ sub Count {
 # Confirmation methods
 
 {
-    my $spec = { is_password_change => BOOLEAN_TYPE( default => 0 ) };
+    my $spec = { 
+        is_password_change => BOOLEAN_TYPE( default => 0 ),
+        workspace_name => 
+            {
+                type => SCALAR | UNDEF, 
+                default => undef 
+            }
+        };
 
     sub set_confirmation_info {
         my $self = shift;
@@ -1364,6 +1371,12 @@ sub confirmation_is_for_password_change {
     return $self->email_confirmation->is_password_change;
 }
 
+sub confirmation_workspace_id {
+    my $self = shift;
+    return $self->email_confirmation->workspace_id;
+}
+
+
 # REVIEW - does this belong in here, or maybe a higher level library
 # like one for all of our emails? I dunno.
 sub send_confirmation_email {
@@ -1375,10 +1388,17 @@ sub send_confirmation_email {
 
     my $uri = $self->confirmation_uri();
 
+    my $workspace_name;
+
+    if ($self->confirmation_workspace_id) {
+        my $ws = new Socialtext::Workspace(workspace_id => $self->confirmatino_workspace_id));
+        $workspace_name = $ws->name;
+    }
     my %vars = (
         confirmation_uri => $uri,
         appconfig        => Socialtext::AppConfig->instance(),
-        account_name     => $self->primary_account->name
+        account_name     => $self->primary_account->name,
+        workspace_name   => $workspace_name
     );
 
     my $text_body = $renderer->render(
@@ -1396,7 +1416,10 @@ sub send_confirmation_email {
     my $email_sender = Socialtext::EmailSender::Factory->create($locale);
     $email_sender->send(
         to        => $self->name_and_email(),
-        subject   => loc('Welcome to the [_1] community - please confirm your email to join', $self->primary_account->name),
+        subject   => $workspace_name ? 
+            loc('Welcome to the [_1] workspace - please confirm your email to join', $workspace_name)
+            :
+            loc('Welcome to the [_1] community - please confirm your email to join', $self->primary_account->name),
         text_body => $text_body,
         html_body => $html_body,
     );
@@ -1405,11 +1428,18 @@ sub send_confirmation_email {
 sub send_confirmation_completed_email {
     my $self = shift;
 
+    my $workspace_name = shift;
+
     return if $self->email_confirmation();
 
     my $renderer = Socialtext::TT2::Renderer->instance();
 
-    my $ws = $self->workspaces->next();
+    my $ws 
+    if ($workspace_name) {
+        $ws = Socialtext::Workspace(name => $workspace_name);
+    } else
+        $ws = $self->workspaces->next();
+    }
 
     my %vars;
     my $subject;
@@ -1440,7 +1470,7 @@ sub send_confirmation_completed_email {
 
     $vars{user}      = $self;
     $vars{appconfig} = Socialtext::AppConfig->instance();
-
+    $vars{is_workspace_self_join} = defined($workspace_name);
     my $text_body = $renderer->render(
         template => 'email/email-address-confirmation-completed.txt',
         vars     => \%vars,
@@ -1525,9 +1555,14 @@ sub confirm_email_address {
     $uce->delete;
 
     return if $uce->is_password_change;
+    my $workspace_name;
+    if (my $wsid=$uce->workspace_id) {
+        my $ws = Socialtext::Workspace->new(workspace_id => $wsid);
+        $workspace_name = $ws->name;
+    }
 
-    $self->send_confirmation_completed_email;
-    $self->send_confirmation_completed_signal;
+    $self->send_confirmation_completed_email( workspace_name=> $workspace_name);
+    $self->send_confirmation_completed_signal unless $workspace_name;
 }
 
 sub send_confirmation_completed_signal {
