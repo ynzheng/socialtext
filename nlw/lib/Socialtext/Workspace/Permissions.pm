@@ -540,6 +540,7 @@ C<impersonate> to the C<impersonator> role.
 =item o workspace_admin - read, edit, attachments, comment, delete, email_in, email_out, lock
 
 =back
+
 =item * intranet
 
 =over 8
