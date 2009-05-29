@@ -4,7 +4,7 @@ package Socialtext::UserGroupRoleFactory;
 use MooseX::Singleton;
 use Carp qw(croak);
 use Socialtext::Events;
-use Socialtext::SQL qw/:exec/;
+use Socialtext::SQL qw(:exec);
 use Socialtext::SQL::Builder qw(:all);
 use Socialtext::Role;
 use Socialtext::UserGroupRole;
