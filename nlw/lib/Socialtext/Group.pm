@@ -304,6 +304,10 @@ Delegated to C<Socialtext::Group::Homunculus>.
 
 Delegated to C<Socialtext::Group::Homunculus>.
 
+=item B<$group-E<gt>users()>
+
+Returns a C<Socialtext::MultiCursor> of users who have a role in this group.
+
 =back
 
 =head1 AUTHOR

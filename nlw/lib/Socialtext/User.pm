@@ -1776,6 +1776,10 @@ list reference in scalar context.
 Returns a list of the accounts where both $user and $user2 are members.
 Returns a list reference in scalar context.
 
+=head2 $user->groups()
+
+Returns a C<Socialtext::MultiCursor> of groups that this user has a role in.
+
 =head2 $user->to_hash()
 
 Returns a hash reference representation of the user, suitable for using with
