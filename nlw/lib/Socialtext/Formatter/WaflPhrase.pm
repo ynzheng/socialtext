@@ -530,6 +530,8 @@ use base 'Socialtext::Formatter::PageInclusion';
 use Class::Field qw( const );
 use Socialtext::Permission 'ST_READ_PERM';
 use Socialtext::l10n qw( loc );
+use Socialtext::Sheet;
+use Socialtext::Sheet::Renderer;
 use pQuery::DOM;
 
 const wafl_id => 'ss';
@@ -552,7 +554,8 @@ sub cell_value {
     my ($page_id, $cell_id) = @_;
     $cell_id = uc($cell_id);
     my $content = $self->hub->pages->new_from_name($page_id)->content;
-    if ($cell_id =~ /^[A-Z]+\d+:[A-Z]+\d+$/) {
+    if ($cell_id =~ /^([A-Z]+\d+)(:[A-Z]+\d+)?$/) {  # un-named range
+        $cell_id = "$1:$1" unless $2;
         (my $cell_range = $cell_id) =~ s/:/\\c/;
         return $self->sheet_range(
             $content, $cell_range, '', $page_id, $cell_id
@@ -570,9 +573,7 @@ sub cell_value {
             $cell_id = $cell_range;
         }
     }
-    if ($content =~ /^${cell_id}:\s*(.*)/m) {
-        return $1;
-    }
+
     return $cell_id;
 }
 
@@ -592,8 +593,9 @@ sub sheet_range {
         return $error;
     }
 
-    $content =~ /\n__SPREADSHEET_HTML__\n(.*?\n)__SPREADSHEET_/s;
-    my $html = $1;
+    my $sheet = Socialtext::Sheet->new(sheet_source => \$content);
+    my $renderer = Socialtext::Sheet::Renderer->new(sheet => $sheet, hub => $self->hub);
+    my $html = $renderer->sheet_to_html();
 
     my $dom = pQuery::DOM->fromHTML($html);
 
@@ -614,9 +616,13 @@ sub sheet_range {
     for my $n ($N1..$N2) {
         $output .= "<tr>";
         for my $a ($A1..$A2) {
-             my $cell = $dom->getElementById("cell_$a$n")
-                 or next;
-             $output .= $cell->toHTML;
+             my $cell = $dom->getElementById("cell_$a$n");
+             if ($cell) {
+                 $output .= $cell->toHTML;
+             }
+             else {
+                 $output .= "<td id=\"cell_$a$n\" class=\"emptycell\"></td>";
+             }
         }
         $output .= "</tr>";
     }
