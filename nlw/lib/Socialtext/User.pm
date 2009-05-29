@@ -364,6 +364,14 @@ sub shared_accounts {
     return grep { $mine{$_->account_id} } $user->accounts;
 }
 
+sub groups {
+    my $self = shift;
+    return Socialtext::UserGroupRoleFactory->ByUserId( 
+        $self->user_id,
+        sub { shift->group(); },
+    );
+}
+
 sub to_hash {
     my $self = shift;
     my $hash = {};
