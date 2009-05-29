@@ -47,7 +47,11 @@ sub Update {
 
     # merge the updates back into the Group object
     foreach my $attr (keys %{$updates_ref}) {
-        next if ($attr eq 'group_id');      # not updateable
+        # can't update pkey attrs
+        my $meta_attr = $group->meta->find_attribute_by_name($attr);
+        next if ($meta_attr->is_primary_key);
+
+        # update non pkey attrs
         my $setter = "_$attr";
         $group->$setter( $updates_ref->{$attr} );
     }
