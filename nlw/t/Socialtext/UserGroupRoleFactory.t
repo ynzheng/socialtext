@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 use mocked 'Socialtext::Events', qw(clear_events event_ok is_event_count);
-use Test::Socialtext tests => 57;
+use Test::Socialtext tests => 71;
 use Test::Exception;
 
 ###############################################################################
@@ -346,4 +346,80 @@ by_user_id_with_non_existing_user_id: {
 
     isa_ok $groups, 'Socialtext::MultiCursor', 'Got a list';
     ok !$groups->count(), '... with no results';
+}
+
+################################################################################
+# TEST: ByGroupId 
+by_group_id: {
+    my $group    = create_test_group();
+    my $user_one = create_test_user();
+    my $user_two = create_test_user();
+
+    # Create UGRs
+    Socialtext::UserGroupRoleFactory->Create( {
+        user_id  => $user_one->user_id,
+        group_id => $group->group_id,
+    } );
+
+    Socialtext::UserGroupRoleFactory->Create( {
+        user_id  => $user_two->user_id,
+        group_id => $group->group_id,
+    } );
+
+    my $users = Socialtext::UserGroupRoleFactory->ByGroupId( $group->group_id );
+    isa_ok $users, 'Socialtext::MultiCursor', 'Got a list of results';
+    is $users->count(), 2, '... of correct size';
+
+    my $q_user_one = $users->next();
+    isa_ok $q_user_one, 'Socialtext::UserGroupRole', 'First result';
+    is $q_user_one->user_id, $user_one->user_id, '... with correct user_id';
+
+    my $q_user_two = $users->next();
+    isa_ok $q_user_two, 'Socialtext::UserGroupRole', 'First result';
+    is $q_user_two->user_id, $user_two->user_id, '... with correct user_id';
+}
+
+################################################################################
+# TEST: ByGroupId -- passing in a closure.
+by_group_id_with_closure: {
+    my $group    = create_test_group();
+    my $user_one = create_test_user();
+    my $user_two = create_test_user();
+
+    # Create UGRs
+    Socialtext::UserGroupRoleFactory->Create( {
+        user_id  => $user_one->user_id,
+        group_id => $group->group_id,
+    } );
+
+    Socialtext::UserGroupRoleFactory->Create( {
+        user_id  => $user_two->user_id,
+        group_id => $group->group_id,
+    } );
+
+    my $users = Socialtext::UserGroupRoleFactory->ByGroupId( 
+        $group->group_id,
+        sub { shift->user(); }
+    );
+    isa_ok $users, 'Socialtext::MultiCursor', 'Got a list of results';
+    is $users->count(), 2, '... of correct size';
+
+    my $q_user_one = $users->next();
+    isa_ok $q_user_one, 'Socialtext::User', 'First result';
+    is $q_user_one->username, $user_one->username, '... with correct username';
+
+    my $q_user_two = $users->next();
+    isa_ok $q_user_two, 'Socialtext::User', 'First result';
+    is $q_user_two->username, $user_two->username, '... with correct username';
+}
+
+################################################################################
+# TEST: ByGroupId with non-existing group_id
+by_group_id_with_non_existing_group_id: {
+    my $group = create_test_group();
+
+    my $ugrs = Socialtext::UserGroupRoleFactory->ByGroupId( '12345678' );
+
+    isa_ok $ugrs, 'Socialtext::MultiCursor', 'Got a list';
+    ok !$ugrs->count(), '... with no results';
 }

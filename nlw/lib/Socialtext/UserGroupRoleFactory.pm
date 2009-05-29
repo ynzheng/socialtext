@@ -150,6 +150,23 @@ sub ByUserId {
     return $self_or_class->_UgrCursor( $sql, [$user_id], $closure );
 }
 
+sub ByGroupId {
+    my $self_or_class = shift;
+    my $group_id      = shift;
+    my $closure       = shift;
+
+    my $sql = qq{
+        SELECT user_id,
+               group_id,
+               role_id
+          FROM user_group_role
+         WHERE group_id = ?
+      ORDER BY user_id
+    };
+
+    return $self_or_class->_UgrCursor( $sql, [$group_id], $closure );
+}
+
 sub _UgrCursor {
     my $self_or_class = shift;
     my $sql           = shift;
@@ -372,6 +389,15 @@ Get a C<Socialtext::MultiCursor> of UGR's for a user.
 This method takes an optional C<$closure> PARAM that can be used to maniulate
 the UGR before it gets passed back with C<Socialtext::MultiCursor->next()>.
 This can be used, for example to return only the C<group> attribute of the
+UGR.
+
+=item B<$factory-E<gt>ByGroupId($group_id)>
+
+Get a C<Socialtext::MultiCursor> of UGR's for a group.
+
+This method takes an optional C<$closure> PARAM that can be used to maniulate
+the UGR before it gets passed back with C<Socialtext::MultiCursor->next()>.
+This can be used, for example to return only the C<user> attribute of the
 UGR.
 
 =item B<$factory-E<gt>DefaultRoleId()>
