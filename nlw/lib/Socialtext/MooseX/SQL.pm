@@ -68,6 +68,14 @@ sub has_column {
         my $self = shift;
         return $self->primary_key;
     }
+
+    # is_primary_key implies is_required
+    around 'is_required' => sub {
+        my $orig = shift;
+        my $self = shift;
+        my $is_required = $self->$orig(@_);
+        return $is_required || $self->is_primary_key;
+    };
 }
 
 1;
@@ -135,6 +143,10 @@ attribute.
 =item primary_key
 
 Signifies that this DB column is the primary key for the underlying DB table.
+
+If a column is marked as a primary key, C<required =E<gt> 1> is implied and is
+handled for you automatically; calling C<$attr-E<gt>is_required()> will return
+true for all columns marked as primary keys.
 
 =back
 
