@@ -49,6 +49,7 @@ fi
 
 # Create the basic dev-env
 rm -rf $HOME/.nlw/
+st-make-all @clean all
 dev-bin/make-test-fixture --home_dir $HOME --fixture clean
 dev-bin/make-test-fixture --home_dir $HOME --preserve --fixture base_config
 dev-bin/make-test-fixture --home_dir $HOME --preserve --fixture ALL
@@ -76,5 +77,4 @@ echo "Starting in dual-Apache mode";
 dev-bin/nlwctl start;
 
 st-admin set-workspace-config --workspace admin skin_name s3
-st-make-all @clean all
 st-widgets update-gallery --fork
