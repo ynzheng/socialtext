@@ -25,7 +25,7 @@ my ($account, $account_id) = get_account($name);
 my @wsObjects = create_workspaces($account, \@aWorkspaces, $account_id);
 my @users = ('t_stub01@socialtext.com','t_stub02@socialtext.com','t_stub03@socialtext.com','t_stub04@socialtext.com',
              't_stub05@socialtext.com', 't_stub06@socialtext.com');
-my $userObjs = create_users(\@users, \@wsObjects);
+my $userObjs = create_users(\@users, \@wsObjects, $account_id);
 my $tm = localtime;
 my $stamp = $tm->year . "-" . $tm->mon . "-" . $tm->mday . "-" . $tm->hour . "-" . $tm->min . "-" . $tm->sec;
 my $nlw = "test_nlw.log"; 
@@ -102,7 +102,7 @@ sub create_workspaces {
 
 
 sub create_users {
-    my ($rausers, $raworkspaces) = @_;
+    my ($rausers, $raworkspaces, $account_id) = @_;
     my @arrUserObjs;
 
     my $first_ws = 1;
@@ -114,9 +114,11 @@ sub create_users {
             }
             else {
                 eval {
+                    print "ACCOUNT ID IS $account_id GOOFY!!!!\n";
                     $user = Socialtext::User->create(username=> $username,
                                                      email_address => $username,
-                                                     password=> 'password');
+                                                     password=> 'password',
+                                                     primary_account_id => $account_id);
                      };
                 next if $@;
                 if ($first_ws) { push @arrUserObjs, $user; }
