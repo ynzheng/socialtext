@@ -40,15 +40,24 @@ sub _create {
     my $class = shift;
     my %p = @_;
 
+    my $workspace_id;
+    if ($p{workspace_name}) {
+        my $workspace = eval{Socialtext::Workspace->new( name => $p{workspace_name})};
+        die $@ if $@;
+        $workspace_id = $workspace->workspace_id if ($workspace);
+    } elsif ($p{workspace_id}) {
+        $workspace_id = $p{workspace_id};
+    }
     my @vals = (
         $p{user_id},
         _generate_confirmation_hash($p{user_id}),
         _expiration_datetime(),
         $p{is_password_change} ? 'TRUE' : 'FALSE',
+        $workspace_id
     );
 
     sql_execute(<<EOSQL, @vals);
-INSERT INTO "UserEmailConfirmation" VALUES (?, ?, ?, ?)
+INSERT INTO "UserEmailConfirmation" VALUES (?, ?, ?, ?, ?)
 EOSQL
 
     return $class->new($p{user_id});
@@ -58,17 +67,27 @@ sub _update {
     my $self = shift;
     my %p = @_;
     my $user_id = delete $p{user_id};
+    
+    my $workspace_id;
+    if ($p{workspace_name}) {
+        my $workspace = eval{Socialtext::Workspace->new( name => $p{workspace_name})};
+        die $@ if $@;
+        $workspace_id = $workspace->workspace_id if ($workspace);
+    } elsif ($p{workspace_id}) {
+        $workspace_id = $p{workspace_id};
+    }
 
-    my @vals = (_expiration_datetime(), $p{is_password_change});
+    my @vals = (_expiration_datetime(), $p{is_password_change}, $workspace_id);
     sql_execute(<<EOSQL, @vals, $user_id);
 UPDATE "UserEmailConfirmation"
-    SET expiration_datetime = ?, is_password_change = ?
+    SET expiration_datetime = ?, is_password_change = ?, workspace_id = ?
     WHERE user_id = ?
 EOSQL
 
     # Update object too
     $self->{expiration_datetime} = $vals[0];
     $self->{is_password_change}  = $vals[1];
+    $self->{workspace_id} = $vals[2];
     return $self;
 }
 
@@ -96,6 +115,11 @@ sub expiration_datetime {
 sub has_expired {
     my $self = shift;
     return $self->expiration_datetime < DateTime->now();
+}
+
+sub workspace_id {
+    my $self = shift;
+    return $self->{workspace_id};
 }
 
 sub delete {

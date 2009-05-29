@@ -136,7 +136,8 @@ CREATE TABLE "UserEmailConfirmation" (
     user_id bigint NOT NULL,
     sha1_hash varchar(27) NOT NULL,
     expiration_datetime timestamptz DEFAULT '-infinity'::timestamptz NOT NULL,
-    is_password_change boolean DEFAULT false NOT NULL
+    is_password_change boolean DEFAULT false NOT NULL,
+    workspace_id bigint
 );
 
 CREATE TABLE "UserMetadata" (
@@ -1504,6 +1505,11 @@ ALTER TABLE ONLY user_workspace_pref
             FOREIGN KEY (workspace_id)
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY "UserEmailConfirmation"
+    ADD CONSTRAINT useremailconfirmation_workpace_id_fk
+            FOREIGN KEY (workspace_id)
+            REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY "UserMetadata"
     ADD CONSTRAINT usermeta_account_fk
             FOREIGN KEY (primary_account_id)
@@ -1540,4 +1546,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '65');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '66');
