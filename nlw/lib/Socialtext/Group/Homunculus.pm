@@ -12,7 +12,6 @@ use namespace::clean -except => 'meta';
 has_column 'group_id' => (
     is => 'rw', isa => 'Int',
     writer => '_group_id',
-    required => 1,
     primary_key => 1,
 );
 

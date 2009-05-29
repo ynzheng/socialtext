@@ -12,7 +12,6 @@ has_column 'user_id' => (
     is => 'rw', isa => 'Int',
     writer => '_user_id',
     trigger => \&_set_user_id,
-    required => 1,
     primary_key => 1,
 );
 
@@ -25,7 +24,6 @@ has_column 'group_id' => (
     is => 'rw', isa => 'Int',
     writer => '_group_id',
     trigger => \&_set_group_id,
-    required => 1,
     primary_key => 1,
 );
 
