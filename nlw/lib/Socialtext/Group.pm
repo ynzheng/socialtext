@@ -45,7 +45,6 @@ sub Drivers {
 sub ByAccountId {
     my $class   = shift;
     my %p       = @_;
-    my $acct_id = $p{account_id};
     my $sql = qq{
         SELECT group_id
           FROM groups
