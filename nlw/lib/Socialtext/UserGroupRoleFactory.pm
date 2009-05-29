@@ -391,7 +391,7 @@ the UGR before it gets passed back with C<Socialtext::MultiCursor->next()>.
 This can be used, for example to return only the C<group> attribute of the
 UGR.
 
-=item B<$factory-E<gt>ByGroupId($group_id)>
+=item B<$factory-E<gt>ByGroupId($group_id, $closure)>
 
 Get a C<Socialtext::MultiCursor> of UGR's for a group.
 
@@ -402,7 +402,7 @@ UGR.
 
 =item B<$factory-E<gt>DefaultRoleId()>
 
-Get the ID for the default Role being  used.
+Get the ID for the default Role being used.
 
 =back
 
