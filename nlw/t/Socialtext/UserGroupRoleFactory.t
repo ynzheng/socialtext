@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 use mocked 'Socialtext::Events', qw(clear_events event_ok is_event_count);
-use Test::Socialtext tests => 71;
+use Test::Socialtext tests => 73;
 use Test::Exception;
 
 ###############################################################################
@@ -78,6 +78,25 @@ create_ugr_with_default_role: {
     isa_ok $ugr, 'Socialtext::UserGroupRole', 'created UGR';
     is $ugr->role_id, Socialtext::UserGroupRoleFactory->DefaultRoleId(),
         '... with default role_id';
+}
+
+###############################################################################
+# TEST: create UGR with additional attributes
+create_ugr_with_additional_attributes: {
+    my $user  = create_test_user();
+    my $group = create_test_group();
+
+    # UGR gets created, and we don't die a horrible death due to unknown extra
+    # additional attributes
+    my $ugr;
+    lives_ok sub {
+        $ugr   = Socialtext::UserGroupRoleFactory->Create( {
+            user_id  => $user->user_id,
+            group_id => $group->group_id,
+            bogus    => 'attribute',
+        } );
+    }, 'created UGR when additional attributes provided';
+    isa_ok $ugr, 'Socialtext::UserGroupRole', '... created UGR';
 }
 
 ###############################################################################
