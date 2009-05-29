@@ -2455,6 +2455,7 @@ Check whether spreadsheets are enabled or not.
 =item o workspace_admin - read, edit, attachments, comment, delete, email_in, email_out
 
 =back
+
 =item * intranet
 
 =over 8
