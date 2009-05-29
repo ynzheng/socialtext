@@ -133,6 +133,46 @@ sub Delete {
         } );
 }
 
+sub ByUserId {
+    my $self_or_class = shift;
+    my $user_id       = shift;
+    my $closure       = shift;
+
+    my $sql = qq{
+        SELECT user_id,
+               group_id,
+               role_id
+          FROM user_group_role
+         WHERE user_id = ?
+      ORDER BY group_id
+    };
+
+    return $self_or_class->_UgrCursor( $sql, [$user_id], $closure );
+}
+
+sub _UgrCursor {
+    my $self_or_class = shift;
+    my $sql           = shift;
+    my $bindings      = shift;
+    my $closure       = shift;
+
+    my $sth = sql_execute($sql, @$bindings);
+
+    return Socialtext::MultiCursor->new(
+        iterables => [ $sth->fetchall_arrayref ],
+        apply     => sub {
+            my $row = shift;
+            my $ugr = Socialtext::UserGroupRole->new(
+                user_id  => $row->[0],
+                group_id => $row->[1],
+                role_id  => $row->[2],
+            );
+
+            return ( $closure ) ? $closure->($ugr) : $ugr;
+        },
+    );
+}
+
 sub _emit_event {
     my ($self, $proto_ugr, $action) = @_;
 
@@ -324,6 +364,15 @@ Returns true if a record was deleted, false otherwise.
 Deletes the C<$ugr> from the DB.
 
 Helper method which calls C<DeleteRecord()>.
+
+=item B<$factory-E<gt>ByUserId($user_id)>
+
+Get a C<Socialtext::MultiCursor> of UGR's for a user.
+
+This method takes an optional C<$closure> PARAM that can be used to maniulate
+the UGR before it gets passed back with C<Socialtext::MultiCursor->next()>.
+This can be used, for example to return only the C<group> attribute of the
+UGR.
 
 =item B<$factory-E<gt>DefaultRoleId()>
 
