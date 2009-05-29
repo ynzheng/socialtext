@@ -133,6 +133,7 @@ sub base_package {
     return __PACKAGE__;
 }
 
+###############################################################################
 sub users {
     my $self = shift;
     return Socialtext::UserGroupRoleFactory->ByGroupId(
@@ -169,6 +170,9 @@ Socialtext::Group - Socialtext Group object
 
   # retrieve an existing Group
   $group = Socialtext::Group->GetGroup(group_id => $group_id);
+
+  # get the Users in the Group
+  $user_multicursor = $group->users();
 
 =head1 DESCRIPTION
 
@@ -230,6 +234,10 @@ Valid C<$key>s include:
 
 Returns a C<Socialtext::MultiCursor> containing a list of all of the Groups
 that exist within the given Account, ordered by "Group Name".
+
+=item B<$group-E<gt>users()>
+
+Returns a C<Socialtext::MultiCursor> of Users who have a Role in this Group.
 
 =item B<$group-E<gt>homunculus()>
 
@@ -302,10 +310,6 @@ Delegated to C<Socialtext::Group::Homunculus>.
 =item B<$group-E<gt>delete()>
 
 Delegated to C<Socialtext::Group::Homunculus>.
-
-=item B<$group-E<gt>users()>
-
-Returns a C<Socialtext::MultiCursor> of users who have a role in this group.
 
 =back
 
