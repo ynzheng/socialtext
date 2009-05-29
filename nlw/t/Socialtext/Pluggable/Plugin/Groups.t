@@ -11,6 +11,8 @@ use_ok 'Socialtext::Pluggable::Plugin::Groups';
 # We need a DB, but don't care what's in it.
 fixtures(qw/db/);
 
+my $data_ref = {};
+
 ################################################################################
 # TEST: backup
 backup: {
@@ -30,7 +32,7 @@ backup: {
 
     # make backup data
     my $plugin = Socialtext::Pluggable::Plugin::Groups->new();
-    my $ref = $plugin->export_groups_for_account($account);
+    $plugin->export_groups_for_account($account, $data_ref);
 
     my $expected = [
         {
@@ -45,7 +47,7 @@ backup: {
         } 
     ];
 
-    is_deeply $ref, $expected, 'correct export data structure';
+    is_deeply $data_ref->{groups}, $expected, 'correct export data structure';
 }
 
 ################################################################################
