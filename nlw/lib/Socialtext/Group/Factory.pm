@@ -10,6 +10,7 @@ use Socialtext::Group::Homunculus;
 use Socialtext::SQL qw(:exec :time);
 use Socialtext::SQL::Builder qw(:all);
 use Socialtext::l10n qw(loc);
+use namespace::clean -except => 'meta';
 
 has 'driver_key' => (
     is => 'ro', isa => 'Str',
@@ -380,6 +381,7 @@ sub _validate_assign_created_by {
     return;
 }
 
+no Moose::Role;
 1;
 
 =head1 NAME

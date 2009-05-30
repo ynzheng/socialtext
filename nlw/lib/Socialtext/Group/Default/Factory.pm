@@ -63,6 +63,7 @@ sub _build_cache_lifetime {
     return DateTime::Duration->new(years => 1000);
 }
 
+no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
 
