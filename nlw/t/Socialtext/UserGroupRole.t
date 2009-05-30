@@ -3,7 +3,8 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 12;
+use Test::Socialtext tests => 14;
+use Test::Exception;
 
 ###############################################################################
 # Fixtures: db
@@ -24,6 +25,21 @@ instantiation: {
     is $ugr->user_id,  1, '... with the provided user_id';
     is $ugr->group_id, 2, '... with the provided group_id';
     is $ugr->role_id,  3, '... with the provided role_id';
+}
+
+###############################################################################
+# TEST: instantiation with additional attributes
+instantiation_with_extra_attributes: {
+    my $ugr;
+    lives_ok sub {
+        $ugr = Socialtext::UserGroupRole->new( {
+            user_id  => 1,
+            group_id => 2,
+            role_id  => 3,
+            bogus    => 'attribute',
+        } );
+    }, 'created UGR when additional attributes provided';
+    isa_ok $ugr, 'Socialtext::UserGroupRole', '... created UGR';
 }
 
 ###############################################################################
