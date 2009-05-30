@@ -138,15 +138,21 @@ sub ByUserId {
     my $user_id       = shift;
     my $closure       = shift;
 
+    # introspect the names of the DB columns for these attributes
+    my $meta = Socialtext::UserGroupRole->meta();
+    my ($user_column, $group_column) =
+        map { $meta->find_attribute_by_name($_)->column_name() }
+        qw(user_id group_id);
+
+    # build the SQL used to get the UGRs for this User Id
     my $sql = qq{
-        SELECT user_id,
-               group_id,
-               role_id
+        SELECT *
           FROM user_group_role
-         WHERE user_id = ?
-      ORDER BY group_id
+         WHERE $user_column = ?
+      ORDER BY $group_column
     };
 
+    # go get the list of UGRs
     return $self_or_class->_UgrCursor( $sql, [$user_id], $closure );
 }
 
@@ -155,18 +161,26 @@ sub ByGroupId {
     my $group_id      = shift;
     my $closure       = shift;
 
+    # introspect the names of the DB columns for these attributes
+    my $meta = Socialtext::UserGroupRole->meta();
+    my ($user_column, $group_column) =
+        map { $meta->find_attribute_by_name($_)->column_name() }
+        qw(user_id group_id);
+
+    # build the SQL used to get the UGRs for this Group Id
     my $sql = qq{
-        SELECT user_id,
-               group_id,
-               role_id
+        SELECT *
           FROM user_group_role
-         WHERE group_id = ?
-      ORDER BY user_id
+         WHERE $group_column = ?
+      ORDER BY $user_column
     };
 
+    # go get the list of UGRs
     return $self_or_class->_UgrCursor( $sql, [$group_id], $closure );
 }
 
+# When calling _UgrCursor(), your SQL *MUST* include the "user_id", "group_id"
+# and "role_id" columns in the SELECT.
 sub _UgrCursor {
     my $self_or_class = shift;
     my $sql           = shift;
