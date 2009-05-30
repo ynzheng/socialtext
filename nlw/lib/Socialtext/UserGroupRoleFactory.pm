@@ -188,17 +188,11 @@ sub _UgrCursor {
     my $closure       = shift;
 
     my $sth = sql_execute($sql, @$bindings);
-
     return Socialtext::MultiCursor->new(
-        iterables => [ $sth->fetchall_arrayref ],
+        iterables => [ $sth->fetchall_arrayref( {} ) ],
         apply     => sub {
             my $row = shift;
-            my $ugr = Socialtext::UserGroupRole->new(
-                user_id  => $row->[0],
-                group_id => $row->[1],
-                role_id  => $row->[2],
-            );
-
+            my $ugr = Socialtext::UserGroupRole->new($row);
             return ( $closure ) ? $closure->($ugr) : $ugr;
         },
     );
