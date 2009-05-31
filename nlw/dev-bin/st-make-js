@@ -1,9 +1,17 @@
 #!/bin/bash
 
-MAKEFILES="$ST_CURRENT/nlw/share/skin/Makefile $ST_CURRENT/plugins/socialcalc/share/javascript/Makefile $ST_CURRENT/plugins/people/Makefile $ST_CURRENT/plugins/widgets/Makefile $ST_CURRENT/plugins/signals/Makefile"
+TMP="$HOME/st-make-js.log"
 
-# REMOVED MAKING JS-TEST SINCE IT SEEMS TO BREAK SUBSEQUENT rb COMMANDS:
-# $ST_CURRENT/nlw/share/skin/js-test/Makefile
+echo Making clean all in known directories
+st-make-all -clean all >& $TMP
+
+echo Updating widgets
+st-widgets update-all --verbose --force >> $TMP 2>&1
+
+echo Updating widget gallery
+st-widgets update-gallery --verbose >> $TMP 2>&1
+
+echo logged to $TMP
 
 for i in $MAKEFILES ; do echo Making $i ; pushd `dirname $i` ; make clean all ; popd ; done ;
 st-widgets update-gallery --fork
