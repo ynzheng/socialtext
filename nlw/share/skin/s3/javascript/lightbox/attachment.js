@@ -210,6 +210,12 @@ proto.showDeleteInterface = function (img) {
         }
     });
 
+    $(self.getNewAttachments()).each(function() {
+        if ( href == this.uri ) {
+            Socialtext.selected_attachment = this.name;
+        }
+    });
+
     self.process('attachment.tt2');
 
     // We only process the popup once, so we'll only load the
