@@ -2065,11 +2065,11 @@ proto.format_a = function(elem) {
 
     this.check_start_of_block(elem);
     var label = elem.innerHTML;
-    label = label.replace(/<[^>]*>/g, ' ');
-    label = label.replace(/\s+/g, ' ');
-    label = label.replace(/^\s+/, '');
-    label = label.replace(/\s+$/, '');
-    label = Wikiwyg.htmlUnescape(elem.innerHTML);
+    label = label.replace(/<[^>]*>/g, ' '); /* 1: Strip tags */
+    label = Wikiwyg.htmlUnescape(label);    /* 2: Unescape entities */
+    label = label.replace(/\s+/g, ' ')      /* 3: Trim spaces */
+                 .replace(/^\s+/, '') 
+                 .replace(/\s+$/, '');
 
     var href = elem.href;
 
