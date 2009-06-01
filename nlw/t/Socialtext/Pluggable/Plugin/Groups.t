@@ -17,8 +17,7 @@ my $data_ref = {};
 # TEST: backup
 backup: {
     my $def_user = Socialtext::User->SystemUser;
-    my $def_role = Socialtext::Role->new(
-        role_id => Socialtext::UserGroupRoleFactory->DefaultRoleId() );
+    my $def_role = Socialtext::UserGroupRoleFactory->DefaultRole();
 
     # create dummy data.
     my $account   = create_test_account();

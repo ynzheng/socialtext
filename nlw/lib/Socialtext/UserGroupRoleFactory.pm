@@ -252,8 +252,12 @@ sub _pkey_where_clause {
     return ($clause, @bindings);
 }
 
+sub DefaultRole {
+    Socialtext::Role->new( name => 'member' );
+}
+
 sub DefaultRoleId {
-    Socialtext::Role->new( name => 'member' )->role_id();
+    DefaultRole()->role_id();
 }
 
 no Moose;
@@ -407,6 +411,10 @@ This method takes an optional C<$closure> PARAM that can be used to maniulate
 the UGR before it gets passed back with C<Socialtext::MultiCursor->next()>.
 This can be used, for example to return only the C<user> attribute of the
 UGR.
+
+=item B<$factory-E<gt>DefaultRole()>
+
+Returns the C<Socialtext::Role> object for the default Role being used.
 
 =item B<$factory-E<gt>DefaultRoleId()>
 
