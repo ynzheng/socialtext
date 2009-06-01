@@ -58,8 +58,7 @@ our %PermissionSets = (
     },
     'public-join-to-edit' => {
         guest              => [ qw( read self_join) ],
-        authenticated_user => [ qw( read edit attachments comment delete
-                                    email_in email_out ) ],
+        authenticated_user => [ qw( read self_join) ],
         member             => [ qw( read edit attachments comment delete
                                     email_in email_out ) ],
         workspace_admin    => [ qw( read edit attachments comment delete
@@ -533,7 +532,7 @@ C<impersonate> to the C<impersonator> role.
 
 =item o guest - read, self_join
 
-=item o authenticated_user - read, edit, attachments, comment, delete, email_in, email_out
+=item o authenticated_user - read, self_join
 
 =item o member - read, edit, attachments, comment, delete, email_in, email_out
 
