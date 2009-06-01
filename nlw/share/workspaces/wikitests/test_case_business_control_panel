@@ -373,8 +373,18 @@ text_like | qr/0-sort-2-workspace1-%%start_time%%.+0-sort-3-workspace1-%%start_t
 | wait_for_element_visible_ok | field-title-input | 30000 |
 | text_like | qr/Field Title.+Field Name.+Data Source.+Field Type.+Hidden/ |  |
 
-| *Comment* | TC:BCP can fail in IE unless you fill in the field title |  |
+| *Comment* | IE 7 sometimes cacks on the very first field open, so retry it |  |
+| open_ok | /nlw/control/account |  |
+| wait_for_element_visible_ok | link=0 sort 3 account %%start_time%% | 60000 |
+| click_and_wait | link=0 sort 3 account %%start_time%% |  |
+| wait_for_element_visible_ok | link=Profile Fields | 30000 |
+| click_and_wait | link=Profile Fields |  |
+| wait_for_element_visible_ok | link=Edit | 30000 |
+| click_and_wait | link=Edit |  |
 | wait_for_element_visible_ok | field-title-input | 30000 |
+| text_like | qr/Field Title.+Field Name.+Data Source.+Field Type.+Hidden/ |  |
+
+| *Comment* | TC:BCP can fail in IE unless you fill in the field title |  |
 | type_ok | field-title-input | IE field |
 
 | wait_for_element_visible_ok | data-source-select | 30000 |

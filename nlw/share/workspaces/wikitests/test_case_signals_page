@@ -67,7 +67,7 @@
 
 | *Comment* | Test Case: Signals Page. Verify signals in page. |  |
 | select-frame | relative=parent |  |
-| wait_for_element_present_ok | //iframe[@name='2'] | 30000 |
+| wait_for_element_present_ok | //iframe[@name='widget_2'] | 30000 |
 | st-name-widget | 3 | signal_activity |
 | st-select-widget-frame | signal_activity |  |
 
@@ -80,7 +80,7 @@
 | *Comment* | Test Case: Signals widget. Wait for automatic refresh to "one minute ago" in page |  |
 | wait_for_text_present_ok | one minute ago | 120000 |
 | select-frame | relative=parent |  |
-| wait_for_element_present_ok | //iframe[@name='2'] | 30000 |
+| wait_for_element_present_ok | //iframe[@name='widget_2'] | 30000 |
 
 | *Comment* | Test Case: Signals Page. Get a fresh signals widget |  |
 | open_ok | /?dashboard |  |
