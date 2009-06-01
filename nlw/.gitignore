@@ -296,3 +296,5 @@ t/Socialtext/Sheet/Renderer.t
 lib/Socialtext/Sheet/Renderer.pm
 t/wikitests/test-data/socialcalc/render-test-no-html.ssheet
 t/widget/creepy_goat.jpg
+t/wikitests/socialcalc/render-range.wiki
+t/wikitests/test-data/socialcalc/render-test-range.ssheet
