@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext qw/no_plan/;
+use Test::Socialtext tests => 5;
 use Socialtext::UserGroupRoleFactory;
 
 # Need a DB, but don't care what's in it.
