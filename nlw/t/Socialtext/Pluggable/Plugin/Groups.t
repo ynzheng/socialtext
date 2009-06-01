@@ -5,7 +5,6 @@ use warnings;
 use Test::Socialtext tests => 15;
 use Test::Exception;
 use Test::Socialtext::Account;
-use Test::Socialtext::Group;
 use Test::Socialtext::User;
 use Socialtext::UserGroupRoleFactory;
 use Socialtext::Role;
@@ -82,7 +81,7 @@ basic_restore: {
         ### CLEANUP: nuke stuff in DB before we import
         ### - we can't nuke the User; the Account import is responsible for
         ###   re-creating the User, not the Groups import
-        Test::Socialtext::Group->delete_recklessly( $group );
+        $group->delete();
         Test::Socialtext::Account->delete_recklessly( $account );
 
         # SANITY CHECK: User/Group/Account should *NOT* be in the DB any more
