@@ -3,6 +3,10 @@
 use strict;
 use warnings;
 use Test::Socialtext qw/no_plan/;
+use Test::Exception;
+use Test::Socialtext::Account;
+use Test::Socialtext::Group;
+use Test::Socialtext::User;
 use Socialtext::UserGroupRoleFactory;
 use Socialtext::Role;
 
@@ -47,16 +51,67 @@ backup: {
     ];
 
     is_deeply $data_ref->{groups}, $expected, 'correct export data structure';
+
+    # cleanup
+    Test::Socialtext::Group->delete_recklessly( $group_one );
+    Test::Socialtext::Group->delete_recklessly( $group_two );
+    Test::Socialtext::Account->delete_recklessly( $account );
 }
 
 ################################################################################
 # TEST: restore
+basic_restore: {
+    my $data    = $data_ref->{groups};
+    my $account = create_test_account();
+    my $plugin  = Socialtext::Pluggable::Plugin::Groups->new();
+    my $creator = Socialtext::User->new(
+        username => $data->[0]{created_by_username} );
+
+    # import the data that we just exported
+    $plugin->import_groups_for_account($account, $data_ref);
+
+    my $groups = $account->groups;
+    is $groups->count, 1, 'got a group';
+
+    # Test group
+    my $group = $groups->next;
+    is $group->account_id, $account->account_id, '... with correct account_id';
+    is $group->driver_group_name, $data->[0]{driver_group_name},
+        '... with correct driver_group_name';
+
+    # make sure that the creator exists
+    isa_ok $creator, 'Socialtext::User', '... creator';
+    is $group->creator->user_id, $creator->user_id, '... ... with correct id';
+    
+    # Test users
+    my $users = $group->users;
+    is $users->count, 1, 'got a user';
+    
+    my $user = $users->next;
+    is $user->username, $data->[0]{users}[0]{username}, '... with correct id';
+
+    # TODO: test for correct role.
+    
+    # cleanup.
+    Test::Socialtext::Group->delete_recklessly( $group );
+    Test::Socialtext::Account->delete_recklessly( $account );
+}
+
 ################################################################################
 # TEST: restore, group exists already
-################################################################################
-# TEST: restore, user exists already
+
 ################################################################################
 # TEST: restore, pre-groups
+restore_no_groups: {
+    my $data_ref = {};
+    my $account  = create_test_account();
+    my $plugin   = Socialtext::Pluggable::Plugin::Groups->new();
+
+    lives_ok { $plugin->import_groups_for_account( $account, $data_ref ) }
+        'import with no groups data lives';
+
+    is $account->groups->count, 0, '... and no groups are imported';
+}
 
 exit;
 
