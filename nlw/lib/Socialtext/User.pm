@@ -1388,18 +1388,16 @@ sub send_confirmation_email {
 
     my $uri = $self->confirmation_uri();
 
-    my $workspace_name;
+    my $target_workspace;
 
     if ($self->confirmation_workspace_id) {
-        my $ws = new Socialtext::Workspace(workspace_id => $self->confirmation_workspace_id);
-        $workspace_name = $ws->name;
+        $target_workspace = new Socialtext::Workspace(workspace_id => $self->confirmation_workspace_id);
     }
     my %vars = (
         confirmation_uri => $uri,
         appconfig        => Socialtext::AppConfig->instance(),
         account_name     => $self->primary_account->name,
-        workspace_name   => $workspace_name,
-        is_workspace_self_join => defined($workspace_name)
+        target_workspace => $target_workspace
     );
 
     my $text_body = $renderer->render(
@@ -1417,8 +1415,8 @@ sub send_confirmation_email {
     my $email_sender = Socialtext::EmailSender::Factory->create($locale);
     $email_sender->send(
         to        => $self->name_and_email(),
-        subject   => $workspace_name ? 
-            loc('Welcome to the [_1] workspace - please confirm your email to join', $workspace_name)
+        subject   => $target_workspace ? 
+            loc('Welcome to the [_1] workspace - please confirm your email to join', $target_workspace->title)
             :
             loc('Welcome to the [_1] community - please confirm your email to join', $self->primary_account->name),
         text_body => $text_body,
@@ -1429,18 +1427,14 @@ sub send_confirmation_email {
 sub send_confirmation_completed_email {
     my $self = shift;
 
-    my $workspace_name = shift;
+    my $target_workspace = shift;
 
     return if $self->email_confirmation();
 
     my $renderer = Socialtext::TT2::Renderer->instance();
 
-    my $ws;
-    if ($workspace_name) {
-        $ws = Socialtext::Workspace->new(name => $workspace_name);
-    } else {
-        $ws = $self->workspaces->next();
-    }
+    my $ws = $target_workspace;
+    $ws ||= $self->workspaces->next();
 
     my %vars;
     my $subject;
@@ -1471,7 +1465,7 @@ sub send_confirmation_completed_email {
 
     $vars{user}      = $self;
     $vars{appconfig} = Socialtext::AppConfig->instance();
-    $vars{is_workspace_self_join} = defined($workspace_name);
+    $vars{target_workspace} = $target_workspace;
     my $text_body = $renderer->render(
         template => 'email/email-address-confirmation-completed.txt',
         vars     => \%vars,
@@ -1556,14 +1550,13 @@ sub confirm_email_address {
     $uce->delete;
 
     return if $uce->is_password_change;
-    my $workspace_name;
+    my $target_workspace;
     if (my $wsid=$uce->workspace_id) {
-        my $ws = Socialtext::Workspace->new(workspace_id => $wsid);
-        $workspace_name = $ws->name;
+        $target_workspace = Socialtext::Workspace->new(workspace_id => $wsid);
     }
 
-    $self->send_confirmation_completed_email( workspace_name=> $workspace_name);
-    $self->send_confirmation_completed_signal unless $workspace_name;
+    $self->send_confirmation_completed_email($target_workspace);
+    $self->send_confirmation_completed_signal unless $target_workspace;
 }
 
 sub send_confirmation_completed_signal {

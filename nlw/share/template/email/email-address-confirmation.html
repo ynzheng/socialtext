@@ -3,7 +3,7 @@
 <html>
 <head>
  <title>
- [% IF is_workspace_self_join%]
+ [% IF target_workspace %]
  [% loc('Welcome to the Socialtext community - please confirm your email address to join')%]
  [% ELSE %]
  [% loc('Welcome to the [_1] community - please confirm your email address to join', account_name) %]
@@ -15,11 +15,11 @@
 <body>
 
 <p>
-[% loc('Welcome to')%] [% IF is_workspace_self_join%][% loc("the [_1] Workspace in the [_2] Network at ", workspace_name, account_name) %][% END %][% PROCESS system_name %].
+[% loc('Welcome to')%] [% IF target_workspace %][% loc("the [_1] Workspace in the [_2] Network at ", target_workspace.title, account_name) %][% END %][% PROCESS system_name %].
 </p>
 
 <p>
-[% IF is_workspace_self_join %]
+[% IF target_workspace %]
 [% loc('Your profile has been added to the [_1] directory.', account_name) %]
 [% ELSE %]
 [% loc('Your profile has been added to the people directory.') %]
