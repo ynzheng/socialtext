@@ -386,16 +386,25 @@ sub confirm_email {
         return $self->_redirect( "/nlw/choose_password.html" );
     }
 
+    # Need to grab wsid before we do confirm_email_address, cuz that wipes the
+    # email_confirmation
+    my $wsid = $user->confirmation_workspace_id;
+
     $user->confirm_email_address();
 
-    if ( my $wsid = $user->confirmation_workspace_id) {
-        my $workspace = Socialtext::Workspace(workspace_id => $wsid);
-        $workspace->add_user(user => $user);
+    my $targetws;
+    if ( $wsid ) {
+        $targetws = Socialtext::Workspace->new(workspace_id => $wsid);
+        $targetws->add_user(user => $user);
     }
     my $address = $user->email_address;
     $self->session->add_message(loc("Your email address, [_1], has been confirmed. Please login.", $address));
     $self->session->save_args( username => $user->username );
-    return $self->_redirect("/nlw/login.html");
+    if ( $targetws ) {
+        return $self->_redirect("/nlw/login.html?redirect_to=".$targetws->uri);
+    } else {
+        return $self->_redirect("/nlw/login.html");
+    }
 }
 
 sub choose_password {
