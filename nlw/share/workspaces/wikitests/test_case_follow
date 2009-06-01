@@ -37,8 +37,8 @@ TODO: make this run with LDAP user Dev Null Three, perhaps rename him devnull3
 | st-name-widget | 5 | follow_widget |
 | st-widget-title-like | follow_widget | Colleagues |
 | st-select-widget-frame | follow_widget |  |
-| wait_for_element_visible_ok | //td[4] | 10000 |
-| click_ok | //td[4] |  |
+| wait_for_element_visible_ok | //td[contains(text(),'Follows')] | 10000 |
+| click_ok | //td[contains(text(),'Follows')] |  |
 | wait_for_element_visible_ok | link=%%fFname%% | 10000 |
 
 | *Comment* | Test Case: Follow. Don't click the follow link since it is in the child frame |  |
@@ -50,8 +50,8 @@ TODO: make this run with LDAP user Dev Null Three, perhaps rename him devnull3
 | st-name-widget | 2 | follow_widget |
 | st-widget-title-like | follow_widget | Colleagues |
 | st-select-widget-frame | follow_widget |  |
-| wait_for_element_visible_ok | //td[4] | 10000 |
-| click_ok | //td[4] |  |
+| wait_for_element_visible_ok | //td[contains(text(),'Follows')] | 10000 |
+| click_ok | //td[contains(text(),'Follows')] |  |
 | wait_for_element_visible_ok | link=%%fFname%% | 10000 |
 | select-frame | relative=parent |  |
 
@@ -115,13 +115,13 @@ TODO: make this run with LDAP user Dev Null Three, perhaps rename him devnull3
 | st-name-widget | 5 | follow_widget |
 | st-widget-title-like | follow_widget | Colleagues |
 | st-select-widget-frame | follow_widget |  |
-| wait_for_element_visible_ok | //td[4] | 10000 |
-| click_ok | //td[4] |  |
+| wait_for_element_visible_ok | //td[contains(text(),'Follows')] | 10000 |
+| click_ok | //td[contains(text(),'Follows')] |  |
 | wait_for_element_visible_ok | link=%%short_username%% | 10000 |
 
 | *Comment* | Test Case: Follow. Is %%short_username%% a Follower of %%fFname%% |  |
-| wait_for_element_visible_ok | //td[2] | 10000 |
-| click_ok | //td[2] |  |
+| wait_for_element_visible_ok | //td[contains(text(),'Followers')] | 10000 |
+| click_ok | //td[contains(text(),'Followers')] |  |
 | wait_for_element_visible_ok | link=%%short_username%% | 10000 |
 | select-frame | relative=parent |  |
 
@@ -134,13 +134,13 @@ TODO: make this run with LDAP user Dev Null Three, perhaps rename him devnull3
 | st-name-widget | 5 | follow_widget |
 | st-widget-title-like | follow_widget | Colleagues |
 | st-select-widget-frame | follow_widget |  |
-| wait_for_element_visible_ok | //td[4] | 10000 |
-| click_ok | //td[4] |  |
+| wait_for_element_visible_ok | //td[contains(text(),'Follows')] | 10000 |
+| click_ok | //td[contains(text(),'Follows')] |  |
 | wait_for_element_visible_ok | link=%%fFname%% | 10000 |
 
 | *Comment* | Test Case: Follow. Is %%fFname%% a Follower of %%short_username%% |  |
-| wait_for_element_visible_ok | //td[2] | 10000 |
-| click_ok | //td[2] |  |
+| wait_for_element_visible_ok | //td[contains(text(),'Followers')] | 10000 |
+| click_ok | //td[contains(text(),'Followers')] |  |
 | wait_for_element_visible_ok | link=%%fFname%% | 10000 |
 | select-frame | relative=parent |  |
 
@@ -156,8 +156,8 @@ TODO: make this run with LDAP user Dev Null Three, perhaps rename him devnull3
 | st-name-widget | 5 | follow_widget |
 | st-widget-title-like | follow_widget | Colleagues |
 | st-select-widget-frame | follow_widget |  |
-| wait_for_element_visible_ok | //td[4] | 10000 |
-| click_ok | //td[4] |  |
+| wait_for_element_visible_ok | //td[contains(text(),'Follows')] | 10000 |
+| click_ok | //td[contains(text(),'Follows')] |  |
 | wait_for_element_not_present_ok | link=%%short_username%% | 30000 |
 | select-frame | relative=parent |  |
 
