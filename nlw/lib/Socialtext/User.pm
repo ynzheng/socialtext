@@ -2172,6 +2172,10 @@ already confirmation, it returns false.
 Returns a boolean indicating whether or not the user's confirmation
 hash has expired.
 
+=head2 $user->confirmation_workspace_id()
+
+Returns the workspace ID of the confirmation workspace.
+
 =head2 $user->send_confirmation_email()
 
 If the user has a EmailConfirmation object, this method sends them
