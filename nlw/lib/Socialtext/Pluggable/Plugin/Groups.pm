@@ -122,3 +122,43 @@ sub _set_ugrs_on_import {
 }
 
 1;
+
+=head1 NAME
+
+Socialtext::Pluggable::Plugin::Groups
+
+=head1 DESCRIPTION
+
+C<Socialtext::Pluggable::Plugin::Groups> provides a means for hooking the
+Groups infrastructure into the Socialtext Account import/export facilities.
+
+=head1 METHODS
+
+=over
+
+=item B<Socialtext::Pluggable::Plugin::Groups-E<gt>register()>
+
+Registers the plugin with the system.
+
+=item B<$plugin-E<gt>export_groups_for_account($account, $data_ref)>
+
+Exports information on all of the Groups that live within the provided
+C<$account>, by adding group information to the provided C<$data_ref>
+hash-ref.
+
+=item B<$plugin-E<gt>import_groups_for_account($account, $data_ref)>
+
+Imports Group information from the provided C<$data_ref> hash-ref, adding the
+Groups and their membership lists to the given C<$account>.
+
+=back
+
+=head1 AUTHOR
+
+Socialtext, Inc.,  C<< <code@socialtext.com> >>
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2009 Socialtext, Inc.,  All Rights Reserved.
+
+=cut
