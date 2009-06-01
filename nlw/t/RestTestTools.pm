@@ -1,4 +1,5 @@
 package t::RestTestTools;
+# @COPYRIGHT@
 use strict;
 use warnings;
 use base 'Exporter';
