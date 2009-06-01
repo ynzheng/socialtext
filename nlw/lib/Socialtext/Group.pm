@@ -235,6 +235,11 @@ Valid C<$key>s include:
 Returns a C<Socialtext::MultiCursor> containing a list of all of the Groups
 that exist within the given Account, ordered by "Group Name".
 
+=item B<Socialtext::Group-E<gt>base_package()>
+
+Returns the Perl namespace underneath which all of the Group related modules
+can be found.
+
 =item B<$group-E<gt>users()>
 
 Returns a C<Socialtext::MultiCursor> of Users who have a Role in this Group.
