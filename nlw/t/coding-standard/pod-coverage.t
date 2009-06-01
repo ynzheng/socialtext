@@ -328,6 +328,7 @@ my %ToDoModules = map { $_ => 1 } qw(
 # not require POD (for one reason or another).
 my %ModuleExceptions = (
     'Socialtext::Account'       => { trustme => [qr/DefaultOrderByColumn/] },
+    'Socialtext::MooseX::SQL'   => { trustme => ['init_meta'] },
     'Socialtext::User::Default' => { trustme => [qr/DefaultOrderByColumn/] },
     'Socialtext::Workspace'     => { trustme => [qr/DefaultOrderByColumn/] },
     'Socialtext::URI'           => { trustme => [qr/^uri(?:_object)?$/] },
