@@ -1398,7 +1398,8 @@ sub send_confirmation_email {
         confirmation_uri => $uri,
         appconfig        => Socialtext::AppConfig->instance(),
         account_name     => $self->primary_account->name,
-        workspace_name   => $workspace_name
+        workspace_name   => $workspace_name,
+        is_workspace_self_join => defined($workspace_name)
     );
 
     my $text_body = $renderer->render(
