@@ -37,10 +37,6 @@ TODO: find a way to test user chooser
 | click_ok | email_cancel |  |
 | wait_for_element_not_visible_ok | st-email-lightbox | 30000 |
 
-| *Comment* | Test Case: Email. Reopen the page to reset the Email UI content |  |
-| *Comment* | Test Case: Email. TODO: remove this reopen when {bz:2579} is fixed |
-| open_ok | /%%workspace%%/?Email title %%start_time%% |  |
-
 | *Comment* | Test Case: Email. Copy to me, no other recipients |  |
 | wait_for_element_visible_ok | st-pagetools-email | 30000 |
 | click_ok | st-pagetools-email |  |
