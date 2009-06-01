@@ -3,10 +3,12 @@
 
 use strict;
 use warnings;
-use Test::Socialtext qw/no_plan/;
+use Test::Socialtext tests => 6;
 use Socialtext::UserGroupRoleFactory;
 
-# Need a DB, but don't care what's in it.
+###############################################################################
+# Fixtures: db
+# - need a DB, but don't care what's in it.
 fixtures(qw/db/);
 
 use_ok 'Socialtext::User';
