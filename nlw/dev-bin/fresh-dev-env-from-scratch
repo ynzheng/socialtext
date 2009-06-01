@@ -78,5 +78,5 @@ dev-bin/nlwctl start;
 st-admin set-workspace-config --workspace admin skin_name s3
 st-make-all @clean
 st-make-all @all
-st-widgets update-all
+st-widgets update-all --force
 st-widgets update-gallery

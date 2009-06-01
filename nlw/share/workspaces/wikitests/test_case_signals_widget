@@ -81,7 +81,7 @@
 | *Comment* | Test case: Signals Widget. Wait for Signal to appear in Activity |  |
 | click_and_wait | link=Profile |  |
 | wait_for_text_present_ok | Activity | 30000 |
-| st-name-widget | 3 | profile_activity |
+| st-name-widget | 4 | profile_activity |
 | st-select-widget-frame | profile_activity |  |
 
 | wait_for_text_present_ok | She rocks in the treehouse %%start_time%% | 120000 |
