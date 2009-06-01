@@ -2,7 +2,7 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::Socialtext qw/no_plan/;
+use Test::Socialtext tests => 15;
 use Test::Exception;
 use Test::Socialtext::Account;
 use Test::Socialtext::Group;
@@ -12,14 +12,15 @@ use Socialtext::Role;
 
 use_ok 'Socialtext::Pluggable::Plugin::Groups';
 
-# We need a DB, but don't care what's in it.
+###############################################################################
+# Fixtures: db
+# - we need a DB, but don't care what's in it.
 fixtures(qw/db/);
-
-my $data_ref = {};
 
 ################################################################################
 # TEST: backup
 backup: {
+    my $data_ref = {};
     my $def_user = Socialtext::User->SystemUser;
     my $def_role = Socialtext::UserGroupRoleFactory->DefaultRole();
 
@@ -51,23 +52,51 @@ backup: {
     ];
 
     is_deeply $data_ref->{groups}, $expected, 'correct export data structure';
-
-    # cleanup
-    Test::Socialtext::Group->delete_recklessly( $group_one );
-    Test::Socialtext::Group->delete_recklessly( $group_two );
-    Test::Socialtext::Account->delete_recklessly( $account );
 }
 
 ################################################################################
 # TEST: restore
 basic_restore: {
-    my $data    = $data_ref->{groups};
-    my $account = create_test_account();
-    my $plugin  = Socialtext::Pluggable::Plugin::Groups->new();
-    my $creator = Socialtext::User->new(
-        username => $data->[0]{created_by_username} );
+    my $data_ref = {};
+    my ($test_username, $test_creator_name, $test_group_name, $test_role_name);
+
+    do_backup: {
+        my $account = create_test_account();
+        my $user    = create_test_user();
+        my $group   = create_test_group(account => $account);
+        add_user_to_group($user, $group);
+
+        # hold onto the User's name, so we can check for it later after import
+        $test_username     = $user->username();
+        $test_creator_name = $group->creator->username();
+        $test_group_name   = $group->driver_group_name();
+        $test_role_name = Socialtext::UserGroupRoleFactory->GetUserGroupRole(
+            user_id  => $user->user_id(),
+            group_id => $group->group_id(),
+        )->role->name();
+
+        # make backup data
+        my $plugin = Socialtext::Pluggable::Plugin::Groups->new();
+        $plugin->export_groups_for_account($account, $data_ref);
+
+        ### CLEANUP: nuke stuff in DB before we import
+        ### - we can't nuke the User; the Account import is responsible for
+        ###   re-creating the User, not the Groups import
+        Test::Socialtext::Group->delete_recklessly( $group );
+        Test::Socialtext::Account->delete_recklessly( $account );
+
+        # SANITY CHECK: User/Group/Account should *NOT* be in the DB any more
+        $group = Socialtext::Group->GetGroup(group_id => $group->group_id);
+        $account
+            = Socialtext::Account->new(account_id => $account->account_id);
+
+        ok !$group,   '... group has been deleted';
+        ok !$account, '... account has been deleted';
+    }
 
     # import the data that we just exported
+    my $plugin  = Socialtext::Pluggable::Plugin::Groups->new();
+    my $account = create_test_account();
     $plugin->import_groups_for_account($account, $data_ref);
 
     my $groups = $account->groups;
@@ -76,29 +105,29 @@ basic_restore: {
     # Test group
     my $group = $groups->next;
     is $group->account_id, $account->account_id, '... with correct account_id';
-    is $group->driver_group_name, $data->[0]{driver_group_name},
+    is $group->driver_group_name, $test_group_name,
         '... with correct driver_group_name';
 
     # make sure that the creator exists
+    my $creator = $group->creator;
     isa_ok $creator, 'Socialtext::User', '... creator';
-    is $group->creator->user_id, $creator->user_id, '... ... with correct id';
+    is $creator->username, $test_creator_name, '... ... correct creating User';
     
     # Test users
     my $users = $group->users;
     is $users->count, 1, 'got a user';
     
     my $user = $users->next;
-    is $user->username, $data->[0]{users}[0]{username}, '... with correct id';
+    isa_ok $user, 'Socialtext::User', '... member User';
+    is $user->username, $test_username, '... ... is test User';
 
-    # TODO: test for correct role.
-    
-    # cleanup.
-    Test::Socialtext::Group->delete_recklessly( $group );
-    Test::Socialtext::Account->delete_recklessly( $account );
+    # User has the correct Role in the Group
+    my $ugr = Socialtext::UserGroupRoleFactory->GetUserGroupRole(
+        user_id  => $user->user_id,
+        group_id => $group->group_id,
+    );
+    is $ugr->role->name(), $test_role_name, '... correct Role in Group';
 }
-
-################################################################################
-# TEST: restore, group exists already
 
 ################################################################################
 # TEST: restore, pre-groups

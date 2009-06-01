@@ -51,17 +51,31 @@ sub import_groups_for_account {
     print loc("Importing all groups for account '[_1]'...", $acct->name ), "\n";
 
     for my $group_info ( @$groups ) {
+        # Find the User who created the Group, falling back on the SystemUser
+        # if they can't be found.  This matches the behaviour of Workspace
+        # imports (where we assign the WS to the SystemUser).
         my $creator = Socialtext::User->new(
             username => $group_info->{created_by_username} );
-
-        # TODO: Do something if the creator doesn't exist?
         $creator ||= Socialtext::User->SystemUser;
 
-        my $group = Socialtext::Group->Create({
+        # XXX: supports built-in Groups, but doesn't (yet) facilitate an
+        # export/import of an LDAP-sourced Group.
+        #
+        # This code imports all Groups as *internally* sourced Groups,
+        # regardless of whether they were originally internally or externally
+        # sourced.
+        #
+        # Why?
+        #
+        # a) we don't support externally sourced Groups (yet),
+        # b) the primary use case is "export from Prod, import into
+        #    appliance", and we're *not* going to auto-LDAP-ify the Groups on
+        #    import
+        my $group = Socialtext::Group->Create( {
             driver_group_name  => $group_info->{driver_group_name},
             created_by_user_id => $creator->user_id,
             account_id         => $acct->account_id,
-        });
+        } );
 
         $self->_set_ugrs_on_import( $group, $group_info->{users} );
     }
@@ -92,8 +106,9 @@ sub _set_ugrs_on_import {
 
     for my $ugr_data ( @$data ) {
         my $role = Socialtext::Role->new( name => $ugr_data->{role_name} );
-        die loc("No role named [_1] found.\n", $ugr_data->{role_name})
-            unless $role;
+        $role ||= Socialtext::Role->new(
+            role_id => Socialtext::UserGroupRoleFactory->DefaultRoleId()
+        );
 
         my $user = Socialtext::User->new( username => $ugr_data->{username} );
         next unless $user;
