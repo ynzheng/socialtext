@@ -272,9 +272,10 @@ sub register {
         return $self->_redirect($redirect_target);
     }
 
+    my $ws;
     if ($target_ws_name) {
         eval {
-            my $ws = Socialtext::Workspace->new( name => $target_ws_name);
+            $ws = Socialtext::Workspace->new( name => $target_ws_name);
             my $perms = $ws->permissions;
             if (!$perms->role_can( 
                     role => Socialtext::Role->Guest(),
@@ -314,6 +315,7 @@ sub register {
         $self->session->add_error(loc('The passwords you provided did not match.'));
     }
 
+    my $is_new_user;
     eval {
         if ($user) {
             $user->update_store(
@@ -330,6 +332,7 @@ sub register {
                 first_name    => $args{first_name},
                 last_name     => $args{last_name},
             );
+            $is_new_user = 1;
         }
     };
     if ( my $e = Exception::Class->caught('Socialtext::Exception::DataValidation') ) {
@@ -396,9 +399,17 @@ sub confirm_email {
     if ( $wsid ) {
         $targetws = Socialtext::Workspace->new(workspace_id => $wsid);
         $targetws->add_user(user => $user);
+        if (! $user-> primary_account)  { # Also "generic" accts?
+            $user->primary_account($targetws->account);
+        }
     }
     my $address = $user->email_address;
-    $self->session->add_message(loc("Your email address, [_1], has been confirmed. Please login.", $address));
+    if ($targetws) {
+        $self->session->add_message(loc("Your email address, [_1], has been confirmed and you have been added to the [_2] workspace. Please login.", $address, $targetws->title));
+    }
+    else {
+        $self->session->add_message(loc("Your email address, [_1], has been confirmed. Please login.", $address));
+    }
     $self->session->save_args( username => $user->username );
     if ( $targetws ) {
         return $self->_redirect("/nlw/login.html?redirect_to=".$targetws->uri);
