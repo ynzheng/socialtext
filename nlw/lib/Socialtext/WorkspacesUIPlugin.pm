@@ -13,6 +13,7 @@ use Socialtext::Role;
 use Socialtext::Challenger;
 use Socialtext::l10n qw(loc);
 use Socialtext::File::Copy::Recursive qw(dircopy);
+use Socialtext::Log 'st_log';
 use YAML qw(LoadFile);
 
 sub class_id { 'workspaces_ui' }
@@ -443,8 +444,15 @@ sub workspaces_self_join {
     die "do something" 
         if $self->hub->current_user->is_guest;
 
-    $self->hub->current_workspace->add_user(user=>$self->hub->current_user);
-    $self->redirect('/'.$self->hub->current_workspace->name);
+    my $user = $self->hub->current_user;
+    my $ws = $self->hub->current_workspace;
+
+    $self->hub->current_workspace->add_user(user=>$user);
+    st_log->info("SELF_JOIN,user:". $user->email_address . "(".$user->user_id
+            ."),workspace:"
+            . $ws->name . "(" . $ws->workspace_id . ")");
+            
+    $self->redirect('/'.$ws->name);
 }
 
 sub workspaces_create {

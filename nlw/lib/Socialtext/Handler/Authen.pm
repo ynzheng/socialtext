@@ -399,9 +399,19 @@ sub confirm_email {
     if ( $wsid ) {
         $targetws = Socialtext::Workspace->new(workspace_id => $wsid);
         $targetws->add_user(user => $user);
+        my $set_account;
         if (! $user-> primary_account)  { # Also "generic" accts?
             $user->primary_account($targetws->account);
+            $set_account = 1;
         }
+        st_log->info("SELF_JOIN,user:". $user->email_address . "("
+            .$user->user_id."),workspace:"
+            . $targetws->name . "(" . $targetws->workspace_id . ")".
+            ($set_account 
+                ? ",".$targetws->account->name 
+                    . "(". $targetws->account->account_id . ")" 
+                : "" )
+        );
     }
     my $address = $user->email_address;
     if ($targetws) {
