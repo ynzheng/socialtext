@@ -64,7 +64,7 @@ while (my $plugin = shift) {
     warn "Linking the $plugin plugin\n";
     my $plugin_dir = "$FindBin::Bin/../../plugins/$plugin";
     usage("plugin $plugin doesn't exist") unless -d $plugin_dir;
-    shell_run("cd $plugin_dir; make");
+    shell_run("cd $plugin_dir; make") if -f "$plugin_dir/Makefile";
     link_directory($plugin_dir, "$FindBin::Bin/..", 'lib');
     link_directory($plugin_dir, "$FindBin::Bin/..", 'bin');
     link_directory($plugin_dir, "$FindBin::Bin/..", 't');
