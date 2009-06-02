@@ -72,8 +72,11 @@ sub get_results {
 sub typeahead_find {
     my $self = shift;
     $self->cleanup_filter;
-    my $results = $self->get_results;
-    for my $row (@$results) {
+    my @results;
+    for my $row (@{$self->get_results}) {
+        next if Socialtext::User::Default::Users->IsDefaultUser(
+            username => $row->{driver_username},
+        );
         my $user = Socialtext::User->new(user_id => $row->{user_id});
         $row->{best_full_name} = $user->guess_real_name;
         $row->{name} = $row->{driver_username};
@@ -82,8 +85,9 @@ sub typeahead_find {
         # Backwards compatibility stuff
         $row->{email} = $row->{email_address};
         $row->{username} = $row->{driver_username};
+        push @results, $row;
     }
-    return $results;
+    return \@results;
 }
 
 __PACKAGE__->meta->make_immutable;
