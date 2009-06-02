@@ -530,9 +530,6 @@ use base 'Socialtext::Formatter::PageInclusion';
 use Class::Field qw( const );
 use Socialtext::Permission 'ST_READ_PERM';
 use Socialtext::l10n qw( loc );
-use Socialtext::Sheet;
-use Socialtext::Sheet::Renderer;
-use pQuery::DOM;
 
 const wafl_id => 'ss';
 
@@ -543,97 +540,31 @@ sub html {
 
     return $self->syntax_error unless $page_title;
 
-    return $self->cell_value($page_id, $section_id) if $section_id;
+    if ($section_id) {
+        # inline a cell or range
+        # TODO: use workspace_name and check permissions in that workspace
+        return $self->cell_value($page_id, $section_id);
+    }
 
+    # do a regular page include
     return $self->SUPER::html(@_);
 }
 
 sub cell_value {
     my $self = shift;
+    my $page_id = shift;
+    my $cell_ref = shift;
 
-    my ($page_id, $cell_id) = @_;
-    $cell_id = uc($cell_id);
-    my $content = $self->hub->pages->new_from_name($page_id)->content;
-    if ($cell_id =~ /^([A-Z]+\d+)(:[A-Z]+\d+)?$/) {  # un-named range
-        $cell_id = "$1:$1" unless $2;
-        (my $cell_range = $cell_id) =~ s/:/\\c/;
-        return $self->sheet_range(
-            $content, $cell_range, '', $page_id, $cell_id
-        );
-    }
-    if ($content =~ /^name:${cell_id}:(.*?):([\w\\]+)$/m) {
-        my $label = $1;
-        my $cell_range = $2;
-        if ($cell_range =~ /\\c/) {
-            return $self->sheet_range(
-                $content, $cell_range, $label, $page_id, $cell_id
-            );
-        }
-        else {
-            $cell_id = $cell_range;
-        }
-    }
+    my $page = $self->hub->pages->new_from_name($page_id);
+    return unless $page;
 
-    return $cell_id;
+    $cell_ref = uc($cell_ref);
+    my $html = $self->hub->pluggable->hook(
+        'render.sheet_include.html' => $page, $cell_ref);
+    return $cell_ref unless $html;
+    return $html;
+
 }
-
-sub sheet_range {
-    my $self = shift;
-    my ($content, $cell_range, $label, $page_id, $cell_id) = @_;
-    my ($A1, $A2, $N1, $N2);
-    if ($cell_range =~ /^([A-Z]+)([0-9]+)\\c([A-Z]+)([0-9]+)$/ and
-        $1 le $3 and $2 <= $4
-    ) {
-        ($A1, $A2, $N1, $N2) = ($1, $3, $2, $4);
-    }
-    else {
-        my $error = "<div>Cell range '$cell_id' is not valid</div>\n";
-        $error = "<h3>$label</h3>\n" . $error
-            if $label;
-        return $error;
-    }
-
-    my $sheet = Socialtext::Sheet->new(sheet_source => \$content);
-    my $renderer = Socialtext::Sheet::Renderer->new(sheet => $sheet, hub => $self->hub);
-    my $html = $renderer->sheet_to_html();
-
-    my $dom = pQuery::DOM->fromHTML($html);
-
-    my ($table) = ($html =~ /(<table.*?>)/g);
-    my @cols = ($html =~ /(<col .*?>)/g);
-
-    my @offset = 'A'..$A1;
-    my @length = $A1..$A2;
-    @cols = splice(@cols, @offset - 1, @length - 0);
-
-    my $width = 0;
-    for (@cols) {
-        $width += $1 if /width="(\d+)/;
-    }
-    $table =~ s/width:\s*\d+/width: $width/;
-
-    my $output = $table . '<colgroup>' . join('', @cols) . '</colgroup>';
-    for my $n ($N1..$N2) {
-        $output .= "<tr>";
-        for my $a ($A1..$A2) {
-             my $cell = $dom->getElementById("cell_$a$n");
-             if ($cell) {
-                 $output .= $cell->toHTML;
-             }
-             else {
-                 $output .= "<td id=\"cell_$a$n\" class=\"emptycell\"></td>";
-             }
-        }
-        $output .= "</tr>";
-    }
-    $output .= "</table>";
-
-    $output = qq{<h3><a href="?$page_id">$label</a></h3>\n} . $output
-        if $label;
-
-    return $output;
-}
-
 
 ################################################################################
 package Socialtext::Formatter::InterWikiLink;
