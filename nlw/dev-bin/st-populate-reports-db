@@ -64,6 +64,13 @@ my $delete_2 = 'psql ' . $u . $db . ' -c "delete from nlw_log_actions where acco
 my $delete_3 = 'psql ' . $u . $db . ' -c "delete from meta_actions_by_user where account_id =' . $account_id . '; "';
 `$delete_3`;
 
+my $delete_4 = 'psql ' . $u . $db . ' -c "delete from dashboard_actions_by_user where account_id =' . $account_id . '; "';
+`$delete_4`;
+my $delete_5 = 'psql ' . $u . $db . ' -c "delete from people_actions_by_user where account_id =' . $account_id . '; "';
+`$delete_5`;
+my $delete_6 = 'psql ' . $u . $db . ' -c "delete from signal_actions_by_user where account_id =' . $account_id . '; "';
+`$delete_6`;
+
 #Data is deleted, now we can re-add the workspace reports
 #-----------------------------------------------#
 my $populate_db = './st-qa-growth-report-populate-db';
