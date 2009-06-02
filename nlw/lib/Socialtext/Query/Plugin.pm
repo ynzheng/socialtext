@@ -188,6 +188,32 @@ sub _gen_sort_closure {
             }
         }
     }
+    elsif ( $sortby eq 'creator' ) { 
+        if ( $direction eq 'asc' ) {
+            return sub {
+                lc( Socialtext::User->new( 
+                    username => $a->{creator} 
+                )->guess_sortable_name )
+                cmp 
+                lc( Socialtext::User->new(
+                    username => $b->{creator}
+                )->guess_sortable_name )
+                or lc( $a->{Subject} ) cmp lc( $b->{Subject} );
+            }
+        }
+        else {
+            return sub {
+                lc( Socialtext::User->new( 
+                    username => $b->{creator} 
+                )->guess_sortable_name )
+                cmp 
+                lc( Socialtext::User->new(
+                    username => $a->{creator}
+                )->guess_sortable_name )
+                or lc( $b->{Subject} ) cmp lc( $a->{Subject} );
+            }
+        }
+    }
     else { # anything else, most likely a string
         if ( $direction eq 'asc' ) {
             return sub {
@@ -305,6 +331,8 @@ sub _make_row {
     my $document_title = $page->title;
     my $date = $page->last_edit_time;
     my $date_local = $page->datetime_for_user;
+    my $create_time_local = 
+        $self->hub->timezone->date_local( $page->created->date);
     my $snippet = $hit->snippet || $page->summary;
     my $id = $page->id;
     my $attachment;
@@ -343,6 +371,9 @@ sub _make_row {
         is_attachment       => $hit->isa('Socialtext::Search::AttachmentHit'),
         is_spreadsheet      => $page->is_spreadsheet,
         edit_summary        => $page->edit_summary,
+        create_time         => $page->created->date,
+        create_time_local   => $self->createtime_for_user,
+        creator             => $page->created->user_id,
     };
 }
 

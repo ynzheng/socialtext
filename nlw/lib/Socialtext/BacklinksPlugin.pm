@@ -76,7 +76,6 @@ sub show_all_backlinks {
     );
 }
 
-# XXX consider sorting
 sub orphans_list {
     my $self = shift;
     my $pages = $self->get_orphaned_pages();

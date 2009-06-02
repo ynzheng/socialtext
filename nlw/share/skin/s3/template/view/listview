@@ -1,6 +1,6 @@
 [%# vim: set et sts=2 sw=2: %]
 [%# @COPYRIGHT@ -%]
-[% USE decorate %]
+[%- USE decorate -%]
 [% WRAPPER layout/html id="listPage" %]
   [% INCLUDE element/listview_tabs %]
   [% IF !too_many %]
@@ -73,7 +73,9 @@
                 [% PROCESS sort_by_option name = loc('Workspace') field = 'Workspace' %]
               [% END %]
               [% PROCESS sort_by_option name = loc('Last Edited By') field = 'username' %]
-              [% PROCESS sort_by_option name = loc('Date') field = 'Date' %]
+              [% PROCESS sort_by_option name = loc('Created By') field = 'creator' %]
+              [% PROCESS sort_by_option name = loc('Date Last Edited') field = 'Date' %]
+              [% PROCESS sort_by_option name = loc('Date Created') field = 'create_time' %]
               [% PROCESS sort_by_option name = loc('Revisions') field = 'revision_count' %]
           </select>
           </div>
@@ -136,8 +138,11 @@
             <span class="edit_summary">[% loc('Edit summary') %]: [% row.edit_summary %]</span><br />
           [% END %]
         [% END %]
-        <em>(<a href="/[% row.workspace_name || current_workspace.name %]/index.cgi?action=revision_list;page_name=[% row.page_uri %]">[% row.revision_count %]</a> [% loc('Revisions') %])
-        [% loc('Last updated by') %] [% row.username | decorate('user_avatar') %] [% loc('on') %] [% row.DateLocal %]</em></td>
+        <em>
+        [% loc('Last updated by') %] [% row.username | decorate('user_avatar') %] [% loc('on') %] [% row.DateLocal %].
+        [% loc('Originally created by') %] [% row.creator | decorate('user_avatar') %] [% loc('on') %] [% row.create_time_local %].
+        (<a href="/[% row.workspace_name || current_workspace.name %]/index.cgi?action=revision_list;page_name=[% row.page_uri %]">[% row.revision_count %]</a> [% loc('Revisions') %])
+        </em></td>
     [% IF listview_extra_columns.watchlist %]
         <td class="listview-watchlist">
         <a id="st-watchlist-indicator-[% row.page_uri %]" class="on watch" href="#" title="[% loc('Stop watching') %]">[% loc('Stop watching') %]</a>

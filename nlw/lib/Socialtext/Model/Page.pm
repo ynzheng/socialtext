@@ -48,6 +48,9 @@ sub to_result {
         Summary  => $self->{summary},
         Type     => $self->{page_type},
         page_id  => $self->{page_id},
+        create_time => $self->{create_time},
+        create_time_local => $self->createtime_for_user,
+        creator => $self->creator->username,
         page_uri => $self->uri,
         revision_count => $self->{revision_count},
         $self->{hub} && !$self->hub->current_workspace->workspace_id ? (
@@ -60,6 +63,15 @@ sub to_result {
     };
 
     return $result;
+}
+
+sub createtime_for_user {
+    my $self = shift;
+    my $t = $self->{create_time};
+    if ($self->{hub}) {
+        $t = $self->{hub}->timezone->date_local($t);
+    }
+    return $t;
 }
 
 sub datetime_for_user {

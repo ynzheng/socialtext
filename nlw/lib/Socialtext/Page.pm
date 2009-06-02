@@ -2204,6 +2204,9 @@ sub to_result {
     $result->{page_uri} = $self->uri;
     $result->{page_id} = $self->id;
     $result->{is_spreadsheet} = $self->is_spreadsheet;
+    $result->{create_time} = $self->original_revision->metadata->Date;
+    $result->{creator} = $self->creator->username;
+    $result->{create_time_local} = $self->original_revision->datetime_for_user;
     my $user = $self->last_edited_by;
     $result->{username} = $user ? $user->username : '';
     if (not $result->{Summary}) {
