@@ -16,6 +16,8 @@ my $dbh = get_dbh();
 #---Globals
 my $member = Socialtext::Role->Member();
 my $iMonth = 0;  #closure
+my $personal_minutes  = 0;
+my $personal_hours = 10;
 #--------
 require Socialtext::Account;
 my $name = 'test_stub_account';
@@ -114,7 +116,6 @@ sub create_users {
             }
             else {
                 eval {
-                    print "ACCOUNT ID IS $account_id GOOFY!!!!\n";
                     $user = Socialtext::User->create(username=> $username,
                                                      email_address => $username,
                                                      password=> 'password',
@@ -307,7 +308,12 @@ sub Process_view_edits {
                           'plugin_enabled_for_workspace:0.008,web_auth:0.005,sql_prepare:0.004,sql_selectrow:0.003,plugin_enabled_for_users:0.002,ppl_listing:0.001"}' . "\n"; 
                 print $file $str; print $file $str;
             }
+                    
+            my $str = create_dashboard_view($user->{'user'}, $date);
+            print $file $str;
             
+            my $personal = personalized_dashboards($user->{'user'}, $date);
+            print $file $personal;
             if (defined($user->{$comments})) {
                 my $ra = $user->{$comments};
                 foreach my $page (@$ra) {
@@ -359,7 +365,11 @@ sub create_page_nlw_entry {
 }
 
 
-
+sub get_month_day {
+   my $iMonth = shift;
+   my @monthArr = ('Dec 01','Dec 01','Jan 01','Jan 01','Feb 01','Feb 01');
+   return $monthArr[$iMonth];
+}
 
 
 sub create_user_nlw_entry {
@@ -367,7 +377,7 @@ sub create_user_nlw_entry {
    my $email = $user->email_address;
    my $user_id = $user->user_id;
    my @monthArr = ('Dec 01','Dec 01','Jan 01','Jan 01','Feb 01','Feb 01');
-   my $month = $monthArr[$iMonth];
+   my $month = get_month_day($iMonth);
    
    my $str = $month . ' 12:53:18 talc nlw[2805]: [2204] CLI,CREATE-USER,ACTOR_ID:' . $user->user_id .
              ',{"args":"create-user --email ' . $user->email_address . '--password itdoesntmatter --account ' . $account->name . '"' .
@@ -381,3 +391,82 @@ sub create_user_nlw_entry {
    return $str;
 }
 
+
+sub create_dashboard_view {
+     my ($user, $date) = @_;
+     my @arr;
+     my $month = get_month_day($iMonth);
+    
+    $arr[0] = $date . ' 10:02:23 socialtext nlw[25204]: [2204] WEB,GET,/,UNDEF,ACTOR_ID:' .
+             $user->user_id . 
+             ',{"timers":"overall:1.117,handler_run:1.106,gadget_expand_hangman:0.954,tt2_render:0.701,global_tt2_vars:0.588,sql_execute:0.167,container_template_vars:0.067,get_dbh:0.049,container_get_gadgets:0.041,plugin_enabled_for_user:0.028,gadget_get_prefs:0.026,sql_prepare:0.022,user_new:0.013,web_auth:0.008,gadget_get_messages:0.007,user_accts:0.004,plugins_enabled_for_account:0.002,sql_selectrow:0.002,container_load_from_type:0.002,ppl_listing:0.001,container_type_load:0.001"}' . "\n";
+
+    $arr[1] = $date . ' 10:02:25 socialtext nlw[25204]: [2204] WEB,GET,/DATA/EVENTS/CONVERSATIONS/:USER,UNDEF,ACTOR_ID:' .
+              $user->user_id . 
+              ',{"q":{"country":"us","synd":"shindig","parent":"http://talc.socialtext.net:22204","lang":"en","time":"1243875742","nocache":null,"libs":"4SEcosOUU2c/lib/libcore.js,irJtX0bmDdM/lib/libdynamic-height.js,MJLTofH-Kpk/lib/libsetprefs.js,_pVqt4t_Qx8/lib/libviews.js","mid":"3","up_count":"5","url":"local:widgets:recent_conversations","up_feed_name":"My Conversations","up_feed_url":"http://talc.socialtext.net:22204/data/events/conversations/devnull1@socialtext.com?"},"user":"devnull1@socialtext.com","timers":"overall:0.404,handler_run:0.393,gadget_expand_hangman:0.377,global_tt2_vars:0.260,GET_text/html:0.217,coll_tt2_prep:0.190,sql_execute:0.102,plugin_enabled_for_user:0.032,tt2_render:0.024,get_dbh:0.022,gadget_load_from_id:0.016,get_resource:0.014,get_convos:0.013,user_new:0.011,sql_prepare:0.009,gadget_get_prefs:0.008,web_auth:0.007,gadget_get_messages:0.001,plugins_enabled_for_account:0.001,sql_selectrow:0.001"}' . "\n";
+
+    $arr[2] = $date . ' 10:02:26 socialtext nlw[23915]: [2204] WEB,GET,/DATA/WORKSPACES/:WS/PAGES/:PNAME,UNDEF,ACTOR_ID:' .
+              $user->user_id . 
+              ',{"q":{"country":"us","synd":"shindig","parent":"http://talc.socialtext.net:22204","up_page_title":"welcome","lang":"en","time":"1243875742","nocache":null,"libs":"4SEcosOUU2c/lib/libcore.js,irJtX0bmDdM/lib/libdynamic-height.js,MJLTofH-Kpk/lib/libsetprefs.js,_pVqt4t_Qx8/lib/libviews.js","mid":"1","up_workspace_name":"help","url":"local:widgets:one_page"},"pname":"welcome","ws":"help","timers":"overall:0.925,handler_run:0.911,gadget_expand_hangman:0.899,viewer_process:0.375,sql_execute:0.296,global_tt2_vars:0.152,user_new:0.036,get_dbh:0.036,plugin_enabled_for_user:0.029,gadget_load_from_id:0.015,user_accts:0.011,web_auth:0.010,sql_prepare:0.009,tt2_render:0.009,gadget_get_prefs:0.005,sql_selectrow:0.005,gadget_get_messages:0.002,plugin_enabled_for_workspace:0.002,plugins_enabled_for_account:0.001"}' . "\n";
+
+    $arr[3] = $date . ' 10:02:26 socialtext nlw[25204]: [2204] WEB,GET,/DATA/WORKSPACES/:WS/PAGES/:PNAME,UNDEF,ACTOR_ID:' . 
+              $user->user_id . 
+              ',{"q":{"country":"us","synd":"shindig","parent":"http://talc.socialtext.net:22204","up_page_title":"learning_resources","lang":"en","time":"1243875742","nocache":null,"libs":"4SEcosOUU2c/lib/libcore.js,irJtX0bmDdM/lib/libdynamic-height.js,MJLTofH-Kpk/lib/libsetprefs.js,_pVqt4t_Qx8/lib/libviews.js","mid":"2","up_workspace_name":"help","url":"local:widgets:one_page"},"pname":"learning_resources","ws":"help","timers":"overall:0.584,handler_run:0.575,gadget_expand_hangman:0.565,global_tt2_vars:0.143,sql_execute:0.097,plugin_enabled_for_user:0.030,user_new:0.027,get_dbh:0.020,gadget_load_from_id:0.013,sql_prepare:0.009,tt2_render:0.009,user_accts:0.007,web_auth:0.006,viewer_process:0.006,gadget_get_prefs:0.005,gadget_get_messages:0.001,plugins_enabled_for_account:0.001,sql_selectrow:0.001,plugin_enabled_for_workspace:0.001"}' . "\n";
+
+    $arr[4] = $date . ' 10:02:26 socialtext nlw[23915]: [2204] WEB,GET,/DATA/WORKSPACES/:WS/TAGS,UNDEF,ACTOR_ID:' .
+              $user->user_id . 
+              ',{"q":{"country":"us","synd":"shindig","parent":"http://talc.socialtext.net:22204","lang":"en","time":"1243875742","nocache":null,"libs":"4SEcosOUU2c/lib/libcore.js,irJtX0bmDdM/lib/libdynamic-height.js,MJLTofH-Kpk/lib/libsetprefs.js,_pVqt4t_Qx8/lib/libviews.js","mid":"6","up_limit":null,"url":"local:widgets:tag_cloud","up_workspace":"help-en"},"ws":"help-en","timers":"overall:0.230,handler_run:0.220,gadget_expand_hangman:0.211,global_tt2_vars:0.145,sql_execute:0.060,plugin_enabled_for_user:0.028,get_dbh:0.015,gadget_load_from_id:0.012,user_new:0.011,tt2_render:0.008,GET_application/json:0.008,web_auth:0.007,sql_prepare:0.006,gadget_get_prefs:0.006,get_resource:0.003,sql_selectrow:0.002,_entities_for_query:0.002,gadget_get_messages:0.001,plugins_enabled_for_account:0.001,_entity_hash_map:0.000"}' . "\n";
+
+    $arr[5] = $date . ' 10:02:26 socialtext nlw[23914]: [2204] WEB,GET,/DATA/USERS/:USERNAME,UNDEF,ACTOR_ID:0,{"q":{"country":"us","synd":"shindig","parent":"http://talc.socialtext.net:22204","lang":"en","time":"1243875742","up_fetch":"6","nocache":null,"libs":"4SEcosOUU2c/lib/libcore.js,irJtX0bmDdM/lib/libdynamic-height.js,MJLTofH-Kpk/lib/libsetprefs.js,_pVqt4t_Qx8/lib/libviews.js","mid":"4","up_signal_count":"5","url":"local:signals:signals","up_selectedNetwork":null,"up_all_signals":"1"},"timers":"overall:0.810,handler_run:0.800,gadget_expand_hangman:0.761,global_tt2_vars:0.153,sql_execute:0.080,plugin_enabled_for_user:0.044,get_dbh:0.017,user_new:0.012,tt2_render:0.010,gadget_get_prefs:0.009,web_auth:0.007,gadget_load_from_id:0.006,sql_prepare:0.006,user_accts:0.004,plugins_enabled_for_account:0.003,sql_selectrow:0.002,gadget_get_messages:0.002","username":"devnull1@socialtext.com"}' . "\n";
+
+     $arr[6] = $date . ' 10:02:30 socialtext nlw[12652]: [2204] WEB,GET,/DATA/REPORT/:NAME/:START/:DURATION,UNDEF,ACTOR_ID:' .
+     $user->user_id . 
+     ',{"q":{"country":"us","synd":"shindig","parent":"http://talc.socialtext.net:22204","lang":"en","time":"1243875742","nocache":null,"libs":"4SEcosOUU2c/lib/libcore.js,irJtX0bmDdM/lib/libdynamic-height.js,MJLTofH-Kpk/lib/libsetprefs.js,_pVqt4t_Qx8/lib/libviews.js","mid":"5","url":"local:widgets:my_workspaces"},"name":"user_workspace_usage","duration":"-1month","timers":"overall:4.844,handler_run:4.660,web_auth:0.173,user_new:0.167,global_tt2_vars:0.161,sql_selectrow:0.151,get_dbh:0.147,sql_execute:0.068,tt2_render:0.033,plugin_enabled_for_user:0.028,gadget_load_from_id:0.017,gadget_expand_hangman:0.010,sql_prepare:0.006,gadget_get_prefs:0.003,plugins_enabled_for_account:0.001,gadget_get_messages:0.001","start":"now"}' . "\n";
+
+    my $line = '';
+    for my $str (@arr) { $line.=$str; }
+    return $line;
+}
+
+
+sub personalized_dashboards {
+
+    my ($user, $date) = @_;
+    my @arr;
+    my $minutes = sprintf("%02d",$personal_minutes);;
+    
+    $arr[0] = $date . $personal_hours . ':' . $minutes . ':12 socialtext nlw[23677]: [2015] WEB,POST,/DATA/GADGETS/GADGETINSTANCE/:ID/PREFS,UNDEF,ACTOR_ID:' .
+    $user->user_id .
+    ',{"q":{"up_count":"25","up_feed_name":"My Conversations","up_feed_url":"http://talc.socialtext.net:22015/data/events/conversations/devnull1@socialtext.com?"},"id":"15","timers":"overall:0.219,handler_run:0.211,gadget_expand_hangman:0.198,sql_execute:0.180,gadget_set_pref:0.175,gadget_get_prefs:0.021,gadget_load_from_id:0.011,user_new:0.006,web_auth:0.006,get_dbh:0.003,sql_selectrow:0.001,sql_prepare:0.001","meta":{"gadget_title":"Socialtext Dashboard","gadget_id":"2"}}' . "\n";
+    
+    $arr[1] = $date . $personal_hours . ':' . $minutes . ':13 socialtext nlw[25115]: [2015] WEB,GET,/DATA/EVENTS/CONVERSATIONS/:USER,UNDEF,ACTOR_ID:' . 
+    $user->user_id .
+    ',{"q":{"country":"us","synd":"shindig","parent":"http://talc.socialtext.net:22015","lang":"en","time":"1243886712","nocache":null,"libs":"4SEcosOUU2c/lib/libcore.js,irJtX0bmDdM/lib/libdynamic-height.js,MJLTofH-Kpk/lib/libsetprefs.js,_pVqt4t_Qx8/lib/libviews.js","mid":"15","up_count":"25","url":"local:widgets:recent_conversations","up_feed_name":"My Conversations","up_feed_url":' .
+    '"http://talc.socialtext.net:22015/data/events/conversations/' . $user->email_address . '"},"user":"' . $user->email_address . '",' .
+    '"timers":"overall:0.375,handler_run:0.366,gadget_expand_hangman:0.356,global_tt2_vars:0.252,GET_text/html:0.192,coll_tt2_prep:0.169,sql_execute:0.100,plugin_enabled_for_user:0.031,' .
+    'get_dbh:0.022,get_resource:0.018,get_convos:0.017,tt2_render:0.017,user_new:0.011,gadget_load_from_id:0.011,sql_prepare:0.008,web_auth:0.006,gadget_get_prefs:0.005,' .  
+    'gadget_get_messages:0.001,plugins_enabled_for_account:0.001,sql_selectrow:0.001"}' . "\n";
+    
+    $personal_minutes++;
+    if ($personal_minutes>=60) {
+        $personal_minutes = 0;
+        $personal_hours++;
+    }
+    
+    my $line;
+    for my $str (@arr) { $line.=$str; }
+        
+    return $line;
+}
+
+
+sub personalized_profiles { 
+    my $line;
+    return $line;
+}
+
+
+sub signals_sent {
+    my $line;
+    return $line;
+}
