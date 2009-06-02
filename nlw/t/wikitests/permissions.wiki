@@ -20,12 +20,27 @@ Set up workspace permissions to new join-to-edit and make sure public-join-to-ed
 | st-admin | show-acls --workspace %%ws_name%% | qr/. self_join       .   X   ./ |
 
 | comment | Test that setting self_join unsets edit_controls| 
-| add-workspace-permission | %%ws_name%% | Guest |  edit_controls |
 | remove-workspace-permission | %%ws_name%% | Guest |  self_join |
+| remove-workspace-permission | %%ws_name%% | AuthenticatedUser |  self_join |
+| add-workspace-permission | %%ws_name%% | Guest |  edit_controls |
+| add-workspace-permission | %%ws_name%% | AuthenticatedUser|  edit |
+| add-workspace-permission | %%ws_name%% | AuthenticatedUser|  read |
+| add-workspace-permission | %%ws_name%% | AuthenticatedUser|  attachments |
+| add-workspace-permission | %%ws_name%% | AuthenticatedUser|  comment |
+| add-workspace-permission | %%ws_name%% | AuthenticatedUser|  delete |
+| add-workspace-permission | %%ws_name%% | AuthenticatedUser|  email_in |
+| add-workspace-permission | %%ws_name%% | AuthenticatedUser|  email_out |
 | st-admin | show-acls --workspace %%ws_name%% | qr/public-authenticate-to-edit \(deprecated\)/ |
 | st-admin | show-acls --workspace %%ws_name%% | qr/. edit_controls   .   X   ./ |
 | st-admin | show-acls --workspace %%ws_name%% | qr/. self_join       .       ./ |
 | add-workspace-permission | %%ws_name%% | Guest |  self_join |
+| add-workspace-permission | %%ws_name%% | AuthenticatedUser |  self_join |
+| remove-workspace-permission | %%ws_name%% | AuthenticatedUser|  edit |
+| remove-workspace-permission | %%ws_name%% | AuthenticatedUser|  attachments |
+| remove-workspace-permission | %%ws_name%% | AuthenticatedUser|  comment |
+| remove-workspace-permission | %%ws_name%% | AuthenticatedUser|  delete |
+| remove-workspace-permission | %%ws_name%% | AuthenticatedUser|  email_in |
+| remove-workspace-permission | %%ws_name%% | AuthenticatedUser|  email_out |
 | st-admin | show-acls --workspace %%ws_name%% | qr/public-join-to-edit/ |
 | st-admin | show-acls --workspace %%ws_name%% | qr/. edit_controls   .       ./ |
 | st-admin | show-acls --workspace %%ws_name%% | qr/. self_join       .   X   ./ |
