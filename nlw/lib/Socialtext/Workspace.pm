@@ -1465,15 +1465,19 @@ EOT
 
     my @dump;
     my @lock_dump;
+    my @self_join_dump;
     for my $r (@$rows) {
         my $p = Socialtext::Permission->new(
             permission_id => $r->[1]);
 
-        # We cannot export the lock permission in this way, because older
-        # versions of the code do not gracefully understand permissions they
-        # do not know about
+        # we cannot export 'new' permissions using the default method. let's
+        # ignore 'em here and deal with them down below.
+        #
+        # I think I see a pattern emerging.
         my $array_ref = \@dump;
         $array_ref = \@lock_dump if $p->name eq 'lock';
+        $array_ref = \@self_join_dump if $p->name eq 'self_join';
+
         push @$array_ref, {
             role_name => Socialtext::Role->new( role_id => $r->[0] )->name,
             permission_name => $p->name,
@@ -1483,11 +1487,14 @@ EOT
     my $file = Socialtext::File::catfile( $dir, $name . '-permissions.yaml' );
     _dump_yaml( $file, \@dump );
 
-    # Now dump the lock perms to a separate file that will only be read by
-    # code that knows about the lock perm
-    my $lock_perm_file
-        = Socialtext::File::catfile($dir, $name . '-lock-permissions.yaml');
+    # Deal with the 'new' perms down here.
+    my $lock_perm_file = Socialtext::File::catfile(
+        $dir, $name . '-lock-permissions.yaml');
     _dump_yaml( $lock_perm_file, \@lock_dump );
+
+    my $self_join_perm_file = Socialtext::File::catfile(
+        $dir, $name . '-self-join-permissions.yaml');
+    _dump_yaml( $self_join_perm_file, \@self_join_dump );
 }
 
 sub _export_logo_file {

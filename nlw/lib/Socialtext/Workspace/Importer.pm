@@ -301,6 +301,13 @@ sub _set_permissions {
         push @$perms, @$lock_perms;
     }
 
+    # ... and self_join permissions. Methinks we have a pattern here.
+    my $self_join_perm_file = $self->_self_join_permissions_file;
+    if (-e $self_join_perm_file) {
+        my $self_join_perms = $self->_load_yaml($self_join_perm_file);
+        push @$perms, @$self_join_perms;
+    }
+
     eval {
         sql_begin_work();
 
@@ -354,7 +361,14 @@ sub _populate_db_metadata {
 }
 
 sub _permissions_file { return $_[0]->{old_name} . '-permissions.yaml' }
-sub _lock_permissions_file { return $_[0]->{old_name} . '-lock-permissions.yaml' }
+
+sub _lock_permissions_file {
+    return $_[0]->{old_name} . '-lock-permissions.yaml'
+}
+
+sub _self_join_permissions_file {
+    return $_[0]->{old_name} . '-self-join-permissions.yaml'
+}
 
 sub _meta_file { return 'meta.yaml' }
 
