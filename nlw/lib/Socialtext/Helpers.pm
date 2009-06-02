@@ -275,6 +275,7 @@ sub global_template_vars {
             $self->hub->pages->current->locked && 
             $self->hub->current_workspace->allows_page_locking &&
             !$self->hub->checker->check_permission('lock'),
+        role_for_user      => $cur_ws->role_for_user(user=>$cur_user),
     );
 
     # We're disabling the history global nav functionality for now, until its

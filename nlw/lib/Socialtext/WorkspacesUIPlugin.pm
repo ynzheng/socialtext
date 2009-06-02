@@ -33,6 +33,7 @@ sub register {
     $registry->add(action => 'workspaces_unsubscribe');
     $registry->add(action => 'workspaces_permissions');
     $registry->add(action => 'workspace_clone');
+    $registry->add(action => 'workspaces_self_join');
 }
 
 sub workspaces_listall {
@@ -431,6 +432,19 @@ sub workspace_clone {
         loc('Workspaces: Clone This Workspace'),
         'workspace_clone_section',
     );
+}
+
+sub workspaces_self_join {
+    my $self = shift;
+
+    die "do something"
+        unless $self->hub->checker->check_permission("self_join");
+
+    die "do something" 
+        if $self->hub->current_user->is_guest;
+
+    $self->hub->current_workspace->add_user(user=>$self->hub->current_user);
+    $self->redirect('/'.$self->hub->current_workspace->name);
 }
 
 sub workspaces_create {
