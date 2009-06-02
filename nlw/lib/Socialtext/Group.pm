@@ -7,6 +7,7 @@ use Socialtext::AppConfig;
 use Socialtext::MultiCursor;
 use Socialtext::Timer;
 use Socialtext::SQL qw(:exec);
+use Socialtext::UserGroupRoleFactory;
 use namespace::clean -except => 'meta';
 
 ###############################################################################
@@ -134,6 +135,82 @@ sub base_package {
 }
 
 ###############################################################################
+# Assigns a Role to the given User in this Group.  If no Role is specified,
+# the default Role is used.
+sub assign_role_to_user {
+    my ($self, %p) = @_;
+    my $user = $p{user};
+    my $role = $p{role} || Socialtext::UserGroupRoleFactory->DefaultRole();
+
+    my $ugr = Socialtext::UserGroupRoleFactory->GetUserGroupRole(
+        user_id     => $user->user_id(),
+        group_id    => $self->group_id(),
+    );
+
+    if ($ugr) {
+        $ugr->update( {
+            role_id => $role->role_id(),
+        } );
+    }
+    else {
+        $ugr = Socialtext::UserGroupRoleFactory->Create( {
+            user_id  => $user->user_id(),
+            group_id => $self->group_id(),
+            role_id  => $role->role_id(),
+        } );
+    }
+}
+
+###############################################################################
+# Returns true if the given User has an explicit Role in this Group (whatever
+# that Role may be).
+sub has_user {
+    my ($self, $user) = @_;
+    my $ugr = Socialtext::UserGroupRoleFactory->GetUserGroupRole(
+        user_id  => $user->user_id(),
+        group_id => $self->group_id(),
+    );
+    return defined $ugr ? 1 : 0;
+}
+
+###############################################################################
+# Returns the Role that the given User has in this Group.  If the User has no
+# Role in this Group, this method returns empty-handed.
+sub role_for_user {
+    my ($self, %p) = @_;
+
+    my $user = $p{user};
+    return unless $user;
+
+    my $ugr = Socialtext::UserGroupRoleFactory->GetUserGroupRole(
+        user_id  => $user->user_id(),
+        group_id => $self->group_id(),
+    );
+    return unless $ugr;
+
+    return $ugr->role();
+}
+
+###############################################################################
+# Removes a User from the Group.
+sub remove_user {
+    my ($self, %p) = @_;
+
+    my $user = $p{user};
+    return unless $user;
+
+    my $ugr = Socialtext::UserGroupRoleFactory->GetUserGroupRole(
+        user_id  => $user->user_id(),
+        group_id => $self->group_id(),
+    );
+    return unless $ugr;
+
+    Socialtext::UserGroupRoleFactory->Delete($ugr);
+}
+
+###############################################################################
+# Returns a list of Users that have an explicit Role in this Group (whatever
+# that Role may be)
 sub users {
     my $self = shift;
     return Socialtext::UserGroupRoleFactory->ByGroupId(
@@ -173,6 +250,18 @@ Socialtext::Group - Socialtext Group object
 
   # get the Users in the Group
   $user_multicursor = $group->users();
+
+  # add a User to the Group
+  $group->assign_role_to_user( user => $user, role => $role );
+
+  # see if a User is in the Group
+  $group->has_user($user);
+
+  # get User's Role in the Group
+  $role = $group->role_for_user( user => $user );
+
+  # remove a User from the Group
+  $group->remove_user( user => $user );
 
 =head1 DESCRIPTION
 
@@ -239,6 +328,32 @@ that exist within the given Account, ordered by "Group Name".
 
 Returns the Perl namespace underneath which all of the Group related modules
 can be found.
+
+=item B<$group-E<gt>assign_role_to_user(user =E<gt> $user, role =E<gt> $role)>
+
+Assigns the given C<$role> to the given C<$user> in this C<$group>.
+
+If the User has no Role in this Group yet, a new Role is created for him.  If
+the User has an existing Role, it is replaced with the given Role.
+
+If no Role is provided, the Default Role will be used instead (refer to
+L<Socialtext::UserGroupRoleFactory> for more information on the Default Role).
+
+=item B<$group-E<gt>has_user($user)>
+
+Checks to see if the given C<$user> has a Role in this Group, I<regardless> of
+what that Role might be.  Returns true if the User has an explicit Role in the
+Group, returning false otherwise.
+
+=item B<$group-E<gt>role_for_user(user =E<gt> $user)>
+
+Returns the C<Socialtext::Role> object for the Role that the given C<$user>
+has in this Group.  If the User has no Role in this Group, this method returns
+empty-handed.
+
+=item B<$group-E<gt>remove_user(user =E<gt> $user)>
+
+Removes the User's Role from this Group, I<whatever> that Role might be.
 
 =item B<$group-E<gt>users()>
 
