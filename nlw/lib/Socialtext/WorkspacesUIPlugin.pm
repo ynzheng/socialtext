@@ -438,14 +438,14 @@ sub workspace_clone {
 sub workspaces_self_join {
     my $self = shift;
 
-    die "do something"
-        unless $self->hub->checker->check_permission("self_join");
-
-    die "do something" 
-        if $self->hub->current_user->is_guest;
-
     my $user = $self->hub->current_user;
     my $ws = $self->hub->current_workspace;
+    
+    $self->redirect('/'.$ws->name)
+        unless $self->hub->checker->check_permission("self_join");
+
+    $self->redirect('/'.$ws->name)
+        if $self->hub->current_user->is_guest;
 
     $self->hub->current_workspace->add_user(user=>$user);
     st_log->info("SELF_JOIN,user:". $user->email_address . "(".$user->user_id
