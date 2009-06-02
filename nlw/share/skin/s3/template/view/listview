@@ -78,7 +78,7 @@
           </select>
           </div>
           [% END %]
-          [% predicate_with_params = BLOCK %]?[% predicate %];scope=[% scope %];orig_search_term=[% search_term %];sortby=[% sortby %];direction=[% sortdir.$sortby %][%- END %]
+          [% predicate_with_params = BLOCK %]?[% predicate %];scope=[% scope %];orig_search_term=[% search_term %];sortby=[% sortby %];direction=[% direction || sortdir.$sortby %][%- END %]
           <div class="toggle">
             [% loc('Show:') %]
             [% IF summaries %]
