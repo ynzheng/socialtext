@@ -8,7 +8,6 @@ use Term::ANSIColor 'color';
 
 my @dirs = qw(
     nlw/share/skin
-    plugins/socialcalc/share/javascript
     plugins/socialcalc
     plugins/widgets
     plugins/signals
