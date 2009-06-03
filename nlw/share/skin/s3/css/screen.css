@@ -3080,6 +3080,14 @@ div#st-display-mode-container.st-content-no-controls div#contentContainer {
         padding-top: 15px;
         padding-bottom: 15px;
 }
+
+
+.st-wikinav-register a {
+    font-weight:bold; 
+    text-decoration:underline;
+    color:#3366cc;
+}
+
 /* mainNav Dropdown menus styles */
 
 div#mainNav ul.level2 li img {
