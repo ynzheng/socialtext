@@ -1,8 +1,8 @@
 | *Comment* | START Test Case: Orphans List |  |
 
- (↑) (↓)
+(↑) (↓)
 
- Find or create several pages that have no incoming links. This creates orphan pages. | pages are created
+Find or create several pages that have no incoming links. This creates orphan pages. | pages are created
 
 | st-admin | update-page --email %%email%% --workspace %%workspace%% --page "orphan %%start_time%% 0001" < %%wikitest_client_files%%wikitest.txt | The "orphan %%start_time%% 0001" page has been created. |
 | st-admin | update-page --email %%email%% --workspace %%workspace%% --page "orphan %%start_time%% 0002" < %%wikitest_client_files%%wikitest.txt | The "orphan %%start_time%% 0002" page has been created. |
@@ -15,7 +15,7 @@ Create a page by a different user
 | st-admin | add-member --w %%workspace%% --e %%orphan_email%% | is now a member |
 | st-admin | update-page --email %%orphan_email%% --workspace %%workspace%% --page "orphan %%start_time%% 0004" < %%wikitest_client_files%%wikitest.txt | The "orphan %%start_time%% 0004" page has been created. |
 
-"What's New -> Orphans List"<http://...> | list of links to orphan pages appears
+"What's New -> Orphans List"<http://.../> | list of links to orphan pages appears
 
 | *Comment* | Test Case: Orphans List. Orphan page list |  |
 | open_ok | /%%workspace%%/index.cgi?action=orphans_list |  |
@@ -42,9 +42,9 @@ Create a page by a different user
 | text_like | contentContainer | qr/orphan %%start_time%% 0003.+orphan %%start_time%% 0002.+orphan %%start_time%% 0001.+orphan %%start_time%% 0004/ |
 
 | *Comment* | Test Case: Orphans List Sorting Date desc |  |
-| select_and_wait | sort-picker | label=Date |
+| select_and_wait | sort-picker | label=Date Last Edited |
 | text_like | contentContainer | qr/orphan %%start_time%% 0004.+orphan %%start_time%% 0003.+orphan %%start_time%% 0002.+orphan %%start_time%% 0001/ |
-| select_and_wait | sort-picker | label=Date (↑) |
+| select_and_wait | sort-picker | label=Date Last Edited (↑) |
 | text_like | contentContainer | qr/orphan %%start_time%% 0001.+orphan %%start_time%% 0002.+orphan %%start_time%% 0003.+orphan %%start_time%% 0004/ |
 
 | *Comment* | Test Case: Orphans List Sorting Revisions. Create rev 2 for page 0002 |  |
@@ -60,7 +60,14 @@ Create a page by a different user
 | select_and_wait | sort-picker | label=Revisions (↑) |
 | text_like | contentContainer | qr/orphan %%start_time%% 0001.+orphan %%start_time%% 0003.+orphan %%start_time%% 0004.+orphan %%start_time%% 0002/ |
 
- click on several links | correct page appear
+| *Comment* | Test Case: Orphans List Sorting Date Created desc |  |
+| select_and_wait | sort-picker | label=Date Created |
+| text_like | contentContainer | qr/orphan %%start_time%% 0004.+orphan %%start_time%% 0003.+orphan %%start_time%% 0002.+orphan %%start_time%% 0001/ |
+| *Comment* | Test Case: Orphans List Sorting revisions asc |  |
+| select_and_wait | sort-picker | label=Date Created (↑) |
+| text_like | contentContainer | qr/orphan %%start_time%% 0001.+orphan %%start_time%% 0002.+orphan %%start_time%% 0003.+orphan %%start_time%% 0004/ |
+
+click on several links | correct page appear
 
 | *Comment* | Test Case: Orphans List. Orphan page links work |  |
 | click_and_wait | link=orphan %%start_time%% 0001 |  |
@@ -69,7 +76,7 @@ Create a page by a different user
 | click_and_wait | link=orphan %%start_time%% 0002 |  |
 | text_like | st-page-titletext | orphan %%start_time%% 0002 |
 
- observe Incoming Links in sidepanel | there are no Incoming Links for any orphan page
+observe Incoming Links in sidepanel | there are no Incoming Links for any orphan page
 
 | *Comment* | Test Case: Orphans List. Orphan page has no incoming links |  |
 | text_like | contentRight | qr/There are no pages that link to this page yet/i |
