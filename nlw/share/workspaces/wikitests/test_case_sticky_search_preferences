@@ -10,9 +10,19 @@
 | is_selected_ok | sort-picker | label=Revisions |
 
 | *Comment* | Test Case: Sticky Search Preferences. Does Date stick? |  |
-| select_and_wait | sort-picker | label=Date |
+| select_and_wait | sort-picker | label=Date Last Edited |
 | st-search | wiki | Pages containing 'wiki' |
-| is_selected_ok | sort-picker | label=Date |
+| is_selected_ok | sort-picker | label=Date Last Edited |
+
+| *Comment* | Test Case: Sticky Search Preferences: Date Created |  |
+| select_and_wait | sort-picker | label=Date Created |
+| st-search | wiki | Pages containing 'wiki' |
+| is_selected_ok | sort-picker | label=Date Created |
+
+| *Comment* | Test Case: Sticky Search Preferences: Created By |  |
+| select_and_wait | sort-picker | label=Created By |
+| st-search | wiki | Pages containing 'wiki' |
+| is_selected_ok | sort-picker | label=Created By |
 
 | *Comment* | Test Case: Sticky Search Preferences. View preferences. Force Summaries view |  |
 | open_ok | /?action=search;scope=_;orig_search_term=wiki;sortby=Date;direction=desc;summaries=1;limit=20;offset=0 |  |
@@ -35,7 +45,7 @@
 | click_ok | link=Summaries |  |
 | wait_for_element_visible_ok | link=Titles | 30000 |
 | st-search | wiki | Pages containing 'wiki' |
-| select_and_wait | sort-picker | label=Date |
+| select_and_wait | sort-picker | label=Date Last Edited |
 | wait_for_element_visible_ok | link=Titles | 30000 |
 | wait_for_element_not_present_ok | link=Summaries | 5000 |
 
