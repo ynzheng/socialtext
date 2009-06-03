@@ -704,7 +704,7 @@ Delete all webhooks.
 =cut
 
 sub st_clear_webhooks {
-    sql_execute('DELETE FROM webhooks');
+    sql_execute('DELETE FROM webhook');
 }
 
 =head2 st-clear-log
