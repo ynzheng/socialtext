@@ -739,6 +739,7 @@ sub set_user_prefs {
 
         my @columns;
         for my $key (keys %prefs) {
+            next unless defined $prefs{$key};
             push @{$columns[0]}, $user_id;
             push @{$columns[1]}, $plugin;
             push @{$columns[2]}, $key;
