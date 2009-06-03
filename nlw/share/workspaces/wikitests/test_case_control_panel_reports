@@ -125,22 +125,22 @@ open_ok | /nlw/reports/workspace_growth.csv?workspace=growth_report_test&downloa
 | selectFrame | report-iframe |  |
 | text_like | Account Growth - %%testingaccount%% |  |
 | text_like | qr/Date\s*Unique members\s*Unique Visitors\s*Unique contributors\s*Personalized Dashboards\s*Personalized Profiles\s*People Views\s*Dashboard Views\s*Signals Sent\s*Workspaces\s*Pages\s*Page views\s*Workspace Contributions/i |  |
-| text_like | qr/May\s*2009\s*6\s*0\s*0\s*0\s*0\s*0\s*0\s*0\s*2\s*7\s*0\s*0/ |  |
-| text_like | qr/Apr\s*2009\s*6\s*0\s*0\s*0\s*0\s*0\s*0\s*0\s*2\s*7\s*0\s*0/ |  |
-| text_like | qr/Mar\s*2009\s*6\s*6\s*4\s*0\s*0\s*0\s*0\s*0\s*2\s*37\s*152\s*92/ |  |
-| text_like | qr/Feb\s*2009\s*6\s*6\s*3\s*0\s*0\s*0\s*0\s*0\s*2\s*7\s*76\s*4/ |  |
-| text_like | qr/Jan\s*2009\s*4\s*6\s*4\s*0\s*0\s*0\s*0\s*0\s*2\s*6\s*46\s*6/ |  |
-| text_like | qr/Dec\s*2008\s*2\s*2\s*2\s*0\s*0\s*0\s*0\s*0\s*2\s*2\s*24\s*2/ |  |
+| text_like | qr/May\s*2009\s*6\s*0\s*0\s*6\s*0\s*0\s*0\s*0\s*2\s*7\s*0\s*0/ |  |
+| text_like | qr/Apr\s*2009\s*6\s*0\s*0\s*6\s*0\s*0\s*0\s*0\s*2\s*7\s*0\s*0/ |  |
+| text_like | qr/Mar\s*2009\s*6\s*6\s*4\s*6\s*0\s*0\s*24\s*0\s*2\s*37\s*152\s*92/ |  |
+| text_like | qr/Feb\s*2009\s*6\s*6\s*3\s*6\s*0\s*0\s*12\s*0\s*2\s*7\s*76\s*4/ |  |
+| text_like | qr/Jan\s*2009\s*4\s*6\s*4\s*4\s*0\s*0\s*8\s*0\s*2\s*6\s*46\s*6/ |  |
+| text_like | qr/Dec\s*2008\s*2\s*2\s*2\s*2\s*0\s*0\s*4\s*0\s*2\s*2\s*24\s*2/ |  |
 
 | *Comment* | Test Case: Control Panel Reports (Account-level, Growth) Printer Friendly |  |
 | selectFrame | relative=top |  |
 | clickAndWait | link=Printer Friendly Report |  |
-| text_like | qr/May\s*2009\s*6\s*0\s*0\s*0\s*0\s*0\s*0\s*0\s*2\s*7\s*0\s*0/ |  |
-| text_like | qr/Apr\s*2009\s*6\s*0\s*0\s*0\s*0\s*0\s*0\s*0\s*2\s*7\s*0\s*0/ |  |
-| text_like | qr/Mar\s*2009\s*6\s*6\s*4\s*0\s*0\s*0\s*0\s*0\s*2\s*37\s*152\s*92/ |  |
-| text_like | qr/Feb\s*2009\s*6\s*6\s*3\s*0\s*0\s*0\s*0\s*0\s*2\s*7\s*76\s*4/ |  |
-| text_like | qr/Jan\s*2009\s*4\s*6\s*4\s*0\s*0\s*0\s*0\s*0\s*2\s*6\s*46\s*6/ |  |
-| text_like | qr/Dec\s*2008\s*2\s*2\s*2\s*0\s*0\s*0\s*0\s*0\s*2\s*2\s*24\s*2/ |  |
+| text_like | qr/May\s*2009\s*6\s*0\s*0\s*6\s*0\s*0\s*0\s*0\s*2\s*7\s*0\s*0/ |  |
+| text_like | qr/Apr\s*2009\s*6\s*0\s*0\s*6\s*0\s*0\s*0\s*0\s*2\s*7\s*0\s*0/ |  |
+| text_like | qr/Mar\s*2009\s*6\s*6\s*4\s*6\s*0\s*0\s*24\s*0\s*2\s*37\s*152\s*92/ |  |
+| text_like | qr/Feb\s*2009\s*6\s*6\s*3\s*6\s*0\s*0\s*12\s*0\s*2\s*7\s*76\s*4/ |  |
+| text_like | qr/Jan\s*2009\s*4\s*6\s*4\s*4\s*0\s*0\s*8\s*0\s*2\s*6\s*46\s*6/ |  |
+| text_like | qr/Dec\s*2008\s*2\s*2\s*2\s*2\s*0\s*0\s*4\s*0\s*2\s*2\s*24\s*2/ |  |
 
 | *Comment* | Test case: Control Panel Reports (Account-level) Get Usage |  |
 | open_ok | /nlw/control |  |
@@ -189,12 +189,17 @@ open_ok | /nlw/reports/workspace_growth.csv?workspace=growth_report_test&downloa
 
 text_like | Username\s*Dashboard Views\s*Dashboard Personalizations\s*People Views\s*People Contributions\s*Signals Sent\s*Page Views\s*Page Contributions | |
 
-| text_like | qr/t_stub01\@socialtext.com\s*0\s*0\s*0\s*0\s*0\s*70\s*67/ |  |
-| text_like | qr/t_stub02\@socialtext.com\s*0\s*0\s*0\s*0\s*0\s*\s*50\s*0/ |  |
-| text_like | qr/t_stub03\@socialtext.com\s*0\s*0\s*0\s*0\s*0\s*\s*56\s*9/ |  |
-| text_like | qr/t_stub04\@socialtext.com\s*0\s*0\s*0\s*0\s*0\s*\s*44\s*1/ |  |
-| text_like | qr/t_stub05\@socialtext.com\s*0\s*0\s*0\s*0\s*0\s*\s*42\s*22/ |  |
-| text_like | qr/t_stub06\@socialtext.com\s*0\s*0\s*0\s*0\s*0\s*\s*36\s*4/ |  |
+| text_like | qr/t_stub01\@socialtext.com\s*10\s*10\s*0\s*0\s*0\s*70\s*67/ |  |
+| text_like | qr/t_stub02\@socialtext.com\s*10\s*10\s*0\s*0\s*0\s*\s*50\s*0/ |  |
+| text_like | qr/t_stub03\@socialtext.com\s*8\s*8\s*0\s*0\s*0\s*\s*56\s*9/ |  |
+| text_like | qr/t_stub04\@socialtext.com\s*8\s*8\s*0\s*0\s*0\s*\s*44\s*1/ |  |
+| text_like | qr/t_stub05\@socialtext.com\s*6\s*6\s*0\s*0\s*0\s*\s*42\s*22/ |  |
+| text_like | qr/t_stub06\@socialtext.com\s*6\s*6\s*0\s*0\s*0\s*\s*36\s*4/ |  |
 | selectFrame | relative=top |  |
+
+| open_ok | /nlw/reports |  |
+| wait_for_element_visible_ok | duration |  |
+| wait_for_element_visible_ok | start_date |  |
+| text_like | Reports Dashboard |  |
 
 | *Comment* | Test Case: Control Panel Reports COMPLETED |  |
