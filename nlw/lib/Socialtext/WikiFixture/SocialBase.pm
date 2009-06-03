@@ -697,6 +697,16 @@ sub st_clear_events {
     sql_execute('DELETE FROM event');
 }
 
+=head2 st-clear-webhooks
+
+Delete all webhooks.
+
+=cut
+
+sub st_clear_webhooks {
+    sql_execute('DELETE FROM webhooks');
+}
+
 =head2 st-clear-log
 
 Clear any log lines.
