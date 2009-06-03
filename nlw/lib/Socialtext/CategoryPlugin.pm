@@ -191,22 +191,9 @@ sub get_page_info_for_category {
 
         my $disposition = $self->hub->pages->title_to_disposition($subject);
 
-        push @rows, {
-            Subject     => $subject,
-            Summary     => $page->metadata->Summary,
-            page_id     => $page->id,
-            page_uri    => $page->uri,
-            disposition => $disposition,
-            Date        => $page->metadata->Date,
-            DateLocal   => $page->datetime_for_user,
-            From        => $page->last_edited_by->best_full_name(
-                workspace => $self->hub->current_workspace
-            ),
-            username       => $page->last_edited_by->username,
-            revision_count => $page->revision_count,
-            is_spreadsheet => $page->is_spreadsheet,
-            edit_summary   => $page->edit_summary,
-        };
+        my $row = $page->to_result;
+        $row->{disposition} = $disposition;
+        push @rows, $row;
     }
 
     return [ sort $sort_sub @rows ];
