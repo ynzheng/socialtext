@@ -331,8 +331,6 @@ sub _make_row {
     my $document_title = $page->title;
     my $date = $page->last_edit_time;
     my $date_local = $page->datetime_for_user;
-    my $create_time_local = 
-        $self->hub->timezone->date_local( $page->created->date);
     my $snippet = $hit->snippet || $page->summary;
     my $id = $page->id;
     my $attachment;
@@ -371,9 +369,9 @@ sub _make_row {
         is_attachment       => $hit->isa('Socialtext::Search::AttachmentHit'),
         is_spreadsheet      => $page->is_spreadsheet,
         edit_summary        => $page->edit_summary,
-        create_time         => $page->created->date,
-        create_time_local   => $self->createtime_for_user,
-        creator             => $page->created->user_id,
+        create_time         => $page->{create_time},
+        create_time_local   => $page->createtime_for_user,
+        creator             => $page->creator->username,
     };
 }
 
