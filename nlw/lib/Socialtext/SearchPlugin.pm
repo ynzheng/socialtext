@@ -26,8 +26,10 @@ const sortdir => {
     Subject        => 'asc',
     Workspace      => 'asc',
     Date           => 'desc',
+    create_time    => 'desc',
     revision_count => 'desc',
     username       => 'asc',
+    creator        => 'asc',
 };
 
 field 'category_search';
