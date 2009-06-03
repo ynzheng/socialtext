@@ -654,6 +654,22 @@ CREATE SEQUENCE users___user_id
     NO MINVALUE
     CACHE 1;
 
+CREATE TABLE webhook (
+    id bigint NOT NULL,
+    creator_id bigint NOT NULL,
+    "class" text NOT NULL,
+    account_id bigint DEFAULT 0,
+    workspace_id bigint DEFAULT 0,
+    details text DEFAULT '{}',
+    url text NOT NULL
+);
+
+CREATE SEQUENCE webhook___webhook_id
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
 CREATE TABLE workspace_plugin (
     workspace_id bigint NOT NULL,
     plugin text NOT NULL
@@ -1154,6 +1170,12 @@ CREATE UNIQUE INDEX users_lower_username_driver_key
 CREATE INDEX watchlist_user_workspace
 	    ON "Watchlist" (user_id, workspace_id);
 
+CREATE INDEX webhook__workspace_class_ix
+	    ON webhook ("class");
+
+CREATE INDEX webhook__workspace_class_workspace_ix
+	    ON webhook ("class", workspace_id);
+
 CREATE INDEX workspace_plugin_pref_idx
 	    ON workspace_plugin_pref (workspace_id, plugin);
 
@@ -1525,6 +1547,16 @@ ALTER TABLE ONLY "Watchlist"
             FOREIGN KEY (user_id)
             REFERENCES users(user_id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY webhook
+    ADD CONSTRAINT webhook_user_id_fk
+            FOREIGN KEY (creator_id)
+            REFERENCES users(user_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY webhook
+    ADD CONSTRAINT webhook_workspace_id_fk
+            FOREIGN KEY (workspace_id)
+            REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY "Workspace"
     ADD CONSTRAINT workspace___account___account_id___account_id___n___1___1___0
             FOREIGN KEY (account_id)
@@ -1546,4 +1578,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '66');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '67');
