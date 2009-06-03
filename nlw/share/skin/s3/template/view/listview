@@ -138,9 +138,8 @@
             <span class="edit_summary">[% loc('Edit summary') %]: [% row.edit_summary %]</span><br />
           [% END %]
         [% END %]
-        <em>
-        [% loc('Last updated by') %] [% row.username | decorate('user_avatar') %] [% loc('on') %] [% row.DateLocal %].
-        [% loc('Originally created by') %] [% row.creator | decorate('user_avatar') %] [% loc('on') %] [% row.create_time_local %].
+        [% loc('Last updated by') %] <em>[% row.username | decorate('user_avatar') %] [% loc('on') %] [% row.DateLocal %].</em>
+        [% loc('Originally created by') %] <em>[% row.creator | decorate('user_avatar') %] [% loc('on') %] [% row.create_time_local %].
         (<a href="/[% row.workspace_name || current_workspace.name %]/index.cgi?action=revision_list;page_name=[% row.page_uri %]">[% row.revision_count %]</a> [% loc('Revisions') %])
         </em></td>
     [% IF listview_extra_columns.watchlist %]
