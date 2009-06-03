@@ -6,3 +6,9 @@ socialtext-reports/
 socialtext-skins/
 socialpoint/
 socialcalc/
+*.tar.gz
+*.tgz
+*.deb
+*.dsc
+*.changes
+*.build
