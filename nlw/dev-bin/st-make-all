@@ -8,7 +8,7 @@ use Term::ANSIColor 'color';
 
 my @dirs = qw(
     nlw/share/skin
-    plugins/socialcalc/share/javascript
+    plugins/socialcalc
     plugins/widgets
     plugins/signals
     plugins/dashboard
@@ -29,7 +29,26 @@ unshift @ARGV, 'make';
 my $st_current = $ENV{ST_CURRENT};
 my $overall_err = 0;
 my %proc;
+
+# run the first one synchronously
+my $topdir = shift @dirs;
+start_dir($topdir);
+wait_for_dir($topdir);
+
+# run the rest in parallel
 foreach my $dir (@dirs) {
+    start_dir($dir);
+}
+while (my $dir = shift @dirs) {
+    wait_for_dir($dir);
+}
+
+print "\n";
+
+exit $overall_err;
+
+sub start_dir {
+    my $dir = shift;
     my $out = '';
     chdir "$st_current/$dir";
 
@@ -40,8 +59,11 @@ foreach my $dir (@dirs) {
     };
 }
 
-while (my $dir = shift @dirs) {
-    my $handle = $proc{$dir}{handle};
+sub wait_for_dir {
+    my $dir = shift;
+    my $job = delete $proc{$dir};
+
+    my $handle = $job->{handle};
     color_print('green'," $dir");
     unless ($handle) {
         color_print('red', "\nDir doesn't exist.\n");
@@ -51,21 +73,17 @@ while (my $dir = shift @dirs) {
     my $err = $?>>8;
     color_print('red',"!(exit:$err)") unless $success;
 
-    my $out = ${$proc{$dir}{output}};
+    my $out = ${$job->{output}};
     chomp $out;
     print "\n$out\n" unless $quiet || $out eq '';
     $overall_err |= $err; # yes, bitwise
     unless ($nodie || $success) {
-        foreach my $remaining (@dirs) {
-            $handle->kill_kill();
+        foreach my $remaining (values %proc) {
+            $remaining->{handle}->kill_kill();
         }
         exit $err;
     }
 }
-
-print "\n";
-
-exit $overall_err;
 
 sub color_print {
     my $color = shift;
