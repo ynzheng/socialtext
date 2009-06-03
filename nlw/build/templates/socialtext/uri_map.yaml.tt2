@@ -390,6 +390,11 @@
             'text/x-yaml':      [Socialtext::Rest::ReportAdapter, GET_yaml]
         '*':                    [Socialtext::Rest::ReportAdapter, bad_method]
 -
+    '/data/webhooks':
+        'GET':
+            'application/json': [Socialtext::Rest::WebHooks, GET_json]
+        '*':                    [Socialtext::Rest::WebHooks, bad_method]
+-
     '/data':
         '*':                    [Socialtext::Rest, redirect_workspaces]
 -

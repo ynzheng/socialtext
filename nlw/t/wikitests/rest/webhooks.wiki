@@ -1,0 +1,25 @@
+* Fixture: SocialRest
+
+This is a test of the WebHook system.
+
+| *Comment*           | Create us a workspace, account and user       |
+| standard-test-setup |                                               |
+| st-admin            | give-accounts-admin --email %%email_address%% |
+
+| *Comment* | Show that we have no hooks |
+| st-clear-webhooks   | |
+| GET | /data/webhooks | application/json |
+| code-is | 200 |
+| body-is | [] |
+
+| *Comment* | Create a Signal hook |
+| PUT_json | /data/webhooks | {"
+To Test:
+* create a signal webhook 
+* get list of webhooks
+* fail to update a webhook
+* delete a webhook
+* show there are no webhooks
+
+
+
