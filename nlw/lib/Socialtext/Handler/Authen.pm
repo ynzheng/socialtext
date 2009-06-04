@@ -310,7 +310,7 @@ sub register {
                 last_name     => $args{last_name},
             );
         }
-    };
+    } unless $self->session->has_errors;
     if ( my $e = Exception::Class->caught('Socialtext::Exception::DataValidation') ) {
         # We don't show them "Username is required" since that field
         # is not on the form.
