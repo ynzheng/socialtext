@@ -163,25 +163,27 @@ Set up a new account, workspace and user to work with.
 
 sub standard_test_setup {
     my $self = shift;
-    my $acct_name = shift || "acct-$self->{start_time}";
-    my $wksp_name = shift || "wksp-$self->{start_time}";
-    my $user_name = shift || "user-$self->{start_time}\@ken.socialtext.net";
-    my $password  = shift || 'password';
+    my $prefix = shift || '';
+    $prefix .= '_' if $prefix;
+    my $acct_name = shift || "${prefix}acct-$self->{start_time}";
+    my $wksp_name = shift || "${prefix}wksp-$self->{start_time}";
+    my $user_name = shift || "${prefix}user-$self->{start_time}\@ken.socialtext.net";
+    my $password  = shift || "${prefix}password";
 
     my $acct = $self->create_account($acct_name);
     my $wksp = $self->create_workspace($wksp_name, $acct_name);
     my $user = $self->create_user($user_name, $password, $acct_name);
     $self->add_workspace_admin($user_name, $wksp_name);
 
-    $self->{account} = $acct_name;
-    $self->{account_id} = $acct->account_id;
-    $self->{workspace} = $wksp_name;
-    $self->{workspace_id} = $wksp->workspace_id;
-    $self->{email_address} = $user_name;
-    $self->{username} = $user_name;
-    $self->{user_id} = $user->user_id;
-    $self->{password} = $password;
-    $self->http_user_pass($self->{username}, $self->{password});
+    $self->{"${prefix}account"} = $acct_name;
+    $self->{"${prefix}account_id"} = $acct->account_id;
+    $self->{"${prefix}workspace"} = $wksp_name;
+    $self->{"${prefix}workspace_id"} = $wksp->workspace_id;
+    $self->{"${prefix}email_address"} = $user_name;
+    $self->{"${prefix}username"} = $user_name;
+    $self->{"${prefix}user_id"} = $user->user_id;
+    $self->{"${prefix}password"} = $password;
+    $self->http_user_pass($user_name, $password);
 }
 
 sub create_account {
@@ -194,6 +196,7 @@ sub create_account {
     $acct->enable_plugin($_) for qw/people dashboard widgets signals/;
     $ws->enable_plugin($_) for qw/socialcalc/;
     diag "Created account $name";
+    $self->{account_id} = $acct->account_id;
     return $acct;
 }
 
