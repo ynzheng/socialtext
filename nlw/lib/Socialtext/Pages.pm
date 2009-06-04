@@ -340,12 +340,13 @@ sub page_in_workspace {
 }
 
 my $semaphore = {}; # for loop prevention
-sub html_for_page_in_workspace {
-    my $self = shift;
+sub _render_in_workspace {
+    my $self           = shift;
     my $page_id        = shift;
     my $workspace_name = shift;
-    my $hub = $self->hub;
+    my $code           = shift;
 
+    my $hub = $self->hub;
     if ( $workspace_name ne $self->hub->current_workspace->name ) {
         my $main = Socialtext->new();
         $main->load_hub(
@@ -369,11 +370,26 @@ sub html_for_page_in_workspace {
     $semaphore->{$semaphore_string}++;
 
     my $target_page = $hub->pages->new_page($page_id);
-    my $html = $target_page->to_html_or_default;
+    my $html = $code->($target_page);
 
     delete $semaphore->{$semaphore_string};
 
     return $html;
+}
+
+sub html_for_page_in_workspace {
+    my $self = shift;
+    my $page_id        = shift;
+    my $workspace_name = shift;
+
+    return $self->_render_in_workspace(
+        $page_id,
+        $workspace_name,
+        sub {
+            my $page = shift;
+            return $page->to_html_or_default;
+        }
+    );
 }
 
 # Grab the wikitext from a spreadsheet and put it in a page object.
@@ -386,6 +402,7 @@ sub page_with_spreadsheet_wikitext {
     my $wikitext = '';
     my $text = $new->content;
 
+    # TODO: use Socialtext::Sheet
     OUTER: while (1) {
         $text =~ s/.*?\n--SocialCalcSpreadsheetControlSave\n//s
             or last; 
