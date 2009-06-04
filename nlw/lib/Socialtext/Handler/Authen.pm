@@ -400,17 +400,12 @@ sub confirm_email {
         $targetws = Socialtext::Workspace->new(workspace_id => $wsid);
         $targetws->add_user(user => $user);
         my $set_account;
-        if (! $user-> primary_account)  { # Also "generic" accts?
-            $user->primary_account($targetws->account);
-            $set_account = 1;
-        }
+        $user->primary_account($targetws->account);
         st_log->info("SELF_JOIN,user:". $user->email_address . "("
             .$user->user_id."),workspace:"
-            . $targetws->name . "(" . $targetws->workspace_id . ")".
-            ($set_account 
-                ? ",".$targetws->account->name 
-                    . "(". $targetws->account->account_id . ")" 
-                : "" )
+            . $targetws->name . "(" . $targetws->workspace_id . ")"
+            . ",".$targetws->account->name 
+            . "(". $targetws->account->account_id . ")" 
         );
     }
     my $address = $user->email_address;
