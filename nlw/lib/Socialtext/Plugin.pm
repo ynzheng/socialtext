@@ -66,6 +66,7 @@ sub failure_message {
 sub user_plugin_directory {
     my $self = shift;
     my $email = shift;
+    my $no_create = shift;
 
     my $dir = Socialtext::File::catdir(
         Socialtext::Paths::user_directory(
@@ -74,6 +75,7 @@ sub user_plugin_directory {
         ),
         $self->class_id
     );
+    return $dir if $no_create;
 
     if ( not -d $dir ) {
         File::Path::mkpath($dir)

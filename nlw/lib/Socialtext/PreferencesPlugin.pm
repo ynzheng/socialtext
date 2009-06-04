@@ -117,7 +117,9 @@ sub _values_for_email_from_disk {
     my $email = shift;
 
     my $file = Socialtext::File::catfile(
-       $self->user_plugin_directory($email),
+       $self->user_plugin_directory(
+           $email, 'do not create the directory for me'
+       ),
        'preferences.dd'
     );
 
