@@ -334,7 +334,7 @@ sub register {
             );
             $is_new_user = 1;
         }
-    };
+    } unless $self->session->has_errors;
     if ( my $e = Exception::Class->caught('Socialtext::Exception::DataValidation') ) {
         # We don't show them "Username is required" since that field
         # is not on the form.
