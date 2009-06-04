@@ -167,15 +167,18 @@ sub standard_test_setup {
     my $user_name = shift || "user-$self->{start_time}\@ken.socialtext.net";
     my $password  = shift || 'password';
 
-    $self->create_account($acct_name);
-    $self->create_workspace($wksp_name, $acct_name);
-    $self->create_user($user_name, $password, $acct_name);
+    my $acct = $self->create_account($acct_name);
+    my $wksp = $self->create_workspace($wksp_name, $acct_name);
+    my $user = $self->create_user($user_name, $password, $acct_name);
     $self->add_workspace_admin($user_name, $wksp_name);
 
     $self->{account} = $acct_name;
+    $self->{account_id} = $acct->account_id;
     $self->{workspace} = $wksp_name;
+    $self->{workspace_id} = $wksp->workspace_id;
     $self->{email_address} = $user_name;
     $self->{username} = $user_name;
+    $self->{user_id} = $user->user_id;
     $self->{password} = $password;
     $self->http_user_pass($self->{username}, $self->{password});
 }
@@ -190,6 +193,7 @@ sub create_account {
     $acct->enable_plugin($_) for qw/people dashboard widgets signals/;
     $ws->enable_plugin($_) for qw/socialcalc/;
     diag "Created account $name";
+    return $acct;
 }
 
 sub account_config {
@@ -260,6 +264,7 @@ sub create_user {
         )
     );
     diag "Created user ".$user->email_address. ", name ".$user->guess_real_name;
+    return $user;
 }
 
 sub create_workspace {
@@ -285,6 +290,7 @@ sub create_workspace {
     );
     $ws->enable_plugin($_) for qw/socialcalc/;
     diag "Created workspace $name";
+    return $ws;
 }
 
 sub purge_workspace {
@@ -973,6 +979,22 @@ sub deliver_email_error_like {
     $regex = $self->quote_as_regex($regex);
     like $self->{_deliver_email_err}, $regex, 
         "Delivering email stderr matches $regex";
+}
+
+sub set_from_json {
+    my $self = shift;
+    my $var  = shift;
+    my $key  = shift;
+
+    $self->{$var} = $self->{json}{$key};
+}
+
+sub set_from_header {
+    my $self = shift;
+    my $var  = shift;
+    my $header = shift;
+
+    $self->{$var} = $self->{http}->response->header($header);
 }
 
 sub set_from_subject {

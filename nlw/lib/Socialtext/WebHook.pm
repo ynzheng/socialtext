@@ -1,19 +1,19 @@
 package Socialtext::WebHook;
 use Moose;
-use MooseX::Singleton;
 use Socialtext::Workspace;
 use Socialtext::SQL qw/sql_execute sql_singlevalue/;
 use Socialtext::SQL::Builder qw/sql_nextval/;
 use Carp qw/croak/;
 use Socialtext::Page;
+use Socialtext::JSON qw/decode_json encode_json/;
 use namespace::clean -except => 'meta';
 
 has 'id'           => (is => 'ro', isa => 'Int', required => 1);
 has 'creator_id'   => (is => 'ro', isa => 'Int', required => 1);
 has 'class'        => (is => 'ro', isa => 'Str', required => 1);
-has 'account_id'   => (is => 'ro', isa => 'Int', required => 1);
-has 'workspace_id' => (is => 'ro', isa => 'Int', required => 1);
-has 'details_blob' => (is => 'ro', isa => 'Str', required => 1);
+has 'account_id'   => (is => 'ro', isa => 'Int', predecate => 'has_account');
+has 'workspace_id' => (is => 'ro', isa => 'Int', predecate => 'has_workspace');
+has 'details_blob' => (is => 'ro', isa => 'Str', default => '{}');
 has 'url'          => (is => 'ro', isa => 'Str', required => 1);
 has 'workspace' => (is => 'ro', isa => 'Object',  lazy_build => 1);
 has 'account'   => (is => 'ro', isa => 'Object',  lazy_build => 1);
@@ -23,9 +23,37 @@ has 'details'   => (is => 'ro', isa => 'HashRef', lazy_build => 1);
 sub _build_workspace { die }
 sub _build_account { die }
 sub _build_creator { die }
-sub _build_details { die }
+
+sub _build_details {
+    my $self = shift;
+    return decode_json( $self->details_blob );
+}
+
+sub to_hash {
+    my $self = shift;
+    return {
+        map { $_ => $self->$_ }
+          qw/id creator_id account_id workspace_id class details url/
+    };
+}
+
+sub delete {
+    my $self = shift;
+    sql_execute(q{DELETE FROM webhook WHERE id = ?}, $self->id);
+}
 
 # Class Methods
+
+sub ById {
+    my $class = shift;
+    my $id = shift or die "id is mandatory";
+
+    my $sth = sql_execute(q{SELECT * FROM webhook WHERE id = ?}, $id);
+    die "No webhook found with id '$id'" unless $sth->rows;
+
+    my $rows = $sth->fetchall_arrayref({});
+    return $class->_new_from_db($rows->[0]);
+}
 
 sub Clear {
     sql_execute(q{DELETE FROM webhook});
@@ -33,35 +61,40 @@ sub Clear {
 
 sub All {
     my $class = shift;
+
     my $sth = sql_execute(q{SELECT * FROM webhook ORDER BY id});
     my $results = $sth->fetchall_arrayref({});
-    my @all;
-    for my $r (@$results) {
-        push @all, $class->new($r);
-    }
-    return \@all;
+    return [ map { $class->_new_from_db($_) } @$results ];
 }
 
-sub Add {
+sub _new_from_db {
     my $class = shift;
-    my %opts = @_;
-    die "TODO";
-    croak 'action is not defined!' unless $opts{action};
+    my $hashref = shift;
 
-    my $workspace_id = $opts{workspace} ? $opts{workspace}->workspace_id 
-                                        : undef;
-    my $page_id = undef;
-    if (my $name = $opts{page_id}) {
-        my $page = Socialtext::Page->new;
-        $page_id = $page->name_to_id($name);
+    for (qw/account_id workspace_id/) {
+        delete $hashref->{$_} unless defined $hashref->{$_};
     }
+    return $class->new($hashref);
+}
 
-    sql_execute('INSERT INTO webhook VALUES (?, ?, ?, ?)',
-        sql_nextval('webhook___webhook_id'),
-        $workspace_id,
-        $opts{action},
-        $page_id,
+sub Create {
+    my $class = shift;
+    my %args  = @_;
+
+    my $h = $class->new(
+        %args,
+        id => sql_nextval('webhook___webhook_id'),
     );
+    sql_execute('INSERT INTO webhook VALUES (?,?,?,?,?,?,?)',
+        $h->id,
+        $h->creator_id,
+        $h->class,
+        ($h->has_account   ? $h->account_id   : undef ),
+        ($h->has_workspace ? $h->workspace_id : undef ),
+        $h->details_blob,
+        $h->url,
+    );
+    return $h;
 }
 
 __PACKAGE__->meta->make_immutable;
