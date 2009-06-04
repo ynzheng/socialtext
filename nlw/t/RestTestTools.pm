@@ -11,8 +11,11 @@ use URI::Escape qw/uri_escape/;
 
 our @EXPORT_OK = qw/do_get_json do_post_form do_post_json is_status/;
 
+our $Actor;
+
 sub default_actor {
-    return Socialtext::User->new(
+    my $class = shift;
+    $Actor ||= Socialtext::User->new(
         user_id    => 27,
         name       => 'username',
         email      => 'username@example.com',
@@ -20,6 +23,17 @@ sub default_actor {
         last_name  => 'Name',
         is_guest   => 0
     );
+    return $Actor;
+}
+
+sub set_actor {
+    my $class = shift;
+    $Actor = shift;
+}
+
+sub reset_actor {
+    my $class = shift;
+    $Actor = undef;
 }
 
 sub do_get_json {
