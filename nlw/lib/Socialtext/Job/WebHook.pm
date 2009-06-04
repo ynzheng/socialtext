@@ -18,7 +18,7 @@ sub do_work {
     my $payload = ref($args->{payload}) ? encode_json($args->{payload})
                                         : $args->{payload};
     my $response = $ua->post( $args->{hook}{url},
-        { payload => $payload },
+        { json_payload => $payload },
     );
 
     st_log()->info("Triggered webhook '$args->{hook}{id}': "
