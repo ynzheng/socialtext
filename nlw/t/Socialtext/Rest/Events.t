@@ -17,9 +17,18 @@ BEGIN {
     use_ok 'Socialtext::Rest::Events';
 }
 
-our $actor = t::RestTestTools->default_actor();
+our $actor;
 
-Empty_JSON_GET: {
+sub test (&) {
+    $actor = t::RestTestTools->default_actor();
+    my $code = shift;
+    eval { $code->() };
+    my $err = $@;
+    t::RestTestTools->reset_actor();
+    die $err if $err;
+}
+
+Empty_JSON_GET: test {
     my ($rest, $result) = do_get_json();
 
     is_status $rest, '200 OK', "request succeeded";
@@ -30,9 +39,9 @@ Empty_JSON_GET: {
         $actor,
         count => 25 
     ]], "expected parameters passed";
-}
+};
 
-JSON_GET_an_item: {
+JSON_GET_an_item: test {
     my %args = ( 
         after => '2008-06-25 11:39:21.509539-07', 
         before => '2008-06-23T00:00:00Z', 
@@ -69,17 +78,16 @@ JSON_GET_an_item: {
         page_workspace_id => 1,
         page_id => 'quick_start',
     ]], "expected parameters passed";
-}
+};
 
-
-GET_without_authorized_user: {
-    local $actor = Socialtext::User->new(is_guest => 1);
+GET_without_authorized_user: test {
+    t::RestTestTools->set_actor(Socialtext::User->new(is_guest => 1));
     my ($rest, $result) = do_get_json();
 
     is_status $rest, HTTP_401_Unauthorized, "request denied";
-}
+};
 
-POSTing_an_event: {
+POSTing_an_event: test {
     my ($rest, $result) = do_post_form(
         event_class => 'page',
         action => 'edit_begin',
@@ -100,16 +108,18 @@ POSTing_an_event: {
         workspace => 1,
         context => {"page_rev"=>"123456789"},
     );
-}
+};
 
-POSTing_without_actor: {
-    local $actor = Socialtext::User->new(
-        user_id => 98,
-        username => 'auto-actor@devnull',
-        email => 'auto-actor@example.com',
-        first_name => 'Auto',
-        last_name => 'Actor',
-        is_guest => 0
+POSTing_without_actor: test {
+    t::RestTestTools->set_actor(
+        Socialtext::User->new(
+            user_id => 98,
+            username => 'auto-actor@devnull',
+            email => 'auto-actor@example.com',
+            first_name => 'Auto',
+            last_name => 'Actor',
+            is_guest => 0
+        )
     );
 
     my ($rest, $result) = do_post_json({
@@ -131,10 +141,10 @@ POSTing_without_actor: {
         workspace => 1,
         context => {"page_rev"=>"187654321"},
     );
-}
+};
 
-POSTing_without_authorization: {
-    local $actor = Socialtext::User->new(is_guest => 1);
+POSTing_without_authorization: test {
+    $actor = t::RestTestTools->set_actor(Socialtext::User->new(is_guest => 1));
     my ($rest, $result) = do_post_form(
         event_class => 'page',
         action => 'edit_begin',
@@ -147,6 +157,6 @@ POSTing_without_authorization: {
     like $result, qr/not authorized/i, "denied";
     is_status $rest, HTTP_401_Unauthorized, "request denied";
     is_event_count(0);
-}
+};
 
 exit;
