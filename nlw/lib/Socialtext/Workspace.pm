@@ -1415,6 +1415,8 @@ sub _dump_user_workspace_prefs {
         my $prefs = Socialtext::PreferencesPlugin->Prefs_for_user($user, $self);
         next unless keys %$prefs;
 
+        # We dump these prefs to the `preferences.dd` format (instead of 
+        # yaml, say) to preserve backwards compatibility of workspace exports..
         my $user_dir = "$ws_dir/" . $user->email_address . '/preferences';
         File::Path::mkpath $user_dir or die "Can't mkpath $user_dir: $!";
         Socialtext::Base->dumper_to_file("$user_dir/preferences.dd", $prefs);
