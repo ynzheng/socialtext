@@ -20,9 +20,9 @@ has 'account'   => (is => 'ro', isa => 'Object',  lazy_build => 1);
 has 'creator'   => (is => 'ro', isa => 'Object',  lazy_build => 1);
 has 'details'   => (is => 'ro', isa => 'HashRef', lazy_build => 1);
 
-sub _build_workspace { die }
-sub _build_account { die }
-sub _build_creator { die }
+sub _build_workspace {die 'not implemented yet!'}
+sub _build_account   {die 'not implemented yet!'}
+sub _build_creator   {die 'not implemented yet!'}
 
 sub _build_details {
     my $self = shift;
