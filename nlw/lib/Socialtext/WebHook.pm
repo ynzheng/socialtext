@@ -11,8 +11,8 @@ use namespace::clean -except => 'meta';
 has 'id'           => (is => 'ro', isa => 'Int', required => 1);
 has 'creator_id'   => (is => 'ro', isa => 'Int', required => 1);
 has 'class'        => (is => 'ro', isa => 'Str', required => 1);
-has 'account_id'   => (is => 'ro', isa => 'Int', predecate => 'has_account');
-has 'workspace_id' => (is => 'ro', isa => 'Int', predecate => 'has_workspace');
+has 'account_id'   => (is => 'ro', isa => 'Int');
+has 'workspace_id' => (is => 'ro', isa => 'Int');
 has 'details_blob' => (is => 'ro', isa => 'Str', default => '{}');
 has 'url'          => (is => 'ro', isa => 'Str', required => 1);
 has 'workspace' => (is => 'ro', isa => 'Object',  lazy_build => 1);
@@ -96,6 +96,7 @@ sub _new_from_db {
     my $class = shift;
     my $hashref = shift;
 
+    
     for (qw/account_id workspace_id/) {
         delete $hashref->{$_} unless defined $hashref->{$_};
     }
@@ -114,8 +115,8 @@ sub Create {
         $h->id,
         $h->creator_id,
         $h->class,
-        ($h->has_account   ? $h->account_id   : undef ),
-        ($h->has_workspace ? $h->workspace_id : undef ),
+        ($h->account_id   ? $h->account_id   : undef ),
+        ($h->workspace_id ? $h->workspace_id : undef ),
         $h->details_blob,
         $h->url,
     );
