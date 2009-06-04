@@ -393,7 +393,15 @@
     '/data/webhooks':
         'GET':
             'application/json': [Socialtext::Rest::WebHooks, GET_json]
+        'PUT':
+            'application/json': [Socialtext::Rest::WebHooks, PUT_json]
         '*':                    [Socialtext::Rest::WebHooks, bad_method]
+-
+    '/data/webhooks/:hook_id':
+        'GET':
+            'application/json': [Socialtext::Rest::WebHook, GET_json]
+        'DELETE':               [Socialtext::Rest::WebHook, DELETE]
+        '*':                    [Socialtext::Rest::WebHook, bad_method]
 -
     '/data':
         '*':                    [Socialtext::Rest, redirect_workspaces]

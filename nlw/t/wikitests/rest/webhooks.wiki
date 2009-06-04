@@ -13,13 +13,24 @@ This is a test of the WebHook system.
 | body-is | [] |
 
 | *Comment* | Create a Signal hook |
-| PUT_json | /data/webhooks | {"
-To Test:
-* create a signal webhook 
-* get list of webhooks
-* fail to update a webhook
-* delete a webhook
-* show there are no webhooks
+| PUT_json | /data/webhooks | {"class":"signal","url":"http://www.postbin.org/1izgpp1"} |
+| code-is | 201 |
+| set-from-header | hook_uri | Location |
+| GET | %%hook_uri%% |
+| code-is | 200 |
+| json-parse | |
+| json-like | {"class":"signal","url":"http://www.postbin.org/1izgpp1"} |
+| GET | /data/webhooks | application/json |
+| code-is | 200 |
+| json-parse | |
+| json-like | [{"class":"signal","url":"http://www.postbin.org/1izgpp1"}] |
+
+| *Comment* | Delete a webhook |
+| DELETE | %%hook_uri%% |
+| code-is | 204 |
+| GET | /data/webhooks | application/json |
+| code-is | 200 |
+| body-is | [] |
 
 
 

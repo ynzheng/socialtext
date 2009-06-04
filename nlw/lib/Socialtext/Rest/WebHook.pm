@@ -1,22 +1,25 @@
-package Socialtext::Rest::WebHooks;
+package Socialtext::Rest::WebHook;
 # @COPYRIGHT@
 use strict;
 use warnings;
-use base 'Socialtext::Rest::Entity';
+use base 'Socialtext::Rest::Collection';
 use Socialtext::JSON qw/encode_json decode_json/;
 use Socialtext::WebHook;
 use Socialtext::HTTP ':codes';
 
 sub GET_json {
     my $self = shift;
-    return $self->not_authorized unless $self->rest->user->is_business_admin;
+    my $rest = shift;
+    return $self->not_authorized unless $rest->user->is_business_admin;
 
-    my $result = [];
-    my $all_hooks = Socialtext::WebHook->All;
-    for my $h (@$all_hooks) {
-        push @$result, $h->to_hash;
+    my $h;
+    eval { $h = Socialtext::WebHook->ById( $self->hook_id ) };
+    if ($@) {
+        warn $@;
+        $rest->header( -status => HTTP_400_Bad_Request );
+        return '';
     }
-    return encode_json($result);
+    return encode_json($h->to_hash);
 }
 
 sub PUT_json {
@@ -45,6 +48,24 @@ sub PUT_json {
         -status => HTTP_201_Created,
         -Location => "/data/webhooks/" . $hook->id,
     );
+    return '';
+}
+
+sub DELETE {
+    my $self = shift;
+    my $rest = shift;
+    return $self->not_authorized unless $rest->user->is_business_admin;
+
+    my $h;
+    eval { $h = Socialtext::WebHook->ById( $self->hook_id ) };
+    if ($@) {
+        warn $@;
+        $rest->header( -status => HTTP_400_Bad_Request );
+        return '';
+    }
+
+    $h->delete;
+    $rest->header( -status => HTTP_204_No_Content );
     return '';
 }
 
