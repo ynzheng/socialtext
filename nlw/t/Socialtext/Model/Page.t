@@ -65,6 +65,9 @@ Create_from_row: {
         is_spreadsheet => '',
         edit_summary => undef,
         Locked => undef,
+        creator => 'creator',
+        create_time => '2007-01-01 23:12:01',
+        create_time_local => '2007-01-01 23:12:01',
     };
 
     is $page->title, 'name';
