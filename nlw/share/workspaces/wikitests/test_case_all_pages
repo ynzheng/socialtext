@@ -14,7 +14,7 @@
 | text_like | All Pages ( |  |
 
 | *Comment* | Test Case: All Pages Sorting tests |  |
-|  select_and_wait |  sort-picker | Revisions |
+| select_and_wait | sort-picker | Revisions |
 
 | *Comment* | Test Case: All Pages sort Title asc |  |
 | select_and_wait | sort-picker | label=Title |
@@ -33,18 +33,18 @@
 
 | open_ok | /%%workspace%%/index.cgi?action=recent_changes |  |
 | clickAndWait | link=All Pages |  |
-|  select_and_wait | sort-picker  |  Revisions |
+| select_and_wait | sort-picker | Revisions |
 
 | *Comment* | Test Case: All Pages default sort Date desc |  |
-|  select_and_wait |  sort-picker |  label=Date |
+| select_and_wait | sort-picker | label=Date Last Edited |
 | text_like | contentContainer | qr/all pages %%start_time%% 0005.+all pages %%start_time%% 0004/ |
 
 | *Comment* | Test Case: All Pages sort Date asc |  |
-| select_and_wait | sort-picker | label=Date (↑) |
+| select_and_wait | sort-picker | label=Date Last Edited (↑) |
 | text_like | contentContainer | qr/all pages %%start_time%% 0002.+all pages %%start_time%% 0003/ |
 
 | *Comment* | Test Case: All Pages sort Date desc |  |
-| select_and_wait | sort-picker | label=Date (↓) |
+| select_and_wait | sort-picker | label=Date Last Edited (↓) |
 | text_like | contentContainer | qr/all pages %%start_time%% 0002.+all pages %%start_time%% 0001/ |
 
 | *Comment* | Test Case: All Pages create Rev 2 |  |
@@ -63,6 +63,18 @@
 | *Comment* | Test Case: All Pages sort Revisions desc |  |
 | select_and_wait | sort-picker | label=Revisions (↓) |
 | text_like | contentContainer | qr/all pages %%start_time%% 0005.+all pages %%start_time%% 0004/ |
+
+| *Comment* | Test Case: All Pages default sort Create Date desc |  |
+| select_and_wait | sort-picker | label=Date Created |
+| text_like | contentContainer | qr/all pages %%start_time%% 0005.+all pages %%start_time%% 0004/ |
+
+| *Comment* | Test Case: All Pages sort Create Date asc |  |
+| select_and_wait | sort-picker | label=Date Created (↑) |
+| text_like | contentContainer | qr/all pages %%start_time%% 0002.+all pages %%start_time%% 0003/ |
+
+| *Comment* | Test Case: All Pages sort Create Date desc |  |
+| select_and_wait | sort-picker | label=Date Created (↓) |
+| text_like | contentContainer | qr/all pages %%start_time%% 0002.+all pages %%start_time%% 0001/ |
 
 | *Comment* | Test Case: All Pages delete page |  |
 | st-admin | purge-page --w %%workspace%% --p all_pages_%%start_time%%_0004 | purged |
@@ -98,7 +110,7 @@ contains %%email%% as a substring and that messes up other tests like Test Case:
 
 | *Comment* | Test Case: All Pages switch back to Titles view |  |
 | click_and_wait | link=Summaries |  |
-| select_and_wait | sort-picker | label=Date |
+| select_and_wait | sort-picker | label=Date Last Edited |
 | select_and_wait | sort-picker | label=Last Edited By |
 | text_like | contentContainer | qr/all pages %%start_time%% 0003.+all pages %%start_time%% 0001/ |
 
