@@ -1,0 +1,5 @@
+[%# @COPYRIGHT@ -%]
+[%# vim: set et sts=2 sw=2: %]
+[% WRAPPER authen/wrapper title=loc('Join') _ ' ' _ target_workspace.title %]
+  <div class="st-join-confirmation">[% loc("You have joined the [_1] workspace in the [_2] network. Click", target_workspace.title, target_workspace.account.name) %][% loc("Click") %] <a href="[% target_workspace.uri %]">[% loc("here") %]</a>[% loc("to continue") %].</div>
+[% END %]
