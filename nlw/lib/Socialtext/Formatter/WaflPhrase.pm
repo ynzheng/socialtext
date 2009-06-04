@@ -540,28 +540,49 @@ sub html {
 
     return $self->syntax_error unless $page_title;
 
-    if ($section_id) {
-        # inline a cell or range
-        # TODO: use workspace_name and check permissions in that workspace
-        return $self->cell_value($page_id, $section_id);
+    # do a regular page include
+    return $self->SUPER::html(@_) unless $section_id;
+
+    # inline a cell or range
+
+    my $ws = Socialtext::Workspace->new( name => $workspace_name );
+    if ($ws->workspace_id == $self->hub->current_workspace->workspace_id) {
+        my $page = $self->hub->pages->new_page($page_id);
+        return $self->cell_value($page, $section_id);
     }
 
-    # do a regular page include
-    return $self->SUPER::html(@_);
+    # it's cross-workspace
+    return $self->permission_error
+        unless $ws && $self->authz->user_has_permission_for_workspace(
+            user       => $self->current_user,
+            permission => ST_READ_PERM,
+            workspace  => $ws,
+        );
+
+    my $content = $section_id;
+    eval {
+        $self->hub->pages->_render_in_workspace(
+            $page_id, $workspace_name, sub {
+                my $page = shift;
+                $content = $self->cell_value($page, $section_id);
+                return; # don't pass content all the way up
+            }
+        );
+    };
+    return $content;
 }
 
 sub cell_value {
     my $self = shift;
-    my $page_id = shift;
+    my $page = shift;
     my $cell_ref = shift;
 
-    my $page = $self->hub->pages->new_from_name($page_id);
-    return unless $page;
+    return $cell_ref unless $page;
 
     $cell_ref = uc($cell_ref);
-    my $html = $self->hub->pluggable->hook(
+    my $html = $page->hub->pluggable->hook(
         'render.sheet_include.html' => $page, $cell_ref);
-    return $cell_ref unless $html;
+    return $cell_ref unless length($html);
     return $html;
 
 }
