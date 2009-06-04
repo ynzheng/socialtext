@@ -460,6 +460,7 @@ QUICK_TESTS = \
 	t/Socialtext/Search/KinoSearch/Analyzer.t \
 	t/Socialtext/Search/SimpleAttachmentHit.t \
 	t/Socialtext/Search/SimplePageHit.t \
+	t/Socialtext/Sheet.t \
 	t/Socialtext/Skin.t \
 	t/Socialtext/SQL/Builder.t \
 	t/Socialtext/Storage.t \
