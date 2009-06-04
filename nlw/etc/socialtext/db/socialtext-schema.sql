@@ -658,9 +658,9 @@ CREATE TABLE webhook (
     id bigint NOT NULL,
     creator_id bigint NOT NULL,
     "class" text NOT NULL,
-    account_id bigint DEFAULT 0,
-    workspace_id bigint DEFAULT 0,
-    details text DEFAULT '{}',
+    account_id bigint,
+    workspace_id bigint,
+    details_blob text DEFAULT '{}',
     url text NOT NULL
 );
 
@@ -1170,11 +1170,14 @@ CREATE UNIQUE INDEX users_lower_username_driver_key
 CREATE INDEX watchlist_user_workspace
 	    ON "Watchlist" (user_id, workspace_id);
 
+CREATE INDEX webhook__class_account_ix
+	    ON webhook ("class", account_id);
+
+CREATE INDEX webhook__class_workspace_ix
+	    ON webhook ("class", workspace_id);
+
 CREATE INDEX webhook__workspace_class_ix
 	    ON webhook ("class");
-
-CREATE INDEX webhook__workspace_class_workspace_ix
-	    ON webhook ("class", workspace_id);
 
 CREATE INDEX workspace_plugin_pref_idx
 	    ON workspace_plugin_pref (workspace_id, plugin);
@@ -1546,6 +1549,11 @@ ALTER TABLE ONLY "Watchlist"
     ADD CONSTRAINT watchlist_user_fk
             FOREIGN KEY (user_id)
             REFERENCES users(user_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY webhook
+    ADD CONSTRAINT webhook_account_id_fk
+            FOREIGN KEY (account_id)
+            REFERENCES "Account"(account_id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY webhook
     ADD CONSTRAINT webhook_user_id_fk
