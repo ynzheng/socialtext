@@ -25,6 +25,16 @@ This is a test of the WebHook system.
 | json-parse | |
 | json-like | [{"class":"signal","url":"http://www.postbin.org/1izgpp1"}] |
 
+| *Comment*       | Trigger the Signal Hook |                                 |
+| post-json       | /data/signals           | {"signal":"Hello %%username%%"} |
+| code-is         | 201                     |                                 |
+| st-process-jobs |                         |                                 |
+| sleep | 2 |
+| GET | http://www.postbin.org/1izgpp1 |
+| code-is | 200 |
+| body-like | Hello %%username%% |
+
+
 | *Comment* | Delete a webhook |
 | DELETE | %%hook_uri%% |
 | code-is | 204 |
