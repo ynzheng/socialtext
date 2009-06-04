@@ -55,6 +55,24 @@ sub ById {
     return $class->_new_from_db($rows->[0]);
 }
 
+sub Find {
+    my $class = shift;
+    my %args  = @_;
+
+    my (@bind, @where);
+    for my $field (qw/class account_id workspace_id/) {
+        if (my $val = $args{$field}) {
+            push @where, "$field = ?";
+            push @bind, $val;
+        }
+    }
+
+    my $where = join ' AND ', @where;
+    die "Your Find was too loose." unless $where;
+    my $sth = sql_execute( "SELECT * FROM webhook WHERE $where", @bind );
+    return $class->_rows_from_db($sth);
+}
+
 sub Clear {
     sql_execute(q{DELETE FROM webhook});
 }
@@ -63,6 +81,13 @@ sub All {
     my $class = shift;
 
     my $sth = sql_execute(q{SELECT * FROM webhook ORDER BY id});
+    return $class->_rows_from_db($sth);
+}
+
+sub _rows_from_db {
+    my $class = shift;
+    my $sth   = shift;
+
     my $results = $sth->fetchall_arrayref({});
     return [ map { $class->_new_from_db($_) } @$results ];
 }

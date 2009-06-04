@@ -14,6 +14,7 @@ use Socialtext::URI;
 use Socialtext::Exceptions;
 use Socialtext::Base;
 use Socialtext::l10n qw/loc/;
+use Socialtext::Log qw/st_log/;
 
 =head1 NAME
 
@@ -84,29 +85,37 @@ sub _make_getter {
             $rv = $self->if_authorized(
                 'GET',
                 sub {
-                    # REVIEW: should eval this for errors
-                    Socialtext::Timer->Continue('get_resource');
-                    my $resource = $self->get_resource($rest, $content_type);
-                    Socialtext::Timer->Pause('get_resource');
-                    $resource = [] unless (ref $resource && @$resource);
+                    my $result;
+                    eval {
+                        Socialtext::Timer->Continue('get_resource');
+                        my $resource = $self->get_resource($rest, $content_type);
+                        Socialtext::Timer->Pause('get_resource');
+                        $resource = [] unless (ref $resource && @$resource);
 
-                    my $lm = $self->make_http_date(
-                        $self->last_modified($resource)
-                    );
-                    my %new_headers = (
-                        -status => HTTP_200_OK,
-                        -type => $content_type . '; charset=UTF-8',
-                        -Last_Modified => $lm,
-                        # override those with:
-                        $rest->header,
-                    );
-                    $rest->header(%new_headers);
-                    $self->$perl_method($resource);
+                        my $lm = $self->make_http_date(
+                            $self->last_modified($resource)
+                        );
+                        my %new_headers = (
+                            -status => HTTP_200_OK,
+                            -type => $content_type . '; charset=UTF-8',
+                            -Last_Modified => $lm,
+                            # override those with:
+                            $rest->header,
+                        );
+                        $rest->header(%new_headers);
+                        $result = $self->$perl_method($resource);
+                    };
+                    if ($@) {
+                        st_log->info("Rest Collection Error: $@");
+                        die $@;
+                    }
+                    return $result;
                 }
             );
         };
        Socialtext::Timer->Pause("GET_$content_type");
        if ($@) {
+            st_log->info("Rest Collection Error: $@");
             my $e;
             if (Exception::Class->caught('Socialtext::Exception::Auth')) {
                 return $self->not_authorized;
