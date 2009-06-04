@@ -19,6 +19,8 @@ const sortdir => {
     Date           => 'desc',
     revision_count => 'desc',
     username       => 'asc',
+    create_time    => 'desc',
+    creator        => 'asc',
 };
 
 const listview_extra_columns => {};
