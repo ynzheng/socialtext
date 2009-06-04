@@ -15,6 +15,7 @@ use Test::More;
 use Test::HTTP;
 use Time::HiRes qw/gettimeofday tv_interval time/;
 use URI::Escape qw(uri_unescape uri_escape);
+use Data::Dumper;
 
 =head1 NAME
 
@@ -194,6 +195,16 @@ sub create_account {
     $ws->enable_plugin($_) for qw/socialcalc/;
     diag "Created account $name";
     return $acct;
+}
+
+sub dump_vars {
+    my $self = shift;
+    my %hash;
+    for my $key (sort keys %$self) {
+        next if ref $self->{$key};
+        next unless defined $self->{$key};
+        diag "Var '$key': $self->{$key}";
+    }
 }
 
 sub account_config {
