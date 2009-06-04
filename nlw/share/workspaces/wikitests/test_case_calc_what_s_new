@@ -44,14 +44,22 @@
 | click_and_wait | st-save-button-link |  |
 
 | open_ok | /%%workspace%%/index.cgi?action=recent_changes |  |
-|  select_and_wait |  sort-picker |  Revisions |
+| select_and_wait | sort-picker | Revisions |
 
 | *Comment* | Test Case: Calc What's New sort Date desc |  |
-| select_and_wait | sort-picker | Date |
+| select_and_wait | sort-picker | Date Last Edited |
 | text_like | contentContainer | qr/hey whats new %%start_time%% 0004.+hey whats new %%start_time%% 0001/ |
 
 | *Comment* | Test Case: Calc What's New sort Date asc |  |
-| select_and_wait | sort-picker | Date (↑) |
+| select_and_wait | sort-picker | Date Last Edited (↑) |
+| text_like | contentContainer | qr/hey whats new %%start_time%% 0002.+hey whats new %%start_time%% 0003/ |
+
+| *Comment* | Test Case: Calc What's New sort Date created desc |  |
+| select_and_wait | sort-picker | Date Created |
+| text_like | contentContainer | qr/hey whats new %%start_time%% 0004.+hey whats new %%start_time%% 0001/ |
+
+| *Comment* | Test Case: Calc What's New sort Date created asc |  |
+| select_and_wait | sort-picker | Date Created (↑) |
 | text_like | contentContainer | qr/hey whats new %%start_time%% 0002.+hey whats new %%start_time%% 0003/ |
 
 | *Comment* | Test Case: Calc What's New create Rev 2 |  |

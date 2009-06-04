@@ -51,11 +51,11 @@ Visit some individual pages in the workspace; add them to the watchlist. View wa
 | st-is-watched | 1 | watchlist bbb spreadsheet %%start_time%% |
 | st-is-watched | 1 | watchlist ccc spreadsheet %%start_time%% |
 
- User removes page from watchlist through the watchlist UI.
+User removes page from watchlist through the watchlist UI.
 
-Watchlist icon reverses color to indicate no longer a member of watchlist. 
+Watchlist icon reverses color to indicate no longer a member of watchlist.
 Entry does not disappear.
- User adds removed page from watchlist through the watchlist UI.
+User adds removed page from watchlist through the watchlist UI.
 
 Watchlist icon reverses color to indicate a member of watchlist. | *Comment* | Test case: Calc Watchlist UI | |
 
@@ -72,7 +72,7 @@ Watchlist icon reverses color to indicate a member of watchlist. | *Comment* | T
 | st-watch-page | 1 | watchlist ccc spreadsheet %%start_time%% |
 | st-is-watched | 1 | watchlist ccc spreadsheet %%start_time%% |
 
- When a page that is on the watchlist is deleted, it is removed from the watchlist.
+When a page that is on the watchlist is deleted, it is removed from the watchlist.
 
 Remove all pages from watchlist; watchlist displays "No watchlist for USER ID in <workspace>"
 
@@ -139,16 +139,30 @@ title sort
 | text_like | contentContainer | qr/watchlist aaa spreadsheet %%start_time%%.+watchlist bbb spreadsheet %%start_time%%.+watchlist ccc spreadsheet %%start_time%%.+watchlist newpage spreadsheet %%start_time%%/ |
 
 | *Comment* | Test case: Calc Watchlist sort by Date |  |
-| select_and_wait | sort-picker | label=Date |
+| select_and_wait | sort-picker | label=Date Last Edited |
 | text_like | contentContainer | qr/watchlist newpage spreadsheet %%start_time%%.+watchlist ccc spreadsheet %%start_time%%.+watchlist bbb spreadsheet %%start_time%%.+watchlist aaa spreadsheet %%start_time%%/ |
 
 | *Comment* | label=Date (↑) |  |
-| select_and_wait | sort-picker | label=Date (↑) |
+| select_and_wait | sort-picker | label=Date Last Edited (↑) |
 | text_like | contentContainer | qr/watchlist aaa spreadsheet %%start_time%%.+watchlist bbb spreadsheet %%start_time%%.+watchlist ccc spreadsheet %%start_time%%.+watchlist newpage spreadsheet %%start_time%%/ |
 
 | *Comment* | label=Date (↓) |  |
-| select_and_wait | sort-picker | label=Date (↓) |
+| select_and_wait | sort-picker | label=Date Last Edited (↓) |
 | text_like | contentContainer | qr/watchlist newpage spreadsheet %%start_time%%.+watchlist ccc spreadsheet %%start_time%%.+watchlist bbb spreadsheet %%start_time%%.+watchlist aaa spreadsheet %%start_time%%/ |
+
+Date Created sort
+
+| *Comment* | Test case: Calc Watchlist sort by created date |  |
+| select_and_wait | sort-picker | label=Date Created |
+| text_like | contentContainer | qr/watchlist ccc spreadsheet %%start_time%%.+watchlist bbb spreadsheet %%start_time%%.+watchlist aaa spreadsheet %%start_time%%/ |
+
+| *Comment* | label=Date Created (↑) |  |
+| select_and_wait | sort-picker | label=Date Created (↑) |
+| text_like | contentContainer | qr/watchlist aaa spreadsheet %%start_time%%.+watchlist bbb spreadsheet %%start_time%%.+watchlist ccc spreadsheet %%start_time%%/ |
+
+| *Comment* | label=Date Created (↓) |  |
+| select_and_wait | sort-picker | label=Date Created (↓) |
+| text_like | contentContainer | qr/watchlist ccc spreadsheet %%start_time%%.+watchlist bbb spreadsheet %%start_time%%.+watchlist aaa spreadsheet %%start_time%%/ |
 
 Revisions sort
 
