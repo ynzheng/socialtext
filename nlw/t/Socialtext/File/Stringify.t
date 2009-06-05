@@ -2,9 +2,13 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-
 use Test::More tests => 41;
 use File::Basename qw(dirname);
+use FindBin;
+
+# We need to specify a full lib path, as the stringify code will chdir
+# elsewhere, but we need to load some libraries at run time.
+use lib "$FindBin::Bin/../../../lib";
 
 my $data_dir = dirname(__FILE__) . "/stringify_data";
 my %ext_deps = (
@@ -25,7 +29,6 @@ BEGIN {
 }
 
 for my $ext (qw(txt html doc rtf pdf ps xls ppt xml mp3 bin)) {
-    local $ENV{ST_STRINGIFY_TEST} = 1;
     my $file = $data_dir . "/test.$ext";
     my $text = Socialtext::File::Stringify->to_string($file);
     SKIP: {

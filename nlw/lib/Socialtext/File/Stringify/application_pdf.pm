@@ -12,10 +12,6 @@ sub to_string {
     $@ = undef;
     my $text = Socialtext::System::backtick( "pdftotext", "-enc", "UTF-8", $file,
         "-" );
-
-    if ($ENV{ST_STRINGIFY_TEST}) {
-        warn "pdftotext: \$?=($?) \$\@=($@)";
-    }
     $text = Socialtext::File::Stringify::Default->to_string($file) if $? or $@;
     return $text;
 }
