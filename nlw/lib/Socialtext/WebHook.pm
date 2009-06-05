@@ -1,3 +1,4 @@
+# @COPYRIGHT@
 package Socialtext::WebHook;
 use Moose;
 use Socialtext::Workspace;
