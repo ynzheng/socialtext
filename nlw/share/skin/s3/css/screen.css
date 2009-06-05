@@ -4209,7 +4209,8 @@ body#dashBoard div#controls div#controlsRight ul {
 }
 
 .galleryWidget .thumbnail {
-    width: 62px;
+    width: 120px;
+    height: 60px;
     float: left;
     margin: 0 10px;
 }
