@@ -55,7 +55,7 @@
 [% BLOCK feed_item %]
   <li class="fetchrss_item">
     <a href="[% link %]">[% title | html %]</a>
-    [% IF item.issued %]
+    [% IF style && item.issued %]
       <span class="fetchrss_date">[% date_for_user(item.issued) %]</span>
     [% END %]
 
