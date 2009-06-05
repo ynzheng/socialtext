@@ -796,4 +796,27 @@ sub import_user_prefs {
     }
 }
 
+sub sheet_renderer {
+    my $self = shift;
+    my $page_or_ref = shift;
+
+    my $hub;
+    my $content;
+    if (ref($page_or_ref) eq 'SCALAR') {
+        $content = $page_or_ref;
+        $hub     = $self->hub;
+    }
+    else {
+        $content = $page_or_ref->content;
+        $hub     = $page_or_ref->hub;
+    }
+
+    require Socialtext::Sheet;
+    my $sheet = Socialtext::Sheet->new(sheet_source => \$content);
+    return Socialtext::Sheet::Renderer->new(
+        sheet => $sheet,
+        hub   => $hub,
+    );
+}
+
 1;
