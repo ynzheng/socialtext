@@ -179,6 +179,7 @@ sub rest {
 # Timezone plugin mocked up here
 sub timezone { $_[0] } # return ourself
 sub date_local { $_[1] } # return the date we passed in
+sub get_date   { $_[1] } # return the date we passed in
 
 sub registry_loaded { 1 }
 
