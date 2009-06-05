@@ -66,6 +66,18 @@ either inaccurate or invalid.  For this reason we explicitly state here that
 we try to get you B<as close to the original end-user as is possible.>  Isn't
 a guarantee, its a best effort.
 
+=head1 METHODS
+
+=over
+
+=item handler
+
+Mod_perl PostReadRequest handler method, which extracts IP information from
+the "X-Forwarded-For" header and makes that look like the remote connection
+IP.
+
+=back
+
 =head1 AUTHOR
 
 Socialtext, Inc.  C<< <code@socialtext.com> >>
