@@ -6,6 +6,10 @@ ALTER TABLE container_type
     ADD COLUMN columns INTEGER DEFAULT 3,
     ADD COLUMN title TEXT;
 
+UPDATE container_type
+    SET global = true
+    WHERE container_type IN ('profile', 'edit_profile');
+
 ALTER TABLE gadget
     DROP COLUMN extra_files;
 
