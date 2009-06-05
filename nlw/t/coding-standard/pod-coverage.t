@@ -66,18 +66,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::FavoritesPlugin
     Socialtext::FetchRSSPlugin
     Socialtext::File
-    Socialtext::File::Stringify::Default
-    Socialtext::File::Stringify::application_msword
-    Socialtext::File::Stringify::application_pdf
-    Socialtext::File::Stringify::application_postscript
-    Socialtext::File::Stringify::application_vnd_ms_excel
-    Socialtext::File::Stringify::application_vnd_ms_powerpoint
-    Socialtext::File::Stringify::application_zip
-    Socialtext::File::Stringify::audio_mpeg
-    Socialtext::File::Stringify::text_html
-    Socialtext::File::Stringify::text_plain
-    Socialtext::File::Stringify::text_rtf
-    Socialtext::File::Stringify::text_xml
     Socialtext::FillInFormBridge
     Socialtext::Formatter
     Socialtext::Formatter::AbsoluteLinkDictionary

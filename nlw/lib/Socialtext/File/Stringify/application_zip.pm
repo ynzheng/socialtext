@@ -43,3 +43,28 @@ sub _default {
 }
 
 1;
+
+=head1 NAME
+
+Socialtext::File::Stringify::application_zip - Stringify contents of Zip files
+
+=head1 METHODS
+
+=over
+
+=item to_string($filename)
+
+Recursively extracts the stringified content of B<all> of the documents
+contained within the given C<$filename>, a Zip archive.
+
+=back
+
+=head1 AUTHOR
+
+Socialtext, Inc. C<< <code@socialtext.com> >>
+
+=head1 COPYRIGHT
+
+Copyright 2006 Socialtext, Inc., all rights reserved.
+
+=cut
