@@ -36,9 +36,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::CGI::Scrubbed
     Socialtext::CLI
     Socialtext::CategoryPlugin
-    Socialtext::Challenger
-    Socialtext::Challenger::OpenId
-    Socialtext::Challenger::STLogin
     Socialtext::CommentUIPlugin
     Socialtext::CredentialsExtractor
     Socialtext::DaemonUtil

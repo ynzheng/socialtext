@@ -28,9 +28,20 @@ Socialtext::Challenger::OpenId - Challenge with the default login screen
 When configured for use, this Challenger will redirect a request
 to the OpenId login system.
 
+=head1 METHODS
+
+=over
+
+=item B<Socialtext::Challenger::OpenID-E<gt>challenge(%p)>
+
+Custom challenger.
+
+Not to be called directly.  Use C<Socialtext::Challenger> instead.
+
+=back
+
 =cut
 
-# Send this request to the NLW challenge screen
 sub challenge {
     my $class    = shift;
     my %p        = @_;
@@ -149,6 +160,7 @@ sub _set_cookie {
 }
 
 1;
+
 =head1 AUTHOR
 
 Socialtext, Inc., <code@socialtext.com>

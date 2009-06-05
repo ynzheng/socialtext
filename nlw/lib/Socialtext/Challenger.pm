@@ -77,6 +77,16 @@ Individual plugin classes are expected to implement a class method called
 C<challenge> (note case distinction).  If it returns false, the system did not
 activate (for whatever reason) and the next challenger will be tried.
 
+=head2 Socialtext::Challenger->Challengers()
+
+Returns a C<Socialtext::MultiCursor> containing instances of all of the
+configured challengers, as listed in the C<socialtext.conf> configuration
+file.
+
+=head2 base_package()
+
+Returns the base package for all Challenger modules.
+
 =head3 ARGUMENTS
 
 C<challenge> accepts a hash of arguments.  C<request> is required and is the
