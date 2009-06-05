@@ -80,6 +80,11 @@ Returns the first defined set of credentials it can.
 Individual plugin classes are expected to implement a method called
 'extract_credentials' which returns a scalar, either username or user_id.
 
+=head2 base_package()
+
+Base package underneath which all Credentials Extractor plugins are to be
+found.
+
 =head1 AUTHOR
 
 Socialtext, Inc., <code@socialtext.com>
