@@ -1,7 +1,15 @@
+package Socialtext::Apache::AuthenHandler;
 # @COPYRIGHT@
-#
-use warnings;
+
 use strict;
+use warnings;
+
+use Apache::Constants qw(OK HTTP_UNAUTHORIZED HTTP_INTERNAL_SERVER_ERROR);
+use Readonly;
+use Socialtext::Authen;
+use Socialtext::Apache::User;
+use Socialtext::AppConfig;
+use Socialtext::Exceptions 'throw_undef_method';
 
 =head1 NAME
 
@@ -21,15 +29,6 @@ The handler tries each of your actions in turn.  It expects the last action
 listed to be what to do in case of failure.
 
 =cut
-
-package Socialtext::Apache::AuthenHandler;
-
-use Apache::Constants qw(OK HTTP_UNAUTHORIZED HTTP_INTERNAL_SERVER_ERROR);
-use Readonly;
-use Socialtext::Authen;
-use Socialtext::Apache::User;
-use Socialtext::AppConfig;
-use Socialtext::Exceptions 'throw_undef_method';
 
 Readonly my $SERVICE => __PACKAGE__;
 
