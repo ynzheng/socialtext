@@ -801,18 +801,19 @@ sub sheet_renderer {
     my $page_or_ref = shift;
 
     my $hub;
-    my $content;
+    my $content_ref;
     if (ref($page_or_ref) eq 'SCALAR') {
-        $content = $page_or_ref;
-        $hub     = $self->hub;
+        $content_ref = $page_or_ref;
+        $hub         = $self->hub;
     }
     else {
-        $content = $page_or_ref->content;
-        $hub     = $page_or_ref->hub;
+        my $content = $page_or_ref->content;
+        $content_ref = \$content;
+        $hub         = $page_or_ref->hub;
     }
 
     require Socialtext::Sheet;
-    my $sheet = Socialtext::Sheet->new(sheet_source => \$content);
+    my $sheet = Socialtext::Sheet->new(sheet_source => $content_ref);
     return Socialtext::Sheet::Renderer->new(
         sheet => $sheet,
         hub   => $hub,
