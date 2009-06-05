@@ -341,17 +341,21 @@ my %ModuleExceptions = (
 
 ###############################################################################
 # Find all the modules, and plan our tests
-my @all_modules = @ARGV || all_core_modules();
+my @all_modules = @ARGV;
+unless (@all_modules) {
+    @all_modules = all_core_modules();
+}
 plan tests => scalar @all_modules;
 
 ###############################################################################
 # Test each module in turn
-foreach my $mod (sort @all_modules) {
-    my $is_todo = exists $ToDoModules{$mod};
-    my $params  = $ModuleExceptions{$mod} || {};
+foreach my $file (sort @all_modules) {
+    my $module  = file_to_module($file);
+    my $is_todo = exists $ToDoModules{$module};
+    my $params  = $ModuleExceptions{$module} || {};
     TODO: {
         local $TODO = 'old module' if ($is_todo);
-        pod_coverage_ok( $mod, $params );
+        pod_coverage_ok( $module, $params );
     }
 }
 exit;
@@ -363,10 +367,16 @@ exit;
 sub all_core_modules {
     my @all_files = `find lib -type f -name "*.pm"`;
     chomp @all_files;
-    foreach my $file (@all_files) {
-        $file =~ s{lib/}{};             # strip leading "lib/"
-        $file =~ s{\.pm$}{};            # strip file suffix
-        $file =~ s{/}{::}g;             # convert file to module name
-    }
     return @all_files;
+}
+
+###############################################################################
+# Takes a filename (e.g. "lib/Socialtext/Apache/AuthenHandler.pm") and
+# converts that into a module name (e.g. "Socialtext::Apache::AuthenHandler").
+sub file_to_module {
+    my $file = shift;
+    $file =~ s{lib/}{};             # strip leading "lib/"
+    $file =~ s{\.pm$}{};            # strip file suffix
+    $file =~ s{/}{::}g;             # convert file to module name
+    return $file;
 }
