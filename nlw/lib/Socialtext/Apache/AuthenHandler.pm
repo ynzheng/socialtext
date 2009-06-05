@@ -32,6 +32,14 @@ listed to be what to do in case of failure.
 
 Readonly my $SERVICE => __PACKAGE__;
 
+=head1 METHODS
+
+=head2 handler
+
+Mod_perl handler.
+
+=cut
+
 sub handler {
     my ($r) = @_;
 
