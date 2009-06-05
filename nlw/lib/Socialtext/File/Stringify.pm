@@ -43,7 +43,6 @@ sub _load_class_by_mime_type {
     $class_name =~ s{_+}{_}g;
     $class_name = "Socialtext::File::Stringify::$class_name";
     eval "use $class_name;";
-    warn "INC=(@INC)" .$@ if $@;
     return $@ ? "Socialtext::File::Stringify::Default" : $class_name;
 }
 
