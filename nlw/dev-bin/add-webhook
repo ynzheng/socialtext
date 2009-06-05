@@ -1,0 +1,21 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Socialtext::Resting::Getopt qw/get_rester/;
+use Getopt::Long;
+
+my %args;
+GetOptions( \%args,
+    'class=s',
+    'url=s',
+) or die;
+
+my $port = $> + 20000;
+my $r = get_rester(
+    server => "http://localhost:$port",
+    username => 'devnull1@socialtext.com',
+    password => 'd3vnu11l',
+);
+
+
+print $r->put_webhook( %args ), "\n";
