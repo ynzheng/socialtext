@@ -11,6 +11,14 @@ $NLW_BIN/st-admin add-workspace-admin --w test-data --e $USERNAME >/dev/null 2>/
 $NLW_BIN/st-admin give-accounts-admin  --e $USERNAME  >/dev/null 2>/dev/null || true
 $NLW_BIN/st-admin give-system-admin  --e $USERNAME  >/dev/null 2>/dev/null || true
 
+echo "Set up wikitests"
+    $NLW_DEVBIN/wikitests-to-wiki
+
+echo ENABLING Socialcalc for all workspaces
+$NLW_DEVBIN/st-socialcalc enable
+
+echo "CTRL-C to halt reports DB setup"
+
 echo ""
 echo Populating reports DB
 $NLW_DEVBIN/st-populate-reports-db
@@ -18,14 +26,5 @@ $NLW_DEVBIN/st-populate-reports-db
 # report tests to pass
 export PGUSER=`st-config echo db_user`
 $NLW_DEVBIN/st-populate-reports-db
-
-echo "Set up wikitests"
-    $NLW_DEVBIN/wikitests-to-wiki
-
-echo ENABLING Socialcalc for all workspaces
-$NLW_DEVBIN/st-socialcalc enable
-
-echo Removing all ceqlotron tasks to stop unnecessary indexing
-$NLW_BIN/ceq-rm /.+/
 
 echo Done setting up wikitests
