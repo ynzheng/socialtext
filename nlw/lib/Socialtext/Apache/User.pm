@@ -1,9 +1,8 @@
-# @COPYRIGHT@
 package Socialtext::Apache::User;
+# @COPYRIGHT@
 
 use strict;
 use warnings;
-
 use Apache::Cookie;
 use Digest::SHA ();
 use Socialtext::AppConfig;
@@ -14,7 +13,6 @@ use Socialtext::HTTP::Cookie;
 # Note: A parallel version of this code lives in Socialtext::CGI::User
 # so if this mechanism changes, we need to change the CGI version too
 # (or merge them together).
-
 
 sub set_login_cookie {
     my $r = shift;
