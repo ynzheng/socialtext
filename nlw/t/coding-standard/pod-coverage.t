@@ -35,7 +35,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Build::ConfigureValues
     Socialtext::CGI
     Socialtext::CGI::Scrubbed
-    Socialtext::CGI::User
     Socialtext::CLI
     Socialtext::CategoryPlugin
     Socialtext::Challenger
