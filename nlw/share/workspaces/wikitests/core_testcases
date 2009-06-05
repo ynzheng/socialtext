@@ -80,6 +80,7 @@ test env properly and are not testing the test-workspace
 * [Test Case: Follow]
 * [Test Case: Servername redirect to default ws]
 * [Test Case: Page Locking]
+* [Test Case: Created By Sorting]
 
 * [Edit Contention Testcases]
 

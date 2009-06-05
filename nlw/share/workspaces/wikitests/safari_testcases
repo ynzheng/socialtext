@@ -57,6 +57,7 @@ test env properly and are not testing the test-workspace
 * [Test Case: Page Open Errors]
 * [Test Case: Insert Menu]
 * [Test Case: Tagged Pages Sorting]
+* [Test case: Created By Sorting]
 * [Test Case: Tools: Duplicate Page]
 * [Test Case: Tools: Rename Page]
 * [Test Case: Tools: Copy Page to Workspace]
