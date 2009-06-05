@@ -7,8 +7,9 @@ use base 'Socialtext::Plugin';
 
 use Cache::FileCache;
 use Class::Field qw( const field );
-use LWP::UserAgent;
 use Socialtext::Paths;
+use Socialtext::String;
+use LWP::UserAgent;
 use XML::Feed;
 
 sub class_id { 'fetchrss' }
@@ -155,7 +156,7 @@ use Socialtext::l10n qw/loc/;
 
 sub html {
     my $self = shift;
-    my ($url, $full, $expire) = split(/,?\s+/, $self->arguments);
+    my ($url, $style, $expire) = split(/,?\s+/, $self->arguments);
     return $self->syntax_error unless $url;
     return $self->syntax_error("Recursive Fetchrss")
         if $self->_is_recursive($url);
@@ -176,11 +177,15 @@ sub html {
     my $html = '';
     eval { 
         $html = $self->hub->template->process('fetchrss.html',
-            full => $full,
+            style => $style,
             method => $self->method,
             fetchrss_url => $url,
             feed => $feed,
             fetchrss_error => $self->hub->fetchrss->error,
+            date_for_user => sub { $self->hub->timezone->get_date(shift) },
+            truncator => sub {
+                Socialtext::String::html_truncate(shift, shift || 350)
+            },
         );
     };
     if ($@) {
@@ -222,7 +227,7 @@ Socialtext::FetchRSSPlugin - Wafl Phrase for including RSS or Atom feeds in a Pa
 
 =head1 DESCRIPTION
 
-  {fetchrss <feed url> [full] [expire]}
+  {fetchrss <feed url> [style] [expire]}
 
 Socialtext::FetchRSSPlugin retrieves and caches an RSS or Atom feeds from a blog,
 news site, wiki, wherever and presents it in a page. It can optionally display

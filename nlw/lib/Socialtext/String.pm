@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use HTML::Entities ();
 use URI::Escape ();
+use HTML::Truncate;
 
 use constant MAX_PAGE_ID_LEN => 255;
 
@@ -117,6 +118,22 @@ sub word_truncate {
     $new_string =~ s/\s+$//;
     $new_string .= $ellipsis;
     return $new_string;
+}
+
+=head2 html_truncate ($str, $length)
+
+Return a truncated I<$str> to a maximum of I<$length> characters and append
+I<$ellipsis> if text was truncated.  C<html_truncate> will not break HTML tags
+apart.
+
+=cut
+
+sub html_truncate {
+    my ($string, $length) = @_;
+    return $string if length($string) <= $length;
+
+    my $t = HTML::Truncate->new(utf8_mode => 1, chars => $length);
+    return $t->truncate($string);
 }
 
 =head2 title_to_id ($str, [$no_escape])

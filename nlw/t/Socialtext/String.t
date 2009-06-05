@@ -3,8 +3,9 @@
 
 use strict;
 use warnings;
+use utf8;
 
-use Test::More tests => 45;
+use Test::More tests => 46;
 
 BEGIN {
     use_ok( 'Socialtext::String' );
@@ -102,4 +103,10 @@ TITLE_TO_DISPLAY_ID: {
         is(Socialtext::String::title_to_display_id($in), $out, 
             "title_to_display_id '$in' => '$out'");
     }
+}
+
+HTML_Truncate: {
+    my $html = '<p><i>We</i> have to test <b>something</b>.</p>';
+    is Socialtext::String::html_truncate($html, 20),
+        '<p><i>We</i> have to test <b>some…</b></p>';
 }

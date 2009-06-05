@@ -54,10 +54,18 @@
 [% BLOCK feed_item %]
   <li class="fetchrss_item">
     <a href="[% link %]">[% title | html %]</a>
-    [% IF full && body %]
-      <p class="fetchrss_description">
-        [% item.content.body %]
-      </p>
+    [% IF item.issued %]
+      <span class="fetchrss_date">[% date_for_user(item.issued) %]</span>
+    [% END %]
+
+    [% IF style == 'full' && body %]
+      <p class="fetchrss_description">[% item.content.body %]</p>
+    [% ELSIF style == 'summary' %]
+      [% IF item.summary.body %]
+        <p class="fetchrss_description">[% item.summary.body %]</p>
+      [% ELSIF body %]
+        <p class="fetchrss_description">[% truncator(item.content.body, 350) %]</p>
+      [% END %]
     [% END %]
   </li>
 [% END %]
