@@ -261,7 +261,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Timer
     Socialtext::UniqueArray
     Socialtext::UploadedImage
-    Socialtext::User
     Socialtext::User::Cache
     Socialtext::User::EmailConfirmation
     Socialtext::User::Find
