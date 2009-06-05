@@ -341,7 +341,7 @@ my %ModuleExceptions = (
 
 ###############################################################################
 # Find all the modules, and plan our tests
-my @all_modules = all_core_modules();
+my @all_modules = @ARGV || all_core_modules();
 plan tests => scalar @all_modules;
 
 ###############################################################################
