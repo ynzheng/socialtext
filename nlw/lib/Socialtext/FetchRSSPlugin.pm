@@ -183,9 +183,6 @@ sub html {
             feed => $feed,
             fetchrss_error => $self->hub->fetchrss->error,
             date_for_user => sub { $self->hub->timezone->get_date(shift) },
-            truncator => sub {
-                Socialtext::String::html_truncate(shift, shift || 350)
-            },
         );
     };
     if ($@) {

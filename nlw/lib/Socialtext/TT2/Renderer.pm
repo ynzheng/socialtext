@@ -1,6 +1,5 @@
 # @COPYRIGHT@
 package Socialtext::TT2::Renderer;
-
 use strict;
 use warnings;
 
@@ -182,7 +181,6 @@ sub _include_paths {
 
     return $CurrentPaths;
 }
-
 
 1;
 

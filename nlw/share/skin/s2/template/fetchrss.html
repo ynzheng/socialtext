@@ -1,4 +1,5 @@
 [%# @COPYRIGHT@ -%]
+[%- USE html_truncate -%]
 <div class="fetchrss_box">
   <div class="fetchrss_titlebox">
     [%
@@ -64,7 +65,7 @@
       [% IF item.summary.body %]
         <p class="fetchrss_description">[% item.summary.body %]</p>
       [% ELSIF body %]
-        <p class="fetchrss_description">[% truncator(item.content.body, 350) %]</p>
+        <p class="fetchrss_description">[% item.content.body | html_truncate(350) %]</p>
       [% END %]
     [% END %]
   </li>
