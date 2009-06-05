@@ -97,8 +97,6 @@ sub _set_cookie {
 
 1;
 
-__END__
-
 =head1 NAME
 
 Socialtext::Apache::User - The great new Socialtext::Apache::User!
@@ -107,6 +105,39 @@ Socialtext::Apache::User - The great new Socialtext::Apache::User!
 
   my $user_id = Socialtext::Apache::User::user_id($r);
   Socialtext::Apache::User::set_login_cookie( ... );
+
+=head1 DESCRIPTION
+
+C<Socialtext::Apache::User> provides some helper methods to get information on
+the current User, and to set/query the login cookie.
+
+B<NOTE:> a parallel version of this code lives in C<Socialtext::CGI::User>.
+If this mechanism changes, we need to change the CGI version too.  Eventually
+we'd like to merge them together into a single API, but we haven't gotten
+there yet.
+
+=head1 METHODS
+
+=over
+
+=item B<set_login_cookie($request, $user_id, $expires)>
+
+Sets a login cookie into the provided Apache C<$request> object for the User
+identified by the given C<$user_id>.  Unless a C<$expires> is given, the
+cookie will be a "session cookie" (and will expire when the browser closes).
+C<$expires> can be given in any format usable by C<Apache::Cookie>.
+
+=item B<unset_login_cookie($request)>
+
+Clears any existing session cookie that may exist in the browser.
+
+=item B<current_user($request)>
+
+Returns a C<Socialtext::User> object for the currently authenticated User, and
+sets C<$user->username> into the Apache C<$request> object as the currently
+authenticated username.
+
+=back
 
 =head1 AUTHOR
 

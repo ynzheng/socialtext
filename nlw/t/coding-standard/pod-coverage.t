@@ -21,7 +21,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::AccountInvitation
     Socialtext::AccountLogo
     Socialtext::Apache::Authen::NTLM
-    Socialtext::Apache::User
     Socialtext::ApacheDaemon
     Socialtext::Attachment
     Socialtext::Attachments
