@@ -113,17 +113,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Indexes
     Socialtext::InitFunctions
     Socialtext::InitHandler
-    Socialtext::Job
-    Socialtext::Job::AttachmentIndex
-    Socialtext::Job::Cmd
-    Socialtext::Job::EmailNotify
-    Socialtext::Job::PageIndex
-    Socialtext::Job::Test
-    Socialtext::Job::Upgrade::MigrateUserWorkspacePrefs
-    Socialtext::Job::WatchlistNotify
-    Socialtext::Job::WeblogPing
-    Socialtext::JobCreator
-    Socialtext::Jobs
     Socialtext::LDAP
     Socialtext::LDAP::Config
     Socialtext::LDAP::Operations
@@ -317,6 +306,23 @@ my %ToDoModules = map { $_ => 1 } qw(
     Test::Socialtext::Mechanize
     Test::Socialtext::Search
     Test::Socialtext::Thrower
+    Socialtext::Template::Plugin::html_truncate
+    Socialtext::Rest::WebHooks
+    Socialtext::Rest::WebHook
+    Socialtext::WebHook
+    Socialtext::Job::Test
+    Socialtext::Job::AttachmentIndex
+    Socialtext::Job::Cmd
+    Socialtext::Job::EmailNotify
+    Socialtext::Job::PageIndex
+    Socialtext::Job::Upgrade::MigrateUserWorkspacePrefs
+    Socialtext::Job::WatchlistNotify
+    Socialtext::Job::WeblogPing
+    Socialtext::Job::SignalDMNotify
+    Socialtext::Job::WebHook
+    Socialtext::Jobs
+    Socialtext::Job
+    Socialtext::JobCreator
 );
 
 ###############################################################################
@@ -347,12 +353,9 @@ plan tests => scalar @all_modules;
 # Test each module in turn
 foreach my $file (sort @all_modules) {
     my $module  = file_to_module($file);
-    my $is_todo = exists $ToDoModules{$module};
+    if (exists $ToDoModules{$module}) { ok "$module is Old"; next }
     my $params  = $ModuleExceptions{$module} || {};
-    TODO: {
-        local $TODO = 'old module' if ($is_todo);
-        pod_coverage_ok( $module, $params );
-    }
+    pod_coverage_ok( $module, $params );
 }
 exit;
 
