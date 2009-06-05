@@ -2,7 +2,7 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::Socialtext tests => 48;
+use Test::Socialtext tests => 49;
 use Test::Exception;
 use Socialtext::SQL qw/:exec get_dbh/;
 
@@ -33,7 +33,6 @@ Load_jobs: {
 }
 
 Queue_job: {
-
     my @jobs = Socialtext::Jobs->list_jobs(
         funcname => 'Socialtext::Job::Test',
     );
@@ -44,11 +43,12 @@ Queue_job: {
         $jobs->insert(@job_args);
     } "can't create jobs directly";
 
+    my $jh;
     lives_ok {
-        Socialtext::JobCreator->insert(@job_args);
+        $jh = Socialtext::JobCreator->insert(@job_args);
     } "used the job creator interface";
+    ok $jh;
 
-    sleep 1;
     @jobs = $jobs->list_jobs({
         funcname => 'Socialtext::Job::Test',
     });
