@@ -140,7 +140,7 @@
         [% END %]
         <div class="byline">
         <span class="last-updated-by">[% loc('Last <strong>updated</strong> by') %] [% row.username | decorate('user_avatar') %] [% loc('on') %] [% row.DateLocal %].</span>
-        <span class="originally-created-by">[% loc('Originally <strong>created</strong> by') %] [% row.creator | decorate('user_avatar') %] [% loc('on') %] [% row.create_time_local %]</span>.
+        <span class="byline-separator">&nbsp;</span><span class="originally-created-by">[% loc('Originally <strong>created</strong> by') %] [% row.creator | decorate('user_avatar') %] [% loc('on') %] [% row.create_time_local %]</span>.
         <span class="revision-count">(<a href="/[% row.workspace_name || current_workspace.name %]/index.cgi?action=revision_list;page_name=[% row.page_uri %]">[% row.revision_count %]</a> [% loc('Revisions') %])</span>
         </div>
         </td>

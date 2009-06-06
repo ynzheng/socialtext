@@ -3397,8 +3397,12 @@ span.revision-count {
     white-space: nowrap;
 }
 
+span.byline-separator {
+    border-right: 1px #999 solid;
+    margin-right: 0px;
+}
+
 span.originally-created-by {
-    border-left: 1px #999 solid;
     margin-left: 5px;
     padding-left: 5px;
 }
