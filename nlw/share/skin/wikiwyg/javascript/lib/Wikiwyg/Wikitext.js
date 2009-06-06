@@ -2006,6 +2006,10 @@ proto.format_td = function(elem) {
         );
         if (style && style.match(/font-weight: bold;/))
             elem.wikitext = this.format_b(elem);
+        if (style && style.match(/font-style: italic;/))
+            elem.wikitext = this.format_i(elem);
+        if (style && style.match(/text-decoration: line-through;/))
+            elem.wikitext = this.format_strike(elem);
     }
 
     return '| ' + elem.wikitext + ' ';
