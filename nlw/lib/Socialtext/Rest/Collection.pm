@@ -106,13 +106,17 @@ sub _make_getter {
                         $result = $self->$perl_method($resource);
                     };
                     if ($@) {
+                        if (Exception::Class->caught(
+                                'Socialtext::Exception::Auth')) {
+                            return $self->not_authorized;
+                        }
                         if ( my $e = Exception::Class->caught(
                                 'Socialtext::Exception::NoSuchWorkspace')
                             ) {
                             return $self->no_workspace($e->name);
                         }
                         st_log->info("Rest Collection Error: $@");
-                        die $@;
+                        die;
                     }
                     return $result;
                 }
