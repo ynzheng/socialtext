@@ -1,59 +1,45 @@
-| *Comment* | Test Case: Public Authenticate to Edit |
+| *Comment* | Test Case: Public Join to Edit |
 
 | set | auth_w | public-auth-%%start_time%% |
 | st-admin | create-workspace --name %%auth_w%% --title %%auth_w%% |  |
-| st-admin | set-permissions --workspace %%auth_w%% --permissions public-authenticate-to-edit | The permissions for the %%auth_w%% workspace have been changed to public-authenticate-to-edit. |
+| st-admin | set-permissions --workspace %%auth_w%% --permissions public-join-to-edit | The permissions for the %%auth_w%% workspace have been changed to public-join-to-edit. |
 | st-logout |  |  |
 
 | open_ok | /%%auth_w%%/index.cgi |  |
 | wait_for_element_visible_ok | st-page-titletext | 30000 |
 
-| *Comment* | Test Case: Public Authenticate to Edit. Verify buttons and links page top |  |
-| text_like | st-login-to-edit-button-link | Edit |
+| *Comment* | Test Case: Public Join to Edit. Verify buttons and links page top |  |
+| wait_for_element_not_present_ok | st-edit-button-link | 30000 |
 | wait_for_element_not_present_ok | link=Comment | 30000 |
 | wait_for_element_not_present_ok | link=Add Tag | 30000 |
 | wait_for_element_not_present_ok | link=Upload Files | 30000 |
 | wait_for_element_visible_ok | link=Log in | 30000 |
 | text_like | globalNav | Log in |
-| wait_for_element_visible_ok | link=Register | 30000 |
-| text_like | globalNav | Register |
+| wait_for_element_visible_ok | link=Join | 30000 |
+| text_like | globalNav | Join |
 
-| *Comment* | Test Case: Public Authenticate to Edit. Verify buttons and links page bottom |  |
+| *Comment* | Test Case: Public Join to Edit. Verify buttons and links page bottom |  |
 | text_like | footerGlobal | Log in |
-| text_like | footerGlobal | Register |
-| text_like | bottomButtons | Edit |
 
 | *Comment* | Test Case: Public Authenticate to Edit. Verify bottom buttons missing |  |
 | text_unlike | bottomButtons | Comment |
 
-| click_and_wait | link=Edit |  |
-| text_like | errors-and-messages | You must login to view this page |
-
 | st-admin | create-user --email nonmember_%%start_time%%@ken.socialtext.net --password 123456 |  |
+| click_and_wait | link=Log in |  |
 | type_ok | username | nonmember_%%start_time%%@ken.socialtext.net |
 | type_ok | password | 123456 |
 | click_and_wait | login_btn |  |
 
-| *Comment* | Test Case: Public Authenticate to Edit. Wait for editor to open after login. |  |
-| wait_for_element_visible_ok | st-editing-title | 30000 |
-| text_like | st-editing-title | Editing: |
-| wait_for_element_visible_ok | link=Wiki Text | 30000 |
-| click_ok | link=Wiki Text |  |
-| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
-| wait_for_element_visible_ok | st-save-button-link | 30000 |
-| click_and_wait | st-save-button-link |  |
-
-| wait_for_element_visible_ok | link=Edit | 30000 |
-| wait_for_element_visible_ok | link=Comment | 30000 |
-| text_like | st-edit-button-link | Edit |
-| text_like | st-comment-button-link | Comment |
+| *Comment* | Test Case: Public Join to Edit. Logged-In, NOT GOING to see edit open after login. |  |
+| wait_for_element_not_present_ok | link=Edit | 30000 |
+| wait_for_element_not_present_ok | link=Wiki Text | 30000 |
+| wait_for_element_not_present_ok | link=Comment | 30000 |
 | click_and_wait | link=Settings |  |
 
 | text_like | contentLeft | My Settings |
 | text_like | contentLeft | List All Users |
 | text_like | contentLeft | My Workspaces |
 | text_like | contentLeft | Unsubscribe |
-| text_like | contentLeft | Create New Weblog |
 | text_like | contentLeft | Page Editing |
 | text_like | contentLeft | Screen Layout |
 | text_like | contentLeft | Your Notepad |
@@ -66,7 +52,7 @@
 | text_unlike | contentLeft | Invite New Users |
 
 | st-logout |  |  |
-| wait_for_element_visible_ok | link=Edit | 30000 |
+| wait_for_element_not_present_ok | link=Edit | 30000 |
 
 | *Comment* | Test Case: Public Authenticate to Edit Teardown |
 | st-admin | delete-workspace -workspace %%auth_w%% --no-export |
