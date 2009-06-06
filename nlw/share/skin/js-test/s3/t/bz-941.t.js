@@ -13,7 +13,7 @@ t.runAsync([
         t.scrollTo(300);
 
         t.like(
-            t.$("table.dataTable tr.oddRow td em a:eq(0)").attr("href"),
+            t.$("table.dataTable tr.oddRow td span.revision-count a:eq(0)").attr("href"),
             /action=revision_list;page_name=/,
             "Revision links in listview need to href to revision_list action"
         );
