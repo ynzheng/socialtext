@@ -2111,7 +2111,7 @@ table.dataTable span.person {
     white-space: nowrap;
 }
 
-table.dataTable span.summary strong {
+table.dataTable .summary strong {
     font-weight:bold;
     background:#ffc;
     padding:1px 2px;
