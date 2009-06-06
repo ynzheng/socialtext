@@ -1558,28 +1558,27 @@ sub _to_spreadsheet_plain_text {
     my $self    = shift;
     my $content = shift;
 
-    my $html_offset = index($content, "\n__SPREADSHEET_HTML__\n") + 21;
-    return '' unless length($content) > $html_offset;
-    $content = substr( $content, $html_offset );
-    $content = substr(
-        $content,
-        0,
-        index($content, "\n__SPREADSHEET_VALUES__\n")
-    );
+    require Socialtext::Sheet;
+    require Socialtext::Sheet::Renderer;
 
-    $content =~ s/<td[^>]*><\/td>//sg;
-    $content =~ s/<tr[^>]*><\/tr>//sg;
-    $content =~ s/<td.*?>/ \| /sg;
-    $content .= ' |';
+    my $html = Socialtext::Sheet::Renderer->new(
+        sheet => Socialtext::Sheet->new(sheet_source => \$content),
+        hub   => $self->hub,
+    )->sheet_to_html();
 
-    $content =~ s/<.*?>//sg;
-    $content =~ s/&nbsp;/ /g;
-    $content =~ s/\s+/ /g;
-    $content =~ s/\|\s+(?=\|)//g;
+    $html =~ s/<td[^>]*><\/td>//sg;
+    $html =~ s/<tr[^>]*><\/tr>//sg;
+    $html =~ s/<td.*?>/ \| /sg;
+    $html .= ' |';
+
+    $html =~ s/<.*?>//sg;
+    $html =~ s/&nbsp;/ /g;
+    $html =~ s/\s+/ /g;
+    $html =~ s/\|\s+(?=\|)//g;
 
     # Since we are starting with HTML (for spreadsheets) things will
     # already be escaped.
-    return Socialtext::String::html_unescape($content);
+    return Socialtext::String::html_unescape($html);
 }
 
 # REVIEW: We should consider throwing exceptions here rather than return codes.
