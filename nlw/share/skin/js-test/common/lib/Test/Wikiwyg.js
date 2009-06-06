@@ -57,9 +57,8 @@ proto.do_roundtrip = function(wikitext) {
     }
 
     var wysiwygObject = this._wysiwyg_object;
-    wysiwygObject.fromHtml(html);
+    var html2 = wysiwygObject.fromHtml(html);
 
-    var html2 = wysiwygObject.get_inner_html();
     var wikitextObject = new Wikiwyg.Wikitext();
     wikitextObject.wikiwyg = wysiwygObject.wikiwyg;
     wikitextObject.set_config();

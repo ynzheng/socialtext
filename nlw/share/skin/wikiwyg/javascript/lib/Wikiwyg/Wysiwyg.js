@@ -1817,6 +1817,8 @@ proto.fromHtml = function(html) {
     this.sanitize_dom(dom);
     this.set_inner_html(dom.innerHTML);
     this.setWidgetHandlers();
+
+    return dom.innerHTML;
 }
 
 proto.assert_padding_between_block_elements = function(html) {
