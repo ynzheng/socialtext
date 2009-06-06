@@ -12,7 +12,7 @@ unless (-d $reports_dir) {
     die "Couldn't find reports directory at $reports_dir!\n";
 }
 
-if (!-d "$reports_dir/lib/Socialtext/Reports") {
+if (-d "$reports_dir/lib/Socialtext/Reports" and not -d "lib/Socialtext/Reports") {
     symlink "$reports_dir/lib/Socialtext/Reports", "lib/Socialtext/Reports"
         or die "Can't symlink reports";
 }

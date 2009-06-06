@@ -24,7 +24,7 @@
 | click_and_wait | link=Signals |  |
 
 | *Comment* | Test Case: Signal to Networks. Verify no network selector |  |
-| wait_for_element_not_visible_ok | network-select | 30000 |
+| wait_for_element_not_present_ok | network-select | 10000 |
 
 | *Comment* | Test Case: Signal to Networks. Signal to primary account |  |
 | set | mark | primary |

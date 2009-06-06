@@ -110,16 +110,16 @@
 | open_ok | /?dashboard | 60000 |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Cheeky'] | 30000 |
-| click_and_wait | //a[@id='gallery-widget-Cheeky'] |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Cheeky Quote'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Cheeky Quote'] |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | st-name-widget | 1 | cheeky_quote |
 | st-widget-title-like | cheeky_quote | Cheeky Quote |
 
 | *Comment* | Test Case: Manage Widget Gallery add a Boss Spy |  |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Boss'] | 30000 |
-| click_and_wait | //a[@id='gallery-widget-Boss'] |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Boss Spy'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Boss Spy'] |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | st-name-widget | 1 | boss_spy |
 | st-widget-title-like | boss_spy | Boss Spy |

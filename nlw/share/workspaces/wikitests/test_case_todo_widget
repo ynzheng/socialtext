@@ -2,15 +2,12 @@
 
 * Fixture: SocialWidgets
 
-| *Comment* | Test Case: ToDo Widget |  |
-| open_ok | /?dashboard | 60000 |
-| st-empty-container |  |  |
-
-| *Comment* | Test Case: ToDo Widget. Clicking on link text does not work. Use title attribute instead. |  |
-| wait_for_element_present_ok | link=Add Content |
-| click_and_wait | link=Add Content |
-| click_and_wait | gallery-widget-ToDo |  |
-| wait_for_element_visible_ok | link=Add Content |
+| open_ok | /?action=clear_widgets |  |
+| wait_for_element_visible_ok | link=Add Content | 30000 |
+| click_and_wait | link=Add Content |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-LabPixies ToDo'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-LabPixies ToDo'] |  |
+| text_like | contentContainer | LabPixies ToDo |
 
 | st-name-widget | 1 | todo_widget |
 | st-widget-title-like | todo_widget | ToDo |
