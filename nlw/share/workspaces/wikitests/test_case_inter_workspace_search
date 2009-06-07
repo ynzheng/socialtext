@@ -47,7 +47,7 @@
 | st-search | jabber workspaces:test-data3 | Pages containing 'jabber workspaces:test-data3' |
 | st-result | 0 total |  |
 
-| st-admin | set-permissions --workspace test-data3 --permissions public-authenticate-to-edit | The permissions for the test-data3 workspace have been changed to public-authenticate-to-edit. |
+| st-admin | set-permissions --workspace test-data3 --permissions public-join-to-edit | The permissions for the test-data3 workspace have been changed to public-join-to-edit. |
 | st-search | jabber workspaces:test-data3 | Pages containing 'jabber workspaces:test-data3' |
 | st-result | 1 total |  |
 | select_ok | sort-picker | label=Workspace |
