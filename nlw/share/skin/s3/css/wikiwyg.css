@@ -68,11 +68,11 @@ body.signals {
     background-color: white;
 }
 
-body.signals .wiki {
+body.signals .wiki, body.socialcalc .wiki {
     padding: 0;
     font-size: 100%;
 }
 
-body.signals img {
+body.signals img, body.socialcalc img {
     vertical-align: middle;
 }
