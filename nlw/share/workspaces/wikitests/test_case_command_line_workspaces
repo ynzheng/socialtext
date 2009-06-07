@@ -23,7 +23,7 @@
 | st-admin | set-permissions --workspace %%cmdline_workspace%% --permissions authenticated-user-only | qr/The permissions for the %%cmdline_workspace%% workspace have been changed to authenticated-user-only/ |
 | st-admin | set-permissions --workspace %%cmdline_workspace%% --permissions public-read-only | qr/The permissions for the %%cmdline_workspace%% workspace have been changed to public-read-only/ |
 | st-admin | set-permissions --workspace %%cmdline_workspace%% --permissions public-comment-only | qr/The permissions for the %%cmdline_workspace%% workspace have been changed to public-comment-only/ |
-| st-admin | set-permissions --workspace %%cmdline_workspace%% --permissions public-authenticate-to-edit | qr/The permissions for the %%cmdline_workspace%% workspace have been changed to public-authenticate-to-edit/ |
+| st-admin | set-permissions --workspace %%cmdline_workspace%% --permissions public-join-to-edit | qr/The permissions for the %%cmdline_workspace%% workspace have been changed to public-join-to-edit/ |
 | st-admin | set-permissions --workspace %%cmdline_workspace%% --permissions intranet | qr/The permissions for the %%cmdline_workspace%% workspace have been changed to intranet/ |
 
 | *Comment* | Test Case: Command Line Tests WORKSPACES check basic error conditions for add-permission |  |
@@ -156,7 +156,7 @@ show-impersonators
 | st-admin | import-workspace --tarball /tmp/%%target_workspace%%.1.tar.gz --overwrite | Workspace has been imported |
 
 This doesn't work. Why?
- st-admin import-workspace--tarball /tmp/%%target_workspace%%.1.tar.gz --name %%target_workspace%%-2
+st-admin import-workspace--tarball /tmp/%%target_workspace%%.1.tar.gz --name %%target_workspace%%-2
 
 the `--dir` option is not being tested. Testing it would require specifying a directory (other than /tmp) to save the workspace too. I don't know of another cross-platform area. Another approach would be to create a /tmp/foo directory for the test, through a `mkdir` or `run` command.
 
@@ -172,7 +172,7 @@ the `--dir` option is not being tested. Testing it would require specifying a di
 | location_like | /%%cmdline_workspace%%-clone/index.cgi |  |
 
 html-archive --workspace --file
- mass-copy-pages --workspace --target [--prefix]
+mass-copy-pages --workspace --target [--prefix]
 
 | *Comment* | Test Case: Command Line Tests WORKSPACE html-archive going to /tmp |  |
 | st-admin | html-archive | qr/The command you called \(html-archive\) requires a workspace to be specified/ |
@@ -215,10 +215,10 @@ purge-attachment
 | st-admin | purge-attachment --workspace %%cmdline_workspace%% --page advanced_getting_around | qr/The command you called \(purge-attachment\) requires an attachment to be specified/ |
 
 TODO: figure out a way to calculate the attachment ID
- st-admin | purge-attachment --workspace %%cmdline_workspace%% --page advanced_getting_around --attachment 20080320064508-16-27288 | The Navbar-All-tags.png attachment was purged from Advanced Getting Around page in the %%cmdline_workspace%% workspace. |
+st-admin | purge-attachment --workspace %%cmdline_workspace%% --page advanced_getting_around --attachment 20080320064508-16-27288 | The Navbar-All-tags.png attachment was purged from Advanced Getting Around page in the %%cmdline_workspace%% workspace. |
 
  search-categories --workspace --search
- delete-category --workspace [--category or --search]
+delete-category --workspace [--category or --search]
 
 | *Comment* | Test Case: Command Line Tests WORKSPACE search-categories and delete-categories have some odd capitalization schemes for "Welcome" tag |  |
 | st-admin | search-categories | qr/The command you called \(search-categories\) requires a workspace to be specified/ |

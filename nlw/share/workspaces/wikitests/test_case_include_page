@@ -119,7 +119,7 @@ Repeat test using Miki/Lite access.
 | verifyValue | edit_textarea | qr/.+This quick tour.+/ |
 
 | *Comment* | Test Case: Include Page. AUTH. Login. Open the included page for editing |  |
-| st-admin | set-permissions --w %%tcipw%% --p public-authenticate-to-edit | The permissions for the %%tcipw%% workspace have been changed to public-authenticate-to-edit. |
+| st-admin | set-permissions --w %%tcipw%% --p public-join-to-edit | The permissions for the %%tcipw%% workspace have been changed to public-join-to-edit. |
 | st-login |  |  |
 
 | open_ok | /%%tcipw%%/?TC Include Page %%start_time%% |  |
