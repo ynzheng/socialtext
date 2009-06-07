@@ -1985,7 +1985,7 @@ proto._do_link = function(widget_element) {
 
     // Set the unload handle explicitly so when user clicks the overlay gray
     // area to close lightbox, widget_editing will still be set to false.
-    jQuery('#lightbox').unload(function(){
+    jQuery('#lightbox').bind('lightbox-unload', function(){
         Wikiwyg.Widgets.widget_editing = 0;
         if (self.wikiwyg && self.wikiwyg.current_mode && self.wikiwyg.current_mode.set_focus) {
             self.wikiwyg.current_mode.set_focus();
