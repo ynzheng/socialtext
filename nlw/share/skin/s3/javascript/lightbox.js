@@ -145,6 +145,8 @@
                     $(opts.focus).focus();
                     if ($.isFunction(opts.callback))
                         opts.callback();
+
+                    $('#lightbox').trigger('lightbox-load');
                 })
             });
     };
