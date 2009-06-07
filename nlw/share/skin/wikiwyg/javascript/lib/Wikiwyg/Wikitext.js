@@ -1166,8 +1166,11 @@ proto.enableThis = function() {
     this.textarea.focus();
 
     if (Wikiwyg.is_gecko) {
-        this.textarea.selectionStart = 0;
-        this.textarea.selectionEnd = 0;
+        try {
+            this.textarea.selectionStart = 0;
+            this.textarea.selectionEnd = 0;
+        }
+        catch (e) {};
     }
 
     if (jQuery('#contentRight').is(':visible')) {
