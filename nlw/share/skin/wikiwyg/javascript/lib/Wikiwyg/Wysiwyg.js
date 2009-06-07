@@ -531,7 +531,7 @@ proto.process_command = function(command) {
     if (this['do_' + command])
         this['do_' + command](command);
 
-    if ( command == 'link' ) {
+    if ( command == 'link' && !(this.wikiwyg.config.noToolbar)) {
         var self = this;
         setTimeout(function() {
             self.wikiwyg.toolbarObject
