@@ -87,8 +87,8 @@
 | wait_for_element_visible_ok | link=Add Content | 60000 |
 | st-empty-container |  |  |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Socialtext Signals | 30000 |
-| click_and_wait | link=Socialtext Signals |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Socialtext Signals'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Socialtext Signals'] |  |
 
 | *Comment* | Test case: Signals Page. Check Dashboard, then wait for auto refresh |  |
 | wait_for_text_present_ok | Socialtext Signals | 30000 |
