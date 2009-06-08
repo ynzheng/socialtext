@@ -1163,15 +1163,15 @@ proto.enableThis = function() {
     this.textarea.style.width = Wikiwyg.is_ie ? '98%' : '99%';
     this.setHeightOfEditor();
     this.enable_keybindings();
-    this.textarea.focus();
 
-    if (Wikiwyg.is_gecko) {
-        try {
+    try {
+        this.textarea.focus();
+
+        if (Wikiwyg.is_gecko) {
             this.textarea.selectionStart = 0;
             this.textarea.selectionEnd = 0;
         }
-        catch (e) {};
-    }
+    } catch (e) {};
 
     if (jQuery('#contentRight').is(':visible')) {
         jQuery('#st-page-maincontent').css('marginRight', '240px');
