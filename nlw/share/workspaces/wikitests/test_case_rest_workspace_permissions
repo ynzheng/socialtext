@@ -73,7 +73,7 @@ Test set up:
 | code-is | 200 |  |
 | body-like | public-read-only |  |
 
-| comment | Test case: REST Workspace Permissions workspace-admin sets permissions public-comment-only, public-authenticate-to-edit, intranet |  |
+| comment | Test case: REST Workspace Permissions workspace-admin sets permissions public-comment-only, public-join-to-edit, intranet |  |
 | st-admin | remove-system-admin --email %%email%% | no longer has |
 | st-admin | remove-accounts-admin --email %%email%% | no longer has |
 
@@ -85,13 +85,13 @@ Test set up:
 | code-is | 200 |  |
 | body-like | public-comment-only |  |
 
-| put | /data/workspaces/%%wksp%% | Content-Type=application/json | { "permission_set": "public-authenticate-to-edit" } |
+| put | /data/workspaces/%%wksp%% | Content-Type=application/json | { "permission_set": "public-join-to-edit" } |
 | code-is | 204 |  |
 
 | comment | Test case: REST Workspace Permissions do GET to make sure it worked |  |
 | get | /data/workspaces/%%wksp%% | application/json |
 | code-is | 200 |  |
-| body-like | public-authenticate-to-edit |  |
+| body-like | public-join-to-edit |  |
 
 | put | /data/workspaces/%%wksp%% | Content-Type=application/json | { "permission_set": "intranet" } |
 | code-is | 204 |  |
