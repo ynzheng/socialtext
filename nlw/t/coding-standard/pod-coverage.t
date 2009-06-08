@@ -260,6 +260,7 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::WikiFixture::EmailJob
     Socialtext::WikiFixture::SocialBase
     Socialtext::WikiFixture::SocialpointPlugin
+    Socialtext::WikiFixture::WebHook
     Socialtext::WikiText::Emitter::HTML
     Socialtext::WikiText::Emitter::Messages::Base
     Socialtext::WikiText::Emitter::Messages::Canonicalize
