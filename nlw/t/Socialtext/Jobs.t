@@ -2,9 +2,8 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::Socialtext tests => 49;
+use Test::Socialtext tests => 55;
 use Test::Exception;
-use Socialtext::SQL qw/:exec get_dbh/;
 
 fixtures('db', 'foobar');
 
@@ -193,7 +192,7 @@ Indexer_fails_to_instantiate: {
         my @failures = $handle->failure_log;
         is scalar(@failures), 1, "one failure";
         like $failures[0], qr/Couldn't create an indexer:/, 'indexer fail';
-        ok $handle->exit_status, "job exited";
+        ok $handle->exit_status, "job permanently failed";
     }
 }
 
@@ -214,4 +213,31 @@ Cant_index_untitled_page_attachments: {
         $handle = Socialtext::JobCreator->index_attachment($att, 'live')
     } 'fails silently';
     ok !$handle, 'job wasn\'t created';
+}
+
+Existing_untitled_page_jobs_fail: {
+    use_ok 'Socialtext::Job::AttachmentIndex';
+
+    # simulate adding a pre-existing job for untitled_page
+    my $handle;
+    lives_ok {
+        $handle = Socialtext::JobCreator->insert(
+            'Socialtext::Job::AttachmentIndex' => {
+                workspace_id => $foobar->workspace_id,
+                page_id => 'untitled_page',
+                filename => 'foobar.txt',
+                search_config => 'live',
+            }
+        );
+    } 'insert of bad att.index job';
+    ok $handle;
+
+    $jobs->can_do('Socialtext::Job::AttachmentIndex');
+    $jobs->work_once();
+    {
+        my @failures = $handle->failure_log;
+        is scalar(@failures), 1, "one failure";
+        like $failures[0], qr/Couldn't load page id=untitled_page/, 'no untitled_page for you';
+        ok $handle->exit_status, "job permanently failed";
+    }
 }
