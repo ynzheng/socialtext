@@ -88,8 +88,12 @@ sub _parse_feed {
 	# fixup URLS to absolute ones
 	my $hostname = '';
         $hostname = $1 if $url =~ m!^(\w+://[^/]+)/!;
+        chomp $hostname;
+
 	my $link_expander = sub {
             my $l = shift;
+            chomp $l;
+            $l =~ s/^\s+//sm;
             return $l if $l =~ m!^\w+://!;
             return $hostname . $l;
 	};
