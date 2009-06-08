@@ -11,6 +11,7 @@ our $Work_count = 0;
 our $Retries = 0;
 our $Keep_exit_status_for = 3600;
 our $Grab_for = 3600;
+our $Last_ID;
 
 override 'max_retries' => sub { $ENV{TEST_JOB_RETRIES} || $Retries };
 override 'keep_exit_status_for' => sub { $Keep_exit_status_for };
@@ -40,6 +41,7 @@ sub do_work {
         st_log->debug("Indexer OK");
     }
 
+    $Last_ID = $self->job->jobid;
     $Work_count++;
     $self->completed();
 }

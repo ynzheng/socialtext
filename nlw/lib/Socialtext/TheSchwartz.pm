@@ -9,6 +9,7 @@ extends qw/TheSchwartz::Moosified/;
 
 has '+verbose' => ( default => ($ENV{ST_JOBS_VERBOSE} ? 1 : 0) );
 has '+error_length' => ( default => 0 ); # unlimited errors logged
+has '+prioritize' => ( default => 1 );
 
 # make sure to call get_dbh() every time, basically
 override 'databases' => sub { return [ get_dbh() ] };
@@ -24,9 +25,27 @@ around 'list_jobs' => sub {
 # mySQL limitation.  Since we're Pg only, disable this.
 override 'temporarily_remove_ability' => sub {};
 
+around 'insert' => sub {
+    my $code = shift;
+    my $self = shift;
+    my $job_class = shift;
+    my $args = shift;
+    my $prio = delete $args->{_job_priority};
+
+    my $job = TheSchwartz::Moosified::Job->new(
+        funcname => $job_class,
+        priority => $prio,
+        arg => $args,
+    );
+    return $self->$code($job);
+};
+
 sub Unlimit_list_jobs {
-    no warnings 'once';
     $TheSchwartz::Moosified::FIND_JOB_BATCH_SIZE = 0x7FFFFFFF;
+}
+sub Limit_list_jobs {
+    my $class = shift;
+    $TheSchwartz::Moosified::FIND_JOB_BATCH_SIZE = shift;
 }
 
 sub stat_jobs {
