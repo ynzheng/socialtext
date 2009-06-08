@@ -335,7 +335,7 @@ plan tests => scalar @all_modules;
 # Test each module in turn
 foreach my $file (sort @all_modules) {
     my $module  = file_to_module($file);
-    if (exists $ToDoModules{$module}) { ok "$module is Old"; next }
+    if (exists $ToDoModules{$module}) { ok 1, "OLD: $module"; next }
     my $params  = $ModuleExceptions{$module} || {};
     pod_coverage_ok( $module, $params );
 }
