@@ -48,8 +48,8 @@ while ( my $ws = $workspaces->next ) {
             print "Adding users in account $account_id to workspace ".$ws->name."\n";
             my $users = $acct->users;
             while (my $user = $users->next ) {
-                unless ($user->is_system_created) {
-                    $ws->add_user( user => $user);
+                unless ($user->is_system_created || $ws->has_user(user => $user)) {
+                        $ws->add_user( user => $user);
                 }
             }
         }
