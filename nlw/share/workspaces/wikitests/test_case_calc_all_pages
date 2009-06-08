@@ -45,10 +45,10 @@
 
 | *Comment* | Test Case: Calc All Pages reopen. Date sort. |  |
 | wait_for_element_visible_ok | sort-picker | 30000 |
-| select_and_wait | sort-picker | label=Date |
+| select_and_wait | sort-picker | label=Date Last Edited |
 | text_like | contentContainer | qr/allpages spreadsheet0005%%start_time%%.+allpages spreadsheet0004%%start_time%%/ |
 | wait_for_element_visible_ok | sort-picker | 30000 |
-| select_and_wait | sort-picker | label=Date (↑) |
+| select_and_wait | sort-picker | label=Date Last Edited (↑) |
 | text_like | contentContainer | qr/allpages spreadsheet0004%%start_time%%.+allpages spreadsheet0005%%start_time%%/ |
 
 | *Comment* | Test Case: Calc All Pages revision sort |  |
