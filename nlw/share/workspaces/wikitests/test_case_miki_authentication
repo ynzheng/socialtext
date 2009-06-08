@@ -36,8 +36,8 @@ test latest login scheme:
 * Check that the links now say "Log Out" (at the bottom) and "Edit" at the top
 * Log out and in a few times to make sure everything behaves right
 
-| *Comment* | Test Case: Miki Authentication test auth-to-edit |  |
-| st-admin | set-permissions --workspace %%miki_space%% --permissions public-authenticate-to-edit |  |
+| *Comment* | Test Case: Miki Authentication test join-to-edit |  |
+| st-admin | set-permissions --workspace %%miki_space%% --permissions public-join-to-edit |  |
 | open_ok | /lite/page/%%miki_space%%/ |  |
 | click_and_wait | link=Log in |  |
 | *Comment* | Test Case: Miki Authentication test login and redirect |  |
