@@ -70,7 +70,7 @@
               [% IF self_registration %]
                 <li id="st-wikinav-login"><a href="/challenge?[% wiki.uri | html %]">[% loc('Log in') %]</a></li>
                 [% IF workspace_present AND checker.check_permission('self_join') %]
-                  <li class="st-wikinav-register last"><a title="[% loc('Join now to edit this page!') %]" href="/nlw/join.html?workspace_name=[% current_workspace.name%];redirect_to=[% current_workspace.uri %]">[% loc('Join') %]</a></li>
+                  <li id="st-wikinav-register-header" class="last"><a title="[% loc('Join now to edit this page!') %]" href="/nlw/join.html?workspace_name=[% current_workspace.name%];redirect_to=[% current_workspace.uri %]">[% loc('Join') %]</a></li>
                 [% ELSE %]
                   <li class="last"><a href="/nlw/register.html?redirect_to=[% hub.current_workspace.uri %]">[% loc('Register') %]</a></li>
                 [% END %]
@@ -79,7 +79,7 @@
               [% END %]
             [% ELSE %]
               [% IF self_registration and workspace_present and checker.check_permission('self_join') and ! ( role_for_user.name == 'member' or role_for_user.name == 'workspace_admin' or role_for_user.name == "impersonator") %]
-                <li class="st-wikinav-register"><a title="[% loc('Join now to edit this page!') %]" href="/[% current_workspace.name%]?action=workspaces_self_join">[% loc('Join') %]</a></li>
+                <li id="st-wikinav-register-header"><a title="[% loc('Join now to edit this page!') %]" href="/[% current_workspace.name%]?action=workspaces_self_join">[% loc('Join') %]</a></li>
               [% END %]
             <li id="st-wikinav-logout" class="last"><a id="logout_btn" href="/nlw/submit/logout[% IF wiki.is_public %]?redirect_to=[% wiki.uri | html %][% END %]">[% loc('Log out') %]</a></li>
             [% END %]
@@ -245,7 +245,7 @@
                 [% IF self_registration %]
                   <li><a id="st-footer-link-login" href="/challenge?[% wiki.uri | html %]">[% loc('Log in') %]</a></li>
                     [% IF workspace_present AND checker.check_permission('self_join') %]
-                      <li class="st-wikinav-register last"><a title="[% loc('Join now to edit this page!') %]" href="/nlw/join.html?workspace_name=[% current_workspace.name%];redirect_to=[% current_workspace.uri %]">[% loc('Join') %]</a></li>
+                      <li id="st-wikinav-register-footer" class="last"><a title="[% loc('Join now to edit this page!') %]" href="/nlw/join.html?workspace_name=[% current_workspace.name%];redirect_to=[% current_workspace.uri %]">[% loc('Join') %]</a></li>
                     [% ELSE %]
                       <li class="last"><a id="st-footer-link-register" href="/nlw/register.html?redirect_to=[% hub.current_workspace.uri %]">[% loc('Register') %]</a></li>
                     [% END %]
@@ -254,7 +254,7 @@
                 [% END %]
               [% ELSE %]
                 [% IF self_registration and workspace_present and checker.check_permission('self_join') and ! ( role_for_user.name == 'member' or role_for_user.name == 'workspace_admin' or role_for_user.name == "impersonator") %]
-                    <li class="st-wikinav-register"><a title="[% loc('Join now to edit this page!') %]" href="/[% current_workspace.name%]?action=workspaces_self_join">[% loc('Join') %]</a></li>
+                    <li id="st-wikinav-register-footer"><a title="[% loc('Join now to edit this page!') %]" href="/[% current_workspace.name%]?action=workspaces_self_join">[% loc('Join') %]</a></li>
                 [% END %]
                 <li class="last"><a id="st-footer-link-logout" href="/nlw/submit/logout[% IF wiki.is_public %]?redirect_to=[% wiki.uri | html %][% END %]">[% loc('Log out') %]</a></li>
               [% END %]
