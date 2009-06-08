@@ -7,8 +7,8 @@
 | st-empty-container |  |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_ok | link=Add Content |  |
-| wait_for_element_visible_ok | link=RSS Viewer | 30000 |
-| click_ok | link=RSS Viewer |  |
+| wait_for_element_visible_ok | gallery-widget-RSS Viewer | 30000 |
+| click_ok | gallery-widget-RSS Viewer |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 
 | *Comment* | Test Case: RSS Feed Widget. Set the widget |  |

@@ -7,8 +7,8 @@
 | st-empty-container |  |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=One Image | 30000 |
-| click_and_wait | link=One Image |  |
+| wait_for_element_visible_ok | gallery-widget-One Image | 30000 |
+| click_and_wait | gallery-widget-One Image |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 
 | st-name-widget | 1 | image_widget |
@@ -21,8 +21,8 @@
 | *Comment* | Test Case: Multiple Widgets Add Wiki Page Widget |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Wiki Page | 30000 |
-| click_and_wait | link=Wiki Page |  |
+| wait_for_element_visible_ok | gallery-widget-Wiki Page | 30000 |
+| click_and_wait | gallery-widget-Wiki Page |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 
 | *Comment* | Test Case: Multiple Widgets Image is now 2nd widget, right? |  |
@@ -53,8 +53,8 @@
 
 | *Comment* | Test Case: Multiple Widgets Add Workspace Tags, everything shifts by 1 |  |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Workspace Tags | 30000 |
-| click_and_wait | link=Workspace Tags |  |
+| wait_for_element_visible_ok | gallery-widget-Workspace Tags | 30000 |
+| click_and_wait | gallery-widget-Workspace Tags |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 
 | *Comment* | Test Case: Multiple Widgets Image widget again |  |
@@ -89,8 +89,8 @@
 
 | *Comment* | Add RSS Viewer everything shifts by 1 |  |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=RSS Viewer | 30000 |
-| click_and_wait | link=RSS Viewer |  |
+| wait_for_element_visible_ok | gallery-widget-RSS Viewer | 30000 |
+| click_and_wait | gallery-widget-RSS Viewer |  |
 | *Comment* | Do Something with the RSS Viewer HERE |  |
 
 | *Comment* | Test Case: Multiple Widgets teardown |  |
