@@ -123,7 +123,7 @@ Avatar.prototype = {
             name:'skype_sn',
             title: true,
             href: "callto:%s",
-            image: "http://mystatus.skype.com/smallicon/%s",
+            image: "http://mystatus.skype.com/smallicon/%s"
           }
         ],
         [ {name:'sametime_sn', title: true} ]
