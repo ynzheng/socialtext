@@ -70,7 +70,7 @@
               [% IF self_registration %]
                 <li id="st-wikinav-login"><a href="/challenge?[% wiki.uri | html %]">[% loc('Log in') %]</a></li>
                 [% IF workspace_present AND checker.check_permission('self_join') %]
-                  <li id="st-wikinav-register-header" class="last"><a title="[% loc('Join now to edit this page!') %]" href="/nlw/join.html?workspace_name=[% current_workspace.name%];redirect_to=[% current_workspace.uri %]">[% loc('Join') %]</a></li>
+                  <li id="st-wikinav-register" class="last"><a title="[% loc('Join now to edit this page!') %]" href="/nlw/join.html?workspace_name=[% current_workspace.name%];redirect_to=[% current_workspace.uri %]">[% loc('Join') %]</a></li>
                 [% ELSE %]
                   <li class="last"><a href="/nlw/register.html?redirect_to=[% hub.current_workspace.uri %]">[% loc('Register') %]</a></li>
                 [% END %]
