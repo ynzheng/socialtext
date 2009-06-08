@@ -39,10 +39,9 @@ my $guestrole = Socialtext::Role->Guest;
 while ( my $ws = $workspaces->next ) {
     my $perms = $ws->permissions;
     
-    if ($perms->role_can(role => $guestrole, permission => ST_EDIT_CONTROLS_PERM )) {
-        $perms->remove(role => $guestrole, permission => ST_EDIT_CONTROLS_PERM);
-        $perms->add(role => $guestrole, permission => ST_SELF_JOIN_PERM);
-        print "Changing ".$ws->name." to use self_join for guests\n";
+    if ($perms->current_set_name eq 'public-authenticate-to-edit') {
+        $perms->set(set_name => 'public-join-to-edit');
+        print "Changing ".$ws->name." to use public-join-to-edit permission set\n";
 
         if ($add) {
             print "Adding users in account $account_id to workspace ".$ws->name."\n";
