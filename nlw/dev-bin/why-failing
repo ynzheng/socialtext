@@ -63,6 +63,9 @@ unless (@tests) {
     die "Couldn't find '$unittest' in the YAML; has that test run yet?\n";
 }
 
+# remove tests that don't exist; could have leftovers from previous STCI run
+@tests = grep { -e $_ } @tests;
+
 # remove everything that ran before the most recent 'clean' fixture
 my $last_clean = last_index { is_fixture_used_by_test('clean', $_) } @tests;
 if ($last_clean > -1) {
