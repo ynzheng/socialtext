@@ -50,15 +50,15 @@
 | wait_for_element_visible_ok | link=Home | 30000 |
 | st-logout |  |  |
 | wait_for_element_visible_ok | link=Log in | 30000 |
-| st-login | %%username%%  | %%password%%  |
+| st-login | %%username%% | %%password%% |
 
 | open_ok | /?dashboard | 60000 |
 | wait_for_text_present_ok | Welcome, New User | 30000 |
 | st-empty-container |  |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Recent Conversations | 30000 |
-| click_and_wait | link=Recent Conversations |  |
+| wait_for_element_visible_ok | gallery-widget-Recent Conversations | 30000 |
+| click_and_wait | gallery-widget-Recent Conversations |  |
 
 | *Comment* | Test Case: My Conversations Widget is the widget there? |  |
 | wait_for_element_visible_ok | //a[@class='close'] | 30000 |
