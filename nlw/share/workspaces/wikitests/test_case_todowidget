@@ -6,10 +6,10 @@
 | open_ok | /?dashboard | 60000 |
 | st-empty-container |  |  |
 
-| *Comment* | Test Case: ToDo Widget. Clicking on link text does not work.  Use title attribute instead.  |  |
+| *Comment* | Test Case: ToDo Widget. Clicking on link text does not work. Use title attribute instead. |  |
 | wait_for_element_present_ok | link=Add Content |
 | click_and_wait | link=Add Content |
-| click_and_wait | link=LabPixies ToDo |  |
+| click_and_wait | gallery-widget-ToDo |  |
 | wait_for_element_visible_ok | link=Add Content |
 
 | st-name-widget | 1 | todo_widget |
