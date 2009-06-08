@@ -39,6 +39,14 @@ our %data = (
 }
 
 ###############################################################################
+# When we're done, *CLEAR/EMPTY* the LDAP configuration; we're going to monkey
+# around with it here in this test and don't want to pollute other LDAP tests.
+###############################################################################
+END {
+    Socialtext::LDAP::Config->save();
+}
+
+###############################################################################
 # List available LDAP connections (when only one exists)
 available_ldap_connections_one: {
     # create the LDAP configuration file
