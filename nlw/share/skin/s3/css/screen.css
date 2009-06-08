@@ -3082,7 +3082,7 @@ div#st-display-mode-container.st-content-no-controls div#contentContainer {
 }
 
 
-.st-wikinav-register a {
+li#st-wikinav-register-header a, li#st-wikinav-register-footer a {
     font-weight:bold; 
     text-decoration:underline;
     color:#3366cc;

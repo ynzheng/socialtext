@@ -4,9 +4,11 @@ package Socialtext::UserGroupRoleFactory;
 use MooseX::Singleton;
 use Carp qw(croak);
 use Socialtext::Events;
+use Socialtext::Log qw(st_log);
 use Socialtext::SQL qw(:exec);
 use Socialtext::SQL::Builder qw(:all);
 use Socialtext::Role;
+use Socialtext::Timer;
 use Socialtext::UserGroupRole;
 use namespace::clean -except => 'meta';
 
@@ -60,9 +62,14 @@ sub CreateRecord {
 
 sub Create {
     my ($self, $proto_ugr) = @_;
+    my $timer = Socialtext::Timer->new();
+
     $proto_ugr->{role_id} ||= $self->DefaultRoleId();
     $self->CreateRecord($proto_ugr);
-    return $self->GetUserGroupRole(%{$proto_ugr});
+
+    my $ugr = $self->GetUserGroupRole(%{$proto_ugr});
+    $self->_record_log_entry('ASSIGN', $ugr, $timer);
+    return $ugr;
 }
 
 sub UpdateRecord {
@@ -79,12 +86,14 @@ sub UpdateRecord {
 
     my $sth = sql_update('user_group_role', \%update_args, [keys %pkey]);
 
-    $self->_emit_event($proto_ugr, 'update_role')
-        if ($sth && $sth->rows);
+    my $did_update = ($sth && $sth->rows) ? 1 : 0;
+    $self->_emit_event($proto_ugr, 'update_role') if $did_update;
+    return $did_update;
 }
 
 sub Update {
     my ($self, $user_group_role, $proto_ugr) = @_;
+    my $timer = Socialtext::Timer->new();
 
     # update the record for this UGR in the DB
     my $updates_ref = {
@@ -92,18 +101,24 @@ sub Update {
         user_id  => $user_group_role->user_id,
         group_id => $user_group_role->group_id,
     };
-    $self->UpdateRecord($updates_ref);
+    my $did_update = $self->UpdateRecord($updates_ref);
 
-    # merge the updates back into the UGR object
-    foreach my $attr (keys %{$updates_ref}) {
-        # can't update pkey attrs
-        my $meta_attr = $user_group_role->meta->find_attribute_by_name($attr);
-        next if ($meta_attr->is_primary_key());
+    if ($did_update) {
+        # merge the updates back into the UGR object
+        foreach my $attr (keys %{$updates_ref}) {
+            # can't update pkey attrs
+            my $meta_attr =
+                $user_group_role->meta->find_attribute_by_name($attr);
+            next if ($meta_attr->is_primary_key());
 
-        # update non pkey attrs
-        my $setter = "_$attr";
-        $user_group_role->$setter( $updates_ref->{$attr} );
+            # update non pkey attrs
+            my $setter = "_$attr";
+            $user_group_role->$setter( $updates_ref->{$attr} );
+        }
+
+        $self->_record_log_entry('CHANGE', $user_group_role, $timer);
     }
+
     return $user_group_role;
 }
 
@@ -119,18 +134,21 @@ sub DeleteRecord {
     my $sql = qq{DELETE FROM user_group_role WHERE $clause};
     my $sth = sql_execute($sql, @bindings);
 
-    $self->_emit_event($proto_ugr, 'delete_role')
-        if ($sth->rows);
+    my $did_delete = $sth->rows();
+    $self->_emit_event($proto_ugr, 'delete_role') if $did_delete;
 
-    return $sth->rows();
+    return $did_delete;
 }
 
 sub Delete {
     my ($self, $ugr) = @_;
-    $self->DeleteRecord( {
+    my $timer = Socialtext::Timer->new();
+    my $did_delete = $self->DeleteRecord( {
         user_id  => $ugr->user_id,
         group_id => $ugr->group_id,
         } );
+    $self->_record_log_entry('REMOVE', $ugr, $timer) if $did_delete;
+    return $did_delete;
 }
 
 sub ByUserId {
@@ -252,6 +270,18 @@ sub _pkey_where_clause {
     return ($clause, @bindings);
 }
 
+sub _record_log_entry {
+    my ($self, $action, $ugr, $timer) = @_;
+    my $msg = "$action,GROUP_ROLE,"
+        . 'role:' . $ugr->role->name . ','
+        . 'user:' . $ugr->user->username
+            . '(' . $ugr->user->user_id . '),'
+        . 'group:' . $ugr->group->driver_group_name
+            . '(' . $ugr->group->group_id . '),'
+        . '[' . $timer->elapsed . ']';
+    st_log->info($msg);
+}
+
 sub DefaultRole {
     Socialtext::Role->new( name => 'member' );
 }
@@ -365,7 +395,9 @@ C<DefaultRoleId()> for details.
 =item B<$factory-E<gt>UpdateRecord(\%proto_ugr)>
 
 Updates an existing user_group_role record in the DB, based on the information
-provided in the C<\%proto_ugr> hash-ref.
+provided in the C<\%proto_ugr> hash-ref.  Returns true if a record was updated
+in the DB, returning false otherwise (e.g. if the update was effectively "no
+change").
 
 This C<\%proto_ugr> hash-ref B<MUST> contain the C<user_id> and C<group_id> of
 the UGR that we are updating in the DB.

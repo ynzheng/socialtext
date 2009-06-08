@@ -4,66 +4,66 @@
 | open_ok | /?action=clear_widgets |  |
 
 | *Comment* | Test Case: Socialtext Gadgets. All People Tags |  |
-
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=All People Tags | 30000 |
-| click_and_wait | link=All People Tags |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-All People Tags'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-All People Tags'] |  |
+| text_like | contentContainer | All People Tags |
 
 | *Comment* | Test Case: Socialtext Gadgets. Recent Conversations |  |
-
 | open_ok | / |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Recent Conversations | 30000 |
-| click_and_wait | link=Recent Conversations |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Recent Conversations'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Recent Conversations'] |  |
+| text_like | contentContainer | My Conversations |
 
 | *Comment* | Test Case: Socialtext Gadgets. Workspaces |  |
-
 | open_ok | / |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | //a[contains(@href,'?action=add_widget;gadget_id=3')] | 30000 |
-| click_and_wait | //a[contains(@href,'?action=add_widget;gadget_id=3')] |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Workspaces'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Workspaces'] |
+| text_like | contentContainer | Workspaces |
 
 | *Comment* | Test Case: Socialtext Gadgets. Wiki Page |  |
-
 | open_ok | / |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Wiki Page | 30000 |
-| click_and_wait | link=Wiki Page |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Wiki Page'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Wiki Page'] |  |
+| text_like | contentContainer | Wiki Page |
 
 | *Comment* | Test Case: Socialtext Gadgets. One Image |  |
-
 | open_ok | / |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=One Image | 30000 |
-| click_and_wait | link=One Image |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-One Image'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-One Image'] |  |
+| text_like | contentContainer | Image |
 
 | *Comment* | Test Case: Socialtext Gadgets. RSS Viewer |  |
-
 | open_ok | / |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=RSS Viewer | 30000 |
-| click_and_wait | link=RSS Viewer |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-RSS Viewer'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-RSS Viewer'] |  |
+| text_like | contentContainer | Socialtext blog |
 
 | *Comment* | Test Case: Socialtext Gadgets. Workspace Tags |  |
-
 | open_ok | / |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Workspace Tags | 30000 |
-| click_and_wait | link=Workspace Tags |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Workspace Tags'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Workspace Tags'] |  |
+| text_like | contentContainer | Tags for |
 
-| *Comment* | Test Case: Socialtext Gadgets. Signals |  |
-
+| *Comment* | Test Case: Socialtext Gadgets. Socialtext Signals |  |
 | open_ok | / |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Socialtext Signals | 30000 |
-| click_and_wait | link=Socialtext Signals |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Socialtext Signals'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Socialtext Signals'] |  |
+| text_like | contentContainer | Socialtext Signals |
 
 | *Comment* | Test Case: Socialtext Gadgets COMPLETED |  |

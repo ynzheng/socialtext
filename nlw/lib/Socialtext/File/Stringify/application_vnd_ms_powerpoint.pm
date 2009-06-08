@@ -17,3 +17,27 @@ sub to_string {
 }
 
 1;
+
+=head1 NAME
+
+Socialtext::File::Stringify::application_vnd_ms_powerpoint - Stringify MS Powerpoint documents
+
+=head1 METHODS
+
+=over
+
+=item to_string($filename)
+
+Extracts the stringified content from C<$filename>, an MS Powerpoint document.
+
+=back
+
+=head1 AUTHOR
+
+Socialtext, Inc. C<< <code@socialtext.com> >>
+
+=head1 COPYRIGHT
+
+Copyright 2006 Socialtext, Inc., all rights reserved.
+
+=cut

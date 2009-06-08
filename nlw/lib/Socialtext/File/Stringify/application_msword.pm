@@ -29,3 +29,27 @@ sub to_string {
 }
 
 1;
+
+=head1 NAME
+
+Socialtext::File::Stringify::application_msword - Stringify MS Word documents
+
+=head1 METHODS
+
+=over
+
+=item to_string($filename)
+
+Extracts the stringified content from C<$filename>, an MS Word document.
+
+=back
+
+=head1 AUTHOR
+
+Socialtext, Inc. C<< <code@socialtext.com> >>
+
+=head1 COPYRIGHT
+
+Copyright 2006 Socialtext, Inc., all rights reserved.
+
+=cut

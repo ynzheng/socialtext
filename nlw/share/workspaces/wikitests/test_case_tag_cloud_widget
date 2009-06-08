@@ -8,9 +8,8 @@
 | st-empty-container |  |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_ok | link=Add Content |  |
-| wait_for_element_visible_ok | link=Workspace Tags | 30000 |
-| click_ok | link=Workspace Tags |  |
-| wait_for_element_visible_ok | link=Add Content | 30000 |
+| wait_for_element_visible_ok | gallery-widget-Workspace Tags | 30000 |
+| click_ok | gallery-widget-Workspace Tags |  |
 
 | *Comment* | Test Case: Tag Cloud Widget. See the tags for workspace help-en |  |
 | wait_for_text_present_ok | Tags for help-en workspace | 30000 |

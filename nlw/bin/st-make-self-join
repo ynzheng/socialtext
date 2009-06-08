@@ -15,7 +15,7 @@ sub usage {
     my $msg = shift;
     warn "$msg\n" if $msg;
     die <<EOT;
-$0 <account-id>
+$0 <account-name>
 
 Options:
     --add
@@ -39,17 +39,16 @@ my $guestrole = Socialtext::Role->Guest;
 while ( my $ws = $workspaces->next ) {
     my $perms = $ws->permissions;
     
-    if ($perms->role_can(role => $guestrole, permission => ST_EDIT_CONTROLS_PERM )) {
-        $perms->remove(role => $guestrole, permission => ST_EDIT_CONTROLS_PERM);
-        $perms->add(role => $guestrole, permission => ST_SELF_JOIN_PERM);
-        print "Changing ".$ws->name." to use self_join for guests\n";
+    if ($perms->current_set_name eq 'public-authenticate-to-edit') {
+        $perms->set(set_name => 'public-join-to-edit');
+        print "Changing ".$ws->name." to use public-join-to-edit permission set\n";
 
         if ($add) {
             print "Adding users in account $account_id to workspace ".$ws->name."\n";
             my $users = $acct->users;
             while (my $user = $users->next ) {
-                unless ($user->is_system_created) {
-                    $ws->add_user( user => $user);
+                unless ($user->is_system_created || $ws->has_user($user)) {
+                        $ws->add_user( user => $user);
                 }
             }
         }

@@ -24,8 +24,8 @@
 | st-empty-container |  |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Socialtext Signals | 30000 |
-| click_and_wait | link=Socialtext Signals |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Socialtext Signals'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Socialtext Signals'] |  |
 
 | *Comment* | Test Case: Signals Widget. Verify back at Dashboard with widget |  |
 | wait_for_text_present_ok | Welcome | 30000 |

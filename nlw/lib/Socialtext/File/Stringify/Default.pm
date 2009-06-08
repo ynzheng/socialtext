@@ -17,3 +17,31 @@ sub to_string {
 }
 
 1;
+
+=head1 NAME
+
+Socialtext::File::Stringify::Default - Default stringifier
+
+=head1 DESCRIPTION
+
+Default stringifier, when nothing else is willing to handle it.
+
+=head1 METHODS
+
+=over
+
+=item to_string($filename)
+
+Extracts the stringified content from C<$filename>, using F<strings>.
+
+=back
+
+=head1 AUTHOR
+
+Socialtext, Inc. C<< <code@socialtext.com> >>
+
+=head1 COPYRIGHT
+
+Copyright 2006 Socialtext, Inc., all rights reserved.
+
+=cut

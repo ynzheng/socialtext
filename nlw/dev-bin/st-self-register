@@ -1,0 +1,20 @@
+#!/bin/sh
+
+if [ "$1" == "" ]; then
+    echo "Usage: $0 <workspace_id>";
+    exit 1;
+fi
+
+WS=$1
+ROLE="authenticated_user"
+PERMS='attachments comment delete edit email_in email_out read'
+
+for P in $PERMS ; do
+    st-admin add-permission --w $WS --role $ROLE --p $P;
+done;
+
+st-admin remove-permission --w $WS --role $ROLE --p self_join
+st-admin remove-permission --w $WS --role guest --p self_join
+st-admin add-permission --w $WS --role guest --p edit_controls
+
+st-admin show-acls --w $WS

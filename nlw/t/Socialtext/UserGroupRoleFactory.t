@@ -4,7 +4,8 @@
 use strict;
 use warnings;
 use mocked 'Socialtext::Events', qw(clear_events event_ok is_event_count);
-use Test::Socialtext tests => 73;
+use mocked 'Socialtext::Log', qw(:tests);
+use Test::Socialtext tests => 80;
 use Test::Exception;
 
 ###############################################################################
@@ -38,6 +39,7 @@ create_ugr: {
 
     # create the UGR, make sure it got created with our info
     clear_events();
+    clear_log();
     my $ugr   = Socialtext::UserGroupRoleFactory->Create( {
         user_id  => $user->user_id,
         group_id => $group->group_id,
@@ -53,6 +55,9 @@ create_ugr: {
         event_class => 'group',
         action      => 'create_role',
     );
+
+    # and that an entry was logged
+    logged_like 'info', qr/ASSIGN,GROUP_ROLE/, '... creation was logged';
 
     # double-check that we can pull this UGR from the DB
     my $queried = Socialtext::UserGroupRoleFactory->GetUserGroupRole(
@@ -140,6 +145,7 @@ update_a_ugr: {
 
     # update the UGR
     clear_events();
+    clear_log();
     my $rc = $factory->Update($ugr, { role_id => $guest_role->role_id } );
     ok $rc, 'updated UGR';
     is $ugr->role_id, $guest_role->role_id, '... with updated role_id';
@@ -149,6 +155,9 @@ update_a_ugr: {
         event_class => 'group',
         action      => 'update_role',
     );
+
+    # and that an entry was logged
+    logged_like 'info', qr/CHANGE,GROUP_ROLE/, '... update was logged';
 
     # make sure the updates are reflected in the DB
     my $queried = $factory->GetUserGroupRole(
@@ -175,12 +184,16 @@ ignore_update_to_user_id_pkey: {
 
     # update the UGR
     clear_events();
+    clear_log();
     my $rc = $factory->Update($ugr, { user_id => $user_two->user_id } );
     ok $rc, 'updated UGR';
     is $ugr->user_id, $user_one->user_id, '... UGR has original user_id';
 
     # and that *NO* Event was recorded
     is_event_count(0);
+
+    # and that *NO* entry was logged
+    logged_not_like 'info', qr/GROUP_ROLE/, '... NO update was logged';
 }
 
 ###############################################################################
@@ -200,12 +213,16 @@ ignore_update_to_group_id_pkey: {
 
     # update the UGR
     clear_events();
+    clear_log();
     my $rc = $factory->Update($ugr, { group_id => $group_two->group_id } );
     ok $rc, 'updated UGR';
     is $ugr->group_id, $group_one->group_id, '... UGR has original group_id';
 
     # and that *NO* Event was recorded
     is_event_count(0);
+
+    # and that *NO* entry was logged
+    logged_not_like 'info', qr/GROUP_ROLE/, '... NO update was logged';
 }
 
 ###############################################################################
@@ -223,6 +240,7 @@ update_non_existing_ugr: {
     #
     # This mimics the behaviour of ST::User and for ST::UserWorkspaceRole.
     clear_events();
+    clear_log();
     lives_ok {
         Socialtext::UserGroupRoleFactory->Update(
             $ugr,
@@ -232,6 +250,9 @@ update_non_existing_ugr: {
 
     # and that *NO* Event was recorded
     is_event_count(0);
+
+    # and that *NO* entry was logged
+    logged_not_like 'info', qr/GROUP_ROLE/, '... NO update was logged';
 }
 
 ###############################################################################
@@ -250,6 +271,7 @@ delete_ugr: {
 
     # delete the UGR
     clear_events();
+    clear_log();
     my $rc = $factory->Delete($ugr);
     ok $rc, 'deleted the UGR';
 
@@ -258,6 +280,9 @@ delete_ugr: {
         event_class => 'group',
         action      => 'delete_role',
     );
+
+    # and that an entry was logged
+    logged_like 'info', qr/REMOVE,GROUP_ROLE/, '... removal was logged';
 
     # make sure the delete was reflected in the DB
     my $queried = $factory->GetUserGroupRole(
@@ -279,12 +304,16 @@ delete_non_existing_ugr: {
 
     # Deleting a non-existing UGR fails, without throwing an exception
     clear_events();
+    clear_log();
     my $factory = Socialtext::UserGroupRoleFactory->instance();
     my $rc      = $factory->Delete($ugr);
     ok !$rc, 'cannot delete a non-existing UGR';
 
     # and that *NO* Event was recorded
     is_event_count(0);
+
+    # and that *NO* entry was logged
+    logged_not_like 'info', qr/GROUP_ROLE/, '... NO removal was logged';
 }
 
 ###############################################################################

@@ -18,8 +18,8 @@
 | st-empty-container |  |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_ok | link=Add Content |  |
-| wait_for_element_visible_ok | link=Wiki Page | 30000 |
-| click_ok | link=Wiki Page |  |
+| wait_for_element_visible_ok | gallery-widget-Wiki Page | 30000 |
+| click_ok | gallery-widget-Wiki Page |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 
 | *Comment* | Test Case: Wiki Page Widget. Load the widget |  |

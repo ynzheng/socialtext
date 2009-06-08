@@ -8,85 +8,97 @@
 | open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Microsoft Outlook | 30000 |
-| click_and_wait | link=Microsoft Outlook |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Microsoft Outlook'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Microsoft Outlook'] |  |
+| text_like | contentContainer | Microsoft Outlook |
 
 | *Comment* | Test Case: External Gadgets. Google Calendar |  |
 | open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Google Calendar | 30000 |
-| click_and_wait | link=Google Calendar |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Google Calendar'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Google Calendar'] |  |
+| text_like | contentContainer | Google Calendar |
 
 | *Comment* | Test Case: External Gadgets. YouTube Video Player |  |
 | open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=YouTube Video Player | 30000 |
-| click_and_wait | link=YouTube Video Player |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-YouTube Video Player'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-YouTube Video Player'] |  |
+| text_like | contentContainer | YouTube Video Player |
 
 | *Comment* | Test Case: External Gadgets. SlideShare Feeds |  |
 | open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=SlideShare Feeds | 30000 |
-| click_and_wait | link=SlideShare Feeds |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-SlideShare Feeds'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-SlideShare Feeds'] |  |
+| text_like | contentContainer | SlideShare Feeds |
 
 | *Comment* | Test Case: External Gadgets. BeTwittered |  |
 | open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=BeTwittered | 30000 |
-| click_and_wait | link=BeTwittered |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-BeTwittered'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-BeTwittered'] |  |
+| text_like | contentContainer | BeTwittered |
 
 | *Comment* | Test Case: External Gadgets. My del.icio.us |  |
 | open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=My del.icio.us | 30000 |
-| click_and_wait | link=My del.icio.us |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-My del.icio.us'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-My del.icio.us'] |  |
+| text_like | contentContainer | My del.icio.us |
 
 | *Comment* | Test Case: External Gadgets. MapQuest |  |
 | open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=MapQuest | 30000 |
-| click_and_wait | link=MapQuest |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-MapQuest'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-MapQuest'] |  |
+| text_like | contentContainer | MapQuest |
 
 | *Comment* | Test Case: External Gadgets. Wikipedia |  |
 | open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Wikipedia | 30000 |
-| click_and_wait | link=Wikipedia |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Wikipedia'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Wikipedia'] |  |
+| text_like | contentContainer | Wikipedia |
 
 | *Comment* | Test Case: External Gadgets. Flickr Photos |  |
 | open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Flickr Photos | 30000 |
-| click_and_wait | link=Flickr Photos |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Flickr Photos'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Flickr Photos'] |  |
+| text_like | contentContainer | Flickr Photos |
 
 | *Comment* | Test Case: External Gadgets. LabPixies Calculator |  |
 | open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=LabPixies Calculator | 30000 |
-| click_and_wait | link=LabPixies Calculator |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-LabPixies Calculator'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-LabPixies Calculator'] |  |
+| text_like | contentContainer | LabPixies Calculator |
 
 | *Comment* | Test Case: External Gadgets. Clock & Date |  |
 | open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Clock & Date | 30000 |
-| click_and_wait | link=Clock & Date |  |
+| wait_for_element_visible_ok | //a[contains(@id,'Date')] | 30000 |
+| click_and_wait | //a[contains(@id,'Date')] |  |
+| text_like | contentContainer | Clock & Date |
 
 | *Comment* | Test Case: External Gadgets. LabPixies ToDo |  |
 | open_ok | /?action=clear_widgets |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=LabPixies ToDo | 30000 |
-| click_and_wait | link=LabPixies ToDo |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-LabPixies ToDo'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-LabPixies ToDo'] |  |
+| text_like | contentContainer | LabPixies ToDo |
 
 | *Comment* | Test Case: External Gadgets TEARDOWN |  |
 | open_ok | /?action=clear_widgets |  |

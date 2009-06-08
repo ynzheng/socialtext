@@ -20,7 +20,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::AccessHandler::IsBusinessAdmin
     Socialtext::AccountInvitation
     Socialtext::AccountLogo
-    Socialtext::Apache::Authen::NTLM
     Socialtext::ApacheDaemon
     Socialtext::Attachment
     Socialtext::Attachments
@@ -37,11 +36,7 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::CGI::Scrubbed
     Socialtext::CLI
     Socialtext::CategoryPlugin
-    Socialtext::Challenger
-    Socialtext::Challenger::OpenId
-    Socialtext::Challenger::STLogin
     Socialtext::CommentUIPlugin
-    Socialtext::CredentialsExtractor
     Socialtext::DaemonUtil
     Socialtext::Date
     Socialtext::Date::l10n
@@ -71,18 +66,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::FavoritesPlugin
     Socialtext::FetchRSSPlugin
     Socialtext::File
-    Socialtext::File::Stringify::Default
-    Socialtext::File::Stringify::application_msword
-    Socialtext::File::Stringify::application_pdf
-    Socialtext::File::Stringify::application_postscript
-    Socialtext::File::Stringify::application_vnd_ms_excel
-    Socialtext::File::Stringify::application_vnd_ms_powerpoint
-    Socialtext::File::Stringify::application_zip
-    Socialtext::File::Stringify::audio_mpeg
-    Socialtext::File::Stringify::text_html
-    Socialtext::File::Stringify::text_plain
-    Socialtext::File::Stringify::text_rtf
-    Socialtext::File::Stringify::text_xml
     Socialtext::FillInFormBridge
     Socialtext::Formatter
     Socialtext::Formatter::AbsoluteLinkDictionary
@@ -262,7 +245,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Timer
     Socialtext::UniqueArray
     Socialtext::UploadedImage
-    Socialtext::User
     Socialtext::User::Cache
     Socialtext::User::EmailConfirmation
     Socialtext::User::Find
@@ -278,6 +260,7 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::WikiFixture::EmailJob
     Socialtext::WikiFixture::SocialBase
     Socialtext::WikiFixture::SocialpointPlugin
+    Socialtext::WikiFixture::WebHook
     Socialtext::WikiText::Emitter::HTML
     Socialtext::WikiText::Emitter::Messages::Base
     Socialtext::WikiText::Emitter::Messages::Canonicalize
@@ -353,7 +336,7 @@ plan tests => scalar @all_modules;
 # Test each module in turn
 foreach my $file (sort @all_modules) {
     my $module  = file_to_module($file);
-    if (exists $ToDoModules{$module}) { ok "$module is Old"; next }
+    if (exists $ToDoModules{$module}) { ok 1, "OLD: $module"; next }
     my $params  = $ModuleExceptions{$module} || {};
     pod_coverage_ok( $module, $params );
 }

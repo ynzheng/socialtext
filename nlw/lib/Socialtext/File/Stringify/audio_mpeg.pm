@@ -22,3 +22,28 @@ sub to_string {
 }
 
 1;
+
+=head1 NAME
+
+Socialtext::File::Stringify::audio_mpeg - Stringify MP3 files
+
+=head1 METHODS
+
+=over
+
+=item to_string($filename)
+
+Extracts the stringified content from C<$filename>, an MP3 file, by extracting
+all of the MP3 Tags.
+
+=back
+
+=head1 AUTHOR
+
+Socialtext, Inc. C<< <code@socialtext.com> >>
+
+=head1 COPYRIGHT
+
+Copyright 2006 Socialtext, Inc., all rights reserved.
+
+=cut

@@ -18,6 +18,18 @@ Socialtext::Challenger::STLogin - Challenge with the default login screen
 When configured for use, this Challenger will redirect a request
 to the default Socialtext login screen.
 
+=head1 METHODS
+
+=over
+
+=item B<Socialtext::Challenger::STLogin-E<gt>challenge(%p)>
+
+Custom challenger.
+
+Not to be called directly.  Use C<Socialtext::Challenger> instead.
+
+=back
+
 =cut
 
 # Send this request to the NLW challenge screen
@@ -76,6 +88,7 @@ sub challenge {
 }
 
 1;
+
 =head1 AUTHOR
 
 Socialtext, Inc., <code@socialtext.com>
