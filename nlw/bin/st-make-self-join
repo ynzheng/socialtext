@@ -15,7 +15,7 @@ sub usage {
     my $msg = shift;
     warn "$msg\n" if $msg;
     die <<EOT;
-$0 <account-id>
+$0 <account-name>
 
 Options:
     --add
