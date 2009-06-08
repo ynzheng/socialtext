@@ -115,6 +115,11 @@ sub _make_getter {
                             ) {
                             return $self->no_workspace($e->name);
                         }
+                        elsif ($e = Exception::Class->caught(
+                                'Socialtext::Exception')) {
+                            $rest->header(-status => $e->{http_status});
+                            return $e->{error};
+                        }
                         st_log->info("Rest Collection Error: $@");
                         die;
                     }
