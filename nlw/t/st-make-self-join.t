@@ -8,7 +8,14 @@ use IPC::Run;
 use Test::Socialtext tests => 11;
 use t::Socialtext::CLITestUtils qw/expect_failure expect_success/;
 
-use Socialtext::Permission qw/ST_EDIT_CONTROLS_PERM ST_SELF_JOIN_PERM/;
+use Socialtext::Permission qw/ST_READ_PERM ST_EDIT_PERM 
+                              ST_ATTACHMENTS_PERM
+                              ST_COMMENT_PERM
+                              ST_DELETE_PERM
+                              ST_EMAIL_IN_PERM
+                              ST_EMAIL_OUT_PERM
+                              ST_EDIT_CONTROLS_PERM 
+                              ST_SELF_JOIN_PERM/;
 
 fixtures( 'db' );
 
@@ -42,6 +49,11 @@ test_it: {
         account_id => $acctpri->account_id
     );
 
+    $workspacepri->permissions->set(set_name => 'public-join-to-edit');
+
+    # now, reset back to the old public-authenticate-to-edit and
+    # run the tool
+    #
     $workspacepri->permissions->add(
         permission => ST_EDIT_CONTROLS_PERM,
         role => Socialtext::Role->Guest()
@@ -51,7 +63,19 @@ test_it: {
         permission => ST_SELF_JOIN_PERM,
         role => Socialtext::Role->Guest()
     );
-    
+    $workspacepri->permissions->remove(
+        permission => ST_SELF_JOIN_PERM,
+        role => Socialtext::Role->AuthenticatedUser()
+    );
+
+    for my $perm (ST_READ_PERM,
+                  ST_EDIT_PERM,ST_ATTACHMENTS_PERM,ST_COMMENT_PERM,
+                  ST_DELETE_PERM,ST_EMAIL_IN_PERM,ST_EMAIL_OUT_PERM) {
+        $workspacepri->permissions->add(
+            permission => $perm,
+            role => Socialtext::Role->AuthenticatedUser()
+        );
+    };
     my @command = qw( bin/st-make-self-join --add );
     push(@command,  $acctpri->name );
 
