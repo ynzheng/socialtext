@@ -232,6 +232,13 @@ sub ResolveId {
     my $class = shift;
     my $p = shift;
 
+    # HACK: map "object -> DB"
+    # - ideally we get rid of this thing having two names at different levels
+    # of the system, but for now this is needed to address Bug #2658
+    if ($p->{username} and not $p->{driver_username}) {
+        $p->{driver_username} = $p->{username};
+    }
+
     # in LDAP, any of these fields *could* be considered a unique identifier
     # for the User.  They all have to be unique in LDAP, but they're all also
     # subject to change; a user _could_ have their DN or e-mail changed.
