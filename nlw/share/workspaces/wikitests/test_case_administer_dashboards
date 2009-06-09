@@ -38,8 +38,8 @@
 | *Comment* | Test Case: Administer Dashboards - Add RSS Viewer |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=RSS Viewer | 30000 |
-| click_and_wait | link=RSS Viewer |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-RSS Viewer'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-RSS Viewer'] |  |
 
 | *Comment* | Test Case: Administer Dashboards - Test for RSS Viewer, then remove it |  |
 | wait_for_text_present_ok | Socialtext blog | 30000 |
@@ -55,8 +55,8 @@
 | click_and_wait | link=Administer Dashboards |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Wikipedia | 30000 |
-| click_and_wait | link=Wikipedia |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Wikipedia'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Wikipedia'] |  |
 
 | *Comment* | Test Case: Administer Dashboards - Test for Wikipedia |  |
 | wait_for_text_present_ok | Wikipedia | 30000 |
@@ -94,10 +94,11 @@ click_ok | //a[contains(@class,'cancel genericOrangeButton')] | |
 | click_and_wait | link=Administer Dashboards |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=RSS Viewer | 30000 |
-| click_and_wait | link=RSS Viewer |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-RSS Viewer'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-RSS Viewer'] |  |
 
 | *Comment* | Test Case: Administer Dashboards - Save... but no force update |  |
+| wait_for_element_visible_ok | link=Save... | 30000 |
 | click_ok | link=Save... |  |
 | wait_for_text_present_ok | Save Confirmation | 30000 |
 | wait_for_element_visible_ok | st-save-widget-template | 30000 |
