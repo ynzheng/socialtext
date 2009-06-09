@@ -103,8 +103,9 @@
 | wait_for_element_visible_ok | link=Manage Gallery for Accounts | 30000 |
 | click_and_wait | link=Manage Gallery for Accounts |  |
 | wait_for_element_visible_ok | //a[@id='gallery-remove-Cheeky Quote'] | 30000 |
-| wait_for_element_not_present_ok | //a[@id='gallery-restore-Cheeky Quote'] | 30000 |
 | text_like | //a[@id='gallery-remove-Cheeky Quote'] | `(remove)` |
+| text_like | //a[@id='gallery-update-Cheeky Quote'] | `(update)` |
+| text_unlike | contentContainer | `(restore)` |  |
 
 | *Comment* | Test Case: Add Remove Gallery Widgets remove for delete an uploaded widget |  |
 | open_ok | /?dashboard | 60000 |
