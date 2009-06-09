@@ -149,7 +149,7 @@
         </div><!-- widgetHeader END -->
         <div class="widgetContent">
           <ul id="st-tags-listing">
-          [% FOR tag = tags.tags %]
+          [% FOR tag = tags.sorted_tags %]
             <li>
             <a href="?action=category_display;category=[% tag.name | uri %]" class="tag_name" title="[% tag.name | html %]">[% tag.name | html %]</a>
             [% IF !page_locked_for_user %]
