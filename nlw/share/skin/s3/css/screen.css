@@ -2117,11 +2117,6 @@ table.dataTable span.summary strong {
     padding:1px 2px;
 }
 
-table.dataTable span.edit_summary {
-    font-weight:bold;
-    line-height: 18px;
-}
-
 div#bottomButtons {
     width: 100%;
 }
@@ -3367,6 +3362,46 @@ span.person img.avatar {
     border: 1px solid #AFAFAF !important;
     margin-top: 2px !important;
 }
+
+div.summary {
+    display: block;
+    margin: 5px 0 0 20px;
+}
+
+div.edit_summary {
+    display: block;
+    margin: 5px 0 0 20px;
+    font-weight:bold;
+    line-height: 18px;
+}
+
+
+div.byline {
+   display: block;
+   font-style: italic;
+   margin-left: 20px;
+   color: #666;
+   margin-top: 5px;
+}
+
+span.last-updated-by strong,
+span.originally-created-by strong,
+span.revision-count strong {
+    font-weight: bold;
+}
+
+span.last-updated-by,
+span.originally-created-by,
+span.revision-count {
+    white-space: nowrap;
+}
+
+span.originally-created-by {
+    border-left: 1px #999 solid;
+    margin-left: 5px;
+    padding-left: 5px;
+}
+
 
 a.incipient {
     text-decoration: none;
