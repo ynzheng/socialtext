@@ -1,0 +1,22 @@
+| *Comment* | STARTING Test case: ToDo Widget |
+
+* Fixture: SocialWidgets
+
+| open_ok | /?action=clear_widgets |  |
+| wait_for_element_visible_ok | link=Add Content | 30000 |
+| click_and_wait | link=Add Content |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-LabPixies ToDo'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-LabPixies ToDo'] |  |
+| text_like | contentContainer | LabPixies ToDo |
+
+| st-name-widget | 1 | todo_widget |
+| st-widget-title-like | todo_widget | ToDo |
+| st-select-widget-frame | todo_widget |  |
+| text_like | //body | Type new task here |
+| pause | 5000 |  |
+| select-frame | relative=parent |  |
+
+| *Comment* | Test Case: ToDo Widget Teardown |  |
+| st-empty-container |  |  |
+
+| *Comment* | Test Case: ToDo Widget COMPLETED |  |
