@@ -314,9 +314,7 @@ sub redirect_to_login {
     if (Socialtext::BrowserDetect::is_mobile()) {
         return $self->redirect('/lite/login');
     }
-
-    my $login_uri = Socialtext::AppConfig->logout_redirect_uri;
-    return $self->redirect("$login_uri?redirect_to=$uri");
+    return $self->redirect("/nlw/login.html?redirect_to=$uri");
 }
 
 sub redirect {
