@@ -15,7 +15,8 @@
 | select_ok | st-search-action | label=Search My Workspaces: |
 | st-search | jabber | Pages containing 'jabber' |
 | st-result | 3 total |  |
-| *Comment* | Sort by Workspace |  |
+| *Comment* | Sort by Workspace. Unstick the sort mode |  |
+| select_and_wait | sort-picker | label=Title |
 | select_and_wait | sort-picker | label=Workspace |
 
 | *Comment* | Test Case: Inter Workspace Search unsorted results can appear in any order, so don't check order |  |
@@ -28,6 +29,7 @@
 | select_ok | st-search-action | label=Search My Workspaces: |
 | st-search | jabber | Pages containing 'jabber' |
 | st-result | 2 total |  |
+| select_and_wait | sort-picker | label=Title |
 | select_and_wait | sort-picker | label=Workspace |
 | *Comment* | Test Case: Inter Workspace Search unsorted results can appear in any order, so don't check order |  |
 | st-result | qr/jabber.+test-data3/ |  |
@@ -49,6 +51,7 @@
 | st-admin | set-permissions --workspace test-data3 --permissions public-join-to-edit | The permissions for the test-data3 workspace have been changed to public-join-to-edit. |
 | st-search | jabber workspaces:test-data3 | Pages containing 'jabber workspaces:test-data3' |
 | st-result | 1 total |  |
+| select_and_wait | sort-picker | label=Title |
 | select_and_wait | sort-picker | label=Workspace |
 | st-result | qr/jabber.+test-data3/ |  |
 
@@ -57,6 +60,7 @@
 | select_ok | st-search-action | label=Search My Workspaces: |
 | st-search | jabber | Pages containing 'jabber' |
 | st-result | 2 total |  |
+| select_and_wait | sort-picker | label=Title |
 | select_and_wait | sort-picker | label=Workspace |
 
 st-result | qr/jabber.+test-data3.+jabber.+%%title%%/ | |
@@ -71,6 +75,7 @@ st-result | qr/jabber.+test-data3.+jabber.+%%title%%/ | |
 | select_ok | st-search-action | label=Search My Workspaces: |
 | st-search | jabber | Pages containing 'jabber' |
 | st-result | 3 total |  |
+| select_and_wait | sort-picker | label=Title |
 | select_and_wait | sort-picker | label=Workspace |
 
 st-result | qr/jabber.+test-data3.+jabber.+test-data2.+jabber.+%%title%%/ | |
@@ -84,6 +89,7 @@ st-result | qr/jabber.+test-data3.+jabber.+test-data2.+jabber.+%%title%%/ | |
 | st-search | jabber | Pages containing 'jabber' |
 
 | st-result | 2 total |  |
+| select_and_wait | sort-picker | label=Title |
 | select_and_wait | sort-picker | label=Workspace |
 
 st-result | qr/jabber.+test-data3.+jabber.+%%title%% | |
@@ -98,6 +104,7 @@ st-result | qr/jabber.+test-data3.+jabber.+%%title%% | |
 | open_ok | /help-en |  |
 | st-search | jabber workspaces:test-data3 | Pages containing 'jabber workspaces:test-data3' |
 | st-result | 1 total |  |
+| select_and_wait | sort-picker | label=Title |
 | select_and_wait | sort-picker | label=Workspace |
 | st-result | qr/jabber.+test-data3/ |  |
 
@@ -108,6 +115,7 @@ st-result | qr/jabber.+test-data3.+jabber.+%%title%% | |
 | *Comment* | Test Case: Inter Workspace Search UNSUBSCRIBE |  |
 | *Comment* | Add back test-data2, unsub from test-data3 via UI |  |
 | st-admin | clone-workspace --workspace test-data --target test-data2 --overwrite | The test-data workspace has been cloned to test-data2 |
+| st-admin | set-workspace-config --workspace test-data2 title test-data2 | The workspace config for test-data2 has been updated. |
 
 | st-login |  |  |
 | open_ok | /test-data3 |  |
@@ -119,6 +127,7 @@ st-result | qr/jabber.+test-data3.+jabber.+%%title%% | |
 | select_ok | st-search-action | label=Search My Workspaces: |
 | st-search | jabber | Pages containing 'jabber' |
 | st-result | 2 total |  |
+| select_and_wait | sort-picker | label=Title |
 | select_and_wait | sort-picker | label=Workspace |
 
 st-result | qr/jabber.+test-data2.+jabber.+%%title%%/ | |
@@ -148,6 +157,7 @@ st-result | qr/jabber.+test-data2.+jabber.+%%title%%/ | |
 | select_ok | st-search-action | label=Search My Workspaces: |
 | st-search | jabber | Pages containing 'jabber' |
 | st-result | 3 total |  |
+| select_and_wait | sort-picker | label=Title |
 | select_and_wait | sort-picker | label=Workspace |
 | wait_for_element_visible_ok | sort-picker | 30000 |
 
