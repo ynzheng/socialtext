@@ -14,7 +14,7 @@
       <li class="noBorder">  
     <form action="[% script_name %]">
         <input type="hidden" name="action" value="weblog_display" />
-      <span>[% loc('Go to:') %]<select name="category" onchange="this.form.submit()" id="page-control-category-selector">
+      <span>[% loc('Go to:') %]&nbsp;<select name="category" onchange="this.form.submit()" id="page-control-category-selector">
           [% FOREACH blog = blogs %]
             [% display_string = blog.display | html %]
             <option[% IF blog.display == tag %] selected="true"[% END %] value="[% blog.escape_html %]">[% IF display_string == 'Recent Changes' %] [% loc('Recent Changes') %] [% ELSE %] [% display_string %] [% END %]</option>
