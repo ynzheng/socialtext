@@ -10,7 +10,7 @@ use Socialtext::LDAP;
 use Socialtext::LDAP::Config;
 use Socialtext::User::LDAP::Factory;
 use Test::Socialtext::Bootstrap::OpenLDAP;
-use Test::Socialtext tests => 382;
+use Test::Socialtext tests => 502;
 
 ###############################################################################
 # Fixtures:     db
@@ -401,6 +401,104 @@ test_ldap_lowercase_to_camelcase_change: {
                 cn              => $camel_cn,
                 mail            => $camel_email,
                 employeeNumber  => $camel_username,
+            },
+        );
+    }
+}
+
+###############################################################################
+# TEST: change the DN, and e-mail address
+test_ldap_dn_and_email: {
+    my $user;   # queried user record will go here
+
+    my %updated_user_attrs = (
+        %user_attrs,
+        mail            => $changed_email,
+    );
+
+    # Helper method to change the User record
+    my $cb_change_user = sub {
+        my $ldap = shift;
+
+        # delete the User record at the old DN
+        my $mesg = $ldap->delete($dn);
+        ok !$mesg->is_error, 'removed user in LDAP';
+        $mesg->is_error && diag $mesg->error;
+
+        # create a new User record at the new DN
+        $mesg = $ldap->add($changed_dn, attr => [%updated_user_attrs]);
+        ok !$mesg->is_error, 'moved user to new DN in LDAP, w/new e-mail';
+        $mesg->is_error && diag $mesg->error;
+    };
+
+    # Lookups to do *after* the User data has changed
+    my @test_cases = (
+        [ 'email address (new)'     => sub { user_lookup(email_address => $changed_email) } ],
+        [ 'username'                => sub { user_lookup(username => $username)           } ],
+        [ 'driver_unique_id (new)'  => sub { user_lookup(driver_unique_id => $changed_dn) } ],
+        [ 'user_id'                 => sub { user_lookup(user_id => $user->user_id)       } ],
+    );
+
+    # Go run all of our tests
+    foreach my $test (@test_cases) {
+        my ($title, $cb_lookup_after) = @{$test};
+        test_ldap_data_changes(
+            title               => "Changing DN and e-mail, lookup by $title",
+            lookup_before       => sub { $user = user_lookup(driver_unique_id => $dn) },
+            do_update           => $cb_change_user,
+            lookup_after        => $cb_lookup_after,
+            expected_changes    => {
+                dn      => $changed_dn,
+                mail    => $changed_email,
+            },
+        );
+    }
+}
+
+###############################################################################
+# TEST: change the DN, and username
+test_ldap_dn_and_username: {
+    my $user;   # queried user record will go here
+
+    my %updated_user_attrs = (
+        %user_attrs,
+        employeeNumber  => $changed_username,
+    );
+
+    # Helper method to change the User record
+    my $cb_change_user = sub {
+        my $ldap = shift;
+
+        # delete the User record at the old DN
+        my $mesg = $ldap->delete($dn);
+        ok !$mesg->is_error, 'removed user in LDAP';
+        $mesg->is_error && diag $mesg->error;
+
+        # create a new User record at the new DN
+        $mesg = $ldap->add($changed_dn, attr => [%updated_user_attrs]);
+        ok !$mesg->is_error, 'moved user to new DN in LDAP, w/new username';
+        $mesg->is_error && diag $mesg->error;
+    };
+
+    # Lookups to do *after* the User data has changed
+    my @test_cases = (
+        [ 'email address'           => sub { user_lookup(email_address => $email)         } ],
+        [ 'username (new)'          => sub { user_lookup(username => $changed_username)   } ],
+        [ 'driver_unique_id (new)'  => sub { user_lookup(driver_unique_id => $changed_dn) } ],
+        [ 'user_id'                 => sub { user_lookup(user_id => $user->user_id)       } ],
+    );
+
+    # Go run all of our tests
+    foreach my $test (@test_cases) {
+        my ($title, $cb_lookup_after) = @{$test};
+        test_ldap_data_changes(
+            title               => "Changing DN and username, lookup by $title",
+            lookup_before       => sub { $user = user_lookup(driver_unique_id => $dn) },
+            do_update           => $cb_change_user,
+            lookup_after        => $cb_lookup_after,
+            expected_changes    => {
+                dn              => $changed_dn,
+                employeeNumber  => $changed_username,
             },
         );
     }
