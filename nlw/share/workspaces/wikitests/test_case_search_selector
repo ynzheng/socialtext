@@ -1,0 +1,34 @@
+| *Comment* | Test Case: Search Selector |  |
+
+| *Comment* | Test Case: Search Selector |  |
+| *Comment* | Search My Workspaces is tested in Test Case: Inter Wiki Search |  |
+
+| *Comment* | Test Case: Search Selector. Select People |  |
+| select_ok | st-search-action | label=Search People: |
+| st-search | %%email%% | People matching '%%email%%' |
+| is_selected_ok | st-search-action | label=Search People: |
+
+| *Comment* | Test Case: Search Selector. Select My Workspaces in People context |  |
+| select_ok | st-search-action | label=Search My Workspaces: |
+| st-search | wiki | Pages containing 'wiki' |
+| is_selected_ok | st-search-action | label=Search My Workspaces: |
+
+| *Comment* | Test Case: Search Selector. Enter Workspace context |  |
+| open-ok | /%%workspace%% |  |
+| is_selected_ok | st-search-action | label=Search This Workspace: |
+| st-search | wiki | Pages containing 'wiki' |
+| is_selected_ok | st-search-action | label=Search This Workspace: |
+
+| *Comment* | Test Case: Search Selector. Select My Workspaces in WS context |  |
+| select_ok | st-search-action | label=Search My Workspaces: |
+| st-search | wiki | Pages containing 'wiki' |
+| is_selected_ok | st-search-action | label=Search My Workspaces: |
+
+| *Comment* | Test Case: Search Selector. Select People in WS context |  |
+| select_ok | st-search-action | label=Search People: |
+| st-search | %%email%% | People matching '%%email%%' |
+| is_selected_ok | st-search-action | label=Search People: |
+
+TODO: implement all the selector story tests in {link: dev-tasks [Story: section-sensitive search]}
+
+| *Comment* | Test Case: Search Selector COMPLETED |  |

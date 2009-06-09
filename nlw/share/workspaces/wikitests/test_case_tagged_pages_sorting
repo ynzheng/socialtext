@@ -148,20 +148,20 @@ Create unique sort order for each sort:
 
 | *Comment* | Test Case: Tagged Page Sorting: Create Time |  |
 | select_and_wait | sort-picker | label=Date Created |
-| text_like | contentContainer | qr/Search Sort 4.+Search Sort 3.+Search Sort 2.+Search Sort 1/ |
-| select_and_wait | sort-picker | label=Date Created (↓) |
-| text_like | contentContainer | qr/Search Sort 1.+Search Sort 2.+Search Sort 3.+Search Sort 4/ |
+| text_like | contentContainer | qr/Search Sort 1.+Search Sort 4.+Search Sort 3.+Search Sort 2/ |
+| select_and_wait | sort-picker | label=Date Created (↑) |
+| text_like | contentContainer | qr/Search Sort 2.+Search Sort 3.+Search Sort 4.+Search Sort 1/ |
 
 | *Comment* | Test Case: Tagged Page Sorting. sorted Title |  |
 | select_and_wait | sort-picker | label=Title |
 | text_like | contentContainer | qr/Search Sort 1.+Search Sort 2.+Search Sort 3.+Search Sort 4/ |
-| select_and_wait | sort-picker | index=1 |
+| select_and_wait | sort-picker | label=Title (↓) |
 | text_like | contentContainer | qr/Search Sort 4.+Search Sort 3.+Search Sort 2.+Search Sort 1/ |
 
 | *Comment* | Test Case: Tagged Page Sorting. Sorting Revisions asc, then desc |  |
 | select_and_wait | sort-picker | label=Revisions |
 | text_like | contentContainer | qr/5 Revisions.+4 Revisions.+3 Revisions.+2 Revisions/ |
-| select_and_wait | sort-picker | index=3 |
+| select_and_wait | sort-picker | label=Revisions (↑) |
 | text_like | contentContainer | qr/2 Revisions.+3 Revisions.+4 Revisions.+5 Revisions/ |
 
 | *Comment* | Test Case: Tagged Page Sorting. Sorting Last Edited By asc, then desc |  |
@@ -192,13 +192,13 @@ SEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSEARCHSE
 | *Comment* | Test Case: Tagged Page Sorting. Sorting Revisions desc, then asc |  |
 | select_and_wait | sort-picker | label=Revisions |
 | text_like | contentContainer | qr/Search Sort 2.+Search Sort 1.+Search Sort 4.+Search Sort 3/ |
-| select_and_wait | sort-picker | index=4 |
+| select_and_wait | sort-picker | label=Revisions (↑) |
 | text_like | contentContainer | qr/Search Sort 3.+Search Sort 4.+Search Sort 1.+Search Sort 2/ |
 
 | *Comment* | Test Case: Tagged Page Sorting. Sorting Title asc, then desc |  |
 | select_and_wait | sort-picker | label=Title |
 | text_like | contentContainer | qr/Search Sort 1.+Search Sort 2.+Search Sort 3.+Search Sort 4/ |
-| select_and_wait | sort-picker | index=2 |
+| select_and_wait | sort-picker | label=Title (↓) |
 | text_like | contentContainer | qr/Search Sort 4.+Search Sort 3.+Search Sort 2.+Search Sort 1/ |
 
 | *Comment* | Test Case: Tagged Page Sorting. Sorting Date desc, then asc |  |
