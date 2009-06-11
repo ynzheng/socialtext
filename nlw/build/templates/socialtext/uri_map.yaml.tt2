@@ -382,6 +382,11 @@
         'GET':
             '*/*':              [Socialtext::Rest::Wafl, GET_image]
 -
+    '/data/report/top_content/:start/:duration':
+        'GET':
+            'application/json': [Socialtext::Rest::Report::TopContent, GET_json]
+        '*':                    [Socialtext::Rest::ReportAdapter, bad_method]
+-
     '/data/report/:name/:start/:duration':
         'GET':
             '*/*':     &default [Socialtext::Rest::ReportAdapter, GET_html]

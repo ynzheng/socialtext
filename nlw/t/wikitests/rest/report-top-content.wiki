@@ -1,0 +1,35 @@
+* Fixture: TopContent
+
+| standard-test-setup  |               |
+| add-report-test-data | %%workspace%% |
+| set | base_uri | /data/report/top_content/now/-1week |
+
+| GET       | %%base_uri%% |
+| code-is   | 400                                             |
+| body-like | Report requires a workspace parameter           |
+| set | base_uri | %%base_uri%%?workspace=%%workspace%% |
+
+| comment | most viewed (DEFAULT)                     |                  |
+| GET     | %%base_uri%%                              | application/json |
+| code-is | 200                                       |                  |
+| body-is | [["Awesome",3],["Middle",2],["Boring",1]] |                  |
+
+| comment | most viewed                               |                  |
+| GET     | %%base_uri%%;action=view_page             | application/json |
+| code-is | 200                                       |                  |
+| body-is | [["Awesome",3],["Middle",2],["Boring",1]] |                  |
+
+| comment | most edited                               |                  |
+| GET     | %%base_uri%%;action=edit_page             | application/json |
+| code-is | 200                                       |                  |
+| body-is | [["Awesome",6],["Middle",4],["Boring",2]] |                  |
+
+| comment | most watched                              |                  |
+| GET     | %%base_uri%%;action=add_to_watchlist      | application/json |
+| code-is | 200                                       |                  |
+| body-is | [["Awesome",9],["Middle",6],["Boring",3]] |                  |
+
+| comment | most emailed                              |                  |
+| GET     | %%base_uri%%;action=email_page            | application/json |
+| code-is | 200                                       |                  |
+| body-is | [["Awesome",12],["Middle",8],["Boring",4]] |                  |
