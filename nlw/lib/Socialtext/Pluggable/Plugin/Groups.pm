@@ -90,7 +90,7 @@ sub _get_ugrs_for_export {
 
     while ( my $ugr = $ugrs->next() ) {
         my $user = {
-            username => $ugr->user->username,
+            username  => $ugr->user->username,
             role_name => $ugr->role->name,
         };
         push @users, $user;
