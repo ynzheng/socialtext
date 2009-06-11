@@ -141,8 +141,11 @@ restore_no_groups: {
     is $account->groups->count, 0, '... and no groups are imported';
 }
 
-exit;
 
+
+
+###############################################################################
+# Helper method, to add a User to a Group.
 sub add_user_to_group {
     my $user  = shift;
     my $group = shift;
