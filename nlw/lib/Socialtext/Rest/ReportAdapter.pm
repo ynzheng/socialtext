@@ -14,6 +14,8 @@ sub adapter {
     return $self->{_adapter};
 }
 
+# This relies on the Reports code for authz/authen.
+
 sub GET_html {
     my $self = shift;
     return $self->adapter->handle_report(
