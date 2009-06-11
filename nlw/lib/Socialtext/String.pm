@@ -7,6 +7,7 @@ use URI::Escape ();
 use HTML::Truncate;
 
 use constant MAX_PAGE_ID_LEN => 255;
+use constant BOM => chr(0xFEFF);
 
 =head1 Socialtext::String
 
