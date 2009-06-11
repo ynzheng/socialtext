@@ -105,6 +105,8 @@
               [% END %]
             [% END %]
           [% END %]
+          [% FILTER decorate('pageexport') %]
+          [% END %]
           <li><a href="index.cgi?action=display_html;page_name=[% page.id %]" target="_new">[% loc('Export as HTML') %]</a></li>
 
           [% IF loc_lang != 'ja' %]
@@ -307,7 +309,6 @@
       [% END %]
     </ul>
 
-    [% USE decorate %]
     [% MACRO username BLOCK %]
       [% name | decorate('user_avatar') %]
     [% END %]
