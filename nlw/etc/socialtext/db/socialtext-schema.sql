@@ -421,6 +421,12 @@ CREATE SEQUENCE gallery_id
     NO MINVALUE
     CACHE 1;
 
+CREATE TABLE group_workspace_role (
+    group_id bigint NOT NULL,
+    workspace_id bigint NOT NULL,
+    role_id integer NOT NULL
+);
+
 CREATE TABLE groups (
     group_id bigint NOT NULL,
     driver_key text NOT NULL,
@@ -793,6 +799,10 @@ ALTER TABLE ONLY gallery
 ALTER TABLE ONLY gallery
     ADD CONSTRAINT gallery_pk
             PRIMARY KEY (gallery_id);
+
+ALTER TABLE ONLY group_workspace_role
+    ADD CONSTRAINT group_workspace_role_pk
+            PRIMARY KEY (group_id, workspace_id);
 
 ALTER TABLE ONLY groups
     ADD CONSTRAINT groups_group_id_pk
@@ -1365,6 +1375,21 @@ ALTER TABLE ONLY gallery_gadget
             FOREIGN KEY (gadget_id)
             REFERENCES gadget(gadget_id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY group_workspace_role
+    ADD CONSTRAINT group_workspace_role_group_fk
+            FOREIGN KEY (group_id)
+            REFERENCES groups(group_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY group_workspace_role
+    ADD CONSTRAINT group_workspace_role_role_fk
+            FOREIGN KEY (role_id)
+            REFERENCES "Role"(role_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY group_workspace_role
+    ADD CONSTRAINT group_workspace_role_workspace_fk
+            FOREIGN KEY (workspace_id)
+            REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY groups
     ADD CONSTRAINT groups_account_id_fk
             FOREIGN KEY (account_id)
@@ -1586,4 +1611,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '67');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '68');
