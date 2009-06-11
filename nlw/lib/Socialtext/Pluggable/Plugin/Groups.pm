@@ -58,25 +58,21 @@ sub import_groups_for_account {
             username => $group_info->{created_by_username} );
         $creator ||= Socialtext::User->SystemUser;
 
-        # XXX: supports built-in Groups, but doesn't (yet) facilitate an
-        # export/import of an LDAP-sourced Group.
-        #
-        # This code imports all Groups as *internally* sourced Groups,
-        # regardless of whether they were originally internally or externally
-        # sourced.
-        #
-        # Why?
-        #
-        # a) we don't support externally sourced Groups (yet),
-        # b) the primary use case is "export from Prod, import into
-        #    appliance", and we're *not* going to auto-LDAP-ify the Groups on
-        #    import
-        my $group = Socialtext::Group->Create( {
+        # See if the Group already exists.  If it doesn't, create a new Group.
+        my $group = Socialtext::Group->GetGroup( {
             driver_group_name  => $group_info->{driver_group_name},
             created_by_user_id => $creator->user_id,
             account_id         => $acct->account_id,
         } );
+        unless ($group) {
+            $group = Socialtext::Group->Create( {
+                driver_group_name  => $group_info->{driver_group_name},
+                created_by_user_id => $creator->user_id,
+                account_id         => $acct->account_id,
+            } );
+        }
 
+        # Add all of the Users from the export into the Group
         $self->_set_ugrs_on_import( $group, $group_info->{users} );
     }
 }
@@ -108,9 +104,19 @@ sub _set_ugrs_on_import {
         my $role = Socialtext::Role->new(name => $ugr_data->{role_name})
             || Socialtext::UserGroupRoleFactory->DefaultRole();
 
+        # Get the User that we're creating the UGR for
         my $user = Socialtext::User->new( username => $ugr_data->{username} );
         next unless $user;
 
+        # See if this User already has a Role in this Group; we *don't* want
+        # to over-write any existing UGR.
+        my $ugr = Socialtext::UserGroupRoleFactory->GetUserGroupRole(
+            user_id  => $user->user_id,
+            group_id => $group->group_id,
+        );
+        next if $ugr;
+
+        # Create a new UGR for the User in this Group.
         Socialtext::UserGroupRoleFactory->Create( {
             user_id  => $user->user_id,
             group_id => $group->group_id,
@@ -148,6 +154,11 @@ hash-ref.
 
 Imports Group information from the provided C<$data_ref> hash-ref, adding the
 Groups and their membership lists to the given C<$account>.
+
+If the Group I<already exists> within the Account, any Users/Roles that are
+present in the export but that are I<not> present in the Group are added
+automatically to the Group; missing Users get added to the Group, but existing
+Users and their Roles are untouched.
 
 =back
 
