@@ -105,10 +105,8 @@ sub _set_ugrs_on_import {
     my $data  = shift;
 
     for my $ugr_data ( @$data ) {
-        my $role = Socialtext::Role->new( name => $ugr_data->{role_name} );
-        $role ||= Socialtext::Role->new(
-            role_id => Socialtext::UserGroupRoleFactory->DefaultRoleId()
-        );
+        my $role = Socialtext::Role->new(name => $ugr_data->{role_name})
+            || Socialtext::UserGroupRoleFactory->DefaultRole();
 
         my $user = Socialtext::User->new( username => $ugr_data->{username} );
         next unless $user;
