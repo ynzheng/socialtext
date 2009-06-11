@@ -464,8 +464,6 @@ by_group_id_with_closure: {
 ################################################################################
 # TEST: ByGroupId with non-existing group_id
 by_group_id_with_non_existing_group_id: {
-    my $group = create_test_group();
-
     my $ugrs = Socialtext::UserGroupRoleFactory->ByGroupId( '12345678' );
 
     isa_ok $ugrs, 'Socialtext::MultiCursor', 'Got a list';
