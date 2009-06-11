@@ -423,7 +423,7 @@ by_group_id: {
     is $q_user_one->user_id, $user_one->user_id, '... with correct user_id';
 
     my $q_user_two = $users->next();
-    isa_ok $q_user_two, 'Socialtext::UserGroupRole', 'First result';
+    isa_ok $q_user_two, 'Socialtext::UserGroupRole', 'Second result';
     is $q_user_two->user_id, $user_two->user_id, '... with correct user_id';
 }
 
@@ -457,7 +457,7 @@ by_group_id_with_closure: {
     is $q_user_one->username, $user_one->username, '... with correct username';
 
     my $q_user_two = $users->next();
-    isa_ok $q_user_two, 'Socialtext::User', 'First result';
+    isa_ok $q_user_two, 'Socialtext::User', 'Second result';
     is $q_user_two->username, $user_two->username, '... with correct username';
 }
 
