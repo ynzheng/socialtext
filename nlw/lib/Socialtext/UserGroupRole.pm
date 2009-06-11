@@ -118,7 +118,7 @@ Socialtext::UserGroupRole - A User's Role in a specific Group
 =head1 DESCRIPTION
 
 C<Socialtext::UserGroupRole> provides methods for dealing with the data in the
-C<user_group_role_table>, representing the Role that a User may have in a
+C<user_group_role> table, representing the Role that a User may have in a
 given Group.  Each object represents a I<single> row from the table.
 
 You will commonly see this object referred to as an "UGR", which rhymes with
