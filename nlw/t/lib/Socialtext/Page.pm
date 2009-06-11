@@ -49,6 +49,8 @@ sub add_tags {
     push @{ $self->{tags} }, @_;
 }
 
+sub is_spreadsheet { $_[0]->metadata->Type eq 'spreadsheet' }
+
 # Metadata
 sub metadata { shift } # hack - return ourself
 sub Subject { $_[0]->{title} }

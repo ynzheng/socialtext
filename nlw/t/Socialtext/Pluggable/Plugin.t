@@ -5,7 +5,7 @@ use warnings;
 
 BEGIN { push @INC, 't/share/plugin/fakeplugin/lib' }
 
-use Test::More tests => 33;
+use Test::More tests => 35;
 use mocked 'Socialtext::SQL';
 use mocked 'Socialtext::Page';
 use mocked 'Socialtext::Authz';
@@ -60,6 +60,12 @@ is $plug->value_from_cache('a'), 1, 'can retrieve cache value';
 # Workspace
 isa_ok $plug->current_workspace, 'Socialtext::Workspace', 'current_workspace';
 is $plug->current_workspace->name, 'current', 'current_workspace';
+
+$plug->current_page->{type} = 'spreadsheet'; # hack the mock obj
+is $plug->current_page_rest_uri, '/data/workspaces/current/sheets/welcome';
+$plug->current_page->{type} = 'page'; # hack the mock obj back to a page
+is $plug->current_page_rest_uri, '/data/workspaces/current/pages/welcome';
+
 
 # Plugin functions
 my %plugins = map { $_ => 1 } $plug->plugins;

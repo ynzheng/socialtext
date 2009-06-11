@@ -78,6 +78,17 @@ sub make_uri {
     return Socialtext::URI::uri(@_);
 }
 
+sub current_page_rest_uri {
+    my $self = shift;
+
+    my $page = $self->current_page;
+    my $ws = $self->current_workspace;
+    return unless $page;
+
+    my $type = ($page->is_spreadsheet) ? '/sheets/' : '/pages/';
+    return '/data/workspaces/'.$ws->name.$type.$page->id;
+}
+
 sub code_base {
    return Socialtext::AppConfig->code_base;
 }
