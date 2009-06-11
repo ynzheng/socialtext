@@ -84,7 +84,7 @@ basic_restore: {
         $group->delete();
         Test::Socialtext::Account->delete_recklessly( $account );
 
-        # SANITY CHECK: User/Group/Account should *NOT* be in the DB any more
+        # SANITY CHECK: Group/Account should *NOT* be in the DB any more
         $group = Socialtext::Group->GetGroup(group_id => $group->group_id);
         $account
             = Socialtext::Account->new(account_id => $account->account_id);
