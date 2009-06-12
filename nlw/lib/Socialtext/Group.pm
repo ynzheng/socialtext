@@ -142,6 +142,15 @@ sub users {
     );
 }
 
+###############################################################################
+sub workspaces {
+    my $self = shift;
+    return Socialtext::GroupWorkspaceRoleFactory->ByGroupId(
+        $self->group_id,
+        sub { shift->workspace },
+    );
+}
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
@@ -173,6 +182,9 @@ Socialtext::Group - Socialtext Group object
 
   # get the Users in the Group
   $user_multicursor = $group->users();
+
+  # get the Workspaces the Group has access to
+  $ws_multicursor = $group->workspaces();
 
 =head1 DESCRIPTION
 
@@ -243,6 +255,11 @@ can be found.
 =item B<$group-E<gt>users()>
 
 Returns a C<Socialtext::MultiCursor> of Users who have a Role in this Group.
+
+=item B<$group-E<gt>workspaces()>
+
+Returns a C<Socialtext::MultiCursor> of Workspaces that this Group has a Role
+in.
 
 =item B<$group-E<gt>homunculus()>
 
