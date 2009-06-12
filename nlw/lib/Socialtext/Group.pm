@@ -2,6 +2,7 @@ package Socialtext::Group;
 # @COPYRIGHT@
 
 use Moose;
+use Carp qw(croak);
 use List::Util qw(first);
 use Socialtext::AppConfig;
 use Socialtext::MultiCursor;
@@ -145,6 +146,56 @@ sub users {
 }
 
 ###############################################################################
+sub add_user {
+    my $self = shift;
+    my %p    = @_;
+    my $user = $p{user} || croak "cannot add_user without 'user' parameter";
+    my $role = $p{role} || Socialtext::UserGroupRoleFactory->DefaultRole();
+
+    my $ugr = $self->_ugr_for_user($user);
+    if ($ugr) {
+        $ugr->update( { role_id => $role->role_id } );
+    }
+    else {
+        $ugr = Socialtext::UserGroupRoleFactory->Create( {
+            user_id  => $user->user_id,
+            group_id => $self->group_id,
+            role_id  => $role->role_id,
+        } );
+    }
+
+    return $ugr;
+}
+
+###############################################################################
+sub has_user {
+    my $self = shift;
+    my $user = shift;
+    my $ugr  = $self->_ugr_for_user($user);
+    return $ugr ? 1 : 0;
+}
+
+###############################################################################
+sub role_for_user {
+    my $self = shift;
+    my $user = shift;
+    my $ugr  = $self->_ugr_for_user($user);
+    return unless $ugr;
+    return $ugr->role();
+}
+
+###############################################################################
+sub _ugr_for_user {
+    my $self = shift;
+    my $user = shift;
+    my $ugr  = Socialtext::UserGroupRoleFactory->GetUserGroupRole(
+        user_id  => $user->user_id,
+        group_id => $self->group_id,
+    );
+    return $ugr;
+}
+
+###############################################################################
 sub workspaces {
     my $self = shift;
     return Socialtext::GroupWorkspaceRoleFactory->ByGroupId(
@@ -187,6 +238,15 @@ Socialtext::Group - Socialtext Group object
 
   # get the Workspaces the Group has access to
   $ws_multicursor = $group->workspaces();
+
+  # add a User to the Group
+  $group->add_user(user => $user, role => $role);
+
+  # check if a User already exists in the Group
+  $exists = $group->has_user($user);
+
+  # get the Role for a User in the Group
+  $role = $group->role_for_user($user);
 
 =head1 DESCRIPTION
 
@@ -257,6 +317,25 @@ can be found.
 =item B<$group-E<gt>users()>
 
 Returns a C<Socialtext::MultiCursor> of Users who have a Role in this Group.
+
+=item B<$group-E<gt>add_user(user=>$user, role=>$role)>
+
+Adds a given C<$user> to the Group with the specified C<$role>.  If no
+C<$role> is provided, a default Role will be used instead.
+
+If the User B<already> has a Role in the Group, the User's Role will be
+B<updated> to match the given C<$role>.
+
+=item B<$group-E<gt>has_user($user)>
+
+Checks to see if the given C<$user> has a Role in this Group, returning true
+if the User has a Role, false otherwise.
+
+=item B<$group-E<gt>role_for_user($user)>
+
+Returns a C<Socialtext::Role> object representing the Role that the given
+C<$user> has in this Group.  If the User has no Role in the Group, this method
+returns empty-handed.
 
 =item B<$group-E<gt>workspaces()>
 
