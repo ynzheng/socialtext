@@ -7,6 +7,8 @@ use Socialtext::AppConfig;
 use Socialtext::MultiCursor;
 use Socialtext::Timer;
 use Socialtext::SQL qw(:exec);
+use Socialtext::UserGroupRoleFactory;
+use Socialtext::GroupWorkspaceRoleFactory;
 use namespace::clean -except => 'meta';
 
 ###############################################################################
