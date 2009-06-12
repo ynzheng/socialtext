@@ -1,3 +1,4 @@
+etc/socialtext/db/cache.*.sql
 widget-as-a-wafl-migration.sql
 Makefile
 etc/init.d/ceqlotron
