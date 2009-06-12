@@ -143,7 +143,7 @@ sub _built_in_db {
 }
 
 sub _get_current_schema_checksum {
-    my $sum = `pg_dump --no-owner --no-privileges --schema-only | md5sum | awk '{print \$1}'`;
+    my $sum = `pg_dump --no-owner --no-privileges --schema-only | egrep -v 'STARTS? WITH ' | md5sum | awk '{print \$1}'`;
     chomp $sum;
     return $sum;
 }
