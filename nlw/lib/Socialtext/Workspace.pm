@@ -58,6 +58,7 @@ use Socialtext::GroupWorkspaceRoleFactory;
 use Socialtext::WorkspaceBreadcrumb;
 use Socialtext::Page;
 use Socialtext::Workspace::Permissions;
+use Socialtext::Workspace::Roles;
 use Socialtext::Timer;
 use Socialtext::Pluggable::Adapter;
 use URI;
@@ -1251,33 +1252,13 @@ sub has_user {
 
 sub user_count {
     my $self = shift;
-
-    my $sth = sql_execute( <<EOT, $self->workspace_id );
-SELECT COUNT( DISTINCT( "UserWorkspaceRole".user_id ) )
-    FROM "UserWorkspaceRole"
-    WHERE workspace_id = ?;
-EOT
-    return $sth->fetchall_arrayref->[0][0];
+    return $self->users->count();
 }
 
 sub users {
     my $self = shift;
-
-    my $sth = sql_execute(<<EOSQL, $self->workspace_id);
-SELECT user_id, driver_username
-    FROM users
-    JOIN "UserWorkspaceRole" uwr USING (user_id)
-    WHERE uwr.workspace_id = ?
-    ORDER BY driver_username
-EOSQL
-
-    return Socialtext::MultiCursor->new(
-        iterables => [ $sth->fetchall_arrayref ],
-        apply => sub {
-            my $row = shift;
-            return Socialtext::User->new(
-                user_id => $row->[0] );
-        }
+    return Socialtext::Workspace::Roles->UsersByWorkspaceId(
+        workspace_id => $self->workspace_id,
     );
 }
 
