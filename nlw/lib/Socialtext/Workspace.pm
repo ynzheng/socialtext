@@ -16,6 +16,7 @@ use Socialtext::Validate qw(
 );
 
 use Class::Field 'field';
+use Carp qw(croak);
 use Cwd ();
 use DateTime;
 use DateTime::Format::Pg;
@@ -1287,6 +1288,51 @@ sub users_with_roles {
             workspace_id => $self->workspace_id(), @_ );
 }
 
+sub add_group {
+    my $self  = shift;
+    my %p     = @_;
+    my $group = $p{group} || croak "can't add_group without a 'group'";
+    my $role  = $p{role}  || Socialtext::GroupWorkspaceRoleFactory->DefaultRole();
+
+    my $gwr = $self->_gwr_for_group($group);
+    if ($gwr) {
+        $gwr->update( { role_id => $role->role_id } );
+    }
+    else {
+        $gwr = Socialtext::GroupWorkspaceRoleFactory->Create( {
+            group_id     => $group->group_id,
+            workspace_id => $self->workspace_id,
+            role_id      => $role->role_id,
+        } );
+    }
+    return $gwr;
+}
+
+sub has_group {
+    my $self  = shift;
+    my $group = shift;
+    my $gwr   = $self->_gwr_for_group($group);
+    return $gwr ? 1 : 0;
+}
+
+sub role_for_group {
+    my $self  = shift;
+    my $group = shift;
+    my $gwr   = $self->_gwr_for_group($group);
+    return unless $gwr;
+    return $gwr->role();
+}
+
+sub _gwr_for_group {
+    my $self = shift;
+    my $group = shift;
+    my $gwr = Socialtext::GroupWorkspaceRoleFactory->GetGroupWorkspaceRole(
+        group_id     => $group->group_id,
+        workspace_id => $self->workspace_id,
+    );
+    return $gwr;
+}
+
 sub groups {
     my $self   = shift;
     my $groups = Socialtext::GroupWorkspaceRoleFactory->ByWorkspaceId(
@@ -2541,6 +2587,21 @@ workspace, ordered by username.
 Returns a cursor of C<Socialtext::User> and
 C<Socialtext::UserWorkspaceRole> objects for users in the the
 workspace, ordered by username.
+
+=head2 $workspace->add_group(group=>$group, role=>$role)
+
+Adds the given C<$group> to the Workspace with the specified C<$role>.  If no
+C<$role> is provided, a default Role will be used instead.
+
+=head2 $workspace->has_group($group)
+
+Checks to see if the given C<$group> has a Role in the Workspace, returning
+true if it does, false otherwise.
+
+=head2 $workspace->role_for_group($group)
+
+Returns the C<Socialtext::Role> object representing the Role that the given
+C<$group> has in this Workspace.
 
 =head2 $workspace->groups()
 
