@@ -72,6 +72,7 @@ sub delete_recklessly {
     );
 
     # Clear any User cache(s) that may be in use
+    Socialtext::SQL::disconnect_dbh();
     Socialtext::Cache->clear();
 }
 

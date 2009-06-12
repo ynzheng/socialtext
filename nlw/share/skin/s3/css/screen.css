@@ -2111,15 +2111,10 @@ table.dataTable span.person {
     white-space: nowrap;
 }
 
-table.dataTable span.summary strong {
+table.dataTable .summary strong {
     font-weight:bold;
     background:#ffc;
     padding:1px 2px;
-}
-
-table.dataTable span.edit_summary {
-    font-weight:bold;
-    line-height: 18px;
 }
 
 div#bottomButtons {
@@ -2257,9 +2252,10 @@ ul li a.followPersonButton {
 body#dashBoard div#lastsignal {
     font-size: 14px;
     color: #666;
-    line-height: 38px;
-    padding: 0 20px;
-    margin:0;
+    height: 28px;
+    padding: 10px 20px 0 0;
+    margin: 0;
+    display: block;
     text-align:center;
     background:#FFFFFF url(../images/contentContainerTile.png) repeat-x scroll left top;
     border-left: 1px solid #759FB1;
@@ -3367,6 +3363,50 @@ span.person img.avatar {
     border: 1px solid #AFAFAF !important;
     margin-top: 2px !important;
 }
+
+div.summary {
+    display: block;
+    margin: 5px 0 0 20px;
+}
+
+div.edit_summary {
+    display: block;
+    margin: 5px 0 0 20px;
+    font-weight:bold;
+    line-height: 18px;
+}
+
+
+div.byline {
+   display: block;
+   font-style: italic;
+   margin-left: 20px;
+   color: #666;
+   margin-top: 5px;
+}
+
+span.last-updated-by strong,
+span.originally-created-by strong,
+span.revision-count strong {
+    font-weight: bold;
+}
+
+span.last-updated-by,
+span.originally-created-by,
+span.revision-count {
+    white-space: nowrap;
+}
+
+span.byline-separator {
+    border-right: 1px #999 solid;
+    margin-right: 0px;
+}
+
+span.originally-created-by {
+    margin-left: 5px;
+    padding-left: 5px;
+}
+
 
 a.incipient {
     text-decoration: none;

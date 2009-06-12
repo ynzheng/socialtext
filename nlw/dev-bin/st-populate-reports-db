@@ -89,12 +89,29 @@ if (is_dev_env($host)) {
    `sudo /usr/bin/st-reports-consume-nlw-log test_nlw.log`;
 }
 
+st_reports_reduce($host);
 print "Completed Reports data set-up (If you saw no errors)\n";
 #---------------------------------------------------------------#
 # End Main Routine Subroutines Follow                           #
 #---------------------------------------------------------------#
 #
 
+
+sub st_reports_reduce {
+    my $host = shift;
+    my $reduce_path = "";
+    my $orig_dir = cwd;
+    if (is_dev_env($host)) {
+        chdir "../../socialtext-reports/";
+        $reduce_path =  "./bin/st-reports-reduce";
+        system($reduce_path);
+        chdir($orig_dir);
+     } else {
+        $reduce_path = "sudo /usr/bin/st-reports-reduce";
+        system($reduce_path);
+     }
+}
+                                    
 
 sub is_dev_env {
     my $host = shift;

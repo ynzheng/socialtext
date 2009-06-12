@@ -238,7 +238,8 @@ proto.setup_one_widget = function(params, callback) {
 
 
     var setup_widget = function() {
-        var url = self.$('div.widgetTitle a:contains(' + name + ')').attr('href').replace( /^\/*/, '/' );
+        var url = self.$('div.title:contains(' + name + ')').nextAll('ul.widgetButton')
+            .find('a').attr('href').replace( /^\/*/, '/' );
 
         $(self.iframe).one("load", function() {
             var widget = self._get_widget();

@@ -223,7 +223,7 @@
             [% SET length = "content-length" %]
             [%
               IF file.$length < 1024;
-                SET displaylength = file.$length _ " bytes";
+                SET displaylength = file.$length;
               ELSE;
                 SET displaylength = Number.Format.format_bytes(file.$length);
               END;

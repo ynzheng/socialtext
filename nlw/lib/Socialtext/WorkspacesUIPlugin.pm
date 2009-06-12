@@ -659,7 +659,7 @@ sub _set_workspace_permissions {
         $message .= '  ';
         $message .= loc('The permissions for [_1] ([_2]) is deprecated.', $ws->name(), loc($set_name));
     }        
-    else {
+    elsif ($ws->permissions->current_set_name ne $set_name) {
         $message .= '  ';
         $message .= loc('The permissions for [_1] have been set to [_2].', $ws->name(), loc($set_name));
         $ws->permissions->set( set_name => $set_name );

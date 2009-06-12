@@ -47,7 +47,7 @@ test latest login scheme:
 * Log out and in a few times to make sure everything behaves right
 
 | *Comment* | Test Case: IE Miki Authentication test auth-to-edit |  |
-| st-admin | set-permissions --workspace %%miki_space%% --permissions public-authenticate-to-edit |  |
+| st-admin | set-permissions --workspace %%miki_space%% --permissions public-join-to-edit |  |
 | open_ok | /lite/page/%%miki_space%%/ |  |
 | click_and_wait | link=Log in |  |
 

@@ -19,6 +19,7 @@ test env properly and are not testing the test-workspace
 * [Test Case: Recently Viewed]
 * [Test Case: Recent Changes]
 * [Test Case: Edit This Page]
+* [Test Case: Search Selector]
 * [Test case: functional search tests]
 * [Test Case: Phrase search]
 * [Test Case: stemming]

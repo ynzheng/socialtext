@@ -26,6 +26,8 @@ sub delete_recklessly {
          )
     }, $account->account_id);
 
+    Socialtext::SQL::disconnect_dbh();
+
     $account->delete;
 }
 

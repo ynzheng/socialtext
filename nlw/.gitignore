@@ -1,3 +1,4 @@
+etc/socialtext/db/cache.*.sql
 widget-as-a-wafl-migration.sql
 Makefile
 etc/init.d/ceqlotron
@@ -295,8 +296,8 @@ t/wikitests/test-data/socialcalc/render-test.ssheet
 t/Socialtext/Sheet/Renderer.t
 lib/Socialtext/Sheet/Renderer.pm
 t/wikitests/test-data/socialcalc/render-test-no-html.ssheet
-t/widget/creepy_goat.jpg
 t/wikitests/socialcalc/ss-wafl.wiki
 t/wikitests/test-data/socialcalc/render-test-range.ssheet
 lib/Socialtext/Pluggable/Plugin/Revisions.pm
 etc/socialtext/db/cache.*.sql
+t/widget/creepy_goat.jpg

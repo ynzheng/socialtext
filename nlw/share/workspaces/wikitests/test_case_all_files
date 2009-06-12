@@ -80,11 +80,11 @@
 | wait_for_element_visible_ok | sort-picker | 30000 |
 
 | *Comment* | Test Case: All Files sorted Filename desc |  |
-| select_and_wait | sort-picker | index=1 |
+| select_and_wait | sort-picker | label=Filename (↓) |
 | text_like | contentContainer | qr/wikitestzip\.zip \(24kb\), attached to All Files %%start_time%% 2.+wikitest\.jpg \(.+\), attached to All Files %%start_time%% 1/ |
 
 | *Comment* | Test Case: All Files default sorted Filename asc |  |
-| select_and_wait | sort-picker | index=1 |
+| select_and_wait | sort-picker | label=Filename (↑) |
 | text_like | contentContainer | qr/wikitest\.jpg \(.+\), attached to All Files %%start_time%% 1.+wikitestzip\.zip \(24kb\), attached to All Files %%start_time%% 2/ |
 
 | *Comment* | Test Case: All Files sort File size desc |  |
@@ -92,7 +92,7 @@
 | text_like | contentContainer | qr/wikitest\.doc \(27kb\), attached to All Files %%start_time%% 1.+wikitestzip\.zip \(24kb\), attached to All Files %%start_time%% 2.+wikitest\.jpg \(.+\), attached to All Files %%start_time%% 1/ |
 
 | *Comment* | Test Case: All Files sort File size asc |  |
-| select_and_wait | sort-picker | index=5 |
+| select_and_wait | sort-picker | label=Size (↑) |
 | text_like | contentContainer | qr/wikitest\.jpg \(.+\), attached to All Files %%start_time%% 1.+wikitestzip\.zip \(24kb\), attached to All Files %%start_time%% 2.+wikitest\.doc \(27kb\), attached to All Files %%start_time%% 1/ |
 
 | *Comment* | Test Case: All Files sort Title asc |  |
@@ -100,7 +100,7 @@
 | text_like | contentContainer | qr/All Files %%start_time%% 1.+All Files %%start_time%% 2/ |
 
 | *Comment* | Test Case: All Files sort Title desc |  |
-| select_and_wait | sort-picker | index=2 |
+| select_and_wait | sort-picker | label=Page Title (↓) |
 | text_like | contentContainer | qr/All Files %%start_time%% 2.+All Files %%start_time%% 1/ |
 
 | *Comment* | Test Case: All Files sort Uploaded by asc |  |
@@ -108,7 +108,7 @@
 | text_like | contentContainer | qr/All Files %%start_time%% 1.+All Files %%start_time%% 2/ |
 
 | *Comment* | Test Case: All Files sort Uploaded by desc |  |
-| select_and_wait | sort-picker | index=3 |
+| select_and_wait | sort-picker | label=Uploaded By (↓) |
 | text_like | contentContainer | qr/All Files %%start_time%% 2.+All Files %%start_time%% 1/ |
 
 | *Comment* | Test Case: All Files sort Date desc |  |
@@ -116,7 +116,7 @@
 | text_like | contentContainer | qr/All Files %%start_time%% 2.+All Files %%start_time%% 1/ |
 
 | *Comment* | Test Case: All Files sort Date asc |  |
-| select_and_wait | sort-picker | index=4 |
+| select_and_wait | sort-picker | label=Date Uploaded (↑) |
 | text_like | contentContainer | qr/All Files %%start_time%% 1.+All Files %%start_time%% 2/ |
 
 | *Comment* | Test Case: All Files Teardown |  |

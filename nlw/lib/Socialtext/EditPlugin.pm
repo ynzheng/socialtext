@@ -128,10 +128,11 @@ sub edit_content {
     else {
         $page->content($content);
     }
-    my @tags = $self->cgi->add_tag;
 
-    if (@tags) {
-        $page->add_tags(@tags); # add_tags auto saves
+    if ( my @tags = $self->cgi->add_tag ) {
+        foreach my $tag ( @tags ) {
+            $metadata->add_category($tag);
+        }
     }
 
     $page->store(

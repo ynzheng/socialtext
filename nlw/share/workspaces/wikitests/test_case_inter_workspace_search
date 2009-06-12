@@ -12,24 +12,25 @@
 | st-admin | set-workspace-config --workspace test-data3 title test-data3 | The workspace config for test-data3 has been updated. |
 
 | *Comment* | Test Case: Inter Workspace Search Search all the workspaces where %%username%% is a member |  |
-| st-search | jabber workspaces:* | Pages containing 'jabber workspaces:*' |
+| select_ok | st-search-action | label=Search My Workspaces: |
+| st-search | jabber | Pages containing 'jabber' |
 | st-result | 3 total |  |
-| *Comment* | select and wait sort-picker | label=Workspace |
-| select_ok | sort-picker | label=Workspace |
-| wait_for_element_visible_ok | sort-picker | 30000 |
+| *Comment* | Sort by Workspace. Unstick the sort mode |  |
+| select_and_wait | sort-picker | label=Title |
+| select_and_wait | sort-picker | label=Workspace |
+
 | *Comment* | Test Case: Inter Workspace Search unsorted results can appear in any order, so don't check order |  |
 | st-result | qr/jabber.+test-data2/ |  |
 | st-result | qr/jabber.+test-data3/ |  |
 | st-result | qr/jabber.+%%title%%/ |  |
 
-| *Comment* | Test Case: Inter Workspace Search RT 27423 |  |
-
 | *Comment* | Test Case: Inter Workspace Search Remove %%username%% from test-data2 and search again |  |
 | st-admin | remove-member --workspace test-data2 --email %%email%% |  |
-| st-search | jabber workspaces:* | Pages containing 'jabber workspaces:*' |
+| select_ok | st-search-action | label=Search My Workspaces: |
+| st-search | jabber | Pages containing 'jabber' |
 | st-result | 2 total |  |
-| select_ok | sort-picker | label=Workspace |
-| wait_for_element_visible_ok | sort-picker | 30000 |
+| select_and_wait | sort-picker | label=Title |
+| select_and_wait | sort-picker | label=Workspace |
 | *Comment* | Test Case: Inter Workspace Search unsorted results can appear in any order, so don't check order |  |
 | st-result | qr/jabber.+test-data3/ |  |
 | st-result | qr/jabber.+%%title%%/ |  |
@@ -42,7 +43,7 @@
 | st-result | 1 total |  |
 
 | *Comment* | Test Case: Inter Workspace Search PRIVATE TO PUBLIC CONVERSION |  |
-| *Comment* | Test Case: Inter Workspace Search Test user is still in Help but searching test-data3 ws |  |
+| *Comment* | Test Case: Inter Workspace Search Test user is still LOGGED OUT but searching test-data3 ws |  |
 
 | st-search | jabber workspaces:test-data3 | Pages containing 'jabber workspaces:test-data3' |
 | st-result | 0 total |  |
@@ -50,16 +51,17 @@
 | st-admin | set-permissions --workspace test-data3 --permissions public-join-to-edit | The permissions for the test-data3 workspace have been changed to public-join-to-edit. |
 | st-search | jabber workspaces:test-data3 | Pages containing 'jabber workspaces:test-data3' |
 | st-result | 1 total |  |
-| select_ok | sort-picker | label=Workspace |
-| wait_for_element_visible_ok | sort-picker | 30000 |
+| select_and_wait | sort-picker | label=Title |
+| select_and_wait | sort-picker | label=Workspace |
 | st-result | qr/jabber.+test-data3/ |  |
 
 | *Comment* | Test Case: Inter Workspace Search Login to test-data ws and search again |  |
 | st-login |  |  |
-| st-search | jabber workspaces:* | Pages containing 'jabber workspaces:*' |
+| select_ok | st-search-action | label=Search My Workspaces: |
+| st-search | jabber | Pages containing 'jabber' |
 | st-result | 2 total |  |
-| select_ok | sort-picker | label=Workspace |
-| wait_for_element_visible_ok | sort-picker | 30000 |
+| select_and_wait | sort-picker | label=Title |
+| select_and_wait | sort-picker | label=Workspace |
 
 st-result | qr/jabber.+test-data3.+jabber.+%%title%%/ | |
 
@@ -70,10 +72,11 @@ st-result | qr/jabber.+test-data3.+jabber.+%%title%%/ | |
 | *Comment* | add user back to test-data2, delete test-data2 |  |
 
 | st-admin | add-member --workspace test-data2 --email %%email%% | qr/%%username%% .+ a member of the test-data2 workspace\./ |
-| st-search | jabber workspaces:* | Pages containing 'jabber workspaces:*' |
+| select_ok | st-search-action | label=Search My Workspaces: |
+| st-search | jabber | Pages containing 'jabber' |
 | st-result | 3 total |  |
-| select_ok | sort-picker | label=Workspace |
-| wait_for_element_visible_ok | sort-picker | 30000 |
+| select_and_wait | sort-picker | label=Title |
+| select_and_wait | sort-picker | label=Workspace |
 
 st-result | qr/jabber.+test-data3.+jabber.+test-data2.+jabber.+%%title%%/ | |
 
@@ -82,11 +85,12 @@ st-result | qr/jabber.+test-data3.+jabber.+test-data2.+jabber.+%%title%%/ | |
 | st-result | qr/jabber.+%%title%%/ |  |
 
 | st-admin | delete-workspace --workspace test-data2 --no-export | The test-data2 workspace has been deleted. |
+| select_ok | st-search-action | label=Search My Workspaces: |
+| st-search | jabber | Pages containing 'jabber' |
 
-| st-search | jabber workspaces:* | Pages containing 'jabber workspaces:*' |
 | st-result | 2 total |  |
-| select_ok | sort-picker | label=Workspace |
-| wait_for_element_visible_ok | sort-picker | 30000 |
+| select_and_wait | sort-picker | label=Title |
+| select_and_wait | sort-picker | label=Workspace |
 
 st-result | qr/jabber.+test-data3.+jabber.+%%title%% | |
 
@@ -100,18 +104,16 @@ st-result | qr/jabber.+test-data3.+jabber.+%%title%% | |
 | open_ok | /help-en |  |
 | st-search | jabber workspaces:test-data3 | Pages containing 'jabber workspaces:test-data3' |
 | st-result | 1 total |  |
-| select_ok | sort-picker | label=Workspace |
-| wait_for_element_visible_ok | sort-picker | 30000 |
+| select_and_wait | sort-picker | label=Title |
+| select_and_wait | sort-picker | label=Workspace |
 | st-result | qr/jabber.+test-data3/ |  |
 
 | st-admin | set-permissions --workspace test-data3 --permissions authenticated-user-only | The permissions for the test-data3 workspace have been changed to authenticated-user-only. |
-
 | st-search | jabber workspaces:test-data3 | Pages containing 'jabber workspaces:test-data3' |
 | st-result | 0 total |  |
 
 | *Comment* | Test Case: Inter Workspace Search UNSUBSCRIBE |  |
 | *Comment* | Add back test-data2, unsub from test-data3 via UI |  |
-
 | st-admin | clone-workspace --workspace test-data --target test-data2 --overwrite | The test-data workspace has been cloned to test-data2 |
 | st-admin | set-workspace-config --workspace test-data2 title test-data2 | The workspace config for test-data2 has been updated. |
 
@@ -122,10 +124,11 @@ st-result | qr/jabber.+test-data3.+jabber.+%%title%% | |
 | click_and_wait | Button |  |
 
 | open_ok | /test-data |  |
-| st-search | jabber workspaces:* | Pages containing 'jabber workspaces:*' |
+| select_ok | st-search-action | label=Search My Workspaces: |
+| st-search | jabber | Pages containing 'jabber' |
 | st-result | 2 total |  |
-| select_ok | sort-picker | label=Workspace |
-| wait_for_element_visible_ok | sort-picker | 30000 |
+| select_and_wait | sort-picker | label=Title |
+| select_and_wait | sort-picker | label=Workspace |
 
 st-result | qr/jabber.+test-data2.+jabber.+%%title%%/ | |
 
@@ -151,10 +154,11 @@ st-result | qr/jabber.+test-data2.+jabber.+%%title%%/ | |
 
 | *Comment* | Test Case: Inter Workspace Search index new page explicitly just in case ceq is tetchy |  |
 | st-admin | index-page -workspace from-scratch --page jabber | The jabber page in the from-scratch workspace has been indexed. |
-
-| st-search | jabber workspaces:* | Pages containing 'jabber workspaces:*' |
+| select_ok | st-search-action | label=Search My Workspaces: |
+| st-search | jabber | Pages containing 'jabber' |
 | st-result | 3 total |  |
-| select_ok | sort-picker | label=Workspace |
+| select_and_wait | sort-picker | label=Title |
+| select_and_wait | sort-picker | label=Workspace |
 | wait_for_element_visible_ok | sort-picker | 30000 |
 
 st-result | qr/jabber.+test-data2.+jabber.+%%title%%.+jabber.+From-Scratch/ | |
@@ -162,6 +166,8 @@ st-result | qr/jabber.+test-data2.+jabber.+%%title%%.+jabber.+From-Scratch/ | |
 | st-result | qr/jabber.+test-data2/ |  |
 | st-result | qr/jabber.+%%title%%/ |  |
 | st-result | qr/jabber.+From-Scratch/ |  |
+
+| *Comment* | Test Case: Inter Workspace Search TEARDOWN |
 
 | st-admin | delete-workspace --workspace test-data2 --no-export | The test-data2 workspace has been deleted. |
 | st-admin | delete-workspace --workspace test-data3 --no-export | The test-data3 workspace has been deleted. |

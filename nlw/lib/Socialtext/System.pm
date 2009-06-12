@@ -8,9 +8,11 @@ our @EXPORT = qw/backtick timeout_backtick shell_run quote_args/;
 
 our $SILENT_RUN = 0;
 our $TIMEOUT = 0;
+our $VMEM_LIMIT = 0;
 
 use IPC::Run qw(run timeout);
 use POSIX ();
+use BSD::Resource qw(setrlimit get_rlimits);
 use namespace::clean;
 
 
@@ -20,14 +22,31 @@ sub backtick {
     my $out;
     my $err;
     eval {
-        # IPC::Run::run returns true on success
         # STDIN  needs to be closed explicitly
-        my $timer = timeout($TIMEOUT, exception => 'Command Timeout')
+        my @args = (\@_, \undef, \$out, \$err);
+
+        # init must happen before timeout:
+        push @args, init => \&_vmem_limiter
+            if $VMEM_LIMIT;
+        push @args, timeout($TIMEOUT, exception => 'Command Timeout')
             if $TIMEOUT;
-        my $return = run(\@_, \undef, \$out, \$err, $timer);
+
+        # IPC::Run::run returns true on success
+        my $return = run(@args);
         die $err unless $return;
     };
     return $out;
+}
+
+{
+    my $rlimits = get_rlimits();
+    sub _vmem_limiter {
+        # limit Virtual Memory and Address Space
+        for (qw(RLIMIT_VMEM RLIMIT_AS)) {
+            setrlimit($rlimits->{$_}, $VMEM_LIMIT, $VMEM_LIMIT)
+                if exists $rlimits->{$_};
+        }
+    }
 }
 
 sub timeout_backtick {

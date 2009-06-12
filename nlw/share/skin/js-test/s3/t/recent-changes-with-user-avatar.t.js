@@ -13,10 +13,9 @@ t.runAsync([
         t.scrollTo(200);
 
         var $avatar = t.$("#st-listview-form tr.oddRow td:eq(1) img.avatar");
-        t.is(
-            $avatar.size(),
-            1,
-            "There are user avatars in recent changes listview"
+        t.ok(
+            ($avatar.size() >= 1),
+            "There are at lease one user avatar in recent changes listview"
         );
 
     // TODO Need to get this one to pass in the Harness:
