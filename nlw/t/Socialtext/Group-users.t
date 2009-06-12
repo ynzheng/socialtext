@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 16;
+use Test::Socialtext tests => 15;
 use Socialtext::UserGroupRoleFactory;
 
 ################################################################################
