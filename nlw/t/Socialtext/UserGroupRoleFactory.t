@@ -388,9 +388,7 @@ by_user_id_with_closure: {
 ################################################################################
 # TEST: ByUserId with non-existing user_id
 by_user_id_with_non_existing_user_id: {
-    my $group = create_test_group();
-
-    my $groups = Socialtext::UserGroupRoleFactory->ByUserId( '12345678' );
+    my $groups = Socialtext::UserGroupRoleFactory->ByUserId( 12345678 );
 
     isa_ok $groups, 'Socialtext::MultiCursor', 'Got a list';
     ok !$groups->count(), '... with no results';
@@ -464,7 +462,7 @@ by_group_id_with_closure: {
 ################################################################################
 # TEST: ByGroupId with non-existing group_id
 by_group_id_with_non_existing_group_id: {
-    my $ugrs = Socialtext::UserGroupRoleFactory->ByGroupId( '12345678' );
+    my $ugrs = Socialtext::UserGroupRoleFactory->ByGroupId( 12345678 );
 
     isa_ok $ugrs, 'Socialtext::MultiCursor', 'Got a list';
     ok !$ugrs->count(), '... with no results';
