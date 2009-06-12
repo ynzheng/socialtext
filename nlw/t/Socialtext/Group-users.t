@@ -6,8 +6,10 @@ use warnings;
 use Test::Socialtext tests => 5;
 use Socialtext::UserGroupRoleFactory;
 
-# Need a DB, but don't care what's in it.
-fixtures(qw/db/);
+################################################################################
+# Fixtures: db
+# - need a DB, but don't care what's in it.
+fixtures(qw( db ));
 
 use_ok 'Socialtext::Group';
 
@@ -17,7 +19,7 @@ use_ok 'Socialtext::Group';
 ################################################################################
 
 ################################################################################
-# TEST: Group has no users; it's a lonely, lonely group.
+# TEST: Group has no Users; it's a lonely, lonely group.
 group_with_no_users: {
     my $group = create_test_group();
     my $users = $group->users();
@@ -27,7 +29,7 @@ group_with_no_users: {
 }
 
 ################################################################################
-# TEST: Group has no users; it's a lonely, lonely group.
+# TEST: Group has some Users
 group_has_users: {
     my $group    = create_test_group();
     my $user_one = create_test_user();
