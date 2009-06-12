@@ -283,7 +283,7 @@ sub _record_log_entry {
 }
 
 sub DefaultRole {
-    Socialtext::Role->new( name => 'member' );
+    Socialtext::Role->Member();
 }
 
 sub DefaultRoleId {
