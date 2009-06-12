@@ -299,3 +299,4 @@ t/widget/creepy_goat.jpg
 t/wikitests/socialcalc/ss-wafl.wiki
 t/wikitests/test-data/socialcalc/render-test-range.ssheet
 lib/Socialtext/Pluggable/Plugin/Revisions.pm
+etc/socialtext/db/cache.*.sql
