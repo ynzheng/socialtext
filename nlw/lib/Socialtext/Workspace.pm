@@ -53,6 +53,7 @@ use Socialtext::URI;
 use Socialtext::MultiCursor;
 use Socialtext::User;
 use Socialtext::UserWorkspaceRole;
+use Socialtext::GroupWorkspaceRoleFactory;
 use Socialtext::WorkspaceBreadcrumb;
 use Socialtext::Page;
 use Socialtext::Workspace::Permissions;
@@ -1284,6 +1285,14 @@ sub users_with_roles {
 
     return Socialtext::User->ByWorkspaceIdWithRoles(
             workspace_id => $self->workspace_id(), @_ );
+}
+
+sub groups {
+    my $self   = shift;
+    my $groups = Socialtext::GroupWorkspaceRoleFactory->ByWorkspaceId(
+        $self->workspace_id,
+        sub { shift->group },
+    );
 }
 
 {
@@ -2532,6 +2541,11 @@ workspace, ordered by username.
 Returns a cursor of C<Socialtext::User> and
 C<Socialtext::UserWorkspaceRole> objects for users in the the
 workspace, ordered by username.
+
+=head2 $workspace->groups()
+
+Returns a cursor of C<Socialtext::Group> objects for Groups that have a Role
+in the Workspace, ordered by Group name.
 
 =head2 $workspace->to_hash()
 
