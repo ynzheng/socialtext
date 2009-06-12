@@ -24,6 +24,8 @@ sub to_string {
 
     # default 5 minute timeout for backticked scripts
     local $Socialtext::System::TIMEOUT = 300;
+    # default 2 GiB virtual memory space for backticked scripts
+    local $Socialtext::System::VMEM_LIMIT = 2 * 2**30;
 
     my $convert_class = $class->_get_converter_for_file( $filename, $type );
     my $text = $convert_class->to_string($filename);
