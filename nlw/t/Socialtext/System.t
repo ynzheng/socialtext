@@ -2,7 +2,7 @@
 # @COPYRIGHT@
 use warnings;
 use strict;
-use Test::More tests => 18;
+use Test::More tests => 23;
 use Test::Exception;
 use Socialtext::System;
 use Socialtext::File qw/set_contents/;
@@ -55,4 +55,24 @@ Backticks_timeout: {
     $out = timeout_backtick(1 => qw(sleep 5));
     ok !$out;
     like $@, qr/Command Timeout/;
+}
+
+Backticks_vmem_limit: {
+    local $Socialtext::System::VMEM_LIMIT = 100 * 2**20; # 100MiB
+
+    my @mem_bomb = ('perl','-e','sleep 2; while(1){ push @x,"asdf" x 1024 }');
+
+    my $out;
+    $out = backtick(@mem_bomb);
+
+    ok !$out;
+    ok $@;
+    unlike $@, qr/Command Timeout/;
+
+    Also_with_timeout: {
+        local $Socialtext::System::TIMEOUT = 1;
+        $out = backtick(@mem_bomb);
+        ok !$out;
+        like $@, qr/Command Timeout/;
+    }
 }
