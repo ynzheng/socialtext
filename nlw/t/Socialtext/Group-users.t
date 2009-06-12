@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 5;
+use Test::Socialtext tests => 6;
 use Socialtext::UserGroupRoleFactory;
 
 ################################################################################
@@ -50,4 +50,5 @@ group_has_users: {
 
     isa_ok $users, 'Socialtext::MultiCursor', 'got a list of users';
     is $users->count(), 2, '... with the correct count';
+    isa_ok $users->next(), 'Socialtext::User', '... queried User';
 }

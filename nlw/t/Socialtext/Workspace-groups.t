@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 5;
+use Test::Socialtext tests => 6;
 use Socialtext::GroupWorkspaceRoleFactory;
 
 ###############################################################################
@@ -53,4 +53,5 @@ workspace_has_groups: {
 
     isa_ok $groups, 'Socialtext::MultiCursor', 'got a list of groups';
     is $groups->count(), 2, '... with the correct count';
+    isa_ok $groups->next(), 'Socialtext::Group', '... queried Group';
 }
