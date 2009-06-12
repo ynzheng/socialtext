@@ -25,6 +25,9 @@ ALTER TABLE ONLY group_workspace_role
     ADD CONSTRAINT group_workspace_role_pk
     PRIMARY KEY (group_id, workspace_id);
 
+CREATE INDEX group_workspace_role_workspace_id
+    ON group_workspace_role (workspace_id);
+
 UPDATE "System"
    SET value = '68'
  WHERE field = 'socialtext-schema-version';

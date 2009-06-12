@@ -941,6 +941,9 @@ CREATE INDEX exitstatus_funcid
 CREATE INDEX gallery_gadget_gadget_id_idx
 	    ON gallery_gadget (gadget_id);
 
+CREATE INDEX group_workspace_role_workspace_id
+	    ON group_workspace_role (workspace_id);
+
 CREATE UNIQUE INDEX groups_driver_unique_id
 	    ON groups (driver_key, driver_unique_id);
 
