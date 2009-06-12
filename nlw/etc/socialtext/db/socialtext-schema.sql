@@ -1150,6 +1150,9 @@ CREATE INDEX storage_key_value_viewer_ix
 	    ON "storage" ("key", value)
 	    WHERE (("key")::text = 'viewer');
 
+CREATE INDEX user_group_role_group_id
+	    ON user_group_role (group_id);
+
 CREATE INDEX user_plugin_pref_idx
 	    ON user_plugin_pref (user_id, plugin);
 
@@ -1614,4 +1617,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '68');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '69');
