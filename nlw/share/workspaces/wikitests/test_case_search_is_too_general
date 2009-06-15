@@ -37,10 +37,10 @@
 | st-result | General Page 11 %%start_time%% |  |
 | st-result | General Page 12 %%start_time%% |  |
 
-| *Comment* | Test Case: Search Too General: Search with limit set to 20, see too general warning |  |
-| st-config | set search_warning_threshold 21 |
+| *Comment* | Test Case: Search Too General: Search with limit set to 21, see too general warning |  |
+| st-config | set search_warning_threshold 21 |  |
 | open_ok | /%%gws%%/ |  |
-| st-search | This is a simple text file |
+| st-search | This is a simple text file |  |
 | text_unlike | //body | General Page 10 %%start_time%% |
 | text_unlike | //body | General Page 11 %%start_time%% |
 | text_unlike | //body | General Page 12 %%start_time%% |

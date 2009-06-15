@@ -71,6 +71,7 @@ test env properly and are not testing the test-workspace
 * [Localization Testcases]
 * [Test case: Business Control Panel]
 * [Report Testcases]
+* [Test Case: Search Is Too General]
 
 LDAP Testcases will Enable LDAP and use a known LDAP user instead of a Default user where required
 
