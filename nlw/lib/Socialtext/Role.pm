@@ -268,12 +268,12 @@ role.
 
 =item Socialtext::Role->All()
 
-Returns a cursor for all the accounts in the system, ordered by name.
+Returns a cursor for all the Roles in the system, ordered by name.
 See L<Socialtext::MultiCursor> for more details on this method.
 
 =item Socialtext::Role->Count()
 
-Returns a count of all accounts.
+Returns a count of all Roles.
 
 =item Socialtext::Role->EnsureRequiredDataIsPresent()
 
