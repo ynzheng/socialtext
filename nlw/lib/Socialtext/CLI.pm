@@ -1488,8 +1488,6 @@ sub show_acls {
     require Socialtext::Permission;
     require Socialtext::Role;
 
-    my %roles = map { $_->name() => $_ } Socialtext::Role->All()->all();
-
     my @perms = Socialtext::Permission->All()->all();
 
     my $msg = "ACLs for " . $ws->name . " workspace\n\n";
@@ -1503,11 +1501,11 @@ sub show_acls {
 
     my $format = "| \@$first_col| ";
 
-    # We want the roles in a specific order, but if we add new ones
-    # and no one updates this code, at least they'll all be shown in
-    # _some_ order.
+    # We want the Roles in a specific order; lowest-highest effectiveness,
+    # with custom Roles appearing afterwards in alphabetical order.
+    my %roles = map { $_->name() => $_ } Socialtext::Role->All()->all();
     my @roles = map { delete $roles{$_} }
-        qw( guest authenticated_user member workspace_admin impersonator );
+        reverse Socialtext::Role->DefaultRoleNames();
     push @roles, sort { $a->name() cmp $b->name() } values %roles;
 
     for my $role (@roles) {
