@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 9;
+use Test::Socialtext tests => 10;
 
 ###############################################################################
 # Fixtures: db
@@ -11,6 +11,26 @@ use Test::Socialtext tests => 9;
 fixtures(qw( db ));
 
 use_ok 'Socialtext::Role';
+
+###############################################################################
+# TEST: sort Roles by effective privileges
+sort_by_effectiveness: {
+    my $guest        = Socialtext::Role->Guest();
+    my $auth_user    = Socialtext::Role->AuthenticatedUser();
+    my $member       = Socialtext::Role->Member();
+    my $admin        = Socialtext::Role->WorkspaceAdmin();
+    my $impersonator = Socialtext::Role->Impersonator();
+
+    # sort the Roles by their effective privileges
+    my @sorted = Socialtext::Role->SortByEffectiveness(
+        roles => [$impersonator, $auth_user, $guest, $admin, $member],
+    );
+    my @ordered_names = map { $_->name } @sorted;
+    my @expected_names =
+        map { $_->name } ($guest, $auth_user, $member, $admin, $impersonator);
+    is_deeply \@ordered_names, \@expected_names,
+        '... containing Roles in order of lowest->highest privilege';
+}
 
 ###############################################################################
 # TEST: Get all Roles in the system

@@ -155,26 +155,36 @@ sub All {
 }
 
 sub AllOrderedByEffectiveness {
-    my $class  = shift;
+    my $class     = shift;
+    my @all_roles = $class->All->all();
+    my @sorted    = $class->SortByEffectiveness(roles => \@all_roles);
+    return Socialtext::MultiCursor->new(
+        iterables => [ \@sorted ],
+    );
+}
 
-    # get all of the Roles that exist in the system
-    my %roles = map { $_->name => $_ } $class->All->all();
+sub SortByEffectiveness {
+    my $class      = shift;
+    my %p          = @_;
+    my $roles_aref = $p{roles} || [];
+
+    # turn the list-ref of Roles into a hash-ref for easier manipulation
+    my %to_sort = map { $_->name => $_ } @{$roles_aref};
 
     # order the built-in/default Roles
     my @builtin_sorted;
     foreach my $name ($class->DefaultRoleNames) {
-        push @builtin_sorted, delete $roles{$name};
+        next unless $to_sort{$name};
+        push @builtin_sorted, delete $to_sort{$name};
     }
 
     # order the remaining custom Roles
     my @custom_sorted =
-        sort { $a->name cmp $b->name } values %roles;
+        sort { $a->name cmp $b->name } values %to_sort;
 
     # assemble the final sorted set of Roles
     my @sorted = (@custom_sorted, @builtin_sorted);
-    return Socialtext::MultiCursor->new(
-        iterables => [ \@sorted ],
-    );
+    return @sorted;
 }
 
 # Helper methods
@@ -314,6 +324,11 @@ See L<Socialtext::MultiCursor> for more details on this method.
 
 Returns a cursor for all the Roles in the system, ordered from "lowest
 effective privileges" to "highest effective privileges".
+
+=item Socialtext::Role->SortByEffectiveness(roles => \@roles)
+
+Sorts the given list-ref of C<\@roles> by their effective priveleges,
+returning the sorted results back to the caller as a list.
 
 The calculation performed for "effective privileges" is based on the
 B<default/built-in> set of Roles, with any Custom Roles being treated as
