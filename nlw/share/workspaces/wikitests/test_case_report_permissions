@@ -61,13 +61,9 @@
 | wait_for_text_present_ok | You are not allowed to view this report | 30000 |
 | open_ok | /webplugin/cgi/reports/report.cgi/user_workspace_usage/04-28-2008/-3months.json |  |
 | wait_for_text_present_ok | growth_report_test | 30000 |
-| text_like | qr/\"growth_report_test\"\,\"46\"\,\"9\"\]/ |  |
-| text_like | qr/\[\[/ |  |
-| text_like | qr/\]\]/ |  |
-| text_like | qr/\,\"46\"\,\"9\"\]/ |  |
-| text_like | `qr/\[\"growth_report_test\"\,\"growth_report_test\"\,\"46\"\,\"9\"\]\,/` |  |
-| text_like | `qr/\,\[\"test-data\"\,\"Canonical Test Data Set\"\,0\,0\]\]/` |  |
-| text_like | `qr/\[\"%%workspace_two%%\"\,\"%%workspace_two%%\"\,0\,0\]/` |  |
+| text_like | `qr/\[\[\"test-data\",\"Canonical Test Data Set\",0,0\],/` |  |
+| text_like | `qr/\[\"growth_report_test\",\"growth_report_test\",\"46\",\"9\"\],/` |  |
+| text_like | `qr/\[\"%%workspace_two%%\",\"%%workspace_two%%\",0,0\]\]/` |  |
 
 | *Comment* | Test Case: Report Permissions Cleanup |  |
 
