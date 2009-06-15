@@ -52,9 +52,9 @@ get_all_roles_ordered_by_effectiveness_with_custom_roles: {
     # make sure the Roles are returned in the right order
     my @role_names     = map { $_->name } $cursor->all();
     my @expected_order = (
-        Socialtext::Role->DefaultRoleNames,     # built-in Roles first
         'AAA Role',                             # custom Roles alphabetically
         'ZZZ Role',
+        Socialtext::Role->DefaultRoleNames,     # then built-in Roles
     );
     is_deeply \@role_names, \@expected_order,
         '... Roles were returned in the expected sorted order';

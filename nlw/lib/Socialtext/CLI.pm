@@ -1505,7 +1505,7 @@ sub show_acls {
     # with custom Roles appearing afterwards in alphabetical order.
     my %all_roles = map { $_->name() => $_ } Socialtext::Role->All()->all();
     my @roles = map { delete $all_roles{$_} }
-        reverse Socialtext::Role->DefaultRoleNames();
+        Socialtext::Role->DefaultRoleNames();
     push @roles, sort { $a->name() cmp $b->name() } values %all_roles;
 
     for my $role (@roles) {

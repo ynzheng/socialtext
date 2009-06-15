@@ -17,7 +17,8 @@ field 'role_id';
 field 'name';
 field 'used_as_default';
 
-# FIXME: This belongs elsewhere, in fixture creation code, perhaps
+# Built-in/default Roles, and whether they're required.  *IN ORDER* of implied
+# effectiveness, from lowest->highest effective privilege.
 Readonly my @RequiredRoles => (
     [ guest              => 1 ],
     [ authenticated_user => 1 ],
@@ -133,7 +134,7 @@ sub Impersonator {
 }
 
 sub DefaultRoleNames {
-    return (qw( impersonator workspace_admin member authenticated_user guest ));
+    return map { $_->[0] } @RequiredRoles;
 }
 
 sub All {
@@ -155,19 +156,22 @@ sub All {
 
 sub AllOrderedByEffectiveness {
     my $class  = shift;
-    my @sorted;
 
     # get all of the Roles that exist in the system
     my %roles = map { $_->name => $_ } $class->All->all();
 
-    # grab the built-in/default Roles, in order
+    # order the built-in/default Roles
+    my @builtin_sorted;
     foreach my $name ($class->DefaultRoleNames) {
-        push @sorted, delete $roles{$name};
+        push @builtin_sorted, delete $roles{$name};
     }
 
-    # add any remaining custom Roles to the end of the list
-    push @sorted, sort { $a->name cmp $b->name } values %roles;
+    # order the remaining custom Roles
+    my @custom_sorted =
+        sort { $a->name cmp $b->name } values %roles;
 
+    # assemble the final sorted set of Roles
+    my @sorted = (@custom_sorted, @builtin_sorted);
     return Socialtext::MultiCursor->new(
         iterables => [ \@sorted ],
     );
@@ -299,7 +303,7 @@ role.
 =item Socialtext::Role->DefaultRoleNames()
 
 Returns a list containing the names of the default/built-in Roles, ordered
-from "highest effectiveness" to "lowest effectiveness".
+from "lowest effective privileges" to "highest effective privileges".
 
 =item Socialtext::Role->All()
 
@@ -308,12 +312,12 @@ See L<Socialtext::MultiCursor> for more details on this method.
 
 =item Socialtext::Role->AllOrderedByEffectiveness()
 
-Returns a cursor for all the Roles in the system, ordered from "highest
-effectiveness" to "lowest effectiveness".
+Returns a cursor for all the Roles in the system, ordered from "lowest
+effective privileges" to "highest effective privileges".
 
-This effectiveness calculation is done using the B<default/built-in> set of
-Roles, with any custom Roles appearing at the I<end> of the list, ordered
-alphabetically.
+The calculation performed for "effective privileges" is based on the
+B<default/built-in> set of Roles, with any Custom Roles being treated as
+"lowest privilege".
 
 Do note that B<no> check is done against the actual Permissions that the Roles
 may grant.
