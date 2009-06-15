@@ -270,6 +270,7 @@ sub maybe_run_in_background {
 }
 
 sub exit_if_already_running {
+    return if ($RunInForeground && $OnceMode);
     return unless -e $PID_FILE;
     my $pid = get_contents($PID_FILE);
     my $alive = kill 0 => $pid;
