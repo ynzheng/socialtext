@@ -49,8 +49,9 @@ fi
 
 # Create the basic dev-env
 rm -rf $HOME/.nlw/
+PLUGINS=${PLUGINS:-widgets agile csskit dashboard people signals socialcalc apache socialpoint}
+dev-bin/link-plugins $PLUGINS
 st-make-all @clean all
-dev-bin/link-plugins socialcalc
 dev-bin/make-test-fixture --home_dir $HOME --fixture clean
 dev-bin/make-test-fixture --home_dir $HOME --preserve --fixture base_config
 dev-bin/make-test-fixture --home_dir $HOME --preserve --fixture ALL
@@ -60,14 +61,12 @@ bin/st-admin enable-plugin --all-accounts --plugin dashboard
 perl -le 'print "User-agent: *\nDisallow: /"' > ~/.nlw/root/docroot/robots.txt
 
 echo "Linking in extra modules ..."
-PLUGINS=${PLUGINS:-widgets agile csskit dashboard people signals socialcalc apache socialpoint}
 # We set +e here so that if these fail, fdefs continues
 # otherwise everyone is forced to have all this code checked out
 set +e
 dev-bin/link-control-panel
 dev-bin/link-console
 dev-bin/link-reports
-dev-bin/link-plugins $PLUGINS
 set -e
 
 export PGUSER=`st-config echo db_user`
@@ -78,7 +77,5 @@ echo "Starting in dual-Apache mode";
 dev-bin/nlwctl start;
 
 st-admin set-workspace-config --workspace admin skin_name s3
-st-make-all @clean
-st-make-all @all
 st-widgets update-all
 st-widgets update-gallery
