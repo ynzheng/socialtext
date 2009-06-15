@@ -111,7 +111,7 @@ sub exit_gracefully {
 
 sub wait_for_all_children {
     return unless $RunningChildren;
-    kill HUP => -$$;
+    kill HUP => -$$ unless $OnceMode;
     st_log->notice("Ceqlotron master: waiting for $RunningChildren children to exit");
     $ProcManager->wait_all_children;
 }
