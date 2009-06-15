@@ -159,6 +159,11 @@ sub _validate_and_clean_data {
 
     $p->{name} = Socialtext::String::trim( $p->{name} );
 
+    if ($is_create and not exists $p->{used_as_default}) {
+        # by default, Roles are *not* used as Default Roles
+        $p->{used_as_default} = 0;
+    }
+
     my @errors;
     if ( ( exists $p->{name} or $is_create )
          and not
