@@ -19,11 +19,11 @@ field 'used_as_default';
 
 # FIXME: This belongs elsewhere, in fixture creation code, perhaps
 Readonly my @RequiredRoles => (
-    [ guest => 1 ],
+    [ guest              => 1 ],
     [ authenticated_user => 1 ],
-    [ member => 0 ],
-    [ workspace_admin => 0 ],
-    [ impersonator => 0 ],
+    [ member             => 0 ],
+    [ workspace_admin    => 0 ],
+    [ impersonator       => 0 ],
 );
 sub EnsureRequiredDataIsPresent {
     my $class = shift;
