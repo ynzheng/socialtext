@@ -132,6 +132,10 @@ sub Impersonator {
     shift->new( name => 'impersonator' );
 }
 
+sub DefaultRoleNames {
+    return (qw( impersonator workspace_admin member authenticated_user guest ));
+}
+
 sub All {
     my ( $class, %p ) = @_;
 
@@ -146,6 +150,26 @@ sub All {
             my $row = shift;
             return Socialtext::Role->new( role_id => $row->[0] );
         }
+    );
+}
+
+sub AllOrderedByEffectiveness {
+    my $class  = shift;
+    my @sorted;
+
+    # get all of the Roles that exist in the system
+    my %roles = map { $_->name => $_ } $class->All->all();
+
+    # grab the built-in/default Roles, in order
+    foreach my $name ($class->DefaultRoleNames) {
+        push @sorted, delete $roles{$name};
+    }
+
+    # add any remaining custom Roles to the end of the list
+    push @sorted, sort { $a->name cmp $b->name } values %roles;
+
+    return Socialtext::MultiCursor->new(
+        iterables => [ \@sorted ],
     );
 }
 
@@ -272,10 +296,27 @@ Returns the role's name, but with underscores replaced by spaces.
 Shortcut class methods for getting a role object for the specified
 role.
 
+=item Socialtext::Role->DefaultRoleNames()
+
+Returns a list containing the names of the default/built-in Roles, ordered
+from "highest effectiveness" to "lowest effectiveness".
+
 =item Socialtext::Role->All()
 
 Returns a cursor for all the Roles in the system, ordered by name.
 See L<Socialtext::MultiCursor> for more details on this method.
+
+=item Socialtext::Role->AllOrderedByEffectiveness()
+
+Returns a cursor for all the Roles in the system, ordered from "highest
+effectiveness" to "lowest effectiveness".
+
+This effectiveness calculation is done using the B<default/built-in> set of
+Roles, with any custom Roles appearing at the I<end> of the list, ordered
+alphabetically.
+
+Do note that B<no> check is done against the actual Permissions that the Roles
+may grant.
 
 =item Socialtext::Role->Count()
 
