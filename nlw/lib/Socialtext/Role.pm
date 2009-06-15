@@ -85,6 +85,7 @@ sub create {
         'INSERT INTO "Role" (role_id, name, used_as_default)'
         . ' VALUES (nextval(\'"Role___role_id"\'),?,?)',
         $p{name}, $p{used_as_default} );
+    return $class->new(name => $p{name});
 }
 
 sub delete {
