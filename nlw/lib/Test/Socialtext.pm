@@ -292,6 +292,15 @@ sub _teardown_cleanup {
                 Test::Socialtext::Account->delete_recklessly($_[0]);
             },
         },
+        role => {
+            get_iterator => sub { Socialtext::Role->All() },
+            get_id       => sub { $_[0]->role_id },
+            identifier   => sub {
+                my $r = shift;
+                return $r->role_id . ' (' . $r->name . ')';
+            },
+            delete_item => sub { $_[0]->delete },
+        },
     );
 
     sub _store_initial_objects {
