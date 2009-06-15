@@ -17,18 +17,50 @@
 | text_like | st-page-content | Yahoo! alternatively: |
 | text_like | st-page-content | Skype. alternatively: |
 
+| *Comment* | Test Case: Connections. Four RSS/ATOM feeds, one at a time ELSE timeout |
+
+| *Comment* | Test Case: Connections. ATOM 1.0 |
 | click_ok | link=Edit |  |
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
-
-| type_ok | wikiwyg_wikitext_textarea | `^ Atom\n{fetchrss: http://www.socialtext.com/blog/atom.xml}\n{fetchrss: http://www.socialtext.com/blog/atom.xml abstract}\n{fetchrss: http://www.socialtext.com/blog/atom.xml full}\n^ RSS 2.0\n{fetchrss: http://www.petefreitag.com/rss/}\n{fetchrss: http://www.petefreitag.com/rss/ abstract}\n{fetchrss: http://www.petefreitag.com/rss/ full}\n^ RSS 1.0\n{fetchrss: http://weblogs.macromedia.com/dev_center/index.rdf}\n{fetchrss: http://weblogs.macromedia.com/dev_center/index.rdf abstract}\n{fetchrss: http://weblogs.macromedia.com/dev_center/index.rdf full}\n^ RSS .91\n{fetchrss: http://www.brettonwoodsproject.org/feed/rss/highlights.rss}\n{fetchrss: http://www.brettonwoodsproject.org/feed/rss/highlights.rss abstract}\n{fetchrss: http://www.brettonwoodsproject.org/feed/rss/highlights.rss full}` |
-
+| type_ok | wikiwyg_wikitext_textarea | `^ Atom\n{fetchrss: http://www.socialtext.com/blog/atom.xml}\n{fetchrss: http://www.socialtext.com/blog/atom.xml abstract}\n{fetchrss: http://www.socialtext.com/blog/atom.xml summary}\n{fetchrss: http://www.socialtext.com/blog/atom.xml full}` |
 | click_and_wait | st-save-button-link |  |
+| wait_for_text_present_ok | Atom | 120000 |
+| text_like | qr/Socialtext blog.+Socialtext blog.+Socialtext blog.+Socialtext blog/ims |  |
 
-TODO: verify results of RSS fetches
+| *Comment* | Test Case: Connections. RSS 2.0 |
+| click_ok | link=Edit |  |
+| wait_for_element_visible_ok | link=Wiki Text | 30000 |
+| click_ok | link=Wiki Text | RSS |
+| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| type_ok | wikiwyg_wikitext_textarea | `^ RSS 2.0\n{fetchrss: http://www.topix.net/rss/com/socialtext.xml}\n{fetchrss: http://www.topix.net/rss/com/socialtext.xml abstract}\n{fetchrss: http://www.topix.net/rss/com/socialtext.xml summary}\n{fetchrss: http://www.topix.net/rss/com/socialtext.xml full}` |
+| click_and_wait | st-save-button-link |  |
+| wait_for_text_present_ok | RSS 2.0 | 120000 |
+| text_like | qr/Socialtext News.+Socialtext News.+Socialtext News.+Socialtext News/ims |  |
+
+| *Comment* | Test Case: Connections. RSS 1.0 |
+| click_ok | link=Edit |  |
+| wait_for_element_visible_ok | link=Wiki Text | 30000 |
+| click_ok | link=Wiki Text |  |
+| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| type_ok | wikiwyg_wikitext_textarea | `^ RSS 1.0\n{fetchrss: http://weblogs.macromedia.com/dev_center/index.rdf}\n{fetchrss: http://weblogs.macromedia.com/dev_center/index.rdf abstract}\n{fetchrss: http://weblogs.macromedia.com/dev_center/index.rdf summary}\n{fetchrss: http://weblogs.macromedia.com/dev_center/index.rdf full}` |
+| click_and_wait | st-save-button-link |  |
+| wait_for_text_present_ok | RSS 1.0 | 120000 |
+| text_like | qr/Macromedia Developer Center.+Macromedia Developer Center.+Macromedia Developer Center.+Macromedia Developer Center/ims |  |
+
+| *Comment* | Test Case: Connections. RSS .91 |
+| click_ok | link=Edit |  |
+| wait_for_element_visible_ok | link=Wiki Text | 30000 |
+| click_ok | link=Wiki Text |  |
+| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| type_ok | wikiwyg_wikitext_textarea | `^ RSS .91\n{fetchrss: http://www.brettonwoodsproject.org/feed/rss/highlights.rss}\n{fetchrss: http://www.brettonwoodsproject.org/feed/rss/highlights.rss abstract}\n{fetchrss: http://www.brettonwoodsproject.org/feed/rss/highlights.rss summary}\n{fetchrss: http://www.brettonwoodsproject.org/feed/rss/highlights.rss full}` |
+| click_and_wait | st-save-button-link |  |
+| wait_for_text_present_ok | RSS .91 | 120000 |
+| text_like | qr/Bretton Woods Project.+Bretton Woods Project.+Bretton Woods Project.+Bretton Woods Project/ims |  |
 
 | *Comment* | Test Case: Connections Teardown |  |
+
 | st-admin | purge-page --w %%workspace%% --p connections_testpage_%%start_time%% | was purged |
 
 | *Comment* | Test Case: Connections COMPLETED |
