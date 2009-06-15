@@ -2,25 +2,11 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Socialtext::JobCreator;
-use Socialtext::Workspace;
-use Socialtext::Migration::Utils qw/ensure_socialtext_schema/;
+use Socialtext::Migration::Utils qw/ensure_socialtext_schema
+                                    create_job_for_each_workspace/;
 
 ensure_socialtext_schema(61); # Current version when this migration written
 
-my $job_class = 'Socialtext::Job::Upgrade::MigrateUserWorkspacePrefs';
-my $all = Socialtext::Workspace->All;
-my $job_count = 0;
-while (my $ws = $all->next) {
-    Socialtext::JobCreator->insert( $job_class,
-        { workspace_id => $ws->workspace_id },
-    );
-    $job_count++;
-}
+create_job_for_each_workspace('MigrateUserWorkspacePrefs');
 
-# And add one more job to clean up global prefs
-Socialtext::JobCreator->insert( $job_class, { workspace_id => 0 } );
-$job_count++;
-
-print "Inserted $job_count $job_class jobs\n";
 exit 0;
