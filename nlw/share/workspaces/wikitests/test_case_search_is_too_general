@@ -1,0 +1,63 @@
+| *Comment* | Test Case: Search Too General |  |
+
+| *Comment* | Test Case: Search Too General: Create new workspace |  |
+| set | gws | general-workspace-%%start_time%% |
+| st-admin | create-workspace --name %%gws%% --title %%gws%% |  |
+| st-admin | add-member --username %%username%% --workspace %%gws%% |  |
+
+| *Comment* | Test Case: Search Too General: Create 22 pages |  |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 1 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 1 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 2 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 2 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 3 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 3 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 4 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 4 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 5 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 5 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 6 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 6 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 7 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 7 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 8 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 8 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 9 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 9 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 10 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 10 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 11 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 11 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 12 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 12 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 13 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 13 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 14 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 14 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 15 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 15 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 16 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 16 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 17 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 17 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 18 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 18 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 19 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 19 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 20 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 20 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 21 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 21 %%start_time%%" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%gws%% --page "General Page 22 %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "General Page 22 %%start_time%%" page has been created. |
+
+| *Comment* | Test Case: Search Too General: Search regular |  |
+| open_ok | /%%gws%%/ |  |
+| st-search | This is a simple text file |  |
+| st-result | 22 total |  |
+| st-result | General Page 10 %%start_time%% |  |
+| st-result | General Page 11 %%start_time%% |  |
+| st-result | General Page 12 %%start_time%% |  |
+
+| *Comment* | Test Case: Search Too General: Search with limit set to 20, see too general warning |  |
+| st-config | set search_warning_threshold 21 |
+| open_ok | /%%gws%%/ |  |
+| st-search | This is a simple text file |
+| text_unlike | //body | General Page 10 %%start_time%% |
+| text_unlike | //body | General Page 11 %%start_time%% |
+| text_unlike | //body | General Page 12 %%start_time%% |
+| text_like | //body | The search you have entered is too general; 22 pages and/or attachments matched your query. |
+| text_like | //body | Searches are limited to 21 results. |
+| text_like | //body | Please use more specific words or add more search terms. |
+
+| *Comment* | Test Case: Search Too General: Search with limit set to 500, all good |  |
+| st-config | set search_warning_threshold 500 |  |
+| open_ok | /%%gws%%/ |  |
+| st-search | This is a simple text file |  |
+| st-result | 22 total |  |
+| st-result | General Page 10 %%start_time%% |  |
+| st-result | General Page 11 %%start_time%% |  |
+| st-result | General Page 12 %%start_time%% |  |
+
+| *Comment* | Test case: Search Is Too General Teardown |  |
+| st-admin | delete-workspace --w %%gws%% |  |
+
+| *Comment* | Test case: Search Is Too General COMPLETED |  |
