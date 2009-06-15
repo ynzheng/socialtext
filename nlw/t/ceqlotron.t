@@ -115,6 +115,7 @@ Workers_are_limited: {
 }
 
 Once_mode: {
+    my $NUM_JOBS = 50;
     Socialtext::Jobs->clear_jobs();
     Socialtext::JobCreator->insert(
         'Socialtext::Job::Test',
@@ -123,11 +124,11 @@ Once_mode: {
             sleep => 0,
             post_message => "end-$_",
         },
-    ) for (0 .. 9);
+    ) for (1 .. $NUM_JOBS);
     my @start_with = Socialtext::Jobs->list_jobs(
         funcname => 'Socialtext::Job::Test'
     );
-    is scalar(@start_with), 10, 'start with a bunch of jobs';
+    is scalar(@start_with), $NUM_JOBS, 'start with a bunch of jobs';
 
     ceq_fast_forward();
     lives_ok {
@@ -142,8 +143,8 @@ Once_mode: {
 
     my @started = sort {$a<=>$b} map { /[^"]start-(\d)/ ? $1 : () } @lines;
     my @ended =   sort {$a<=>$b} map { /[^"]end-(\d)/   ? $1 : () } @lines;
-    is scalar(@started), 10, '10 started';
-    is scalar(@ended), 10, '10 ended';
+    is scalar(@started), $NUM_JOBS, "$NUM_JOBS started";
+    is scalar(@ended), $NUM_JOBS, "$NUM_JOBS ended";
     is_deeply [grep /FAILED/, @lines], [], "no failed jobs";
     is_deeply [grep /TEMPFAILED/, @lines], [], "no tempfailed jobs";
     is_deeply \@started, \@ended, "same jobs got started and ran to completion";
