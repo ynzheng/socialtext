@@ -107,6 +107,16 @@ Visit in Firefox:
 | pause | %%popup%% |  |
 | pause | %%pt%% | some extra time to close HTML window |
 
+* csv (socialcalc) export
+
+| open_ok | /%%workspace%%/index.cgi?car_loan |  |
+| click_ok | link=Export to CSV |  |
+| *Comment* | SlideShow SEE Exported CSV |  |
+| *Comment* | IF SEPARATE WINDOW, CTRL-W HTML ON WINDOWS |  |
+| *Comment* | IF SEPARATE WINDOW, APPLE-W HTML ON MAC |  |
+| pause | %%popup%% |  |
+| pause | %%pt%% | some extra time to close CSV window |
+
 | *Comment* | setup Account Logo test |  |
 | set | logo_acc | logo-acc-%%start_time%% |
 | set | logo_ws | logo-ws-%%start_time%% |
