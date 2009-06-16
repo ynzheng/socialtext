@@ -1,0 +1,90 @@
+| *Comment* | Test Case: Join. |  |
+
+| *Comment* | Test Case: Join. Define a fresh account and a ws in it |  |
+| set | acct | SJ %%start_time%% |
+| set | acct_ws | sj-%%start_time%% |
+
+| *Comment* | Test Case: Join. Define a brand new user to invite. Make the email address of that user a wiki |  |
+| set | to_ws | sj-ws-%%start_time%% |
+| set | to_ws_user | %%to_ws%%@%%wikiemail%% |
+| set | eto_ws_user | %%to_ws%%\@%%wikiemail%% |
+
+| *Comment* | Test Case: Join. Create new acct, ws in it, and brand new (workspace == new user) |  |
+| *Comment* | Test Case: Join. Default allow_self_register is YES |  |
+| *Comment* | The user to be invited is %%to_ws_user%% and the wiki to be created is %%to_ws%%, so the user email addr and wiki email addr are identical, so we can read the email in the wiki! |  |
+| st-admin | create-account --name "%%acct%%" | created |
+| st-admin | enable-plugin --account "%%acct%%" --plugin dashboard |  |
+| st-admin | enable-plugin --account "%%acct%%" --plugin signals |  |
+| st-admin | create-workspace --name %%acct_ws%% --title "%%acct%%" --account "%%acct%%" | created |
+| st-admin | set-permissions --w %%acct_ws%% --p public-join-to-edit | have been changed |
+| st-admin | create-workspace --name %%to_ws%% --title "SJ %%to_ws%%" --account "%%acct%%" | created |
+
+| *Comment* | Test Case: Join. Add %%email%% to %%to_ws%% so he can login and click the new user's verification link |  |
+| st-admin | add-workspace-admin --w %%to_ws%% --e %%email%% |  |
+
+| *Comment* | Test Case: Join. Logged-in user joins immediately, primary account unchanged |  |
+| open_ok | /%%acct_ws%% |  |
+| wait_for_element_visible_ok | link=Join | 30000 |
+| wait_for_element_not_present_ok | link=Edit | 5000 |
+| click_and_wait | link=Join |  |
+| location_like | /%%acct_ws%%/index.cgi |  |
+| wait_for_element_visible_ok | link=Edit | 5000 |
+| wait_for_element_visible_ok | link=Comment | 5000 |
+| st-admin | get-user-account --u %%username%% | Primary account for "%%username%%" is %%hostname%%. |
+
+| *Comment* | Test Case: Join. New user joins, primary account set to %%acct%% |  |
+| st-logout |  |  |
+| open_ok | /%%acct_ws%% |  |
+| wait_for_element_visible_ok | link=Join | 30000 |
+| wait_for_element_not_present_ok | link=Edit | 5000 |
+| click_and_wait | link=Join |  |
+| wait_for_element_visible_ok | email_address | 30000 |
+| wait_for_element_visible_ok | password | 30000 |
+| wait_for_element_visible_ok | password2 | 30000 |
+| wait_for_element_visible_ok | first_name | 30000 |
+| wait_for_element_visible_ok | last_name | 30000 |
+| type_ok | email_address | %%to_ws_user%% |
+| type_ok | password | %%password%% |
+| type_ok | password2 | %%password%% |
+| type_ok | first_name | Donald |
+| type_ok | last_name | Duck |
+| wait_for_element_visible_ok | register_btn | 30000 |
+| click_and_wait | register_btn |  |
+| text_like | An email confirming your registration has been sent to %%to_ws_user%% |  |
+
+| *Comment* | Test Case: Join. login to %%to_ws%% as %%email%% and open the confirmation email |  |
+| open_ok | /%%to_ws%%/ |  |
+| wait_for_element_visible_ok | username | 30000 |
+| wait_for_element_visible_ok | pasword | 30000 |
+| type_ok | username | %%email%% |
+| type_ok | password | %%password%% |
+| click_and_wait | login_btn |  |
+
+| *Comment* | Test Case: Join. Navigate to the confirmation email |  |
+| wait_for_element_visible_ok | link=What's New | 30000 |
+| click_and_wait | link=What's New |  |
+| wait_for_element_visible_ok | link=Welcome to the SJ %%to_ws%% workspace - please confirm your email to join | 30000 |
+| click_and_wait | link=Welcome to the SJ %%to_ws%% workspace - please confirm your email to join |  |
+
+| *Comment* | Test Case: Join. click the confirmation link |  |
+| text_like | Your profile has been added |  |
+| wait_for_element_visible_ok | //a[contains(@href,'confirm_email')] | 30000 |
+| click_and_wait | //a[contains(@href,'confirm_email')] |  |
+
+| *Comment* | Test Case: Join. Log in |  |
+| text_like | Your email address, %%eto_ws_user%%, has been confirmed and you have been added to the SJ %%to_ws%% workspace. Please login. |  |
+| type_ok | username | %%to_ws_user%% |
+| type_ok | password | %%password%% |
+| click_and_wait | login_btn |  |
+| location_like | /%%acct_ws%%/index.cgi |  |
+| wait_for_element_visible_ok | link=Edit | 5000 |
+| wait_for_element_visible_ok | link=Comment | 5000 |
+| st-admin | get-user-account --u %%username%% | Primary account for "%%username%%" is %%acct%%. |
+
+^ END
+
+| *Comment* | Test Case: Join TEARDOWN |  |
+| st-admin | delete-workspace --w %%to_ws%% --no-export | has been deleted |
+| st-admin | delete-workspace --w %%acct_ws%% --no-export | has been deleted |
+
+| *Comment* | Test Case: Join COMPLETED |  |
