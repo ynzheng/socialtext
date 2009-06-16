@@ -24,8 +24,8 @@
 | *Comment* | Test Case: Join. Allow invitation to be mailed to %%to_ws%% |  |
 | st-admin | add-permission --w %%to_ws%% --role guest --p email_in | has been granted |
 
-| *Comment* | Test Case: Join. Add %%email%% to %%to_ws%% so he can login and click the new user's verification link |  |
-| st-admin | add-workspace-admin --w %%to_ws%% --e %%email%% |  |
+| *Comment* | Test Case: Join. Add %%username%% to %%to_ws%% so he can login and click the new user's verification link |  |
+| st-admin | add-workspace-admin --w %%to_ws%% --u %%username%% |  |
 
 | *Comment* | Test Case: Join. Logged-in user joins immediately, primary account unchanged |  |
 | open_ok | /%%acct_ws%% |  |
@@ -57,11 +57,11 @@
 | click_and_wait | register_btn |  |
 | text_like | An email confirming your registration has been sent to %%to_ws_user%% |  |
 
-| *Comment* | Test Case: Join. login to %%to_ws%% as %%email%% and open the confirmation email |  |
+| *Comment* | Test Case: Join. login to %%to_ws%% as %%username%% and open the confirmation email |  |
 | open_ok | /%%to_ws%%/ |  |
 | wait_for_element_visible_ok | username | 30000 |
 | wait_for_element_visible_ok | password | 30000 |
-| type_ok | username | %%email%% |
+| type_ok | username | %%username%% |
 | type_ok | password | %%password%% |
 | click_and_wait | login_btn |  |
 
