@@ -6,12 +6,8 @@ if [ "$ST_CURRENT" != "" ]; then
     cd $ST_CURRENT/nlw
 fi
 
-# Cleanup plugins that don't exist here
-for link in lib/Socialtext/Pluggable/Plugin/*.pm; do
-    [ -e $link ] && continue;
-    echo "Unlinking dead symlink $link"
-    rm $link
-done
+# Clean up dead symlinks
+find -L -type l -delete
 
 perl -MCwd -le'print "Running ", Cwd::abs_path(shift)' $0
 
@@ -52,6 +48,7 @@ rm -rf $HOME/.nlw/
 PLUGINS=${PLUGINS:-widgets agile csskit dashboard people signals socialcalc apache socialpoint}
 dev-bin/link-plugins $PLUGINS
 st-make-all @clean all
+rm -f etc/socialtext/db/cache.*.sql
 dev-bin/make-test-fixture --home_dir $HOME --fixture clean
 dev-bin/make-test-fixture --home_dir $HOME --preserve --fixture base_config
 dev-bin/make-test-fixture --home_dir $HOME --preserve --fixture ALL
@@ -69,13 +66,12 @@ dev-bin/link-console
 dev-bin/link-reports
 set -e
 
-export PGUSER=`st-config echo db_user`
-echo "Adding special dev-env SQL hacks"
-psql -f etc/socialtext/db/dev.sql
-
 echo "Starting in dual-Apache mode";
 dev-bin/nlwctl start;
 
 st-admin set-workspace-config --workspace admin skin_name s3
 st-widgets update-all
 st-widgets update-gallery
+
+# Clean up dead symlinks
+find -L -type l -delete
