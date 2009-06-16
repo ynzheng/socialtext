@@ -30,11 +30,11 @@ around 'insert' => sub {
     my $self = shift;
     my $job_class = shift;
     my $args = shift;
-    my $prio = delete $args->{_job_priority};
+    my $opts = delete $args->{job} || {};
 
     my $job = TheSchwartz::Moosified::Job->new(
+        %$opts,
         funcname => $job_class,
-        priority => $prio,
         arg => $args,
     );
     return $self->$code($job);

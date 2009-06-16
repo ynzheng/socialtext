@@ -51,6 +51,10 @@ sub job_to_string {
     (my $shortname = $job->funcname) =~ s/^Socialtext::Job:://;
     $string .= ";type=$shortname";
 
+    if ($job->uniqkey) {
+        $string .= ";uniqkey=".$job->uniqkey;
+    }
+
     return $string unless ref($job->arg) eq 'HASH';
 
     if (my $ws_id = $job->arg->{workspace_id}) {

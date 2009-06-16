@@ -11,8 +11,10 @@ use Getopt::Long;
 Getopt::Long::Configure('pass_through');
 
 my $timeout;
+my $uniqkey;
 GetOptions(
     'timeout=i' => \$timeout,
+    'uniqkey=s' => \$uniqkey,
 );
 
 my $cmd = shift;
@@ -23,6 +25,9 @@ my $job_h = Socialtext::JobCreator->insert(
         cmd => $cmd,
         args => \@args,
         ($timeout ? (timeout => $timeout) : ()),
+        job => {
+            ($uniqkey ? (uniqkey => $uniqkey) : ()),
+        }
     }
 );
 if ($job_h) {

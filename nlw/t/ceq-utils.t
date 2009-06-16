@@ -12,7 +12,9 @@ our $RM   = 'bin/ceq-rm';
 
 sub make_exec_job {
     my $n = shift;
-    my $exec_create = `$EXEC /bin/touch t/tmp/touch-job-$^T-$n 2>&1`;
+    my $uniq = shift;
+    my $u = $uniq ? "--uniqkey $uniq" : "";
+    my $exec_create = `$EXEC $u /bin/touch t/tmp/touch-job-$^T-$n 2>&1`;
     chomp $exec_create;
     my ($id) = ($exec_create =~ qr/job id (\d+)/);
     ok $id, "created job $n";
@@ -21,14 +23,17 @@ sub make_exec_job {
 }
 
 my $exec1_id = make_exec_job(1);
-my $exec2_id = make_exec_job(2);
+my $job1 = qr{(?m:id=$exec1_id;type=Cmd;cmd=/bin/touch;args=t/tmp/touch-job-$^T-1$)};
+my $exec2_id = make_exec_job(2, 'haha');
+my $job2 = qr{(?m:id=$exec2_id;type=Cmd;uniqkey=haha;cmd=/bin/touch;args=t/tmp/touch-job-$^T-2$)};
 my $exec3_id = make_exec_job(3);
+my $job3 = qr{(?m:id=$exec3_id;type=Cmd;cmd=/bin/touch;args=t/tmp/touch-job-$^T-3$)};
 
 {
     my $listing = `$READ 2>&1`;
-    like $listing, qr{(?m:id=$exec1_id;type=Cmd;cmd=/bin/touch;args=t/tmp/touch-job-$^T-1$)}, "job 1 is listed";
-    like $listing, qr{(?m:id=$exec2_id;type=Cmd;cmd=/bin/touch;args=t/tmp/touch-job-$^T-2$)}, "job 2 is listed";
-    like $listing, qr{(?m:id=$exec3_id;type=Cmd;cmd=/bin/touch;args=t/tmp/touch-job-$^T-3$)}, "job 3 is listed";
+    like $listing, $job1, "job 1 is listed";
+    like $listing, $job2, "job 2 is listed";
+    like $listing, $job3, "job 3 is listed";
 }
 
 dry_run_rm: {
@@ -37,9 +42,9 @@ dry_run_rm: {
     unlike $dry_run_rm, qr{(?m:would de-schedule event for.+?id=(?!$exec1_id;))}, 'no extra jobs';
 
     my $listing = `$READ 2>&1`;
-    like $listing, qr{(?m:id=$exec1_id;type=Cmd;cmd=/bin/touch;args=t/tmp/touch-job-$^T-1$)}, "job 1 is listed";
-    like $listing, qr{(?m:id=$exec2_id;type=Cmd;cmd=/bin/touch;args=t/tmp/touch-job-$^T-2$)}, "job 2 is listed";
-    like $listing, qr{(?m:id=$exec3_id;type=Cmd;cmd=/bin/touch;args=t/tmp/touch-job-$^T-3$)}, "job 3 is listed";
+    like $listing, $job1, "job 1 is listed";
+    like $listing, $job2, "job 2 is listed";
+    like $listing, $job3, "job 3 is listed";
 }
 
 dry_run_rm_alt_id: {
@@ -48,9 +53,9 @@ dry_run_rm_alt_id: {
     unlike $dry_run_rm, qr{(?m:would de-schedule event for.+?id=(?!$exec2_id;))}, 'no extra jobs';
 
     my $listing = `$READ 2>&1`;
-    like $listing, qr{(?m:id=$exec1_id;type=Cmd;cmd=/bin/touch;args=t/tmp/touch-job-$^T-1$)}, "job 1 is listed";
-    like $listing, qr{(?m:id=$exec2_id;type=Cmd;cmd=/bin/touch;args=t/tmp/touch-job-$^T-2$)}, "job 2 is listed";
-    like $listing, qr{(?m:id=$exec3_id;type=Cmd;cmd=/bin/touch;args=t/tmp/touch-job-$^T-3$)}, "job 3 is listed";
+    like $listing, $job1, "job 1 is listed";
+    like $listing, $job2, "job 2 is listed";
+    like $listing, $job3, "job 3 is listed";
 }
 
 actually_rm: {
@@ -59,7 +64,18 @@ actually_rm: {
     unlike $really_rm, qr{(?m:^de-scheduling event for .+ id=(?!$exec3_id))}, 'no extra deletions';
 
     my $listing = `$READ 2>&1`;
-    like $listing, qr{(?m:id=$exec1_id;type=Cmd;cmd=/bin/touch;args=t/tmp/touch-job-$^T-1$)}, "job 1 is listed";
-    like $listing, qr{(?m:id=$exec2_id;type=Cmd;cmd=/bin/touch;args=t/tmp/touch-job-$^T-2$)}, "job 2 is listed";
-    unlike $listing, qr{(?m:id=$exec3_id;type=Cmd;cmd=/bin/touch;args=t/tmp/touch-job-$^T-3$)}, "job 3 is no longer listed";
+    like $listing, $job1, "job 1 is listed";
+    like $listing, $job2, "job 2 is listed";
+    unlike $listing, $job3, "job 3 is not listed";
+}
+
+actually_rm_uniq: {
+    my $really_rm = `$RM --verbose uniqkey=haha 2>&1`;
+    like $really_rm, qr{(?m:^de-scheduling event for .+ id=$exec2_id;type=Cmd)};
+    unlike $really_rm, qr{(?m:^de-scheduling event for .+ id=(?!$exec2_id))}, 'no extra deletions';
+
+    my $listing = `$READ 2>&1`;
+    like $listing, $job1, "job 1 is listed";
+    unlike $listing, $job2, "job 2 is not listed";
+    unlike $listing, $job3, "job 3 is not listed";
 }

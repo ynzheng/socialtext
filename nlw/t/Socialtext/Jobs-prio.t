@@ -2,7 +2,7 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::Socialtext tests => 21;
+use Test::Socialtext tests => 19;
 use Test::Exception;
 use List::Util qw/shuffle/;
 
@@ -13,11 +13,6 @@ BEGIN {
     use_ok 'Socialtext::JobCreator';
     use_ok 'Socialtext::Job::Test';
 }
-
-my $hub = new_hub('foobar', 'system-user');
-ok $hub, "loaded hub";
-my $foobar = $hub->current_workspace;
-ok $foobar, "loaded foobar workspace";
 
 my $jobs = Socialtext::Jobs->instance;
 lives_ok {
@@ -39,7 +34,7 @@ Order_jobs: {
     my %job_map;
     for my $prio (shuffle(@expected_prio)) {
         my $jh = Socialtext::JobCreator->insert(
-            @job_args, _job_priority => $prio);
+            @job_args, job => {priority => $prio});
         ok $jh;
         $job_map{$jh->jobid} = $prio;
     }

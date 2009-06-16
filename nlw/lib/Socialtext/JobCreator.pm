@@ -19,8 +19,9 @@ sub insert {
     my $job_class = shift;
     croak 'Job Class is required' unless $job_class;
     my $args = (@_==1) ? shift : {@_};
+    $args->{job} ||= {};
     if ($job_class =~ /::Upgrade::/) {
-        $args->{_job_priority} = -1;
+        $args->{job}{priority} = -65536;
     }
     return $self->_client->insert($job_class => $args);
 }
