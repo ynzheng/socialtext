@@ -47,8 +47,7 @@
 | click_and_wait | st-create-content-savelink |  |
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |
 | text_like | st-editing-title | np %%start_time%% 3 |
-
-| *Comment* | Test Case: New Page. Teardown |  |
+| text_unlike | //body | Export to CSV |  | *Comment* | Test Case: New Page. Teardown |  |
 
 | st-admin | purge-page --workspace %%workspace%% --page np_%%start_time%%_2 | page was purged |
 | st-admin | purge-page --workspace %%workspace%% --page np_%%start_time%% | page was purged |

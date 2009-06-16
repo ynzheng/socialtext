@@ -14,6 +14,8 @@
 | open_ok | /%%workspace%%/index.cgi?action=display;page_type=spreadsheet;page_name=ns%20%%start_time%%#edit |  |
 | wait_for_element_visible_ok | st-save-button-link |  |
 | click_and_wait | st-save-button-link |  |
+| wait_for_element_present_ok | link=Export to CSV | 30000 |
+| pause | 30000 |  |
 
 | *Comment* | Test Case: Calc New Page Teardown |  |
 | st-admin | purge-page --workspace %%workspace%% --page ns_%%start_time%% | was purged |
