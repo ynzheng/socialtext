@@ -148,6 +148,13 @@ set-user-names
 | st-admin | set-user-names --email foo%%start_time%%@bar.com --first-name Foo --last-name Bar | User "foo%%start_time%%@bar.com" was updated. |
 | st-admin | show-members --workspace %%cmdline_workspace%% | qr/Email Address.+First.+Last.+foo%%start_time%%\@bar.com.+Foo.+Bar/ |
 
+show-profile
+hide-profile
+
+| *Comment* | Test Case: Command Line USERS profile |  |
+| st-admin | hide-profile --email foo%%start_time%%@bar.com | The profile for "foo%%start_time%%@bar.com" is now hidden. |
+| st-admin | show-profile --email foo%%start_time%%@bar.com | The profile for "foo%%start_time%%@bar.com" is no longer hidden. |
+
 | *Comment* | Test Case: Command Line USERS Teardown |  |
 | st-admin | delete-workspace --w %%cmdline_workspace%% --no-export |  |
 

@@ -96,6 +96,7 @@ Put tests that don't use the browser here
 * [Test Case: Command Line: EMAIL]
 * [Test Case: Command Line: OTHER]
 * [Test Case: Command Line: INVITE NEW USER]
+* [Test Case: Command Line: LOCK PAGES]
 * [Test Case: Workspace Config Preservation]
 * [Test Case: REST Workspace]
 * [Test Case: REST Users]
