@@ -1206,6 +1206,15 @@ sub set_account_config {
 
         $value = undef if $value eq '-null-';
 
+        if ( $value and $key eq 'all_users_workspace' ) {
+            my $ws = Socialtext::Workspace->new( name => $value );
+
+            $self->_error( loc("No workspace named '[_1]' exists.", $value) )
+                unless $ws;
+
+            $value = $ws->workspace_id;
+        }
+
         $update{$key} = $value;
     }
     eval { $account->update(%update) };

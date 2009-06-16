@@ -33,6 +33,7 @@ Readonly our @ACCT_COLS => qw(
     email_addresses_are_hidden
     is_exportable
     allow_invitation
+    all_users_workspace
 
     desktop_logo_uri
     desktop_header_gradient_top
