@@ -94,7 +94,8 @@ CREATE TABLE "Account" (
     desktop_text_color varchar(7) DEFAULT '#000000'::varchar,
     desktop_link_color varchar(7) DEFAULT '#0081F8'::varchar,
     desktop_highlight_color varchar(7) DEFAULT '#FFFDD3'::varchar,
-    allow_invitation boolean DEFAULT true NOT NULL
+    allow_invitation boolean DEFAULT true NOT NULL,
+    all_users_workspace bigint
 );
 
 CREATE SEQUENCE "Account___account_id"
@@ -1216,6 +1217,11 @@ CREATE TRIGGER users_insert
     FOR EACH ROW
     EXECUTE PROCEDURE auto_vivify_user_rollups();
 
+ALTER TABLE ONLY "Account"
+    ADD CONSTRAINT account_all_users_workspace_fk
+            FOREIGN KEY (all_users_workspace)
+            REFERENCES "Workspace"(workspace_id) ON DELETE RESTRICT;
+
 ALTER TABLE ONLY account_logo
     ADD CONSTRAINT account_logo_account_fk
             FOREIGN KEY (account_id)
@@ -1617,4 +1623,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '69');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '70');
