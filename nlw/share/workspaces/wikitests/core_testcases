@@ -83,7 +83,6 @@ test env properly and are not testing the test-workspace
 * [Test Case: Page Locking]
 * [Test Case: Created By Sorting]
 * [Test Case: Search Is Too General]
-* [Test Case: Join]
 
 * [Edit Contention Testcases]
 
@@ -97,6 +96,7 @@ Put tests that don't use the browser here
 * [Test Case: Command Line: OTHER]
 * [Test Case: Command Line: INVITE NEW USER]
 * [Test Case: Command Line: LOCK PAGES]
+* [Test Case: Command Line: TAGS]
 * [Test Case: Workspace Config Preservation]
 * [Test Case: REST Workspace]
 * [Test Case: REST Users]
