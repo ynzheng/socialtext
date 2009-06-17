@@ -110,21 +110,29 @@ sub save {
             }
         }
 
+        my $job_type;
         if ($class_id eq 'email_notify' and $pref eq 'notify_frequency') {
-            my $old_val = $prefs->{notify_frequency}->value;
+            $job_type = 'Socialtext::Job::EmailNotifyUser';
+        }
+        elsif ($class_id eq 'watchlist' and $pref eq 'watchlist_notify_frequency') {
+            $job_type = 'Socialtext::Job::WatchlistNotifyUser';
+        }
+
+        if ($job_type) {
+            my $old_val = $prefs->{$pref}->value;
             my $ws_id = $self->hub->current_workspace->workspace_id;
             my $user_id = $self->hub->current_user->user_id;
             my $seconds = ($value - $old_val) * 60;
 
             if ($value == 0) {
                 Socialtext::JobCreator->cancel_job(
-                    funcname => 'Socialtext::Job::EmailNotifyUser',
+                    funcname => $job_type,
                     uniqkey => "$ws_id-$user_id",
                 );
             }
             else {
                 Socialtext::JobCreator->move_jobs_by(
-                    funcname => 'Socialtext::Job::EmailNotifyUser',
+                    funcname => $job_type,
                     uniqkey => "$ws_id-$user_id",
                     seconds => $seconds,
                 );

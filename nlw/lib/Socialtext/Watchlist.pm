@@ -10,7 +10,7 @@ use DBI;
 use Socialtext::Schema;
 use Class::Field 'field';
 use Readonly;
-use Socialtext::SQL qw( sql_execute );
+use Socialtext::SQL qw( sql_execute sql_format_timestamptz );
 use Socialtext::String;
 use Socialtext::MultiCursor;
 
@@ -60,18 +60,50 @@ sub pages {
     my $self = shift;
     my %p    = @_;
 
+    my @args = ($p{limit});
+
+    my $new_as = '';
+    if ($p{new_as}) {
+        $new_as = 'AND p.last_edit_time >= ?::timestamptz';
+        unshift @args, sql_format_timestamptz(
+            DateTime->from_epoch(epoch => $p{new_as})
+        );
+    }
+
     my $sth = sql_execute( <<EOT,
 SELECT page_text_id 
     FROM "Watchlist" w
         LEFT JOIN page p ON (w.workspace_id = p.workspace_id 
                         AND w.page_text_id = p.page_id)
-    WHERE w.user_id = ? AND w.workspace_id = ?
+    WHERE w.user_id = ? AND w.workspace_id = ? $new_as
     ORDER BY p.last_edit_time DESC
     LIMIT ?
 EOT
-        $self->{user_id}, $self->{workspace_id}, $p{limit} );
+        $self->{user_id}, $self->{workspace_id}, @args
+    );
 
     return map { $_->[0] } @{ $sth->fetchall_arrayref };
+}
+
+sub Users_watching_page {
+    my $class        = shift;
+    my $workspace_id = shift;
+    my $page_id      = shift;
+
+    my $sth = sql_execute( <<EOT, $workspace_id, $page_id );
+SELECT user_id
+    FROM "Watchlist"
+    WHERE workspace_id = ? AND page_text_id = ?
+EOT
+
+    return Socialtext::MultiCursor->new(
+        iterables => [
+            map { $_->[0] } @{ $sth->fetchall_arrayref }
+        ],
+        apply => sub {
+            return Socialtext::User->new(user_id => shift);
+        }
+    );
 }
 
 1;

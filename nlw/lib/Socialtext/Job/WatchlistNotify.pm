@@ -1,19 +1,31 @@
 package Socialtext::Job::WatchlistNotify;
 # @COPYRIGHT@
 use Moose;
-use Socialtext::WeblogUpdates;
+use Socialtext::Watchlist;
 use namespace::clean -except => 'meta';
 
-extends 'Socialtext::Job';
+extends 'Socialtext::Job::EmailNotify';
 
-sub do_work {
+override '_user_job_class' => sub {
+    return "Socialtext::Job::WatchlistNotifyUser";
+};
+
+override '_freq_for_user' => sub {
     my $self = shift;
-    my $page = $self->page or return;
+    my $user = shift;
+    my $prefs = $self->hub->preferences->new_for_user($user->email_address);
+    return $prefs->{watchlist_notify_frequency}->value;
+};
 
-    $page->hub->watchlist->maybe_send_notifications( $page->id );
 
-    $self->completed();
-}
+override '_get_applicable_users' => sub {
+    my $self = shift;
+
+    # find the users that have this page watched.
+    return Socialtext::Watchlist->Users_watching_page(
+        $self->workspace->workspace_id, $self->page->id,
+    );
+};
 
 __PACKAGE__->meta->make_immutable;
 1;

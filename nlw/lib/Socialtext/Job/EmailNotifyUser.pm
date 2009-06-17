@@ -13,8 +13,8 @@ override 'retry_delay' => sub { 0 };
 sub do_work {
     my $self = shift;
     my $user = $self->user or return;
-    my $ws = $self->workspace or return;
-    my $hub = $self->hub or return;
+    my $ws   = $self->workspace or return;
+    my $hub  = $self->hub or return;
 
     return $self->completed
         unless defined $user->email_address
@@ -23,16 +23,11 @@ sub do_work {
 
     loc_lang(system_locale());
 
-    my $pages = [
-        grep { !$_->is_system_page }
-            $hub->pages->all_at_or_after($self->arg->{pages_after})
-    ];
+    my $pages = $self->_pages_to_send;
     my $prefs = $hub->preferences->new_for_user($user->email_address);
 
-    $pages = $self->_sort_pages_for_user($user, $pages, $prefs);
     return $self->completed unless $pages && @$pages;
-
-    my $include_editor = $prefs->links_only->value eq 'condensed' ? 0 : 1;
+    $pages = $self->_sort_pages_for_user($user, $pages, $prefs);
 
     my $tz = $hub->timezone;
     my $email_time = $tz->_now();
@@ -40,18 +35,19 @@ sub do_work {
         user             => $user,
         workspace        => $ws,
         pages            => $pages,
-        include_editor   => $include_editor,
-        preference_uri   => $ws->uri . 'emailprefs',
+        include_editor   => $self->_links_only($prefs),
         email_time       => $tz->get_time_user($email_time) ,
         email_date       => $tz->get_dateonly_user($email_time) ,
         base_profile_uri => Socialtext::URI::uri(path => '?profile/'),
+        $self->_extra_template_vars(),
     );
 
     my $notifier = Socialtext::EmailNotifier->new();
     $notifier->send_notifications(
-        user          => $user, 
-        pages         => $pages,
-        vars          => \%vars,
+        user  => $user,
+        pages => $pages,
+        vars  => \%vars,
+        from  => $ws->formatted_email_notification_from_address,
         $self->get_notification_vars,
     );
 
@@ -86,11 +82,31 @@ sub get_notification_vars {
     my $ws = $self->workspace;
 
     return (
-        from => $ws->formatted_email_notification_from_address,
         subject => loc('Recent Changes In [_1] Workspace', $ws->title),
         text_template => 'email/recent-changes.txt',
         html_template => 'email/recent-changes.html',
     );
+}
+
+sub _pages_to_send {
+    my $self = shift;
+    return [
+        grep { !$_->is_system_page }
+            $self->hub->pages->all_at_or_after($self->arg->{pages_after})
+    ];
+}
+
+sub _extra_template_vars {
+    my $self = shift;
+    return (
+        preference_uri   => $self->workspace->uri . 'emailprefs',
+    );
+}
+
+sub _links_only {
+    my $self = shift;
+    my $prefs = shift;
+    return $prefs->links_only->value eq 'condensed' ? 0 : 1;
 }
 
 __PACKAGE__->meta->make_immutable;

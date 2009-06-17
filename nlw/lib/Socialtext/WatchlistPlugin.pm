@@ -195,11 +195,6 @@ sub watchlist {
     $self->display_watchlist();
 }
 
-sub watchlist_preference_uri {
-    my $self = shift;
-    return $self->hub->current_workspace->uri . 'watchlistprefs';
-}
-
 sub display_watchlist {
     my $self = shift;
     $self->_reject_guest();
@@ -291,97 +286,6 @@ sub watchlist_changes {
             "Click this button to save the pages you're "
             . 'watching for offline use.',
     );
-}
-
-#------------------------------------------------------------------------------#
-sub maybe_send_notifications {
-    my $self    = shift;
-    my $page_id = shift;
-
-    return unless $self->hub->current_workspace->email_notify_is_enabled;
-
-    loc_lang(system_locale());
-    my $notifier = Socialtext::EmailNotifier->new(
-        plugin           => $self,
-        notify_frequency => 'watchlist_notify_frequency'
-    );
-    return unless $notifier->try_acquire_lock;
-
-    # Don't send any notifications if the triggering page is
-    # a "system" page or if the page hasn't changed within
-    # the last hour
-    if ($page_id) {
-        my $page = $self->hub->pages->new_page($page_id);
-        return if $page->is_system_page;
-        return unless $page->is_recently_modified;
-    }
-
-    my ( $ready_users, $all_pages ) = $notifier->should_notify;
-
-    my ( $from, $subject, $text_template, $html_template )
-        = $self->get_notification_vars;
-
-    my $calling_user = $self->hub->current_user;
-    foreach my $user (@$ready_users) {
-        $self->hub->current_user($user);
-        my $prefs
-            = $self->hub->preferences->new_for_user( $user->email_address );
-        my $pages
-            = $notifier->_sort_pages_for_user( $user, $all_pages, $prefs );
-        my $watched_pages = $self->pages_in_watchlist(
-            $user,
-            $self->hub->current_workspace,
-            $pages
-        );
-
-        next unless ( @$watched_pages > 0 );
-
-        my $include_editor
-            = $prefs->watchlist_links_only->value eq 'condensed' ? 0 : 1;
-
-        my $email_time = $self->hub->timezone->_now();
-        my %vars = (
-            user                     => $user,
-            workspace                => $self->hub->current_workspace(),
-            pages                    => $watched_pages,
-            include_editor           => $include_editor,
-            watchlist_preference_uri => $self->watchlist_preference_uri(),
-            email_time               => $self->hub->timezone->get_time_user($email_time) ,
-            email_date               => $self->hub->timezone->get_dateonly_user($email_time) ,
-            base_profile_uri         => Socialtext::URI::uri(path => '?profile/'),
-        );
-
-        next unless @$pages;
-
-        $notifier->send_notifications(
-            user          => $user,
-            pages         => $pages,
-            from          => $from,
-            subject       => $subject,
-            vars          => \%vars,
-            text_template => $text_template,
-            html_template => $html_template
-            )
-            if $ready_users;
-    }
-    $notifier->release_lock;
-    $self->hub->current_user($calling_user);
-
-    # make this testable
-    return 1;
-}
-
-sub get_notification_vars {
-    my $self = shift;
-    my $from =
-      $self->hub->current_workspace->formatted_email_notification_from_address;
-
-    my $subject = loc('Watchlist update for [_1] Workspace', $self->hub->current_workspace->title);
-
-    my $text_template = 'email/watchlist.txt';
-    my $html_template = 'email/watchlist.html';
-
-    return ( $from, $subject, $text_template, $html_template );
 }
 
 #------------------------------------------------------------------------------#

@@ -4,13 +4,15 @@
 use strict;
 use warnings;
 
-use Test::Socialtext tests => 11;
+use Test::Socialtext tests => 12;
 fixtures( 'admin' );
 
 use Socialtext::User;
 use Socialtext::Workspace;
+use Socialtext::SQL qw/:exec/;
 
 BEGIN { use_ok('Socialtext::Watchlist') }
+sql_execute('DELETE FROM "Watchlist"');
 
 my $hub  = new_hub('admin');
 my $user = Socialtext::User->new( username => 'devnull1@socialtext.com' );
@@ -49,6 +51,15 @@ ok( $watchlist->has_page( page => $other_page ),
 ok( ( grep /admin_wiki/, @list ), 'Admin wiki is still in the watchlist' );
 @list = $watchlist->pages(limit => 2);
 ok( ( grep /admin_wiki/, @list ), 'Admin wiki is still in the watchlist with limit' );
+
+Users_watching_page: {
+    # test using the data created so far in this test
+    my $users = Socialtext::Watchlist->Users_watching_page(
+        $ws->workspace_id, $page->id,
+    );
+    is_deeply [map { $_->email_address} $users->all], [$user->email_address],
+        "Users_watching_page works";
+}
 
 $watchlist->remove_page( page => $page );
 

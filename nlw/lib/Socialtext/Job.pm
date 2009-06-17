@@ -69,11 +69,14 @@ sub _build_workspace {
     return Socialtext::NoWorkspace->new() unless $ws_id;
 
     my $ws = Socialtext::Workspace->new(workspace_id => $ws_id);
-    return $ws if $ws;
+    if (!$ws) {
+        my $msg = "workspace id=$ws_id no longer exists";
+        $self->permanent_failure($msg);
+        die $msg;
+    }
 
-    my $msg = "workspace id=$ws_id no longer exists";
-    $self->permanent_failure($msg);
-    die $msg;
+    $self->hub->current_workspace($ws) if $self->has_hub;
+    return $ws;
 }
 
 sub _build_hub {
@@ -136,7 +139,9 @@ sub _build_user {
     my $self = shift;
     my $user_id = $self->arg->{user_id};
     return unless $user_id;
-    return Socialtext::User->new(user_id => $user_id);
+    my $user = Socialtext::User->new(user_id => $user_id);
+    $self->hub->current_user($user) if $self->has_hub;
+    return $user;
 }
 
 __PACKAGE__->meta->make_immutable;

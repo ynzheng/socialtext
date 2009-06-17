@@ -53,15 +53,15 @@ This also tests the email notify sort order and the display details prefs.
 | job-exists      | EmailNotifyUser | %%workspace_id%%-%%user_id%% |       |
 
 | post-form | /%%workspace%%/index.cgi | action=preferences_settings&preferences_class_id=email_notify&email_notify__notify_frequency=0&email_notify__links_only=condensed&email_notify__sort_order=name&Button=save |
-| code-is   | 200             |   |
-| body-like | Preferences saved |
-| job-count | EmailNotifyUser | 0 |
+| code-is   | 200                      |                                                                                                                                                                             |
+| body-like | Preferences saved        |                                                                                                                                                                             |
+| job-count | EmailNotifyUser          | 0                                                                                                                                                                           |
 
 | Comment | Reset pref to a day |
 
 | post-form | /%%workspace%%/index.cgi | action=preferences_settings&preferences_class_id=email_notify&email_notify__notify_frequency=1440&email_notify__links_only=condensed&email_notify__sort_order=name&Button=save |
-| code-is   | 200             |   |
-| body-like | Preferences saved |
+| code-is   | 200                      |                                                                                                                                                                                |
+| body-like | Preferences saved        |                                                                                                                                                                                |
 
 | Comment | Edit a page, then change notify pref to 4320 after EmailNotifyUser |
 
@@ -76,9 +76,9 @@ This also tests the email notify sort order and the display details prefs.
 | job-exists      | EmailNotifyUser | %%workspace_id%%-%%user_id%% |       |
 
 | post-form | /%%workspace%%/index.cgi | action=preferences_settings&preferences_class_id=email_notify&email_notify__notify_frequency=4320&email_notify__links_only=condensed&email_notify__sort_order=name&Button=save |
-| code-is   | 200             |   |
-| body-like | Preferences saved |
-| job-count | EmailNotifyUser | 1 |
+| code-is   | 200                      |                                                                                                                                                                                |
+| body-like | Preferences saved        |                                                                                                                                                                                |
+| job-count | EmailNotifyUser          | 1                                                                                                                                                                              |
 
 job doesn't run yet:
 
@@ -87,7 +87,7 @@ job doesn't run yet:
 | job-count            | EmailNotifyUser | 1                            |
 | job-exists           | EmailNotifyUser | %%workspace_id%%-%%user_id%% |
 
-but after another day or so:
+but after another few days or so:
 
 | st-fast-forward-jobs | 3500               |   |
 | st-process-jobs      |                    |   |
@@ -98,8 +98,8 @@ but after another day or so:
 Set things back to "normal"
 
 | post-form | /%%workspace%%/index.cgi | action=preferences_settings&preferences_class_id=email_notify&email_notify__notify_frequency=1440&email_notify__links_only=condensed&email_notify__sort_order=name&Button=save |
-| code-is   | 200             |   |
-| body-like | Preferences saved |
+| code-is   | 200                      |                                                                                                                                                                                |
+| body-like | Preferences saved        |                                                                                                                                                                                |
 
 
 | Comment | Set the notify_freq shorter |
@@ -113,9 +113,9 @@ Set things back to "normal"
 | job-exists      | EmailNotifyUser | %%workspace_id%%-%%user_id%% |       |
 
 | post-form | /%%workspace%%/index.cgi | action=preferences_settings&preferences_class_id=email_notify&email_notify__notify_frequency=5&email_notify__links_only=condensed&email_notify__sort_order=name&Button=save |
-| code-is   | 200             |   |
-| body-like | Preferences saved |
-| job-count | EmailNotifyUser | 1 |
+| code-is   | 200                      |                                                                                                                                                                             |
+| body-like | Preferences saved        |                                                                                                                                                                             |
+| job-count | EmailNotifyUser          | 1                                                                                                                                                                           |
 
 job doesn't run yet:
 
@@ -124,22 +124,16 @@ job doesn't run yet:
 | job-count            | EmailNotifyUser | 1                            |
 | job-exists           | EmailNotifyUser | %%workspace_id%%-%%user_id%% |
 
-but after another day or so:
+but after another 3 mins or so:
 
-| st-fast-forward-jobs | 3                  |   |
-| st-process-jobs      |                    |   |
-| job-count            | EmailNotifyUser    | 0 |
-| email-like           | qr/Foo/ |   |
-| email-unlike         | qr/created by/     |   |
+| st-fast-forward-jobs | 3               |   |
+| st-process-jobs      |                 |   |
+| job-count            | EmailNotifyUser | 0 |
+| email-like           | qr/Foo/         |   |
+| email-unlike         | qr/created by/  |   |
 
 Set things back to "normal"
 
 | post-form | /%%workspace%%/index.cgi | action=preferences_settings&preferences_class_id=email_notify&email_notify__notify_frequency=1440&email_notify__links_only=condensed&email_notify__sort_order=name&Button=save |
-| code-is   | 200             |   |
-| body-like | Preferences saved |
-
-^^ Later
-
-* TODO: change  the notify_freq to be shorter
-* edit a page on a watchlist, get email after notify interval
-
+| code-is   | 200                      |                                                                                                                                                                                |
+| body-like | Preferences saved        |                                                                                                                                                                                |
