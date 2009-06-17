@@ -12,7 +12,9 @@ use Test::Builder;
 use Test::Socialtext::Environment;
 use Test::Socialtext::User;
 use Test::Socialtext::Account;
+use Socialtext::Account;
 use Socialtext::Group;
+use Socialtext::User;
 use YAML;
 use File::Temp qw/tempdir/;
 use File::Spec;
@@ -409,9 +411,10 @@ sub main_hub {
 
     sub create_test_workspace {
         my %opts = @_;
+
         $opts{unique_id} ||= create_unique_id;
         $opts{account} ||= Socialtext::Account->Default;
-        die 'user required' unless $opts{user};
+        $opts{user} ||= Socialtext::User->SystemUser;
 
         # create a new test Workspace
         my $ws = Socialtext::Workspace->create(
