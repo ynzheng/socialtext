@@ -28,15 +28,23 @@ override 'temporarily_remove_ability' => sub {};
 around 'insert' => sub {
     my $code = shift;
     my $self = shift;
-    my $job_class = shift;
-    my $args = shift;
-    my $opts = delete $args->{job} || {};
 
-    my $job = TheSchwartz::Moosified::Job->new(
-        %$opts,
-        funcname => $job_class,
-        arg => $args,
-    );
+    my $job;
+    if (ref($_[0]) && $_[0]->isa('TheSchwartz::Moosified::Job')) {
+        $job = shift;
+    }
+    else {
+        my $job_class = shift;
+        my $args = shift;
+        my $opts = delete $args->{job} || {};
+
+        $job = TheSchwartz::Moosified::Job->new(
+            %$opts,
+            funcname => $job_class,
+            arg => $args,
+        );
+    }
+
     return $self->$code($job);
 };
 
