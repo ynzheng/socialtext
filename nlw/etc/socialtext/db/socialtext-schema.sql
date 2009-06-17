@@ -1187,6 +1187,9 @@ CREATE UNIQUE INDEX users_lower_username_driver_key
 CREATE INDEX watchlist_user_workspace
 	    ON "Watchlist" (user_id, workspace_id);
 
+CREATE INDEX watchlist_workspace_page
+	    ON "Watchlist" (workspace_id, page_text_id);
+
 CREATE INDEX webhook__class_account_ix
 	    ON webhook ("class", account_id);
 
