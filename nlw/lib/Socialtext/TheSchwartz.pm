@@ -128,5 +128,72 @@ sub _stat_jobs_per_dbh {
     return { database => $dbh, stats => \%stats };
 }
 
+sub cancel_job {
+    my $self = shift;
+    my $args = @_==1 ? shift : {@_};
+
+    die "must supply funcname and uniqkey"
+        unless $args->{funcname} && $args->{uniqkey};
+
+    for my $dbh (@{ $self->databases }) {
+        my $unixtime = TheSchwartz::Moosified::Utils::sql_for_unixtime($dbh);
+
+        my $funcid = $self->funcname_to_id($dbh, $args->{funcname});
+        my $sth = $dbh->prepare(qq{
+            SELECT jobid FROM job
+            WHERE funcid = ?
+              AND uniqkey = ? 
+              AND grabbed_until <= $unixtime
+        });
+        $sth->execute($funcid, $args->{uniqkey});
+        my ($jobid) = $sth->fetchrow_array;
+        $sth->finish;
+
+        $sth = $dbh->prepare(qq{
+            UPDATE job
+            SET grabbed_until = 2147483647
+            WHERE jobid = ?
+              AND grabbed_until <= $unixtime
+        });
+        $sth->execute($jobid);
+        return unless $sth->rows == 1;
+
+        TheSchwartz::Moosified::Utils::run_in_txn {
+            $dbh->do("DELETE FROM job WHERE jobid = ?", {}, $jobid);
+            $dbh->do("INSERT INTO exitstatus 
+                      (jobid,funcid,status,completion_time,delete_after)
+                      VALUES (?,?,0,$unixtime,$unixtime)", {}, $jobid,$funcid);
+        } $dbh;
+    }
+}
+
+sub move_jobs_by {
+    my $self = shift;
+    my $args = @_==1 ? shift : {@_};
+
+    die "must supply funcname and uniqkey"
+        unless $args->{funcname} && $args->{uniqkey};
+    die "must supply a shift in seconds"
+        unless $args->{seconds};
+
+    for my $dbh (@{ $self->databases }) {
+        my $unixtime = TheSchwartz::Moosified::Utils::sql_for_unixtime($dbh);
+
+        my $funcid = $self->funcname_to_id($dbh, $args->{funcname});
+        # change grabbed_until so it doesn't get accidentally grabbed
+        # TODO: make this so it doesn't modify grabbed_until
+        my $sth = $dbh->prepare(qq{
+            UPDATE job
+            SET run_after = run_after + ?,
+                grabbed_until = grabbed_until - 1
+            WHERE funcid = ?
+              AND uniqkey = ? 
+              AND grabbed_until <= $unixtime
+        });
+        $sth->execute($args->{seconds}, $funcid, $args->{uniqkey});
+    }
+}
+
+
 __PACKAGE__->meta->make_immutable;
 1;
