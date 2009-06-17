@@ -589,19 +589,9 @@ sub _validate_and_clean_data {
 
     if ($p->{account_id}) {
         my $account = Socialtext::Account->new(account_id => $p->{account_id});
-
-        if ( $account ) {
-            if ($self->account->all_users_workspace == $self->workspace_id) {
-                 my $msg = "This workspace is the all users workspace for the "
-                     . "[_1] account.";
-                 push @errors, loc($msg, $self->account->name);
-            }
-        }
-        else {
-            push @errors,
-                loc("The account_id you specified, [_1], does not exist.",
-                    $p->{account_id});
-        }
+        push @errors,
+            loc("The account_id you specified, [_1], does not exist.",
+                $p->{account_id}) unless $account;
     }
 
     data_validation_error errors => \@errors if @errors;
