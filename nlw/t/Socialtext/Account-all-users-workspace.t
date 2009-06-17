@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::Socialtext qw/no_plan/;
+use Test::Socialtext tests => 21;
 use Test::Exception;
 use Test::Warn;
 
