@@ -161,9 +161,21 @@ sub primary_account {
     my $new_account = shift;
 
     if ($new_account) {
-        my $account_id = ref($new_account) ? $new_account->account_id : $new_account;
-        $self->_update_field('primary_account_id=?', $account_id);
-        $self->{primary_account_id} = $account_id;
+        $new_account = ref($new_account)
+            ? $new_account
+            : Socialtext::Account->new( account_id => $new_account );
+
+        my $old_account = Socialtext::Account->new(
+            account_id => $self->{primary_account_id} );
+        $old_account->remove_from_all_users_workspace(
+            user_id => $self->user_id );
+
+        $self->_update_field('primary_account_id=?', $new_account->account_id);
+        $self->{primary_account_id} = $new_account->account_id;
+
+        $new_account->add_to_all_users_workspace(
+            user_id => $self->user_id );
+
         Socialtext::Cache->clear('authz_plugin');
     }
 

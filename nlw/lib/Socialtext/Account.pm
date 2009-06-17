@@ -580,9 +580,58 @@ sub update {
         }
     }
 
+    $self->_post_update( \%p );
+
     return $self;
 }
 
+sub _post_update {
+    my $self = shift;
+    my $p    = shift;
+
+    if ( $p->{all_users_workspace} ) {
+        my $users = $self->users();
+
+        while ( my $user = $users->next() ) {
+            $self->add_to_all_users_workspace( user_id => $user->user_id );
+        }
+    }
+}
+
+sub add_to_all_users_workspace {
+    my $self  = shift;
+    my %p     = @_;
+    my $ws_id = $self->all_users_workspace;
+
+    return unless $ws_id and $p{user_id};
+
+    my $user = Socialtext::User->new(user_id => $p{user_id});
+
+    die "User $p{user_id} doesn't exist" unless $user;
+
+    return unless $user->primary_account_id == $self->account_id;
+
+    my $ws   = Socialtext::Workspace->new(workspace_id => $ws_id);
+    $ws->assign_role_to_user(
+        user => $user,
+        role => Socialtext::Role->Member(),
+    );
+}
+
+sub remove_from_all_users_workspace {
+    my $self  = shift;
+    my %p     = @_;
+    my $ws_id = $self->all_users_workspace;
+
+    return unless $ws_id and $p{user_id};
+
+    my $user = Socialtext::User->new( user_id => $p{user_id} );
+
+    die "User $p{user_id} doesn't exist" unless $user;
+
+    my $ws   = Socialtext::Workspace->new( workspace_id => $ws_id );
+    $ws->remove_user( user => $user );
+}
 
 sub Count {
     my ( $class, %p ) = @_;
@@ -811,6 +860,19 @@ sub _validate_and_clean_data {
 
     if ( not $is_create and $p->{is_system_created} ) {
         push @errors, loc('You cannot change is_system_created for an account after it has been created.');
+    }
+
+    if ( $p->{all_users_workspace} ) {
+        my $ws_id = $p->{all_users_workspace};
+        my $ws = Socialtext::Workspace->new( workspace_id => $ws_id );
+
+        if ( $ws ) {
+            push(@errors, loc("Workspace ([_1]) not in account", $ws_id ))
+                unless $ws->account_id == $self->account_id;
+        }
+        else {
+            push(@errors, loc("Workspace ([_1]) doesn't exist"));
+        }
     }
 
     data_validation_error errors => \@errors if @errors;
