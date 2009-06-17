@@ -698,7 +698,8 @@ sub _AllByWorkspaceCount {
         . '       "Account".desktop_text_color,'
         . '       "Account".desktop_link_color,'
         . '       "Account".desktop_highlight_color,'
-        . '       "Account".allow_invitation'
+        . '       "Account".allow_invitation,'
+        . '       "Account".all_users_workspace'
         . " ORDER BY workspace_count $p{sort_order}, \"Account\".name ASC"
         . ' LIMIT ? OFFSET ?' ,
         @args );
@@ -740,7 +741,8 @@ sub _AllByUserCount {
         . '       "Account".desktop_text_color,'
         . '       "Account".desktop_link_color,'
         . '       "Account".desktop_highlight_color,'
-        . '       "Account".allow_invitation'
+        . '       "Account".allow_invitation,'
+        . '       "Account".all_users_workspace'
         . " ORDER BY user_count $p{sort_order}, \"Account\".name ASC"
         . ' LIMIT ? OFFSET ?',
         @args );
