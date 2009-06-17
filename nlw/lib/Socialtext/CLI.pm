@@ -1843,6 +1843,14 @@ sub delete_workspace {
 
     my $ws = $self->_require_workspace();
 
+    if ( $ws->account->all_users_workspace == $ws->workspace_id ) {
+        my $msg ="This workspace is the all users workspace for the "
+            . "[_1] account.\n"
+            . "You will need to change that before you can delete.";
+
+        $self->_error(loc($msg, $ws->account->name));
+    }
+
     my $skip_export = $self->_boolean_flag('no-export');
 
     my $file = $self->_export_workspace($ws)
