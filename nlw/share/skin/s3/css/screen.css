@@ -4274,3 +4274,44 @@ body#dashBoard div#controls div#controlsRight ul {
     opacity: .5;
     filter: alpha(opacity = 50);
 }
+
+.avatarPopup {
+    position: absolute;
+    display: none;
+    width: 252px;
+    font-size: 90%;
+}
+
+.avatarPopup .inner {
+    background: #FFF;
+    border: 1px solid black;
+    border-bottom: none;
+    padding: 6px;
+}
+
+.avatarPopup img.avatarPhoto {
+    float: left !important;
+    padding: 5px;
+}
+
+.avatarPopup .followPersonButton {
+    color: #000 !important;
+    text-decoration: none;
+}
+
+.avatarPopup .userinfo {
+    height: 70px;
+    padding: 4px 0;
+}
+
+.avatarPopup ul {
+    list-style-type: none !important;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.avatarPopup .follow {
+    text-align: left;
+    border-top: 1px solid #CCCBCC;
+    padding: 3px 0;
+}

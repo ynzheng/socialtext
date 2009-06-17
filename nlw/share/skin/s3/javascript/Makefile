@@ -52,6 +52,7 @@ S3_SOURCE_FILES= \
 		email.js \
 		search.js \
 		s3.js \
+		people-avatar.js \
 
 LIGHTBOX_TEMPLATES=$(wildcard lightbox/*.tt2)
 LIGHTBOX_OUTPUT=$(LIGHTBOX_TEMPLATES:lightbox/%.tt2=lightbox-%.js)
