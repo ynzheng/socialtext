@@ -30,18 +30,18 @@ sub _get_email_contents {
 
 sub email_like {
     my $self = shift;
-    my $expected = shift;
+    my $expected = $self->quote_as_regex(shift);
 
     my $contents = $self->_get_email_contents;
-    like $contents, qr/$expected/, 'email contents';
+    like $contents, $expected, 'email contents';
 }
 
 sub email_unlike {
     my $self = shift;
-    my $expected = shift;
+    my $expected = $self->quote_as_regex(shift);
 
     my $contents = $self->_get_email_contents;
-    unlike $contents, qr/$expected/, 'email contents';
+    unlike $contents, $expected, 'email contents';
 }
 
 

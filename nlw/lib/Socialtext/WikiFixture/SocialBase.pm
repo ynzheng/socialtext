@@ -4,10 +4,10 @@ use strict;
 use warnings;
 use Socialtext::Account;
 use Socialtext::User;
-use Socialtext::SQL qw/sql_execute/;
+use Socialtext::SQL qw/:exec :txn/;
 use Socialtext::JSON qw/decode_json encode_json/;
 use Socialtext::File;
-use Socialtext::System qw();
+use Socialtext::System;
 use Socialtext::HTTP::Ports;
 use Socialtext::Role;
 use File::LogReader;
@@ -1004,6 +1004,14 @@ sub set_from_json {
     $self->{$var} = $self->{json}{$key};
 }
 
+sub set_from_header {
+    my $self = shift;
+    my $var  = shift;
+    my $header = shift;
+
+    $self->{$var} = $self->{http}->response->header($header);
+}
+
 sub set_from_subject {
     my $self = shift;
     my $name = shift || die "email-name is mandatory for set-from-email";
@@ -1147,6 +1155,53 @@ sub body_unlike {
     my $re_expected = $self->quote_as_regex($expected);
     unlike $body, $re_expected,
         $self->{http}->name() . " body-unlike $re_expected";
+}
+
+sub job_count {
+    my ($self, $class, $count) = @_;
+    if ($class && $class ne '*') {
+        $class = "Socialtext::Job::$class";
+    }
+    $class ||= '*';
+    my $actual;
+    if ($class eq '*') {
+        $actual = sql_singlevalue("SELECT COUNT(*) FROM job");
+    }
+    else {
+        $actual = sql_singlevalue(q{
+            SELECT COUNT(*) FROM job NATURAL JOIN funcmap WHERE funcname = ?
+        }, $class);
+    }
+    is $actual, $count, "$count jobs with class '$class'";
+}
+
+sub job_exists {
+    my ($self, $class, $uniqkey) = @_;
+    $class = "Socialtext::Job::$class";
+
+    my $actual = sql_singlevalue(q{
+        SELECT COUNT(*)
+          FROM job NATURAL JOIN funcmap
+         WHERE funcname = ? AND uniqkey = ?
+    }, $class, $uniqkey);
+    $actual ||= 0;
+    ok $actual == 1, "job with key '$uniqkey' and class '$class' exists";
+}
+
+sub st_fast_forward_jobs {
+    my ($self, $minutes) = @_;
+    my $s = $minutes * 60;
+    sql_begin_work;
+    sql_execute(q{
+        UPDATE job SET 
+            insert_time = insert_time - $1,
+            run_after = run_after - $1,
+            grabbed_until = grabbed_until - $1
+    }, $s);
+    sql_execute(q{UPDATE error SET error_time = error_time-$1}, $s);
+    sql_execute(q{UPDATE exitstatus SET completion_time = completion_time-$1}, $s);
+    sql_commit;
+    pass "fast-forwarded jobs by $minutes minutes";
 }
 
 1;
