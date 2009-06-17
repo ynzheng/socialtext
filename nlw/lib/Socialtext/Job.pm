@@ -35,6 +35,11 @@ has page => (
     lazy_build => 1,
 );
 
+has user => (
+    is => 'ro', isa => 'Maybe[Socialtext::User]',
+    lazy_build => 1,
+);
+
 # These are called as class methods:
 override 'keep_exit_status_for' => sub {3600};
 override 'grab_for'             => sub {3600};
@@ -74,6 +79,7 @@ sub _build_workspace {
 sub _build_hub {
     my $self = shift;
     my $ws = $self->workspace or return;
+    my $user = $self->user || Socialtext::User->SystemUser;
 
     require Socialtext;
     require Socialtext::User;
@@ -81,7 +87,7 @@ sub _build_hub {
     my $main = Socialtext->new();
     $main->load_hub(
         current_workspace => $ws,
-        current_user      => Socialtext::User->SystemUser,
+        current_user      => $user,
     );
     $main->hub()->registry()->load();
 
@@ -124,6 +130,13 @@ sub _build_page {
         "' workspace: $@";
     $self->failed($msg);
     die $msg;
+}
+
+sub _build_user {
+    my $self = shift;
+    my $user_id = $self->arg->{user_id};
+    return unless $user_id;
+    return Socialtext::User->new(user_id => $user_id);
 }
 
 __PACKAGE__->meta->make_immutable;

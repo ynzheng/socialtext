@@ -76,13 +76,18 @@ sub send_page_notifications {
     my $self = shift;
     my $page = shift;
 
+    my $ws_id = $page->hub->current_workspace->workspace_id;
+    my $page_id = $page->id;
+
     my @job_ids;
 
     for my $task (qw/WeblogPing EmailNotify WatchlistNotify/) {
         push @job_ids, $self->insert(
             "Socialtext::Job::$task" => {
-                workspace_id => $page->hub->current_workspace->workspace_id,
-                page_id => $page->id,
+                workspace_id => $ws_id,
+                page_id => $page_id,
+                modified_time => $page->modified_time,
+                job => { uniqkey => "$ws_id-$page_id" },
             }
         );
     }

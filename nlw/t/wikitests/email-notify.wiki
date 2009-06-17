@@ -1,0 +1,46 @@
+* Fixture: EmailJob
+
+| standard-test-setup |
+| set-user-id | user_id | %%username%% |
+| st-clear-jobs |
+| clear-email |
+| st-admin | set-workspace-config -w %%workspace%% email_notify_is_enabled 1 |
+
+edit a page, wait, get an email
+
+| Comment | Edit two pages check for notify jobs |
+
+| edit_page  | %%workspace%% | Foo                  | O hai |
+| edit_page  | %%workspace%% | Bar                  | zomg  |
+| job-count  | EmailNotify   | 2                    |       |
+| job-exists | EmailNotify   | %%workspace_id%%-foo |       |
+| job-exists | EmailNotify   | %%workspace_id%%-bar |       |
+
+| Comment | process jobs and check that we have notifications for the future |
+
+| st-process-jobs |                 |                              |
+| job-count       | EmailNotify     | 0                            |
+| job-count       | EmailNotifyUser | 1                            |
+| job-exists      | EmailNotifyUser | %%workspace_id%%-%%user_id%% |
+
+| Comment | move time to just before the user pref interval |
+
+| st-fast-forward-jobs | 1439                |   |
+| st-process-jobs      |                     |   |
+| job-count            | EmailNotifyUser     | 1 |
+
+| Comment | move time to process the user jobs |
+
+| st-fast-forward-jobs | 1                   |   |
+| st-process-jobs      |                     |   |
+| job-count            | EmailNotifyUser     | 0 |
+| email-like           | Foo                 |   |
+| email-like           | Bar                 |   |
+| email-like           | qr/created by.+you/ |   |
+
+* edit a page, change prefs, verify existing jobs are changed
+* edit a page, change prefs to disable, verify jobs get cancelled
+* edit a page on a watchlist, get email after notify interval
+
+
+

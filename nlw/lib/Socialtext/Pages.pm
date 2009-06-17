@@ -19,7 +19,7 @@ use Socialtext::Validate qw( validate DIR_TYPE );
 use Socialtext::Workspace;
 use Socialtext::l10n qw( loc );
 use Socialtext::String ();
-use Socialtext::SQL qw/sql_execute/;
+use Socialtext::SQL qw/sql_execute sql_format_timestamptz/;
 
 sub class_id { 'pages' }
 const class_title => 'NLW Pages';
@@ -137,6 +137,30 @@ EOT
     my @pages_since = map { $self->new_page($_->[0]) } @$pages;
     Socialtext::Timer->Pause('all_since');
     return @pages_since;
+}
+
+sub all_at_or_after {
+    my $self = shift;
+    my $after_epoch = shift;
+    my $active_only = ((shift) ? "AND deleted = false" : '');
+
+    Socialtext::Timer->Continue('all_at_or_after');
+    my $dt = DateTime->from_epoch(epoch => $after_epoch);
+    my $sth = sql_execute(<<EOT,
+SELECT page_id 
+    FROM page
+    WHERE workspace_id = ?
+        AND last_edit_time >= ?::timestamptz
+        $active_only
+    ORDER BY last_edit_time DESC
+EOT
+        $self->hub->current_workspace->workspace_id,
+        sql_format_timestamptz($dt),
+    );
+    my $pages = $sth->fetchall_arrayref();
+    my @pages_after = map { $self->new_page($_->[0]) } @$pages;
+    Socialtext::Timer->Pause('all_at_or_after');
+    return @pages_after;
 }
 
 sub random_page {

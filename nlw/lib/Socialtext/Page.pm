@@ -51,6 +51,7 @@ Readonly my $SYSTEM_EMAIL_ADDRESS       => 'noreply@socialtext.com';
 Readonly my $IS_RECENTLY_MODIFIED_LIMIT => 60 * 60; # one hour
 Readonly my $WIKITEXT_TYPE              => 'text/x.socialtext-wiki';
 Readonly my $HTML_TYPE                  => 'text/html';
+my $REFERENCE_TIME = undef;
 
 field 'id';
 sub class_id { 'page' }
@@ -1238,9 +1239,10 @@ sub age_in_minutes {
 
 sub age_in_seconds {
     my $self = shift;
+    my $time = $REFERENCE_TIME || time;
     return $self->{age_in_seconds} = shift if @_;
     return $self->{age_in_seconds} if defined $self->{age_in_seconds};
-    return $self->{age_in_seconds} = (time - $self->modified_time);
+    return $self->{age_in_seconds} = ($time - $self->modified_time);
 }
 
 sub age_in_english {
