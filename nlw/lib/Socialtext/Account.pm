@@ -569,7 +569,10 @@ sub update {
                 . " SET $set_clause WHERE account_id=?",
                 @bindings, $self->account_id);
         };
-        die $sth->error if ($@);
+        if ( my $e = $@ ) {
+            die $sth->error if $sth;
+            die $e;
+        }
 
         while (my ($column, $value) = each %p) {
             $self->$column($value);
