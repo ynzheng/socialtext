@@ -10,6 +10,7 @@ edit a page, wait, get an email
 
 | Comment | Edit two pages check for notify jobs |
 
+| clear-email |
 | edit_page  | %%workspace%% | Foo                  | O hai |
 | edit_page  | %%workspace%% | Bar                  | zomg  |
 | job-count  | EmailNotify   | 2                    |       |
@@ -38,9 +39,107 @@ edit a page, wait, get an email
 | email-like           | Bar                 |   |
 | email-like           | qr/created by.+you/ |   |
 
-* edit a page, change prefs, verify existing jobs are changed
-* edit a page, change prefs to disable, verify jobs get cancelled
+
+| Comment | Edit a page, then change notify pref to 0 BEFORE EmailNotifyUser |
+
+This also tests the email notify sort order and the display details prefs.
+
+| clear-email |
+| edit_page       | %%workspace%%   | Foo                          | O hai |
+| job-count       | EmailNotify     | 1                            |       |
+| job-exists      | EmailNotify     | %%workspace_id%%-foo         |       |
+| st-process-jobs |                 |                              |       |
+| job-count       | EmailNotifyUser | 1                            |       |
+| job-exists      | EmailNotifyUser | %%workspace_id%%-%%user_id%% |       |
+
+| post-form | /%%workspace%%/index.cgi | action=preferences_settings&preferences_class_id=email_notify&email_notify__notify_frequency=0&email_notify__links_only=condensed&email_notify__sort_order=name&Button=save |
+| code-is   | 200             |   |
+| body-like | Preferences saved |
+| job-count | EmailNotifyUser | 0 |
+
+| Comment | Reset pref to a day |
+
+| post-form | /%%workspace%%/index.cgi | action=preferences_settings&preferences_class_id=email_notify&email_notify__notify_frequency=1440&email_notify__links_only=condensed&email_notify__sort_order=name&Button=save |
+| code-is   | 200             |   |
+| body-like | Preferences saved |
+
+| Comment | Edit a page, then change notify pref to 4320 after EmailNotifyUser |
+
+| clear-email |
+| edit_page       | %%workspace%%   | Foo                          | O hai |
+| edit_page       | %%workspace%%   | Aaaa                         | O hai |
+| job-count       | EmailNotify     | 2                            |       |
+| job-exists      | EmailNotify     | %%workspace_id%%-foo         |       |
+| job-exists      | EmailNotify     | %%workspace_id%%-aaaa        |       |
+| st-process-jobs |                 |                              |       |
+| job-count       | EmailNotifyUser | 1                            |       |
+| job-exists      | EmailNotifyUser | %%workspace_id%%-%%user_id%% |       |
+
+| post-form | /%%workspace%%/index.cgi | action=preferences_settings&preferences_class_id=email_notify&email_notify__notify_frequency=4320&email_notify__links_only=condensed&email_notify__sort_order=name&Button=save |
+| code-is   | 200             |   |
+| body-like | Preferences saved |
+| job-count | EmailNotifyUser | 1 |
+
+job doesn't run yet:
+
+| st-fast-forward-jobs | 1500            |                              |
+| st-process-jobs      |                 |                              |
+| job-count            | EmailNotifyUser | 1                            |
+| job-exists           | EmailNotifyUser | %%workspace_id%%-%%user_id%% |
+
+but after another day or so:
+
+| st-fast-forward-jobs | 3500               |   |
+| st-process-jobs      |                    |   |
+| job-count            | EmailNotifyUser    | 0 |
+| email-like           | qr/(?s)Aaaa.+Foo/s |   |
+| email-unlike         | qr/created by/     |   |
+
+Set things back to "normal"
+
+| post-form | /%%workspace%%/index.cgi | action=preferences_settings&preferences_class_id=email_notify&email_notify__notify_frequency=1440&email_notify__links_only=condensed&email_notify__sort_order=name&Button=save |
+| code-is   | 200             |   |
+| body-like | Preferences saved |
+
+
+| Comment | Set the notify_freq shorter |
+
+| clear-email |
+| edit_page       | %%workspace%%   | Foo                          | O hai |
+| job-count       | EmailNotify     | 1                            |       |
+| job-exists      | EmailNotify     | %%workspace_id%%-foo         |       |
+| st-process-jobs |                 |                              |       |
+| job-count       | EmailNotifyUser | 1                            |       |
+| job-exists      | EmailNotifyUser | %%workspace_id%%-%%user_id%% |       |
+
+| post-form | /%%workspace%%/index.cgi | action=preferences_settings&preferences_class_id=email_notify&email_notify__notify_frequency=5&email_notify__links_only=condensed&email_notify__sort_order=name&Button=save |
+| code-is   | 200             |   |
+| body-like | Preferences saved |
+| job-count | EmailNotifyUser | 1 |
+
+job doesn't run yet:
+
+| st-fast-forward-jobs | 3               |                              |
+| st-process-jobs      |                 |                              |
+| job-count            | EmailNotifyUser | 1                            |
+| job-exists           | EmailNotifyUser | %%workspace_id%%-%%user_id%% |
+
+but after another day or so:
+
+| st-fast-forward-jobs | 3                  |   |
+| st-process-jobs      |                    |   |
+| job-count            | EmailNotifyUser    | 0 |
+| email-like           | qr/Foo/ |   |
+| email-unlike         | qr/created by/     |   |
+
+Set things back to "normal"
+
+| post-form | /%%workspace%%/index.cgi | action=preferences_settings&preferences_class_id=email_notify&email_notify__notify_frequency=1440&email_notify__links_only=condensed&email_notify__sort_order=name&Button=save |
+| code-is   | 200             |   |
+| body-like | Preferences saved |
+
+^^ Later
+
+* TODO: change  the notify_freq to be shorter
 * edit a page on a watchlist, get email after notify interval
-
-
 

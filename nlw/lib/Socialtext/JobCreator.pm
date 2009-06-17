@@ -9,7 +9,7 @@ use namespace::clean -except => 'meta';
 has '_client' => (
     is => 'ro', isa => 'Socialtext::TheSchwartz',
     lazy_build => 1,
-    handles => qr/(?:list|find|get_server_time|func)/,
+    handles => qr/(?:list|find|get_server_time|func|move_jobs_by|cancel_job)/,
 );
 
 sub _build__client { Socialtext::TheSchwartz->new() }

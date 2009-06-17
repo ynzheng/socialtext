@@ -11,6 +11,8 @@ use Class::Field qw( const field );
 use Socialtext::Exceptions qw( data_validation_error );
 use Socialtext::String ();
 
+use Socialtext::JobCreator;
+
 sub class_id { 'user_preferences' }
 const class_title => 'User Preferences';
 const cgi_class => 'Socialtext::UserPreferences::CGI';
@@ -86,38 +88,62 @@ sub save {
 
     my %cgi = $self->cgi->vars;
 
+    my $user_email = $self->hub->current_user->email_address;
+    my $prefs = $self->hub->preferences->new_for_user($user_email);
+
     my $settings = {};
     my $class_id = $object->class_id;
-    for (sort keys %cgi) {
-        if (/^${class_id}__(.*)/) {
-            my $pref = $1;
-            $pref =~ s/-boolean$//;
+    for my $key (sort keys %cgi) {
+        my $value = $cgi{$key};
+        next unless ($key =~ /^${class_id}__(.*)/);
+        my $pref = $1;
+        $pref =~ s/-boolean$//;
 
-            # immediately show the new locale if it is changed
-            if ($pref eq 'locale') {
-                if (valid_code($cgi{$_})) {
-                    loc_lang($cgi{$_});
-                }
-                else {
-                    # Find the old locale to re-save from pkg name
-                    ($cgi{$_} = ref(loc_lang)) =~ s/.+:://;
-                }
+        # immediately show the new locale if it is changed
+        if ($pref eq 'locale') {
+            if (valid_code($value)) {
+                loc_lang($value);
             }
+            else {
+                # Find the old locale to re-save from pkg name
+                ($value = ref(loc_lang)) =~ s/.+:://;
+            }
+        }
 
-            $settings->{$pref} = $cgi{$_}
-              unless exists $settings->{$pref};
+        if ($class_id eq 'email_notify' and $pref eq 'notify_frequency') {
+            my $old_val = $prefs->{notify_frequency}->value;
+            my $ws_id = $self->hub->current_workspace->workspace_id;
+            my $user_id = $self->hub->current_user->user_id;
+            my $seconds = ($value - $old_val) * 60;
 
-            if( $class_id eq 'favorites' ) {
-                if(! $self->_is_favorites_page_title_valid($settings->{$pref})) {
-                    my $message = loc("Page title is too long after URL encoding");
-                    $self->add_error($message);
-                    return;
-                }
+            if ($value == 0) {
+                Socialtext::JobCreator->cancel_job(
+                    funcname => 'Socialtext::Job::EmailNotifyUser',
+                    uniqkey => "$ws_id-$user_id",
+                );
+            }
+            else {
+                Socialtext::JobCreator->move_jobs_by(
+                    funcname => 'Socialtext::Job::EmailNotifyUser',
+                    uniqkey => "$ws_id-$user_id",
+                    seconds => $seconds,
+                );
+            }
+        }
+
+        $settings->{$pref} = $value
+          unless exists $settings->{$pref};
+
+        if( $class_id eq 'favorites' ) {
+            if(! $self->_is_favorites_page_title_valid($settings->{$pref})) {
+                my $message = loc("Page title is too long after URL encoding");
+                $self->add_error($message);
+                return;
             }
         }
     }
     if (keys %$settings) {
-        $self->preferences->store( $self->hub->current_user->email_address, $class_id, $settings );
+        $self->preferences->store( $user_email, $class_id, $settings );
     }
 }
 
