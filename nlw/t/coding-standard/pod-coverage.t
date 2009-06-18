@@ -309,22 +309,6 @@ my %ToDoModules = map { $_ => 1 } qw(
 );
 
 ###############################################################################
-# List of modules that have exceptions, where we know that certain methods may
-# not require POD (for one reason or another).
-my %ModuleExceptions = (
-    'Socialtext::Account'       => { trustme => [qr/DefaultOrderByColumn/] },
-    'Socialtext::MooseX::SQL'   => { trustme => ['init_meta'] },
-    'Socialtext::User::Default' => { trustme => [qr/DefaultOrderByColumn/] },
-    'Socialtext::Workspace'     => { trustme => [qr/DefaultOrderByColumn/] },
-    'Socialtext::URI'           => { trustme => [qr/^uri(?:_object)?$/] },
-    'Socialtext::Search::SimplePageHit' =>
-        { trustme => [qr/^page_uri|workspace_name|key$/] },
-    'Socialtext::Search::SimpleAttachmentHit' =>
-        { trustme => [qr/^page_uri|attachment_id|workspace_name|key$/] },
-);
-
-
-###############################################################################
 # Find all the modules, and plan our tests
 my @all_modules = @ARGV;
 unless (@all_modules) {
@@ -333,12 +317,18 @@ unless (@all_modules) {
 plan tests => scalar @all_modules;
 
 ###############################################################################
+# Our *CUSTOM* POD coverage options
+my $coverage_opts = {
+    coverage_class    => 'Socialtext::Pod::HeadingCoverage',
+    required_headings => [qw( NAME SYNOPSIS DESCRIPTION )],
+};
+
+###############################################################################
 # Test each module in turn
 foreach my $file (sort @all_modules) {
     my $module  = file_to_module($file);
     if (exists $ToDoModules{$module}) { ok 1, "OLD: $module"; next }
-    my $params  = $ModuleExceptions{$module} || {};
-    pod_coverage_ok( $module, $params );
+    pod_coverage_ok( $module, $coverage_opts );
 }
 exit;
 
