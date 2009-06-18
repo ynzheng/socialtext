@@ -380,7 +380,7 @@ QUICK_TESTS = \
 	t/coding-standard/case-conflict.t \
 	t/coding-standard/migrations.t \
 	t/coding-standard/modules-compile.t \
-	t/coding-standard/pod-coverage.t \
+	t/coding-standard/pod-heading-coverage.t \
 	t/coding-standard/pod.t \
 	t/coding-standard/tests-have-plans.t \
 	t/coding-standard/tests.t \
