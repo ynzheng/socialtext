@@ -35,10 +35,15 @@ edit a page, wait, get an email
 | st-fast-forward-jobs | 1                   |   |
 | st-process-jobs      |                     |   |
 | job-count            | EmailNotifyUser     | 0 |
+| email-like | To: %%email_address%% |
+| email-like | Subject: Recent Changes In %%workspace%% Workspace |
+| email-like | From: "%%workspace%%" <noreply@socialtext.com> |
 | email-like           | Foo                 |   |
+| email-like           | /%%workspace%%/?foo                 |   |
 | email-like           | Bar                 |   |
+| email-like           | /%%workspace%%/?bar                 |   |
 | email-like           | qr/created by.+you/ |   |
-
+| email-like           | %%workspace%%/emailprefs|
 
 | Comment | Edit a page, then change notify pref to 0 BEFORE EmailNotifyUser |
 
