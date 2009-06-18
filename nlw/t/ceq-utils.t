@@ -2,7 +2,7 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::Socialtext tests => 24;
+use Test::Socialtext tests => 29;
 
 fixtures('db');
 
