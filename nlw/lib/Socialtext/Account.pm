@@ -208,10 +208,8 @@ sub groups {
 }
 
 sub group_count {
-    my $self  = shift;
-    my $sql   = 'SELECT COUNT(*) FROM groups WHERE primary_account_id = ?';
-    my $count = sql_singlevalue($sql, $self->account_id);
-    return $count;
+    my $self   = shift;
+    return $self->groups->count();
 }
 
 sub to_hash {
