@@ -301,3 +301,5 @@ t/wikitests/test-data/socialcalc/render-test-range.ssheet
 lib/Socialtext/Pluggable/Plugin/Revisions.pm
 etc/socialtext/db/cache.*.sql
 t/widget/creepy_goat.jpg
+t/wikitests/people/followed_person_appears_in_my_colleagues_feed.wiki
+t/wikitests/people/person_links.wiki
