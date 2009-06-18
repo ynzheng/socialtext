@@ -56,7 +56,7 @@ sub do_work {
         my $after = $t + $freq*60;
         my $job = TheSchwartz::Moosified::Job->new(
             funcname => $job_class,
-            priority => -32767,
+            priority => -64,
             run_after => $after,
             uniqkey => "$ws_id-$user_id",
             arg => {

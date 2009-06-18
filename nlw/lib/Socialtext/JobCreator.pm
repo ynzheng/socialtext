@@ -21,7 +21,7 @@ sub insert {
     my $args = (@_==1) ? shift : {@_};
     $args->{job} ||= {};
     if ($job_class =~ /::Upgrade::/) {
-        $args->{job}{priority} = -65536;
+        $args->{job}{priority} = -128;
     }
     return $self->_client->insert($job_class => $args);
 }
