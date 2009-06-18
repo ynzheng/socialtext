@@ -4299,8 +4299,12 @@ body#dashBoard div#controls div#controlsRight ul {
 }
 
 .avatarPopup .userinfo {
-    height: 70px;
     padding: 4px 0;
+    margin-left: 72px;
+}
+
+.avatarPopup .userinfo img {
+    vertical-align: middle !important;
 }
 
 .avatarPopup ul {

@@ -101,7 +101,32 @@ Avatar.prototype = {
         [ {name:'position'}, {name:'company'}],
         [ {name:'location'} ],
         [ {name:'email'} ],
-        [ {name:'work_phone', prefix:'work: '} ]
+        [ {name:'work_phone', title:'work'} ],
+        [ {name:'mobile_phone', title:'mobile'} ],
+        [ {name:'home_phone', title:'home'} ],
+        [ {
+            name:'aol_sn',
+            title: true,
+            href: "aim:goim?screenname=%s&message=hello",
+            image: "http://api.oscar.aol.com/presence/icon?k=br1R5F8xLz-PpiT2&t=%s"
+          }
+        ],
+        [ {
+            name:'yahoo_sn',
+            title: true,
+            href: "ymsgr:sendIM?%s",
+            image: "http://opi.yahoo.com/online?u=%s&f=.gif"
+          }
+        ],
+        [ {name:'gtalk_sn', title: true} ],
+        [ {
+            name:'skype_sn',
+            title: true,
+            href: "callto:%s",
+            image: "http://mystatus.skype.com/smallicon/%s",
+          }
+        ],
+        [ {name:'sametime_sn', title: true} ]
     ],
 
     mouseOver: function() {
@@ -173,6 +198,7 @@ Avatar.prototype = {
 
     showUserInfo: function(user) {
         var self = this;
+        console.log(user);
 
         $('<img/>')
             .addClass('avatarPhoto')
@@ -191,8 +217,28 @@ Avatar.prototype = {
                 var val = user[this.name];
                 if (val) {
                     if (added++) $div.append(', ');
-                    if (this.prefix) val = this.prefix + val;
-                    $(this.wrap || '<span></span>').text(val).appendTo($div);
+                    if (this.title) {
+                        var prefix = this.title === true
+                                   ? user.field_meta[this.name].title
+                                   : this.title;
+                        $div.append(prefix + ': ');
+                    }
+
+                    if (this.image) {
+                        $('<img/>')
+                            .attr('src', this.image.replace('%s', val))
+                            .appendTo($div);
+                    }
+                    if (this.href) {
+                        $('<a></a>')
+                            .attr('href', this.href.replace('%s', val))
+                            .text(val)
+                            .appendTo($div);
+                    }
+                    else {
+                        $(this.wrap || '<span></span>')
+                            .text(val).appendTo($div);
+                    }
                 }
             });
         });
