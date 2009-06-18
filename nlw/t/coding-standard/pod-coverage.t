@@ -3,9 +3,7 @@
 use warnings;
 use strict;
 use Test::More;
-
-eval "use Test::Pod::Coverage 1.00";
-plan skip_all => 'Test::Pod::Coverage 1.00 required for testing POD coverage' if $@;
+use Socialtext::Pod::HeadingCoverage;
 
 ###############################################################################
 # TODO: modules that have insufficient POD coverage, but that we'd like to
@@ -330,18 +328,36 @@ unless (@all_modules) {
 plan tests => scalar @all_modules;
 
 ###############################################################################
-# Our *CUSTOM* POD coverage options
-my $coverage_opts = {
-    coverage_class    => 'Socialtext::Pod::HeadingCoverage',
-    required_headings => [qw( NAME SYNOPSIS DESCRIPTION )],
-};
-
-###############################################################################
 # Test each module in turn
 foreach my $file (sort @all_modules) {
     my $module  = file_to_module($file);
-    if (exists $ToDoModules{$module}) { ok 1, "OLD: $module"; next }
-    pod_coverage_ok( $module, $coverage_opts );
+    my $message = "Pod coverage on $module";
+
+    my $pc = Socialtext::Pod::HeadingCoverage->new(
+        package           => $module,
+        required_headings => [qw( NAME SYNOPSIS DESCRIPTION )],
+    );
+    my $rating = $pc->coverage() || 0;
+    my $is_ok  = ($rating == 1);
+    my @nakies = sort $pc->naked;
+
+    if (exists $ToDoModules{$module}) {
+        if (@nakies) {
+            $message = "OLD $module; " .  join(', ', @nakies);
+            $is_ok = 1;
+        }
+    }
+
+    ok $is_ok, $message;
+    unless ($is_ok) {
+        diag(
+            sprintf(
+                "Coverage for %s is %3.1f%%, with %d missing:",
+                $module, $rating * 100, scalar @nakies
+            )
+        );
+        diag("\t$_") for @nakies;
+    }
 }
 exit;
 
