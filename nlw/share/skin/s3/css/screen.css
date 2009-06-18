@@ -4285,7 +4285,6 @@ body#dashBoard div#controls div#controlsRight ul {
 .avatarPopup .inner {
     background: #FFF;
     border: 1px solid black;
-    border-bottom: none;
     padding: 6px;
 }
 
@@ -4314,4 +4313,23 @@ body#dashBoard div#controls div#controlsRight ul {
     text-align: left;
     border-top: 1px solid #CCCBCC;
     padding: 3px 0;
+}
+
+/* logic for showing the avatar popup under the avatar */
+.avatarPopup .top {
+    display: none;
+}
+.avatarPopup .inner {
+    border-bottom: none;
+}
+
+.avatarPopup.underneath .top {
+    display: block;
+}
+.avatarPopup.underneath .bottom {
+    display: none;
+}
+.avatarPopup.underneath .inner {
+    border-bottom: 1px solid black;
+    border-top: none;
 }

@@ -31,6 +31,7 @@ Person.prototype = {
                 .addClass('followPersonButton')
                 .click(function(){ 
                     self.isFollowing() ? self.stopFollowing() : self.follow();
+                    return false;
                 });
             this.updateFollowLink();
             return this.node;
@@ -129,14 +130,23 @@ Avatar.prototype = {
         var self = this;
         this.contentNode = $('<div></div>')
             .addClass('inner');
+
         this.popup = $('<div></div>')
             .addClass('avatarPopup')
             .mouseover(function() { self.mouseOver() })
             .mouseout(function() { self.mouseOut() })
             .append(this.contentNode)
             .appendTo(this.node);
+
         $('<img/>')
-            .attr('src', nlw_make_s3_path('/images/avatarPopupBottom'))
+            .addClass('top')
+            .attr('src', nlw_make_s3_path('/images/avatarPopupTop.png'))
+            .prependTo(this.popup);
+
+        // Add quote bubbles
+        $('<img/>')
+            .addClass('bottom')
+            .attr('src', nlw_make_s3_path('/images/avatarPopupBottom.png'))
             .appendTo(this.popup);
     },
 
@@ -214,10 +224,18 @@ Avatar.prototype = {
 
     show: function() {
         var offset = $(this.node).offset();
-        this.popup
-            .css('top', offset.top - this.popup.height() - 20)
-            .css('left', offset.left - 43 )
-            .fadeIn();
+        if (window.pageYOffset < (offset.top - this.popup.height())) {
+            this.popup
+                .removeClass('underneath')
+                .css('top', offset.top - this.popup.height() - 20);
+        }
+        else {
+            this.popup
+                .addClass('underneath')
+                .css('top', offset.top + $(this.node).height());
+        }
+
+        this.popup.css('left', offset.left - 43 ).fadeIn();
     },
 
     hide: function() {
