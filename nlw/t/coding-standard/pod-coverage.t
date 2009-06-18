@@ -24,10 +24,7 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Attachment
     Socialtext::Attachments
     Socialtext::AttachmentsUIPlugin
-    Socialtext::Authen
     Socialtext::BacklinksPlugin
-    Socialtext::Base
-    Socialtext::Bootstrap::OpenLDAP
     Socialtext::BreadCrumbsPlugin
     Socialtext::BugsPlugin
     Socialtext::Build
@@ -50,14 +47,10 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::EmailNotifier
     Socialtext::EmailNotifyPlugin
     Socialtext::EmailPageUIPlugin
-    Socialtext::EmailReceiver::Base
     Socialtext::EmailReceiver::Factory
     Socialtext::EmailReceiver::en
     Socialtext::EmailReceiver::ja
-    Socialtext::EmailSender::Base
     Socialtext::EmailSender::Factory
-    Socialtext::EmailSender::en
-    Socialtext::EmailSender::ja
     Socialtext::Encode
     Socialtext::Events
     Socialtext::Events::Recorder
@@ -67,7 +60,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::FetchRSSPlugin
     Socialtext::File
     Socialtext::FillInFormBridge
-    Socialtext::Formatter
     Socialtext::Formatter::AbsoluteLinkDictionary
     Socialtext::Formatter::Block
     Socialtext::Formatter::LiteLinkDictionary
@@ -76,13 +68,10 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Formatter::RailsDemoLinkDictionary
     Socialtext::Formatter::SharepointLinkDictionary
     Socialtext::Formatter::SkinLinkDictionary
-    Socialtext::Formatter::Unit
-    Socialtext::Formatter::Viewer
     Socialtext::Formatter::WaflBlock
     Socialtext::Formatter::WaflPhrase
     Socialtext::HTMLArchive
     Socialtext::HTTP
-    Socialtext::Handler
     Socialtext::Handler::Authen
     Socialtext::Handler::ControlPanel
     Socialtext::Handler::REST
@@ -95,16 +84,10 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Image
     Socialtext::Indexes
     Socialtext::InitFunctions
-    Socialtext::InitHandler
-    Socialtext::LDAP
-    Socialtext::LDAP::Config
-    Socialtext::LDAP::Operations
     Socialtext::Locales
-    Socialtext::Log
     Socialtext::MLDBMAccess
     Socialtext::MassAdd
     Socialtext::Migration::Utils
-    Socialtext::ModPerl
     Socialtext::Model::Page
     Socialtext::Model::Pages
     Socialtext::MultiPlugin
@@ -118,7 +101,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::PageMeta
     Socialtext::Pages
     Socialtext::Pageset
-    Socialtext::Paths
     Socialtext::PdfExport::LinkDictionary
     Socialtext::PdfExportPlugin
     Socialtext::PerfData
@@ -137,7 +119,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Query::Wafl
     Socialtext::RecentChangesPlugin
     Socialtext::RefcardPlugin
-    Socialtext::Registry
     Socialtext::RenamePagePlugin
     Socialtext::RequestContext
     Socialtext::Rest
@@ -175,10 +156,8 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Rest::PageRevision
     Socialtext::Rest::PageRevisions
     Socialtext::Rest::PageTagHistory
-    Socialtext::Rest::PageTags
     Socialtext::Rest::Pages
     Socialtext::Rest::ReportAdapter
-    Socialtext::Rest::Sections
     Socialtext::Rest::Settings::DefaultWorkspace
     Socialtext::Rest::Tag
     Socialtext::Rest::TaggedPages
@@ -191,7 +170,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Rest::Wafl
     Socialtext::Rest::Workspace
     Socialtext::Rest::WorkspaceAttachments
-    Socialtext::Rest::WorkspaceTags
     Socialtext::Rest::WorkspaceUser
     Socialtext::Rest::WorkspaceUsers
     Socialtext::Rest::Workspaces
@@ -200,12 +178,10 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::SOAPGoogle
     Socialtext::SOAPPlugin
     Socialtext::SOAPServer
-    Socialtext::Search
     Socialtext::Search::Basic::Factory
     Socialtext::Search::Basic::Indexer
     Socialtext::Search::Basic::Searcher
     Socialtext::Search::Config
-    Socialtext::Search::ContentTypes
     Socialtext::Search::KinoSearch::Analyzer
     Socialtext::Search::KinoSearch::Analyzer::Base
     Socialtext::Search::KinoSearch::Analyzer::Ja::Tokenize
@@ -229,7 +205,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Storage
     Socialtext::Syndicate::Atom
     Socialtext::Syndicate::RSS20
-    Socialtext::SyndicatePlugin
     Socialtext::System
     Socialtext::SystemSettings
     Socialtext::Template
@@ -238,7 +213,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Template::Plugin::fillinform
     Socialtext::Template::Plugin::flatten
     Socialtext::Template::Plugin::html_encode
-    Socialtext::Template::Plugin::label_ellipsis
     Socialtext::TheSchwartz
     Socialtext::TiddlyPlugin
     Socialtext::TimeZonePlugin
@@ -273,7 +247,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::WikiwygPlugin
     Socialtext::Workspace::Importer
     Socialtext::Workspace::Permissions
-    Socialtext::WorkspaceBreadcrumb
     Socialtext::WorkspaceInvitation
     Socialtext::WorkspaceListPlugin
     Socialtext::WorkspacesUIPlugin
@@ -286,7 +259,6 @@ my %ToDoModules = map { $_ => 1 } qw(
     Test::Socialtext::Ceqlotron
     Test::Socialtext::Environment
     Test::Socialtext::Fixture
-    Test::Socialtext::Mechanize
     Test::Socialtext::Search
     Test::Socialtext::Thrower
     Socialtext::Template::Plugin::html_truncate
