@@ -415,8 +415,14 @@ sub finish_import {
     my $self = shift;
     my %opts = @_;
     my $hub  = $opts{hub};
+    my $meta = $self->{_import_hash};
 
-    $hub->pluggable->hook('nlw.finish_import_account', $self, $self->{_import_hash});
+    if ( my $ws_name = $meta->{all_users_workspace} ) {
+        my $ws = Socialtext::Workspace->new( name => $ws_name );
+        $self->update( all_users_workspace => $ws->workspace_id );
+    }
+
+    $hub->pluggable->hook('nlw.finish_import_account', $self, $meta);
 }
 
 sub users {
