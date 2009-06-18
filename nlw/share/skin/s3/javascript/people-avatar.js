@@ -93,6 +93,8 @@ Avatar = function (node) {
 };
 
 Avatar.prototype = {
+    HOVER_TIMEOUT: 500,
+
     fields: [
         [ {name:'best_full_name', wrap: '<b></b>'} ],
         [ {name:'position'}, {name:'company'}],
@@ -109,7 +111,7 @@ Avatar.prototype = {
                 self.displayAvatar();
                 self._state = 'shown';
             }
-        }, 1000);
+        }, this.HOVER_TIMEOUT);
     },
 
     mouseOut: function() {
@@ -120,7 +122,7 @@ Avatar.prototype = {
                 self.hide();
                 self._state = 'hidden';
             }
-        }, 1000);
+        }, this.HOVER_TIMEOUT);
     },
 
     createPopup: function() {
