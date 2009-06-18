@@ -1,18 +1,13 @@
 # @COPYRIGHT@
 package Socialtext::EmailNotifier;
-
-use strict;
-use warnings;
-
-our $VERSION = '0.01';
-
-use Fcntl ':flock';
+use Moose;
 use Readonly;
 use Socialtext::AppConfig;
-use Socialtext::String;
 use Socialtext::Validate qw( validate PLUGIN_TYPE ARRAYREF_TYPE SCALAR_TYPE HASHREF_TYPE);
 use Socialtext::l10n qw(system_locale);
 use Socialtext::EmailSender::Factory;
+
+our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
@@ -23,19 +18,6 @@ use Socialtext::EmailSender::Factory;
 An object used for shared email notification methods.
 
 =cut
-
-{
-    Readonly my $spec => {
-    };
-
-    sub new {
-        my $class = shift;
-        my %p     = validate( @_, $spec );
-
-        return bless {
-        };
-    }
-}
 
 {
     Readonly my $spec => {
