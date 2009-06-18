@@ -62,13 +62,13 @@ sub import_groups_for_account {
         my $group = Socialtext::Group->GetGroup( {
             driver_group_name  => $group_info->{driver_group_name},
             created_by_user_id => $creator->user_id,
-            account_id         => $acct->account_id,
+            primary_account_id => $acct->account_id,
         } );
         unless ($group) {
             $group = Socialtext::Group->Create( {
                 driver_group_name  => $group_info->{driver_group_name},
                 created_by_user_id => $creator->user_id,
-                account_id         => $acct->account_id,
+                primary_account_id => $acct->account_id,
             } );
         }
 

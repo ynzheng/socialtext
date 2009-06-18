@@ -433,7 +433,7 @@ CREATE TABLE groups (
     driver_key text NOT NULL,
     driver_unique_id text NOT NULL,
     driver_group_name text NOT NULL,
-    account_id bigint NOT NULL,
+    primary_account_id bigint NOT NULL,
     creation_datetime timestamptz DEFAULT now() NOT NULL,
     created_by_user_id bigint NOT NULL,
     cached_at timestamptz DEFAULT '-infinity'::timestamptz NOT NULL
@@ -1406,14 +1406,14 @@ ALTER TABLE ONLY group_workspace_role
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY groups
-    ADD CONSTRAINT groups_account_id_fk
-            FOREIGN KEY (account_id)
-            REFERENCES "Account"(account_id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY groups
     ADD CONSTRAINT groups_created_by_user_id_fk
             FOREIGN KEY (created_by_user_id)
             REFERENCES users(user_id) ON DELETE RESTRICT;
+
+ALTER TABLE ONLY groups
+    ADD CONSTRAINT groups_primary_account_id_fk
+            FOREIGN KEY (primary_account_id)
+            REFERENCES "Account"(account_id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY signal
     ADD CONSTRAINT in_reply_to_fk

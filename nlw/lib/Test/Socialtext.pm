@@ -435,7 +435,7 @@ sub main_hub {
         my $group = Socialtext::Group->Create( {
             driver_group_name  => $opts{unique_id},
             created_by_user_id => $opts{user}->user_id,
-            account_id         => $opts{account}->account_id,
+            primary_account_id => $opts{account}->account_id,
         } );
         return $group;
     }

@@ -103,7 +103,8 @@ basic_restore: {
 
     # Test group
     my $group = $groups->next;
-    is $group->account_id, $account->account_id, '... with correct account_id';
+    is $group->primary_account_id, $account->account_id,
+        '... with correct primary account_id';
     is $group->driver_group_name, $test_group_name,
         '... with correct driver_group_name';
 

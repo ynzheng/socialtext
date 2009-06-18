@@ -25,7 +25,7 @@ my %TEST_DATA = (
     creation_datetime  => DateTime->from_epoch( epoch => 1234567890 ),
     cached_at          => DateTime->from_epoch( epoch => 1234560000 ),
     created_by_user_id => Socialtext::User->SystemUser->user_id(),
-    account_id         => Socialtext::Account->Socialtext->account_id(),
+    primary_account_id => Socialtext::Account->Socialtext->account_id(),
 );
 
 ###############################################################################
@@ -53,10 +53,11 @@ instantiation: {
     is $homey->creator->user_id, $TEST_DATA{created_by_user_id},
         '... ... ... with matching user_id';
 
-    is $homey->account_id, $TEST_DATA{account_id}, '... with account_id';
-    isa_ok $homey->account, 'Socialtext::Account',
-        '... ... vivified Account';
-    is $homey->account->account_id, $TEST_DATA{account_id},
+    is $homey->primary_account_id, $TEST_DATA{primary_account_id},
+        '... with primary_account_id';
+    isa_ok $homey->primary_account, 'Socialtext::Account',
+        '... ... vivified primary Account';
+    is $homey->primary_account->account_id, $TEST_DATA{primary_account_id},
         '... ... ... with matching account_id';
 
     ok $homey->is_system_managed, '... is system managed';

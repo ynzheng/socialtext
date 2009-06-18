@@ -44,14 +44,14 @@ has_column 'driver_group_name' => (
     required => 1,
 );
 
-has_column 'account_id' => (
+has_column 'primary_account_id' => (
     is => 'rw', isa => 'Int',
-    writer => '_account_id',
-    trigger => \&_set_account_id,
+    writer => '_primary_account_id',
+    trigger => \&_set_primary_account_id,
     required => 1,
 );
 
-has 'account' => (
+has 'primary_account' => (
     is => 'ro', isa => 'Socialtext::Account',
     lazy_build => 1,
 );
@@ -111,14 +111,14 @@ sub _build_driver_id {
     return $id;
 }
 
-sub _set_account_id {
+sub _set_primary_account_id {
     my $self = shift;
-    $self->clear_account();
+    $self->clear_primary_account();
 }
 
-sub _build_account {
+sub _build_primary_account {
     my $self    = shift;
-    my $acct_id = $self->account_id();
+    my $acct_id = $self->primary_account_id();
     my $acct    = Socialtext::Account->new(account_id => $acct_id);
     unless ($acct) {
         die "account id=$acct_id no longer exists";
@@ -234,14 +234,14 @@ being managed by.
 The display name for the Group, as specified by the Group Factory that the
 Group is managed by.
 
-=item B<$group-E<gt>account_id()>
+=item B<$group-E<gt>primary_account_id()>
 
-The Account Id for the Account that this Group resides within.
+The Account Id for the Primary Account for the Group.
 
-=item B<$group-E<gt>account()>
+=item B<$group-E<gt>primary_account()>
 
 Helper method, which returns the C<Socialtext::Account> object that represents
-the Account for the C<account_id()> above.  
+the Account for the C<primary_account_id()> above.  
 
 =item B<$group-E<gt>creation_datetime()>
 

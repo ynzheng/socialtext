@@ -24,8 +24,8 @@ has 'homunculus' => (
         driver_id
         driver_unique_id
         driver_group_name
-        account_id
-        account
+        primary_account_id
+        primary_account
         creation_datetime
         created_by_user_id
         creator
@@ -51,7 +51,7 @@ sub ByAccountId {
     my $sql = qq{
         SELECT group_id
           FROM groups
-         WHERE account_id = ?
+         WHERE primary_account_id = ?
          ORDER BY driver_group_name;
     };
     return $class->_GroupCursor(
@@ -370,11 +370,11 @@ Delegated to C<Socialtext::Group::Homunculus>.
 
 Delegated to C<Socialtext::Group::Homunculus>.
 
-=item B<$group-E<gt>account_id()>
+=item B<$group-E<gt>primary_account_id()>
 
 Delegated to C<Socialtext::Group::Homunculus>.
 
-=item B<$group-E<gt>account()>
+=item B<$group-E<gt>primary_account()>
 
 Delegated to C<Socialtext::Group::Homunculus>.
 

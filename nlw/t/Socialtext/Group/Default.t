@@ -22,7 +22,7 @@ create_default_group: {
     my $creator_id = Socialtext::User->SystemUser->user_id();
     my $group = Socialtext::Group->Create( {
         driver_group_name   => 'Test Group',
-        account_id          => $account_id,
+        primary_account_id  => $account_id,
         created_by_user_id  => $creator_id,
         } );
     isa_ok $group, 'Socialtext::Group', 'newly created group';
@@ -39,7 +39,7 @@ retrieve_default_group: {
     my $creator_id = Socialtext::User->SystemUser->user_id();
     my $group = Socialtext::Group->Create( {
         driver_group_name   => 'Test Group',
-        account_id          => $account_id,
+        primary_account_id  => $account_id,
         created_by_user_id  => $creator_id,
         } );
     isa_ok $group, 'Socialtext::Group', 'newly created group';
@@ -55,8 +55,8 @@ retrieve_default_group: {
         '... with matching driver_key';
     is $retrieved->driver_group_name, $group->driver_group_name,
         '... with matching driver_group_name';
-    is $retrieved->account_id, $group->account_id,
-        '... with matching account_id';
+    is $retrieved->primary_account_id, $group->primary_account_id,
+        '... with matching primary_account_id';
     is $retrieved->created_by_user_id, $group->created_by_user_id,
         '... with matching created_by_user_id';
     is $retrieved->creation_datetime, $group->creation_datetime,
@@ -72,7 +72,7 @@ update_default_group: {
     my $creator_id = Socialtext::User->SystemUser->user_id();
     my $group = Socialtext::Group->Create( {
         driver_group_name   => 'Test Group',
-        account_id          => $account_id,
+        primary_account_id  => $account_id,
         created_by_user_id  => $creator_id,
         } );
     isa_ok $group, 'Socialtext::Group', 'newly created group';
@@ -82,14 +82,14 @@ update_default_group: {
     my $new_creator_id = Socialtext::User->Guest->user_id();
     $group->update_store( {
         driver_group_name   => 'Updated Group Name',
-        account_id          => $new_account_id,
+        primary_account_id  => $new_account_id,
         created_by_user_id  => $new_creator_id,
     } );
 
     is $group->driver_group_name, 'Updated Group Name',
         '... driver_group_name updated';
-    is $group->account_id, $new_account_id,
-        '... account_id updated';
+    is $group->primary_account_id, $new_account_id,
+        '... primary_account_id updated';
     is $group->created_by_user_id, $new_creator_id,
         '... created_by_user_id updated';
     ok $group->cached_at->hires_epoch > $cached_at->hires_epoch,
@@ -100,8 +100,8 @@ update_default_group: {
 
     is $refreshed->driver_group_name, 'Updated Group Name',
         '... with updated driver_group_name';
-    is $refreshed->account_id, $new_account_id,
-        '... with updated account_id';
+    is $refreshed->primary_account_id, $new_account_id,
+        '... with updated primary_account_id';
     is $refreshed->created_by_user_id, $new_creator_id,
         '... with updated created_by_user_id';
     # XXX: should be ">" instead of "!=", but we lose hi-res resolution when

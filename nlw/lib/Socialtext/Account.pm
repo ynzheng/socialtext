@@ -209,7 +209,7 @@ sub groups {
 
 sub group_count {
     my $self  = shift;
-    my $sql   = 'SELECT COUNT(*) FROM groups WHERE account_id = ?';
+    my $sql   = 'SELECT COUNT(*) FROM groups WHERE primary_account_id = ?';
     my $count = sql_singlevalue($sql, $self->account_id);
     return $count;
 }

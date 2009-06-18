@@ -33,7 +33,7 @@ my %TEST_DATA = (
     driver_key         => 'Dummy:123',
     driver_group_name  => 'Test Group Name',
     driver_unique_id   => 456,
-    account_id         => Socialtext::Account->Socialtext->account_id(),
+    primary_account_id => Socialtext::Account->Socialtext->account_id(),
     creation_datetime  => DateTime->now(),
     created_by_user_id => Socialtext::User->SystemUser->user_id(),
 );

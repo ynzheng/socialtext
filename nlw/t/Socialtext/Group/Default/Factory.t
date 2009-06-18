@@ -38,7 +38,7 @@ create_group: {
     my $test_start = $factory->Now();
     my $group = $factory->Create( {
         driver_group_name   => 'Test Group',
-        account_id          => $account_id,
+        primary_account_id  => $account_id,
         created_by_user_id  => $creator_id,
     } );
     my $test_finish = $factory->Now();
@@ -56,8 +56,8 @@ create_group: {
         '... group_id matches driver_unique_id (for Default Groups)';
     is $group->driver_group_name, 'Test Group',
         '... with driver_group_name matching provided Group Name';
-    is $group->account_id, $account_id,
-        '... with provided Account Id';
+    is $group->primary_account_id, $account_id,
+        '... with provided primary Account Id';
     is $group->created_by_user_id, $creator_id,
         '... with provided creator User Id';
 
@@ -79,7 +79,7 @@ delete_group: {
     my $creator_id = Socialtext::User->SystemUser->user_id();
     my $group = $factory->Create( {
         driver_group_name   => 'Test Group',
-        account_id          => $account_id,
+        primary_account_id  => $account_id,
         created_by_user_id  => $creator_id,
     } );
     isa_ok $group, 'Socialtext::Group::Default';
@@ -107,7 +107,7 @@ delete_nonexistent_group: {
     my $creator_id = Socialtext::User->SystemUser->user_id();
     my $group = $factory->Create( {
         driver_group_name   => 'Test Group',
-        account_id          => $account_id,
+        primary_account_id  => $account_id,
         created_by_user_id  => $creator_id,
     } );
     isa_ok $group, 'Socialtext::Group::Default';
