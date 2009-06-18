@@ -824,67 +824,6 @@ sub deactivate {
     }
 }
 
-# helper apply functions
-# by workspace count apply
-my $by_workspace_count_apply = sub {
-    my $rows             = shift;
-    my $user_id = $rows->[0];
-
-    # short circuit to not hand back undefs in a list context
-    return ( defined $user_id )
-      ?  Socialtext::User->new( user_id => $user_id )
-        : undef;
-};
-
-# by creator apply
-my $by_creator_apply = sub {
-    my $rows             = shift;
-    my $user_id = $rows->[0];
-
-    # short circuit to not hand back undefs in a list context
-    return ( defined $user_id )
-      ?  Socialtext::User->new( user_id => $user_id )
-        : undef;
-};
-
-# by workspace with roles apply
-my $by_workspace_with_roles_apply = sub {
-    my $rows     = shift;
-    my $user_row = $rows->[0];
-    my $role_row = $rows->[1];
-
-    # short circuit to not hand back undefs in a list context
-    return undef if !$user_row;
-
-    return [
-        Socialtext::User->new(
-            user_id => $user_row->select('user_id')
-        ),
-        Socialtext::Role->new(
-            role_id => $role_row->select('role_id')
-        )
-    ];
-};
-
-# by workspace with roles apply, ordered by creator
-my $by_workspace_with_roles_ordered_by_creator_apply = sub {
-    my $rows     = shift;
-    my $user_id = $rows->[0];
-    my $role_id = $rows->[1];
-
-    # short circuit to not hand back undefs in a list context
-    return undef if !$user_id;
-
-    return [
-        Socialtext::User->new(
-            user_id => $user_id
-        ),
-        Socialtext::Role->new(
-            role_id => $role_id
-        )
-    ];
-};
-
 sub Search {
     my $class = shift;
     my $search_term = shift;
