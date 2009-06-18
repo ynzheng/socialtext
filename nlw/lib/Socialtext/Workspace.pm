@@ -589,9 +589,17 @@ sub _validate_and_clean_data {
 
     if ($p->{account_id}) {
         my $account = Socialtext::Account->new(account_id => $p->{account_id});
-        push @errors,
-            loc("The account_id you specified, [_1], does not exist.",
-                $p->{account_id}) unless $account;
+
+        if ( $account ) {
+            if ( ! $is_create and $self->is_all_users_workspace ) {
+                push @errors, loc("This workspace is the all users workspace for the [_1] account. Aborting.", $self->account->name);
+            }
+        }
+        else {
+            push @errors,
+                loc("The account_id you specified, [_1], does not exist.",
+                    $p->{account_id});
+        }
     }
 
     data_validation_error errors => \@errors if @errors;
@@ -910,6 +918,13 @@ sub account {
     my $self = shift;
 
     return Socialtext::Account->new( account_id => $self->account_id );
+}
+
+sub is_all_users_workspace {
+    my $self        = shift;
+    my $account_auw = $self->account->all_users_workspace || 0;
+
+    return ( $account_auw == $self->workspace_id );
 }
 
 {
@@ -2371,6 +2386,11 @@ workspace.
 
 Returns the C<Socialtext::Account> object for the account to which the
 workspace belongs.
+
+=head2 $workspace->is_all_users_workspace()
+
+Returns whether or not the workspace is the all users workspace for the account
+to which it belongs.
 
 =head2 $workspace->set_permissions( set_name => $name )
 
