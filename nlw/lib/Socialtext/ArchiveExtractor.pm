@@ -1,4 +1,5 @@
 # @COPYRIGHT@
+
 =head1 NAME
 
 Socialtext::ArchiveExtractor - Extracts files from zip and tar archives
