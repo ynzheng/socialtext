@@ -100,7 +100,7 @@ Avatar.prototype = {
         [ {name:'best_full_name', wrap: '<b></b>'} ],
         [ {name:'position'}, {name:'company'}],
         [ {name:'location'} ],
-        [ {name:'email'} ],
+        [ {name:'email', href: "mailto:%s"} ],
         [ {name:'work_phone', title:'work'} ],
         [ {name:'mobile_phone', title:'mobile'} ],
         [ {name:'home_phone', title:'home'} ],
@@ -198,7 +198,6 @@ Avatar.prototype = {
 
     showUserInfo: function(user) {
         var self = this;
-        console.log(user);
 
         $('<img/>')
             .addClass('avatarPhoto')
