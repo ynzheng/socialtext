@@ -394,10 +394,10 @@ sub import_account {
 
     print loc("Importing users ..."), "\n";
     my $account = Socialtext::Account->import_file(
-        file => "$dir/account.yaml",
-        name => $opts{name},
+        file  => "$dir/account.yaml",
+        name  => $opts{name},
         force => $opts{overwrite},
-        hub => $hub,
+        hub   => $hub,
     );
 
     for my $tarball (glob "$dir/*.1.tar.gz") {
