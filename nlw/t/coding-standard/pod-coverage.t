@@ -26,15 +26,22 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::AttachmentsUIPlugin
     Socialtext::BacklinksPlugin
     Socialtext::BreadCrumbsPlugin
+    Socialtext::BrowserDetect
     Socialtext::BugsPlugin
     Socialtext::Build
     Socialtext::Build::ConfigureValues
+    Socialtext::Cache::Hash
     Socialtext::CGI
     Socialtext::CGI::Scrubbed
     Socialtext::CLI
     Socialtext::CategoryPlugin
     Socialtext::CommentUIPlugin
+    Socialtext::CredentialsExtractor::Apache
+    Socialtext::CredentialsExtractor::BasicAuth
+    Socialtext::CredentialsExtractor::Cookie
+    Socialtext::CredentialsExtractor::Guest
     Socialtext::DaemonUtil
+    Socialtext::Data
     Socialtext::Date
     Socialtext::Date::l10n
     Socialtext::Date::l10n::en
@@ -59,6 +66,19 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::FavoritesPlugin
     Socialtext::FetchRSSPlugin
     Socialtext::File
+    Socialtext::File::Stringify
+    Socialtext::File::Stringify::Default
+    Socialtext::File::Stringify::application_msword
+    Socialtext::File::Stringify::application_pdf
+    Socialtext::File::Stringify::application_postscript
+    Socialtext::File::Stringify::application_vnd_ms_excel
+    Socialtext::File::Stringify::application_vnd_ms_powerpoint
+    Socialtext::File::Stringify::application_zip
+    Socialtext::File::Stringify::audio_mpeg
+    Socialtext::File::Stringify::text_html
+    Socialtext::File::Stringify::text_plain
+    Socialtext::File::Stringify::text_rtf
+    Socialtext::File::Stringify::text_xml
     Socialtext::FillInFormBridge
     Socialtext::Formatter::AbsoluteLinkDictionary
     Socialtext::Formatter::Block
@@ -68,8 +88,12 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Formatter::RailsDemoLinkDictionary
     Socialtext::Formatter::SharepointLinkDictionary
     Socialtext::Formatter::SkinLinkDictionary
+    Socialtext::Formatter::Wafl
     Socialtext::Formatter::WaflBlock
     Socialtext::Formatter::WaflPhrase
+    Socialtext::Functional
+    Socialtext::Group::Default
+    Socialtext::Group::Homunculus
     Socialtext::HTMLArchive
     Socialtext::HTTP
     Socialtext::Handler::Authen
@@ -84,9 +108,11 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Image
     Socialtext::Indexes
     Socialtext::InitFunctions
+    Socialtext::l10n
     Socialtext::Locales
     Socialtext::MLDBMAccess
     Socialtext::MassAdd
+    Socialtext::Migration
     Socialtext::Migration::Utils
     Socialtext::Model::Page
     Socialtext::Model::Pages
@@ -107,6 +133,7 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Pluggable::Adapter
     Socialtext::Pluggable::Plugin
     Socialtext::Pluggable::Plugin::Default
+    Socialtext::Pluggable::Plugin::Groups
     Socialtext::Pluggable::Plugin::Test
     Socialtext::Pluggable::Plugin::Widgets
     Socialtext::Pluggable::WaflPhrase
@@ -173,6 +200,7 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Rest::WorkspaceUser
     Socialtext::Rest::WorkspaceUsers
     Socialtext::Rest::Workspaces
+    Socialtext::Resting::RegressionTest
     Socialtext::RevisionPlugin
     Socialtext::RtfExportPlugin
     Socialtext::SOAPGoogle
@@ -182,6 +210,7 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Search::Basic::Indexer
     Socialtext::Search::Basic::Searcher
     Socialtext::Search::Config
+    Socialtext::Search::Hit
     Socialtext::Search::KinoSearch::Analyzer
     Socialtext::Search::KinoSearch::Analyzer::Base
     Socialtext::Search::KinoSearch::Analyzer::Ja::Tokenize
@@ -199,10 +228,13 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::ShortcutLinksPlugin
     Socialtext::Skin
     Socialtext::Statistic
+    Socialtext::Statistic::CpuTime
+    Socialtext::Statistic::ElapsedTime
     Socialtext::Statistic::HeapDelta
     Socialtext::Statistics
     Socialtext::Stax
     Socialtext::Storage
+    Socialtext::String
     Socialtext::Syndicate::Atom
     Socialtext::Syndicate::RSS20
     Socialtext::System
@@ -219,8 +251,10 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Timer
     Socialtext::UniqueArray
     Socialtext::UploadedImage
+    Socialtext::User::Base
     Socialtext::User::Cache
     Socialtext::User::EmailConfirmation
+    Socialtext::User::Factory
     Socialtext::User::Find
     Socialtext::User::Find::Workspace
     Socialtext::UserPreferencesPlugin
@@ -232,8 +266,13 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::WeblogPlugin
     Socialtext::WikiFixture::ApplianceConfig
     Socialtext::WikiFixture::EmailJob
+    Socialtext::WikiFixture::OpenLDAP
     Socialtext::WikiFixture::SocialBase
+    Socialtext::WikiFixture::SocialCalc
+    Socialtext::WikiFixture::SocialRest
+    Socialtext::WikiFixture::SocialWidgets
     Socialtext::WikiFixture::SocialpointPlugin
+    Socialtext::WikiFixture::Socialtext
     Socialtext::WikiFixture::WebHook
     Socialtext::WikiText::Emitter::HTML
     Socialtext::WikiText::Emitter::Messages::Base
@@ -269,9 +308,11 @@ my %ToDoModules = map { $_ => 1 } qw(
     Socialtext::Job::AttachmentIndex
     Socialtext::Job::Cmd
     Socialtext::Job::EmailNotify
+    Socialtext::Job::EmailNotifyUser
     Socialtext::Job::PageIndex
     Socialtext::Job::Upgrade::MigrateUserWorkspacePrefs
     Socialtext::Job::WatchlistNotify
+    Socialtext::Job::WatchlistNotifyUser
     Socialtext::Job::WeblogPing
     Socialtext::Job::SignalDMNotify
     Socialtext::Job::WebHook
