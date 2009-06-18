@@ -18,8 +18,7 @@ sub coverage {
     my $self = shift;
 
     # Get the POD for the current package
-    my $pods    = $self->_get_pods;
-    return unless $pods;
+    my $pods = $self->_get_pods;
 
     # Get the list of required headings
     my @required = $self->{required_headings}
