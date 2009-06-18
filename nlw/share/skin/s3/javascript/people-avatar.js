@@ -48,6 +48,7 @@ Person.prototype = {
             success: function() {
                 Socialtext.watchlist[self.id] = self.best_full_name;
                 self.updateFollowLink();
+                self.addPeopleEntry();
             }
         });
     },
@@ -61,8 +62,26 @@ Person.prototype = {
             success: function() {
                 delete Socialtext.watchlist[self.id];
                 self.updateFollowLink();
+                self.removePeopleEntry();
             }
         });
+    },
+
+    addPeopleEntry: function() {
+        $('<li></li>')
+            .attr('id', "people-link-" + this.id)
+            .append(
+                $('<img/>')
+                    .attr('src', '/data/people/' + this.id + '/small_photo'),
+                $('<a></a>')
+                    .attr('href', "/?profile/" + this.id)
+                    .text(this.best_full_name)
+            )
+            .appendTo('#global-people-directory');
+    },
+
+    removePeopleEntry: function() {
+        $('#global-people-directory li#people-link-' + this.id).remove();
     }
 }
 
