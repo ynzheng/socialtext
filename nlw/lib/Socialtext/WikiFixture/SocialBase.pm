@@ -1004,14 +1004,6 @@ sub set_from_json {
     $self->{$var} = $self->{json}{$key};
 }
 
-sub set_from_header {
-    my $self = shift;
-    my $var  = shift;
-    my $header = shift;
-
-    $self->{$var} = $self->{http}->response->header($header);
-}
-
 sub set_from_subject {
     my $self = shift;
     my $name = shift || die "email-name is mandatory for set-from-email";
