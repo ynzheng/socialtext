@@ -300,6 +300,10 @@ sub export {
     my $export_file = $opts{file} || "$dir/account.yaml";
 
     my $image_ref = $self->logo->load();
+    my $all_users_workspace = ( $self->all_users_workspace )
+        ? Socialtext::Workspace->new(
+            workspace_id =>$self->all_users_workspace )->name()
+        : undef;
 
     my $data = {
         name => $self->name,
@@ -309,6 +313,7 @@ sub export {
         users => $self->users_as_hash,
         logo => MIME::Base64::encode($$image_ref),
         allow_invitation => $self->allow_invitation,
+        all_users_workspace => $all_users_workspace,
         (map { $_ => $self->$_ } grep { /^desktop_/ } @ACCT_COLS),
     };
     $hub->pluggable->hook('nlw.export_account', $self, $data);
