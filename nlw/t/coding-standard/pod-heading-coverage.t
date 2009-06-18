@@ -6,12 +6,14 @@ use Test::More;
 use Socialtext::Pod::HeadingCoverage;
 
 ###############################################################################
-# TODO: modules that have insufficient POD coverage, but that we'd like to
-# eventually get brought out of the dark ages.  For now they're all marked as
-# "TODO" tests.
+# These modules have been grandfathered in as "todo", as per discussion in
+# early June 2009.
 #
-# Yes, this is a *HUGE* list.  We really should either make POD for these or
-# explicitly state that "we're _not_ going to make POD for these".
+# Any NEW modules written after that discussion MUST have the appropriate POD
+# sections; those modules are not being grandfathered in.
+#
+# Thus, you should never be _adding_ to this list, only potentially removing
+# things from it if/as POD gets written.
 my %ToDoModules = map { $_ => 1 } qw(
     Apache::Session::Store::Postgres::Socialtext
     Socialtext
