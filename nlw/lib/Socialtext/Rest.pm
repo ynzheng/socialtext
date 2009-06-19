@@ -10,6 +10,7 @@ use strict;
 use Class::Field 'field';
 use DateTime;
 use DateTime::Format::HTTP;
+use Date::Parse qw/str2time/;
 use Carp 'croak';
 
 use Socialtext::Exceptions;
