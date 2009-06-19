@@ -7,6 +7,6 @@ use Socialtext::Migration::Utils qw/ensure_socialtext_schema
 
 ensure_socialtext_schema(69); # Current version when this migration written
 
-create_job_for_each_workspace('MigrateNotifyPrefs');
+create_job_for_each_workspace('MigrateNotifyPrefs', 31);
 
 exit 0;

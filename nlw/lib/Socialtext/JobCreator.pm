@@ -21,7 +21,7 @@ sub insert {
     my $args = (@_==1) ? shift : {@_};
     $args->{job} ||= {};
     if ($job_class =~ /::Upgrade::/) {
-        $args->{job}{priority} = -128;
+        $args->{job}{priority} ||= -64;
     }
     return $self->_client->insert($job_class => $args);
 }
@@ -40,6 +40,7 @@ sub index_attachment {
             page_id => $attachment->page_id,
             attach_id => $attachment->id,
             search_config => $search_config,
+            job => {priority => 63},
         }
     );
 }
@@ -58,6 +59,7 @@ sub index_page {
             workspace_id => $page->hub->current_workspace->workspace_id,
             page_id => $page->id,
             search_config => $search_config,
+            job => {priority => 63},
         }
     );
     push @job_ids, $main_job_id;

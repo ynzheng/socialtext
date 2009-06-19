@@ -26,13 +26,17 @@ sub ensure_socialtext_schema {
 
 sub create_job_for_each_workspace {
     my $class = shift || die 'A job class is mandatory';
+    my $prio  = shift;
     my $job_class = 'Socialtext::Job::Upgrade::' . $class;
 
     my $all = Socialtext::Workspace->All;
     my $job_count = 0;
     while (my $ws = $all->next) {
         Socialtext::JobCreator->insert( $job_class,
-            { workspace_id => $ws->workspace_id },
+            { 
+                workspace_id => $ws->workspace_id,
+                ($prio ? (job => {priority => $prio}) : ()),
+            },
         );
         $job_count++;
     }
