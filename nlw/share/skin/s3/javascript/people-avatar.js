@@ -98,7 +98,8 @@ Avatar = function (node) {
 
 // Class method for creating all avatar popups
 Avatar.createAll = function() {
-    $('.person.authorized').each(function() { new Avatar(this) });
+    $('.person.authorized')
+        .each(function() { new Avatar(this) });
 };
 
 Avatar.prototype = {
@@ -212,7 +213,8 @@ Avatar.prototype = {
 
         // min-height: 62px
         if ($.browser.msie) {
-            if (this.contentNode.height() < 65) this.contentNode.height(65);
+            var $vcard = $('.vcard', this.contentNode);
+            if ($vcard.height() < 65) $vcard.height(65);
         }
         
         this.mouseOver();
@@ -230,7 +232,11 @@ Avatar.prototype = {
     },
 
     show: function() {
-        var offset = $(this.node).offset();
+        // top was calculated based on $node's top, but if there was an
+        // avatar image, we want to position off of the avatar's top
+        var $img = $(this.node).find('img');
+        var $node = $img.size() ? $img : $(this.node);
+        var offset = $node.offset();
 
         // Check if the avatar is more than half of the way down the page
         var winOffset = $.browser.msie ? document.documentElement.scrollTop 
@@ -238,12 +244,12 @@ Avatar.prototype = {
         if ((offset.top - winOffset) > ($(window).height() / 2)) {
             this.popup
                 .removeClass('underneath')
-                .css('top', offset.top - this.popup.height() - 15);
+                .css('top', offset.top - this.popup.height());
         }
         else {
             this.popup
                 .addClass('underneath')
-                .css('top', offset.top + $(this.node).height());
+                .css('top', offset.top + $node.height() + 5);
         }
 
         this.popup.css('left', offset.left - 43 ).fadeIn();

@@ -414,7 +414,7 @@ sub template_render {
 # Automatic getters for query parameters.
 sub AUTOLOAD {
     my $self = shift;
-    my $type = ref $self or die "$self is not an object.\n";
+    my $type = ref $self or die "$self is not an object ($AUTOLOAD).\n";
 
     $AUTOLOAD =~ s/.*://;
     return if $AUTOLOAD eq 'DESTROY';

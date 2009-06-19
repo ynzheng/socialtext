@@ -4291,8 +4291,11 @@ body#dashBoard div#controls div#controlsRight ul {
     background: #FFF;
     border: 1px solid black;
     padding: 6px;
-    min-height: 62px;
     text-align: left;
+}
+
+.avatarPopup .inner .vcard {
+    min-height: 62px;
 }
 
 .avatarPopup img.avatarPhoto {
