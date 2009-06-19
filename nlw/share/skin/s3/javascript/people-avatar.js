@@ -198,7 +198,11 @@ Avatar.prototype = {
 
     show: function() {
         var offset = $(this.node).offset();
-        if (window.pageYOffset < (offset.top - this.popup.height() - 17)) {
+
+        var windowHeight = window.innerHeight || document.body.offsetHeight;
+        
+        // Check if the avatar is more than half of the way down the page
+        if ((offset.top - window.pageYOffset) > (windowHeight / 2)) {
             this.popup
                 .removeClass('underneath')
                 .css('top', offset.top - this.popup.height() - 20);
