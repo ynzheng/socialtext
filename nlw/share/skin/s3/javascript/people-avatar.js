@@ -89,8 +89,16 @@ Person.prototype = {
 Avatar = function (node) {
     var self = this;
     this.node = node;
-    $(node).mouseover(function(){ self.mouseOver() });
-    $(node).mouseout(function(){ self.mouseOut() });
+    $(node)
+        .unbind('mouseover')
+        .unbind('mouseout')
+        .mouseover(function(){ self.mouseOver() })
+        .mouseout(function(){ self.mouseOut() });
+};
+
+// Class method for creating all avatar popups
+Avatar.createAll = function() {
+    $('.person.authorized').each(function() { new Avatar(this) });
 };
 
 Avatar.prototype = {
@@ -247,8 +255,6 @@ Avatar.prototype = {
 
 };
 
-$(function(){
-    $('.person.authorized').each(function() { new Avatar(this) });
-});
+$(function(){ Avatar.createAll() });
 
 })(jQuery);

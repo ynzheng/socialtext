@@ -94,12 +94,12 @@ Page = {
                     $('#controls-right-revisions').html(rev_string);
                     $('#bottom-buttons-revisions').html(rev_string);
                     $('#update-attribution .st-username').empty().append(
-                            jQuery(".nlw_phrase", jQuery(data.last_editor_html))
-                            );
+                        jQuery(".nlw_phrase", jQuery(data.last_editor_html))
+                    );
    
-                     $('#update-attribution .st-updatedate').empty().append(
-                         jQuery(".nlw_phrase", jQuery(data.last_edit_time_html))
-                     );
+                    $('#update-attribution .st-updatedate').empty().append(
+                        jQuery(".nlw_phrase", jQuery(data.last_edit_time_html))
+                    );
 
                     Page.setPageContent(data.html);
 
@@ -117,6 +117,8 @@ Page = {
                             }
                         });
                     }
+
+                    setTimeout(function() { Avatar.createAll() }, 1000);
                 }
             } 
         });
