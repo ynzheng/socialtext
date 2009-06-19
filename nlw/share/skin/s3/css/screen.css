@@ -4303,6 +4303,14 @@ body#dashBoard div#controls div#controlsRight ul {
     margin-left: 72px;
 }
 
+.avatarPopup .userinfo.web {
+    display: none; /* not a requirement to show web stuff in the popup */
+}
+
+.avatarPopup .vcard .photo {
+    float: left;
+}
+
 .avatarPopup .userinfo img {
     vertical-align: middle !important;
 }

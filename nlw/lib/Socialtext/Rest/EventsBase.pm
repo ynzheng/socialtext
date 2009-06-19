@@ -143,7 +143,7 @@ sub extract_people_args {
 
 sub resource_to_text {
     my ($self, $events) = @_;
-    $self->_template_render('data/events.txt', {
+    $self->template_render('data/events.txt', {
         events => $events,
         viewer => $self->rest->user,
     });
@@ -151,7 +151,7 @@ sub resource_to_text {
 
 sub resource_to_html {
     my ($self, $events) = @_;
-    $self->_template_render('data/events.html', {
+    $self->template_render('data/events.html', {
         events => $events,
         viewer => $self->rest->user,
     });
@@ -162,7 +162,7 @@ sub resource_to_atom {
 
     # Format dates for atom
     $_->{at} =~ s{^(\d+-\d+-\d+) (\d+:\d+:\d+).\d+Z$}{$1T$2+0} for @$events;
-    $self->_template_render('data/events.atom.xml', {
+    $self->template_render('data/events.atom.xml', {
         events => $events,
         viewer => $self->rest->user,
     });
@@ -170,7 +170,7 @@ sub resource_to_atom {
 
 sub _htmlize_event {
     my ($self, $event) = @_;
-    my $renderized = $self->_template_render('data/event', {
+    my $renderized = $self->template_render('data/event', {
         event => $event,
         out => 'html',
     });

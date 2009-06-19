@@ -96,39 +96,6 @@ Avatar = function (node) {
 Avatar.prototype = {
     HOVER_TIMEOUT: 500,
 
-    fields: [
-        [ {name:'best_full_name', wrap: '<b></b>'} ],
-        [ {name:'position'}, {name:'company'}],
-        [ {name:'location'} ],
-        [ {name:'email', href: "mailto:%s"} ],
-        [ {name:'work_phone', title:'work'} ],
-        [ {name:'mobile_phone', title:'mobile'} ],
-        [ {name:'home_phone', title:'home'} ],
-        [ {
-            name:'aol_sn',
-            title: true,
-            href: "aim:goim?screenname=%s&message=hello",
-            image: "http://api.oscar.aol.com/presence/icon?k=br1R5F8xLz-PpiT2&t=%s"
-          }
-        ],
-        [ {
-            name:'yahoo_sn',
-            title: true,
-            href: "ymsgr:sendIM?%s",
-            image: "http://opi.yahoo.com/online?u=%s&f=.gif"
-          }
-        ],
-        [ {name:'gtalk_sn', title: true} ],
-        [ {
-            name:'skype_sn',
-            title: true,
-            href: "callto:%s",
-            image: "http://mystatus.skype.com/smallicon/%s"
-          }
-        ],
-        [ {name:'sametime_sn', title: true} ]
-    ],
-
     mouseOver: function() {
         this._state = 'showing';
         var self = this;
@@ -176,13 +143,14 @@ Avatar.prototype = {
     },
 
     getUserInfo: function(userid) {
+        this.id = userid;
         var self = this;
         $.ajax({
             url: '/data/people/' + userid,
             cache: false,
-            dataType: 'json',
-            success: function (data) {
-                self.showUserInfo(data);
+            dataType: 'html',
+            success: function (html) {
+                self.showUserInfo(html);
             },
             error: function () {
                 self.showError();
@@ -196,53 +164,14 @@ Avatar.prototype = {
         this.mouseOver();
     },
 
-    showUserInfo: function(user) {
+    showUserInfo: function(html) {
         var self = this;
-
-        $('<img/>')
-            .addClass('avatarPhoto')
-            .attr('src', "/data/people/" + user.id + "/photo")
-            .appendTo(this.contentNode);
-
-        var $info = $('<div></div>')
-            .addClass('userinfo')
-            .appendTo(this.contentNode);
-
-        $.each(this.fields, function() {
-            var $div = $('<div></div>').appendTo($info);
-
-            var added = 0;
-            $.each(this, function() {
-                var val = user[this.name];
-                if (val) {
-                    if (added++) $div.append(', ');
-                    if (this.title) {
-                        var prefix = this.title === true
-                                   ? user.field_meta[this.name].title
-                                   : this.title;
-                        $div.append(prefix + ': ');
-                    }
-
-                    if (this.image) {
-                        $('<img/>')
-                            .attr('src', this.image.replace('%s', val))
-                            .appendTo($div);
-                    }
-                    if (this.href) {
-                        $('<a></a>')
-                            .attr('href', this.href.replace('%s', val))
-                            .text(val)
-                            .appendTo($div);
-                    }
-                    else {
-                        $(this.wrap || '<span></span>')
-                            .text(val).appendTo($div);
-                    }
-                }
-            });
+        this.contentNode.append(html);
+        this.person = new Person({
+            id: this.id,
+            best_full_name: this.popup.children('.fn').text(),
+            email: this.popup.children('.email').text()
         });
-
-        this.person = new Person(user);
         var followLink = this.person.createFollowLink();
         if (followLink) {
             $('<div></div>')
@@ -269,7 +198,7 @@ Avatar.prototype = {
 
     show: function() {
         var offset = $(this.node).offset();
-        if (window.pageYOffset < (offset.top - this.popup.height())) {
+        if (window.pageYOffset < (offset.top - this.popup.height() - 10)) {
             this.popup
                 .removeClass('underneath')
                 .css('top', offset.top - this.popup.height() - 20);
