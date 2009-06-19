@@ -4283,6 +4283,10 @@ body#dashBoard div#controls div#controlsRight ul {
     z-index: 1000;
 }
 
+.avatarPopup .fn {
+    font-weight: bold;
+}
+
 .avatarPopup .inner {
     background: #FFF;
     border: 1px solid black;
@@ -4300,7 +4304,6 @@ body#dashBoard div#controls div#controlsRight ul {
 }
 
 .avatarPopup .userinfo {
-    padding: 4px 0;
     margin-left: 72px;
 }
 
@@ -4326,6 +4329,7 @@ body#dashBoard div#controls div#controlsRight ul {
     text-align: left;
     border-top: 1px solid #CCCBCC;
     padding: 3px 0;
+    margin-top: 5px;
 }
 
 /* logic for showing the avatar popup under the avatar */
