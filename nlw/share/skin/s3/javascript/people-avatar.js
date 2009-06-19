@@ -204,7 +204,7 @@ Avatar.prototype = {
 
         // min-height: 62px
         if ($.browser.msie) {
-            if (this.contentNode.height() < 62) this.contentNode.height(62);
+            if (this.contentNode.height() < 65) this.contentNode.height(65);
         }
         
         this.mouseOver();
