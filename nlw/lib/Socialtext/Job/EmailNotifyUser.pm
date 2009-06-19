@@ -17,6 +17,9 @@ sub do_work {
     my $hub  = $self->hub or return;
 
     return $self->completed
+        unless $ws->real && $ws->email_notify_is_enabled;
+
+    return $self->completed
         unless defined $user->email_address
             && length $user->email_address
             && !$user->requires_confirmation();
@@ -24,9 +27,10 @@ sub do_work {
     loc_lang(system_locale());
 
     my $pages = $self->_pages_to_send;
-    my $prefs = $hub->preferences->new_for_user($user->email_address);
-
+    my $pages_fetched_at = time;
     return $self->completed unless $pages && @$pages;
+
+    my $prefs = $hub->preferences->new_for_user($user->email_address);
     $pages = $self->_sort_pages_for_user($user, $pages, $prefs);
 
     my $tz = $hub->timezone;
@@ -42,16 +46,31 @@ sub do_work {
         $self->_extra_template_vars(),
     );
 
-    my $notifier = Socialtext::EmailNotifier->new();
-    $notifier->send_notifications(
-        user  => $user,
-        pages => $pages,
-        vars  => \%vars,
-        from  => $ws->formatted_email_notification_from_address,
-        $self->get_notification_vars,
-    );
+    eval {
+        my $notifier = Socialtext::EmailNotifier->new();
+        $notifier->send_notifications(
+            user  => $user,
+            pages => $pages,
+            vars  => \%vars,
+            from  => $ws->formatted_email_notification_from_address,
+            $self->_notification_vars,
+        );
+    };
+    $self->hub->log->error($@) if $@;
 
-    $self->completed;
+    my @clone_args = map { $_ => $self->job->$_ }
+        qw(funcid funcname priority uniqkey coalesce);
+
+    my $next_interval_job = TheSchwartz::Moosified::Job->new({
+        @clone_args,
+        run_after => $pages_fetched_at + $self->_frequency_pref($prefs),
+        arg => {
+            %{$self->arg},
+            pages_after => $pages_fetched_at,
+        }
+    });
+
+    $self->job->replace_with($next_interval_job);
 }
 
 {
@@ -77,7 +96,7 @@ sub do_work {
     }
 }
 
-sub get_notification_vars {
+sub _notification_vars {
     my $self = shift;
     my $ws = $self->workspace;
 
@@ -107,6 +126,12 @@ sub _links_only {
     my $self = shift;
     my $prefs = shift;
     return $prefs->links_only->value eq 'condensed' ? 0 : 1;
+}
+
+sub _frequency_pref {
+    my $self = shift;
+    my $prefs = shift;
+    return $prefs->{notify_frequency}->value;
 }
 
 __PACKAGE__->meta->make_immutable;

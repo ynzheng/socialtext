@@ -7,7 +7,7 @@ use namespace::clean -except => 'meta';
 
 extends 'Socialtext::Job::EmailNotifyUser';
 
-override 'get_notification_vars' => sub {
+override '_notification_vars' => sub {
     my $self = shift;
     my $ws = $self->workspace;
 
@@ -46,6 +46,12 @@ override '_links_only' => sub {
     my $self = shift;
     my $prefs = shift;
     return $prefs->watchlist_links_only->value eq 'condensed' ? 0 : 1;
+};
+
+override '_frequency_pref' => sub {
+    my $self = shift;
+    my $prefs = shift;
+    return $prefs->{watchlist_notify_frequency}->value;
 };
 
 __PACKAGE__->meta->make_immutable;
