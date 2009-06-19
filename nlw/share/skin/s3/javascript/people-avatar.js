@@ -181,6 +181,9 @@ Avatar.prototype = {
                 )
                 .appendTo(this.contentNode);
         }
+
+        // min-height: 62px
+        if (this.contentNode.height() < 62) this.contentNode.height(62);
         
         this.mouseOver();
     },
