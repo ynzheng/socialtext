@@ -230,7 +230,7 @@ Avatar.prototype = {
         if ((offset.top - winOffset) > ($(window).height() / 2)) {
             this.popup
                 .removeClass('underneath')
-                .css('top', offset.top - this.popup.height() - 20);
+                .css('top', offset.top - this.popup.height() - 15);
         }
         else {
             this.popup
