@@ -5,13 +5,9 @@ use warnings;
 
 use base 'Socialtext::Query::Plugin';
 use Class::Field qw( const field );
-use Socialtext::AppConfig;
 use Socialtext::EmailNotifier;
-use Socialtext::Paths;
-use Socialtext::Helpers;
 use Socialtext::Watchlist;
-use Socialtext::User;
-use Socialtext::l10n qw( loc loc_lang system_locale);
+use Socialtext::l10n qw( loc );
 use Socialtext::Events;
 
 const class_id    => 'watchlist';

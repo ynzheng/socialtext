@@ -2,14 +2,8 @@
 package Socialtext::EmailNotifyPlugin;
 use strict;
 use warnings;
-
 use base 'Socialtext::Plugin';
-
 use Class::Field qw( const field );
-use Fcntl ':flock';
-use Socialtext::AppConfig;
-use Socialtext::File;
-use Socialtext::Paths;
 use Socialtext::EmailNotifier;
 use Socialtext::l10n qw( loc loc_lang system_locale );
 
@@ -75,95 +69,6 @@ sub links_only {
     $p->choices($choices);
     $p->default('expanded');
     return $p;
-}
-
-#------------------------------------------------------------------------------#
-sub maybe_send_notifications {
-    my $self = shift;
-    my $page_id = shift;
-
-    return unless $self->hub->current_workspace->email_notify_is_enabled;
-
-    loc_lang(system_locale());
-
-    my $notifier = Socialtext::EmailNotifier->new(plugin => $self,
-                                    notify_frequency => 'notify_frequency');
-    return unless $notifier->try_acquire_lock;
-    # Don't send any notifications if the triggering page is 
-    # a "system" page or if the page hasn't changed within
-    # the last hour
-    if ($page_id) {
-        my $page = $self->hub->pages->new_page($page_id);
-        return if $page->is_system_page;
-        return unless $page->is_recently_modified;
-    }
-
-    my ( $ready_users, $all_pages ) =  $notifier->should_notify;
-
-    $self->hub->log->info( "sending recent changes notifications from "
-                        . $self->hub->current_workspace->name );
-                    
-    my ($from, $subject, $text_template, $html_template) =
-                  $self->get_notification_vars;
-
-    my $calling_user = $self->hub->current_user;
-    for my $user (@$ready_users) {
-        $self->hub->current_user($user);
-        my $prefs = $self->hub->preferences->new_for_user(
-                $user->email_address);
-        my $pages = $notifier->_sort_pages_for_user( $user, $all_pages, $prefs );
-
-        next unless @$pages;
-        
-        my $include_editor
-              = $prefs->links_only->value eq 'condensed' ? 0 : 1;
-
-        my $email_time = $self->hub->timezone->_now();
-        my %vars = (
-            user             => $user,
-            workspace        => $self->hub->current_workspace(),
-            pages            => $pages,
-            include_editor   => $include_editor,
-            preference_uri   => $self->preference_uri(),
-            email_time       => $self->hub->timezone->get_time_user($email_time) ,
-            email_date       => $self->hub->timezone->get_dateonly_user($email_time) ,
-            base_profile_uri => Socialtext::URI::uri(path => '?profile/'),
-        );
-
-        $notifier->send_notifications(
-            user          => $user, 
-            pages         => $pages,
-            from          => $from,
-            subject       => $subject,
-            vars          => \%vars,
-            text_template => $text_template,
-            html_template => $html_template) if $ready_users;
-    }
-    $notifier->release_lock;
-    $self->hub->current_user($calling_user);
-
-    # make this testable
-    return 1;
-}
-
-sub get_notification_vars {
-    my $self = shift;
-    my $from =
-      $self->hub->current_workspace->formatted_email_notification_from_address;
-
-    my $subject =
-        loc('Recent Changes In [_1] Workspace', $self->hub->current_workspace->title);
-
-    my $text_template = 'email/recent-changes.txt';
-    my $html_template = 'email/recent-changes.html';
-
-    return ($from, $subject, $text_template, $html_template);
-}
-
-sub preference_uri {
-    my $self = shift;
-    return
-        $self->hub->current_workspace->uri . 'emailprefs';
 }
 
 1;
