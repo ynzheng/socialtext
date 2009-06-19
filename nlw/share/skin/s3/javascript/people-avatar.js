@@ -219,7 +219,7 @@ Avatar.prototype = {
 };
 
 $(function(){
-    $('.person').each(function() { new Avatar(this) });
+    $('.person.authorized').each(function() { new Avatar(this) });
 });
 
 })(jQuery);
