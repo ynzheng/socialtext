@@ -198,7 +198,7 @@ Avatar.prototype = {
 
     show: function() {
         var offset = $(this.node).offset();
-        if (window.pageYOffset < (offset.top - this.popup.height() - 10)) {
+        if (window.pageYOffset < (offset.top - this.popup.height() - 17)) {
             this.popup
                 .removeClass('underneath')
                 .css('top', offset.top - this.popup.height() - 20);
