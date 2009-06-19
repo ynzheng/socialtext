@@ -128,7 +128,7 @@ Avatar.prototype = {
             .mouseover(function() { self.mouseOver() })
             .mouseout(function() { self.mouseOut() })
             .append(this.contentNode)
-            .appendTo(this.node);
+            .appendTo('body');
 
         var $img1 = $('<img/>')
             .addClass('top')
@@ -203,7 +203,9 @@ Avatar.prototype = {
         }
 
         // min-height: 62px
-        if (this.contentNode.height() < 62) this.contentNode.height(62);
+        if ($.browser.msie) {
+            if (this.contentNode.height() < 62) this.contentNode.height(62);
+        }
         
         this.mouseOver();
     },

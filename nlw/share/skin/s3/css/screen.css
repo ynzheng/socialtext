@@ -4291,16 +4291,13 @@ body#dashBoard div#controls div#controlsRight ul {
     background: #FFF;
     border: 1px solid black;
     padding: 6px;
+    min-height: 62px;
+    text-align: left;
 }
 
 .avatarPopup img.avatarPhoto {
-    float: left !important;
+    float: left;
     padding: 5px;
-}
-
-.avatarPopup .followPersonButton {
-    color: #000 !important;
-    text-decoration: none;
 }
 
 .avatarPopup .userinfo {
@@ -4328,8 +4325,17 @@ body#dashBoard div#controls div#controlsRight ul {
 .avatarPopup .follow {
     text-align: left;
     border-top: 1px solid #CCCBCC;
-    padding: 3px 0;
     margin-top: 5px;
+    padding: 5px;
+    height: 13px;
+}
+
+.avatarPopup .followPersonButton,
+.avatarPopup .followPersonButton:hover {
+    color: #000;
+    text-decoration: none;
+    height: 18px;
+    float: left;
 }
 
 /* logic for showing the avatar popup under the avatar */
