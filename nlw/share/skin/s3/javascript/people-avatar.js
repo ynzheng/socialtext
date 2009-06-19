@@ -40,7 +40,7 @@ Person.prototype = {
 
     follow: function() {
         var self = this;
-        jQuery.ajax({
+        $.ajax({
             url:'/data/people/' + Socialtext.userid + '/watchlist', 
             type:'POST',
             contentType: 'application/json',
@@ -56,7 +56,7 @@ Person.prototype = {
 
     stopFollowing: function() {
         var self = this;
-        jQuery.ajax({
+        $.ajax({
             url:'/data/people/' + Socialtext.userid + '/watchlist/' + this.id,
             type:'DELETE',
             contentType: 'application/json',
@@ -145,7 +145,7 @@ Avatar.prototype = {
     },
 
     makeTransparent: function($img) {
-	if (jQuery.browser.msie && jQuery.browser.version < 7) {
+	if ($.browser.msie && $.browser.version < 7) {
             var args = "src='" + $img.attr('src') + "', sizingMethod='scale'";
             var filter = "progid:DXImageTransform.Microsoft"
                        + ".AlphaImageLoader(" + args + ")";
@@ -222,10 +222,10 @@ Avatar.prototype = {
     show: function() {
         var offset = $(this.node).offset();
 
-        var windowHeight = window.innerHeight || document.body.offsetHeight;
-        
         // Check if the avatar is more than half of the way down the page
-        if ((offset.top - window.pageYOffset) > (windowHeight / 2)) {
+        var winOffset = $.browser.msie ? document.documentElement.scrollTop 
+                                       : window.pageYOffset;
+        if ((offset.top - winOffset) > ($(window).height() / 2)) {
             this.popup
                 .removeClass('underneath')
                 .css('top', offset.top - this.popup.height() - 20);
