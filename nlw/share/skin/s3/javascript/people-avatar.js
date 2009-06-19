@@ -130,16 +130,36 @@ Avatar.prototype = {
             .append(this.contentNode)
             .appendTo(this.node);
 
-        $('<img/>')
+        var $img1 = $('<img/>')
             .addClass('top')
             .attr('src', nlw_make_s3_path('/images/avatarPopupTop.png'))
             .prependTo(this.popup);
+        this.makeTransparent($img1);
 
         // Add quote bubbles
-        $('<img/>')
+        var $img2 = $('<img/>')
             .addClass('bottom')
             .attr('src', nlw_make_s3_path('/images/avatarPopupBottom.png'))
             .appendTo(this.popup);
+        this.makeTransparent($img2);
+    },
+
+    makeTransparent: function($img) {
+	if (jQuery.browser.msie && jQuery.browser.version < 7) {
+            var args = "src='" + $img.attr('src') + "', sizingMethod='scale'";
+            var filter = "progid:DXImageTransform.Microsoft"
+                       + ".AlphaImageLoader(" + args + ")";
+
+            $('<div></div>')
+                .insertAfter($img)
+                .attr('class', $img.attr('class'))
+                .css({
+                    'filter': filter,
+                    'height': '19px',
+                    'width': '252px'
+                });
+            $img.remove();
+        }
     },
 
     getUserInfo: function(userid) {
