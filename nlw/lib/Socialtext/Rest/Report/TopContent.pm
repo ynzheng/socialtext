@@ -6,6 +6,21 @@ use namespace::clean -except => 'meta';
 
 extends 'Socialtext::Rest::ReportAdapter';
 
+=head1 NAME
+
+Socialtext::Rest::Report::TopContent - top content
+
+=head1 SYNOPSIS
+
+  GET /data/reports/top_content/now/-1week
+
+=head1 DESCRIPTION
+
+Shows the top viewed/edited/watched/emailed pages
+in a workspace or account.
+
+=cut
+
 override 'GET_json' => sub {
     my $self = shift;
     my $user = $self->rest->user;

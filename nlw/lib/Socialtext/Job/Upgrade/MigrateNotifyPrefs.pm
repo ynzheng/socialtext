@@ -8,6 +8,21 @@ use namespace::clean -except => 'meta';
 
 extends 'Socialtext::Job';
 
+=head1 NAME
+
+Socialtext::Job::Upgrade::MigrateNotifyPrefs - migrate email & watchlist notify state
+
+=head1 SYNOPSIS
+
+  Create a job for each workspace
+
+=head1 DESCRIPTION
+
+Migrates data from disk into the new schwartz-based notifier system.  Deletes
+data off disk after it is migrated.
+
+=cut
+
 use constant WINDOW_LIMIT => 14 * 86400; # 14 days
 
 sub do_work {

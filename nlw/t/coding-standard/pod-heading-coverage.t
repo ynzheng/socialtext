@@ -349,6 +349,10 @@ foreach my $file (sort @all_modules) {
             $is_ok = 1;
         }
     }
+    if ($module =~ m/WikiFixture/) {
+        $message = "TEST $module; " .  join(', ', @nakies);
+        $is_ok = 1;
+    }
 
     ok $is_ok, $message;
     unless ($is_ok) {
