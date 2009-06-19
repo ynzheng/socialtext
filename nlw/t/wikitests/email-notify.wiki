@@ -5,12 +5,27 @@
 | st-clear-jobs |
 | clear-email |
 | st-admin | set-workspace-config -w %%workspace%% email_notify_is_enabled 1 |
+| clear-email |
 
 edit a page, wait, get an email
 
+| Comment | System pages should not get emailed out |
+| set | noreply | noreply@socialtext.com |
+| delete-user | %%noreply%% |
+| create-user | %%noreply%% | password |
+| add-member | %%noreply%% | %%workspace%% |
+| http-user-pass | %%noreply%% | password |
+| edit_page  | %%workspace%% | SystemPage            | O hai |
+| http-user-pass | %%username%% | password |
+| job-count  | EmailNotify   | 1                    |       |
+| job-exists | EmailNotify   | %%workspace_id%%-systempage |       |
+| st-process-jobs |                 |                              |
+| job-count       | EmailNotify     | 0                            |
+| job-count       | EmailNotifyUser | 0                            |
+| remove-member | %%noreply%% | %%workspace%% |
+
 | Comment | Edit two pages check for notify jobs |
 
-| clear-email |
 | edit_page  | %%workspace%% | Foo                  | O hai |
 | edit_page  | %%workspace%% | Bar                  | zomg  |
 | job-count  | EmailNotify   | 2                    |       |
@@ -44,6 +59,7 @@ edit a page, wait, get an email
 | email-like           | /%%workspace%%/?bar                 |   |
 | email-like           | qr/created by.+you/ |   |
 | email-like           | %%workspace%%/emailprefs|
+| email-unlike | SystemPage |
 
 | Comment | Edit a page, then change notify pref to 0 BEFORE EmailNotifyUser |
 

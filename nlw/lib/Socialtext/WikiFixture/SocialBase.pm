@@ -281,6 +281,15 @@ sub create_user {
     return $user;
 }
 
+sub delete_user {
+    my $self = shift;
+    my $email = shift;
+    sql_execute('UPDATE users SET email_address = ? WHERE email_address = ?',
+        time() . '@devnull.socialtext.net', $email);
+    sql_execute('UPDATE users SET driver_username = ? WHERE driver_username = ?',
+        time() . '@devnull.socialtext.net', $email);
+}
+
 sub create_workspace {
     my $self = shift;
     my $name = shift;
