@@ -4280,6 +4280,7 @@ body#dashBoard div#controls div#controlsRight ul {
     display: none;
     width: 252px;
     font-size: 90%;
+    z-index: 1000;
 }
 
 .avatarPopup .inner {
