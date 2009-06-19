@@ -188,6 +188,7 @@ sub create {
     my $id = Socialtext::User::Factory->NewUserId();
     $p{user_id} = $id;
 
+    my $primary_account_id = delete $p{primary_account_id};
     my $homunculus = $class->_first( 'create', %p );
 
     if (!exists $p{created_by_user_id}) {
@@ -206,6 +207,7 @@ sub create {
     my $metadata = Socialtext::UserMetadata->create(%metadata_p);
     $user->metadata($metadata);
 
+    $user->primary_account( $primary_account_id ) if $primary_account_id;
     $user->_update_profile();
 
     return $user;
