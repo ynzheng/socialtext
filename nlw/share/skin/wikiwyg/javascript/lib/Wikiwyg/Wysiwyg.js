@@ -711,7 +711,9 @@ proto.enableThis = function() {
 
         self.enable_keybindings();
         self.enable_pastebin();
-        self.set_focus();
+        if (!self.wikiwyg.config.noAutoFocus) {
+            self.set_focus();
+        }
         self.rebindHandlers();
         self.set_clear_handler();
 
