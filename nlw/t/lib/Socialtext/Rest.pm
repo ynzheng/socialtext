@@ -134,4 +134,13 @@ sub is_status($$$) {
     is $headers{-status}, $expected, $name;
 }
 
+sub template_render {
+    my ($self, $tmpl, $add_vars) = @_;
+    my $output = "template=$tmpl";
+    for my $v (keys %$add_vars) {
+        $output .= "$v=$add_vars->{$v}\n";
+    }
+    return $output;
+}
+
 1;
