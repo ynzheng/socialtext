@@ -169,8 +169,8 @@ Avatar.prototype = {
         this.contentNode.append(html);
         this.person = new Person({
             id: this.id,
-            best_full_name: this.popup.children('.fn').text(),
-            email: this.popup.children('.email').text()
+            best_full_name: this.popup.find('.fn').text(),
+            email: this.popup.find('.email').text()
         });
         var followLink = this.person.createFollowLink();
         if (followLink) {
