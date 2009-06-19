@@ -64,10 +64,10 @@ sub _transform_image {
     print $fh $$image_ref;
     close $fh or die "Could not process image: $!";
 
-    Socialtext::Image::extract_rectangle(
-        image_filename => $filename,
-        width => 201,
-        height => 36,
+    Socialtext::Image::resize(
+        filename => $filename,
+        max_width => 201,
+        max_height => 36,
     );
 
     my $txfrm_image = Socialtext::File::get_contents_binary($filename);
