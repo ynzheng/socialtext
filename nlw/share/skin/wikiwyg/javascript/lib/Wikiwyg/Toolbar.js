@@ -73,7 +73,7 @@ proto.setup_widgets_menu = function(title) {
     if (jQuery.browser.msie) {
         jQuery("#st-editing-insert-menu > li > ul a").mouseover(function(){
             if (self.wikiwyg.current_mode.get_editable_div) {
-                self._currentModeHadFocus = wikiwyg.current_mode._hasFocus;
+                self._currentModeHadFocus = self.wikiwyg.current_mode._hasFocus;
             }
         });
     }
