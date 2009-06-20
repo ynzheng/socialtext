@@ -266,6 +266,7 @@ proto.do_pre = proto.format_command;
 proto.insert_html = function(html) { // See IE
     this.get_edit_window().focus();
     this.exec_command('inserthtml', html);
+    $(this.get_edit_document()).triggerHandler('change');
 }
 
 proto.do_unlink = function() {
@@ -370,6 +371,8 @@ proto.insert_html = function(html) {
     if (this.__range) {
         this.__range = null;
     }
+
+    $(this.get_edit_document()).triggerHandler('change');
 }
 
 proto.get_inner_html = function( cb ) {
