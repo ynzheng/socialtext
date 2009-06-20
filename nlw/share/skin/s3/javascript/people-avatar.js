@@ -19,7 +19,7 @@ Person.prototype = {
     },
 
     linkText: function() {
-        return this.isFollowing() ? loc('Stop Following this person')
+        return this.isFollowing() ? loc('Stop following this person')
                                   : loc('Follow this person');
     },
 
