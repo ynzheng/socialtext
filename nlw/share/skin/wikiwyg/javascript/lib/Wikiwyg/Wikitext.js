@@ -194,7 +194,7 @@ proto.get_words = function() {
         return selection.match(/\r?\n(\r?\n|\*+ |\#+ |\=+ )/);
     }
 
-    t = this.area; // XXX needs "var"?
+    var t = this.area;
     var selection_start = t.selectionStart;
     var selection_end = t.selectionEnd;
 
