@@ -1175,7 +1175,10 @@ this.addGlobal().setup_wikiwyg = function() {
             jQuery("#st-editing-tools-display").hide();
 
             nlw_edit_controls_visible = true;
-            ww.enableLinkConfirmations();
+
+            if (Socialtext.page_type == 'wiki') {
+                ww.enableLinkConfirmations();
+            }
 
             ww.is_editing = true;
 
