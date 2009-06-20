@@ -98,8 +98,10 @@ proto.getInnerText = function() {
 }
 
 proto.set_inner_html = function(html) {
-    if (this.get_edit_document().body)
+    if (this.get_edit_document().body) {
         this.get_edit_document().body.innerHTML = html;
+        $(this.get_edit_document()).triggerHandler('change');
+    }
 }
 
 proto.apply_stylesheets = function() {
@@ -455,6 +457,7 @@ proto.set_inner_html = function(html) {
     } else {
         try {
             this._editable_div.innerHTML = html;
+            $(this.get_edit_document()).triggerHandler('change');
         } catch (e) {
             try {
                  self._editable_div.parentNode.removeChild(self._editable_div);
@@ -1832,8 +1835,8 @@ proto.assert_padding_between_block_elements = function(html) {
     var doc = document.createElement("div");
     doc.innerHTML = html;
     if (doc.childNodes.length == 1) {
-        var h = doc.childNodes[0].innerHTML
-        doc.innerHTML = h
+        var h = doc.childNodes[0].innerHTML;
+        if (h) doc.innerHTML = h;
     }
 
     var node_is_a_block = function(node) {
