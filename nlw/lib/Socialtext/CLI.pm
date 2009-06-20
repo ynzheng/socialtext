@@ -1159,6 +1159,13 @@ sub _show_config {
     my $msg = 'Config for ' . $obj->name . " $thing_name\n\n";
     my $fmt = '%-32s: %s';
     my $hash = $obj->to_hash;
+    if ($thing_name eq 'Account') {
+        $hash->{'all_users_workspace_name'} = 'NULL';
+        my $auw = $hash->{all_users_workspace};
+        if ($auw) {
+            $hash->{'all_users_workspace_name'} = Socialtext::Workspace->new(workspace_id => $auw)->name();
+        }
+    }
     delete $hash->{name};
     for my $c ( sort keys %$hash ) {
         my $val = $hash->{$c};
