@@ -838,6 +838,7 @@ proto.diffContent = function () {
 }
 
 proto.get_current_wikitext = function() {
+    if (!this.current_mode) return;
     if (this.current_mode.classname.match(/Wikitext/))
         return this.current_mode.toWikitext();
     var html = (this.current_mode.classname.match(/Wysiwyg/))
@@ -1445,6 +1446,7 @@ this.addGlobal().setup_wikiwyg = function() {
         var rand = (''+Math.random()).replace(/\./, '');
         var input_field = jQuery('#st-tagqueue-field');
         var tag = input_field.val();
+        if (tag == '') return false;
         input_field.val('');
 
         var skip = false;
