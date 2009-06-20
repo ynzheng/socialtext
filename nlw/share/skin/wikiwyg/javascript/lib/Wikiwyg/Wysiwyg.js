@@ -1802,6 +1802,8 @@ var widgets_list = Wikiwyg.Widgets.widgets;
 var widget_data = Wikiwyg.Widgets.widget;
 
 proto.fromHtml = function(html) {
+    if (typeof html != 'string') html = '';
+
     if (Wikiwyg.is_ie) {
         html = html.replace(/<DIV class=wiki>([\s\S]*)<\/DIV>/gi, "$1");
 
