@@ -2481,7 +2481,33 @@ proto.insert_real_image = function(widget, elem, cb) {
 }
 
 proto.insert_image = function (src, widget, widget_element, cb) {
-    var html = '<img src="' + src +
+    var html = '<img ';
+
+    if (!window.image_dimension_cache) {
+        window.image_dimension_cache = {};
+    }
+
+    var dim = window.image_dimension_cache[src];
+
+    if (dim) {
+        html += 'width="' + dim[0] + '" height="' + dim[1] + '"';
+    }
+    else {
+        var srcEscaped = src.replace(/&/g,"&amp;")
+                            .replace(/"/g,"&quot;")
+                            .replace(/</g, "&lt;")
+                            .replace(/>/g, "&gt;")
+                            .replace(/'/g, "\\'")
+                            .replace(/\\/g, "\\\\");
+        html += 'onload="if (!window.image_dimension_cache) window.image_dimension_cache = {};';
+        html += 'window.image_dimension_cache[' + "'";
+        html += srcEscaped;
+        html += "'" + '] = [ $(this).width(), $(this).height() ]; ';
+        html += "$(this).css({ width: $(this).width() + 'px', height: $(this).height() + 'px' })";
+        html += '"';
+    }
+
+    html += ' src="' + src +
         '" widget="' + widget.replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + '" />';
     if ( widget_element ) {
         if ( widget_element.parentNode ) {
