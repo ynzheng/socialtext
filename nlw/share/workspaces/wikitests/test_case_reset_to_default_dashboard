@@ -1,5 +1,4 @@
 | *Comment* | STARTING Test Case: Reset to Default Dashboard |
-| *Comment* | STARTING Test Case: Reset to Default Dashboard DOES NOT WORK IN FF3 |
 
 * Fixture: SocialWidgets
 
@@ -21,8 +20,8 @@
 | *Comment* | Test Case: Reset to Default Dashboard - Add RSS Viewer |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=RSS Viewer | 30000 |
-| click_and_wait | link=RSS Viewer |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-RSS Viewer'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-RSS Viewer'] |  |
 
 | *Comment* | Test Case: Reset to Default Dashboard - Test for RSS Viewer |  |
 | wait_for_text_present_ok | Socialtext blog | 30000 |
@@ -33,8 +32,8 @@
 | *Comment* | Test Case: Reset to Default Dashboard - Add Wikipedia |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | link=Wikipedia | 30000 |
-| click_and_wait | link=Wikipedia |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Wikipedia'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Wikipedia'] |  |
 
 | *Comment* | Test Case: Reset to Default Dashboard - Test for Wikipedia |  |
 | wait_for_text_present_ok | Wikipedia | 30000 |
@@ -49,6 +48,7 @@
 | wait_for_element_visible_ok | force-update | 30000 |
 | check_ok | force-update |  |
 | click_ok | st-save-widget-template |  |
+|  *Comment* |  Selenium can't see Success message. Re-open the Dashboard and verify. |  |
 
 | *Comment* | Test Case: Reset to Default Dashboard - verify force update |  |
 | open_ok | /?dashboard | 60000 |
@@ -77,9 +77,11 @@
 | click_and_wait | link=Administer Dashboards |  |
 | wait_for_element_visible_ok | link=Revert to Default... |  |
 | click_ok | link=Revert to Default... |  |
+|  *Comment* |  must wait for page to load but can't use click and wait because lightbox comes up immediately. |  |
+|  pause |  15000 |  I hate pause |
 | wait_for_text_present_ok | Are you sure you want to revert to the Socialtext defaults? | 30000 |
-| wait_for_element_visible_ok | link=Yes | 30000 |
-| click_ok | link=Yes |  |
+| wait_for_element_visible_ok | //a[@id='dashboard-revert-yes'] | 30000 |
+| click_and-wait | //a[@id='dashboard-revert-yes'] |  |
 | wait_for_text_not_present_ok | Wikipedia | 30000 |
 | wait_for_text_not_present_ok | Socialtext blog | 30000 |
 
