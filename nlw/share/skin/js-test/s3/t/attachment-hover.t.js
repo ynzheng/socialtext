@@ -23,7 +23,7 @@ t.runAsync([
         t.scrollTo(t.$("#st-attachment-listing").offset().top - 50);
 
         var hoverText = t.$("#st-attachment-listing li:first a:first").attr("title");
-        t.like(hoverText, /Uploaded by (.+) on (.+)\.\s*\(\d+\s*(K|M| bytes)\)/, "Attachment hover text contains uploader, date and size info.");
+        t.like(hoverText, /Uploaded by (.+) on (.+) GMT\.\s*\(\d+\.\d+(K|M) bytes\)/, "Attachment hover text contains uploader, date and size info.");
 
         t.endAsync();
     }
