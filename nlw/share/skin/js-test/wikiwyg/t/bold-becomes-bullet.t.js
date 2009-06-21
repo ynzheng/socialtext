@@ -16,8 +16,6 @@ else {
 }
 
 
-t.run_is('html', 'wiitext');
-
 /* Test
 === A bold becomes a bullet
 --- html
