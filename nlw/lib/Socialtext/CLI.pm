@@ -1985,7 +1985,9 @@ sub send_email_notifications {
 
     my $page = $self->_require_page($hub);
 
-    $hub->email_notify()->maybe_send_notifications( $page->id() );
+    Socialtext::JobCreator->send_page_email_notifications($page);
+
+#  $hub->email_notify()->maybe_send_notifications( $page->id() );
 
     $self->_success( 'Email notifications were sent for the '
             . $page->metadata()->Subject()
@@ -1998,7 +2000,8 @@ sub send_watchlist_emails {
     my ( $hub, $main ) = $self->_require_hub();
     my $page = $self->_require_page($hub);
 
-    $hub->watchlist()->maybe_send_notifications( $page->id() );
+    Socialtext::JobCreator->send_page_watchlist_emails($page);
+#    $hub->watchlist()->maybe_send_notifications( $page->id() );
 
     $self->_success( 'Watchlist emails were sent for the '
             . $page->metadata()->Subject()
