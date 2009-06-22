@@ -1162,7 +1162,7 @@ sub _show_config {
     if ($thing_name eq 'Account') {
         $hash->{all_users_workspace_name} = Socialtext::Workspace->new(
                 workspace_id => $hash->{all_users_workspace}
-        ) if defined $hash->{all_users_workspace};
+        )->name() if defined $hash->{all_users_workspace};
     }
     delete $hash->{name};
     for my $c ( sort keys %$hash ) {
