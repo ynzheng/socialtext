@@ -1160,11 +1160,9 @@ sub _show_config {
     my $fmt = '%-32s: %s';
     my $hash = $obj->to_hash;
     if ($thing_name eq 'Account') {
-        $hash->{'all_users_workspace_name'} = 'NULL';
-        my $auw = $hash->{all_users_workspace};
-        if ($auw) {
-            $hash->{'all_users_workspace_name'} = Socialtext::Workspace->new(workspace_id => $auw)->name();
-        }
+        $hash->{all_users_workspace_name} = Socialtext::Workspace->new(
+                workspace_id => $hash->{all_users_workspace}
+        ) if defined $hash->{all_users_workspace};
     }
     delete $hash->{name};
     for my $c ( sort keys %$hash ) {
