@@ -615,12 +615,13 @@ sub add_to_all_users_workspace {
     return unless $ws_id and $p{user_id};
 
     my $user = Socialtext::User->new(user_id => $p{user_id});
-
     die "User $p{user_id} doesn't exist" unless $user;
+    return if $user->is_system_created
+        || $user->primary_account_id != $self->account_id;
 
-    return unless $user->primary_account_id == $self->account_id;
+    my $ws = Socialtext::Workspace->new(workspace_id => $ws_id);
+    return if $ws->role_for_user( user => $user );
 
-    my $ws   = Socialtext::Workspace->new(workspace_id => $ws_id);
     $ws->assign_role_to_user(
         user => $user,
         role => Socialtext::Role->Member(),
