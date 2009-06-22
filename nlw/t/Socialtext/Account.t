@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 90;
+use Test::Socialtext tests => 92;
 use Test::Socialtext::User;
 use Test::Exception;
 use Socialtext::File;
@@ -173,6 +173,13 @@ Set_a_logo: {
     $logo_ref = $test->logo->uploaded->image_ref;
     ok $logo_ref, 'logo ref was set';
     ok !$test->logo->is_default_logo, 'logo is no longer the default';
+}
+
+Load_a_logo: {
+    my $account = Socialtext::Account->new(name => $test->name);
+    my $loaded_ref = $account->logo->load();
+    ok $loaded_ref, 'able to reload logo';
+    ok $$loaded_ref eq $$logo_ref, '... identical to uploaded logo';
 }
 
 my $export_file;
