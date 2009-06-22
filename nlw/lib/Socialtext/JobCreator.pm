@@ -78,12 +78,35 @@ sub send_page_notifications {
     my $self = shift;
     my $page = shift;
 
+    my @tasks = (qw/WeblogPing EmailNotify WatchlistNotify/);
+    return $self->_send_page_notifications($page, \@tasks);
+}
+
+sub send_page_watchlist_emails {
+    my $self = shift;
+    my $page = shift;
+
+    return $self->_send_page_notifications($page, ['EmailNotify']);
+}
+
+sub send_page_email_notifications {
+    my $self = shift;
+    my $page = shift;
+
+    return $self->_send_page_notifications($page, ['WatchlistNotify']);
+}
+
+sub _send_page_notifications {
+    my $self = shift;
+    my $page = shift;
+    my $notification_tasks = shift; # array reference of notification tasks
+    
     my $ws_id = $page->hub->current_workspace->workspace_id;
     my $page_id = $page->id;
 
     my @job_ids;
 
-    for my $task (qw/WeblogPing EmailNotify WatchlistNotify/) {
+    for my $task (@$notification_tasks) {
         push @job_ids, $self->insert(
             "Socialtext::Job::$task" => {
                 workspace_id => $ws_id,
@@ -95,6 +118,7 @@ sub send_page_notifications {
     }
     return @job_ids;
 }
+
 
 __PACKAGE__->meta->make_immutable;
 1;
