@@ -2,18 +2,11 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-
 use Test::Socialtext tests => 2;
-use Socialtext::User;
-use Socialtext::URI;
-use Socialtext::Account;
-use Socialtext::Workspace;
-use Socialtext::AppConfig;
-use Data::Dumper;
-fixtures(qw( admin exchange no-ceq-jobs ));
-
 use Socialtext::Jobs;
 use Socialtext::Search::AbstractFactory;
+
+fixtures(qw( admin exchange no-ceq-jobs ));
 
 my $hub = new_hub('admin');
 Socialtext::Search::AbstractFactory->GetFactory->create_indexer('admin')
