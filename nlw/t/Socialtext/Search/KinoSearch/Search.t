@@ -298,12 +298,10 @@ sub search_ok {
     diag($@) if $@;
 
     my $hits = ( $num_of_results == 1 ) ? "hit" : "hits";
-    is(
-        scalar @results,
-        $num_of_results,
-        "'$term' returns $num_of_results $hits: $text"
-    );
-
+    my $name = $text
+        ? "'$term' returns $num_of_results $hits: $text"
+        : "'$term' returns $num_of_results $hits";
+    is scalar @results, $num_of_results, $name;
     return @results;
 }
 
