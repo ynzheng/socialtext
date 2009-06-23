@@ -8,6 +8,7 @@ use Test::Socialtext tests => 145;
 
 fixtures( 'admin' );
 
+no warnings 'redefine';
 local *Socialtext::l10n::system_locale = sub {
    return 'ja';
 };
