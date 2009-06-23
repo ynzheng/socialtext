@@ -3,9 +3,9 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-
 use utf8;
 use Test::Socialtext tests => 145;
+
 fixtures( 'admin' );
 
 local *Socialtext::l10n::system_locale = sub {
@@ -15,7 +15,7 @@ local *Socialtext::l10n::system_locale = sub {
 use_ok("Socialtext::Search::KinoSearch::Factory");
 
 our $workspace = 'admin';
-our $hub = new_hub('admin');
+our $hub       = new_hub($workspace);
 
 #----------------------------------------------------------
 # Testcases

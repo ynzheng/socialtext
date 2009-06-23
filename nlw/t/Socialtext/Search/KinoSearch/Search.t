@@ -13,7 +13,7 @@ fixtures( 'admin' );
 use_ok("Socialtext::Search::KinoSearch::Factory");
 
 our $workspace = 'admin';
-our $hub = new_hub('admin');
+our $hub       = new_hub($workspace);
 
 my $INDEXER;
 my $SEARCHER;
