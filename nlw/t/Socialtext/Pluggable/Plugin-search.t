@@ -16,7 +16,7 @@ ceqlotron_run_synchronously();
 use_ok 'Socialtext::Pluggable::Plugin';
 
 my $plug = Socialtext::Pluggable::Plugin->new;
-$plug->{hub} = $hub;
+$plug->hub($hub);
 
 #search
 my $pages = $plug->search(search_term => 'tag:welcome');
