@@ -6,7 +6,7 @@ use Test::Socialtext tests => 2;
 use Socialtext::Jobs;
 use Socialtext::Search::AbstractFactory;
 
-fixtures(qw( admin exchange no-ceq-jobs ));
+fixtures(qw( admin no-ceq-jobs ));
 
 my $hub = new_hub('admin');
 Socialtext::Search::AbstractFactory->GetFactory->create_indexer('admin')
