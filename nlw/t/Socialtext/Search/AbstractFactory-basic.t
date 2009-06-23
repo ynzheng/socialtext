@@ -7,8 +7,15 @@ use Test::Socialtext tests => 9;
 use Test::Socialtext::Search;
 use Socialtext::Search::AbstractFactory;
 
-fixtures(qw( admin no-ceq-jobs ));
+###############################################################################
+# Fixtures: clean admin no-ceq-jobs
+# - start with a clean slate; we expect only *one* page to be indexed
+# - need a workspace to work with
+# - but want no Ceq jobs, so *WE* control what gets indexed
+fixtures(qw( clean admin no-ceq-jobs ));
 
+###############################################################################
+# We only want this *ONE* Page indexed, not the whole WS.
 Socialtext::Search::AbstractFactory->GetFactory->create_indexer('admin')
     ->index_page('quick_start');
 
