@@ -18,15 +18,13 @@ our @EXPORT = qw(init delete_page search_for_term
                  create_and_confirm_page turn_on_rampup
                  turn_off_rampup);
 
-our $hub;
 sub hub {
-    $hub = Test::Socialtext::Environment->instance()
-        ->hub_for_workspace('admin');
-    return $hub;
-}
+    return Test::Socialtext::main_hub();
+};
 
 sub delete_page {
     my $title = shift;
+    my $hub   = hub();
     my $page = $hub->pages->new_from_name($title);
     $page->delete( user => $hub->current_user );
 }
@@ -39,6 +37,7 @@ sub search_for_term {
 
     Test::Socialtext::ceqlotron_run_synchronously();
 
+    my $hub    = hub();
     my $search = $hub->search;
     $search->search_for_term(search_term => $term);
     my $set = $search->result_set;
@@ -69,6 +68,7 @@ sub search_for_term_in_attach {
 
     Test::Socialtext::ceqlotron_run_synchronously();
 
+    my $hub    = hub();
     my $search = $hub->search;
     $search->search_for_term(search_term => $term);
     my $set = $search->result_set;
@@ -114,6 +114,7 @@ sub create_and_confirm_page {
     my $title = shift;
     my $content = shift;
     my $categories = shift || [];
+    my $hub = hub();
 
     # FIXME: $categories goes in as a reference to a
     # list. It can be here as [] and come out the other
