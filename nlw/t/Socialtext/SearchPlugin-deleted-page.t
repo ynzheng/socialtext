@@ -8,8 +8,6 @@ use Test::Socialtext tests => 9;
 use Test::Socialtext::Search;
 fixtures( 'admin' );
 
-my $hub = Test::Socialtext::Search::hub();
-
 {
     my $title = 'A Page with a Wacktastic Title';
     create_and_confirm_page(

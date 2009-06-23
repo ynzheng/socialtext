@@ -9,8 +9,6 @@ use Socialtext::Search::AbstractFactory;
 
 fixtures(qw( admin no-ceq-jobs ));
 
-my $hub = Test::Socialtext::Search::hub();
-
 Socialtext::Search::AbstractFactory->GetFactory->create_indexer('admin')
     ->index_page('quick_start');
 
