@@ -8,12 +8,12 @@ use Socialtext::Search::AbstractFactory;
 
 fixtures(qw( admin no-ceq-jobs ));
 
+use_ok 'Socialtext::Pluggable::Plugin';
+
 my $hub = new_hub('admin');
 Socialtext::Search::AbstractFactory->GetFactory->create_indexer('admin')
     ->index_workspace('admin');
 ceqlotron_run_synchronously();
-
-use_ok 'Socialtext::Pluggable::Plugin';
 
 my $plug = Socialtext::Pluggable::Plugin->new;
 $plug->hub($hub);
