@@ -136,39 +136,34 @@ Avatar.prototype = {
             .addClass('avatarPopup')
             .mouseover(function() { self.mouseOver() })
             .mouseout(function() { self.mouseOut() })
-            .append(this.contentNode)
             .appendTo('body');
 
-        var $img1 = $('<img/>')
-            .addClass('top')
-            .attr('src', nlw_make_s3_path('/images/avatarPopupTop.png'))
-            .prependTo(this.popup);
-        this.makeTransparent($img1);
-
         // Add quote bubbles
-        var $img2 = $('<img/>')
-            .addClass('bottom')
-            .attr('src', nlw_make_s3_path('/images/avatarPopupBottom.png'))
+        this.makeBubble('top', '/images/avatarPopupTop.png')
             .appendTo(this.popup);
-        this.makeTransparent($img2);
+
+        this.popup.append(this.contentNode)
+        this.popup.append('<div class="clear"></div>');
+
+        this.makeBubble('bottom', '/images/avatarPopupBottom.png')
+            .appendTo(this.popup);
     },
 
-    makeTransparent: function($img) {
+    makeBubble: function(className, src) {
+        var src = nlw_make_s3_path(src);
+        var $div = $('<div></div>').addClass(className);
 	if ($.browser.msie && $.browser.version < 7) {
-            var args = "src='" + $img.attr('src') + "', sizingMethod='scale'";
-            var filter = "progid:DXImageTransform.Microsoft"
-                       + ".AlphaImageLoader(" + args + ")";
-
-            $('<div></div>')
-                .insertAfter($img)
-                .attr('class', $img.attr('class'))
-                .css({
-                    'filter': filter,
-                    'height': '19px',
-                    'width': '252px'
-                });
-            $img.remove();
+            var args = "src='" + src + "', sizingMethod='crop'";
+            $div.css(
+                'filter',
+                "progid:DXImageTransform.Microsoft"
+                + ".AlphaImageLoader(" + args + ")"
+            );
         }
+        else {
+            $div.css('background', 'transparent url('+src+') no-repeat');
+        }
+        return $div;
     },
 
     getUserInfo: function(userid) {
