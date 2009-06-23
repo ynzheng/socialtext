@@ -2490,7 +2490,7 @@ proto.insert_image = function (src, widget, widget_element, cb) {
     var dim = window.image_dimension_cache[src];
 
     if (dim) {
-        html += 'width="' + dim[0] + '" height="' + dim[1] + '"';
+        html += 'onload="if (ss.editor) { ss.editor.DoPositionCalculations() }" width="' + dim[0] + '" height="' + dim[1] + '"';
     }
     else {
         var srcEscaped = src.replace(/&/g,"&amp;")
@@ -2499,11 +2499,11 @@ proto.insert_image = function (src, widget, widget_element, cb) {
                             .replace(/>/g, "&gt;")
                             .replace(/'/g, "\\'")
                             .replace(/\\/g, "\\\\");
-        html += 'onload="if (!window.image_dimension_cache) window.image_dimension_cache = {};';
+        html += 'onload="if (ss.editor) { ss.editor.DoPositionCalculations() } if (!window.image_dimension_cache) window.image_dimension_cache = {};';
         html += 'window.image_dimension_cache[' + "'";
         html += srcEscaped;
-        html += "'" + '] = [ $(this).width(), $(this).height() ]; ';
-        html += "$(this).css({ width: $(this).width() + 'px', height: $(this).height() + 'px' })";
+        html += "'" + '] = [ this.offsetWidth, this.offsetHeight ]; ';
+        html += "this.style.width = this.offsetWidth + 'px'; this.style.height = this.offsetHeight + 'px'";
         html += '"';
     }
 
