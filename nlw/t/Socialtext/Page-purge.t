@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 use Test::Socialtext tests => 5;
-fixtures( 'admin', 'destructive' );
+fixtures(qw( admin no-ceq-jobs destructive ));
 use Socialtext::Jobs;
 
 
@@ -17,8 +17,6 @@ my $page = $hub->pages->new_from_name('Start here');
 }
 
 {
-    Socialtext::Jobs->clear_jobs();
-
     my $attachment_path =
         join '/', $page->hub->attachments->plugin_directory, $page->id;
     my $page_path = $page->directory_path;

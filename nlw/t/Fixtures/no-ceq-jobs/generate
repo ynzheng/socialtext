@@ -1,0 +1,9 @@
+#!/usr/bin/perl
+# @COPYRIGHT@
+
+use strict;
+use warnings;
+use lib "$ENV{NLW_DIR}/lib";
+use Socialtext::Jobs;
+
+eval { Socialtext::Jobs->clear_jobs() };

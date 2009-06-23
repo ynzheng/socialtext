@@ -8,11 +8,12 @@ BEGIN {
 }
 
 use Test::Socialtext;
+use Test::Socialtext::Search;
+use Socialtext::File;
+
 # This unit test *requires* that there be *no* pages in the workspace that
 # we're testing.
 fixtures( 'admin_no_pages' );
-use Test::Socialtext::Search;
-use Socialtext::File;
 
 
 my $wvtext_path = check_for_file_in_path('wvText');

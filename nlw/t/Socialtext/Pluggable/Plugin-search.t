@@ -10,12 +10,10 @@ use Socialtext::Account;
 use Socialtext::Workspace;
 use Socialtext::AppConfig;
 use Data::Dumper;
-fixtures( 'admin', 'exchange' );
+fixtures(qw( admin exchange no-ceq-jobs ));
 
 use Socialtext::Jobs;
 use Socialtext::Search::AbstractFactory;
-
-Socialtext::Jobs->clear_jobs();
 
 my $hub = new_hub('admin');
 Socialtext::Search::AbstractFactory->GetFactory->create_indexer('admin')

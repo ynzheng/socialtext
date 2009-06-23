@@ -6,7 +6,7 @@ use warnings;
 use Test::Socialtext tests => 44;
 use Socialtext::URI;
 use Socialtext::Cache;
-fixtures( 'auth-to-edit' );
+fixtures(qw( auth-to-edit no-ceq-jobs ));
 
 use DateTime;
 
@@ -26,7 +26,6 @@ no warnings 'redefine';
     host => 'local.example.com',
     scheme => 'http',
 };
-Socialtext::Jobs->clear_jobs();
 
 my $date = DateTime->now->add( seconds => 600 );
 

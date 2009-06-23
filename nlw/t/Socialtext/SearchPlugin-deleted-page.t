@@ -5,9 +5,8 @@ use strict;
 use warnings;
 
 use Test::Socialtext tests => 9;
-fixtures( 'admin' );
-
 use Test::Socialtext::Search;
+fixtures( 'admin' );
 
 my $hub = Test::Socialtext::Search::hub();
 

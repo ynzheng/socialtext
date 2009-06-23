@@ -8,9 +8,10 @@ BEGIN {
 }
 
 use Test::Socialtext;
-fixtures( 'admin' );
 use Test::Socialtext::Search;
 use Socialtext::Search::Config;
+
+fixtures( 'admin' );
 
 plan tests => 19;
 

@@ -18,9 +18,7 @@ our @EXPORT = qw(init delete_page search_for_term
                  create_and_confirm_page turn_on_rampup
                  turn_off_rampup);
 
-Socialtext::Jobs->clear_jobs();
 our $hub;
-
 sub hub {
     $hub = Test::Socialtext::Environment->instance()
         ->hub_for_workspace('admin');

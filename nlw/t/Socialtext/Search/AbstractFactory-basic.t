@@ -3,15 +3,11 @@
 
 use strict;
 use warnings;
-
-# Stick this in a begin block, so that we create the fixture right away
-# Then, when we load Test::Socialtext::Search, it will clear the ceq queue
-BEGIN {
-    use Test::Socialtext tests => 9;
-    fixtures( 'admin' );
-}
+use Test::Socialtext tests => 9;
 use Test::Socialtext::Search;
 use Socialtext::Search::AbstractFactory;
+
+fixtures(qw( admin no-ceq-jobs ));
 
 my $hub = Test::Socialtext::Search::hub();
 
