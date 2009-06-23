@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::Socialtext tests => 3;
+use Test::Socialtext tests => 2;
 use Socialtext::User;
 use Socialtext::URI;
 use Socialtext::Account;
@@ -21,10 +21,7 @@ Socialtext::Search::AbstractFactory->GetFactory->create_indexer('admin')
 ceqlotron_run_synchronously();
 
 use_ok 'Socialtext::Pluggable::Plugin';
-use_ok 'Socialtext::Pluggable::Adapter';
 
-my $system_user = Socialtext::User->SystemUser;
-my $adapter = Socialtext::Pluggable::Adapter->new;
 my $plug = Socialtext::Pluggable::Plugin->new;
 $plug->{hub} = $hub;
 
