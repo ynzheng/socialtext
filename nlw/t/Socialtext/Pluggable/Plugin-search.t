@@ -62,37 +62,3 @@ workspace_tour_table_of_contents
 
 my @page_ids = sort map { $_->{page_id} } @{$pages->{rows}};
 is_deeply \@page_ids, \@expected, "Tag search returned the right page results";
-exit;
-
-
-package Rest;
-use strict;
-use warnings;
-our %query;
-sub new { bless {}, $_[0] }
-sub getContent { 'content' }
-sub getContentPrefs { +{content => 'prefs'} }
-sub query { Query->new }
-sub request { Request->new }
-sub header {
-    my ($self, %headers) = @_;
-    $self->{out} ||= {};
-    $self->{out}{$_} = $headers{$_} for keys %headers;
-    return %{$self->{out}};
-}
-
-package Request;
-use strict;
-use warnings;
-our %in;
-sub new { bless {}, $_[0] }
-sub header_in { $in{$_[1]} }
-sub headers_in { %in }
-
-package Query;
-use strict;
-use warnings;
-our %p;
-sub new { bless {}, $_[0] }
-sub param { $p{$_[1]} }
-sub query_string { join ';', map { "$_=$p{$_}" } keys %p }
