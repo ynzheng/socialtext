@@ -153,13 +153,13 @@
 
     $.fn.hideLightbox = function() {
         if (opts) {
-            $('#lightbox').trigger('lightbox-unload');
             if (opts.content)
                 $(opts.content).hide().appendTo('body');
             $('#overlay').fadeOut(opts.speed);
             $('#lightbox').html('').hide();
             $('html').css('overflow', opts._originalHTMLOverflow);
             $('body').css('overflow', opts._originalBodyOverflow);
+            $('#lightbox').trigger('lightbox-unload');
         }
     };
 })(jQuery);
