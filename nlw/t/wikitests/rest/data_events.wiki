@@ -99,10 +99,10 @@ Test case for `/data/events`(GET and POST).
 | get        | /data/events                                                                                                   | text/html      |
 | has-header | Content-type                                                                                                   | qr/text\/html/ |
 | code-is    | 200                                                                                                            |                |
-| body-like  | qr/Tester One<\/a> tagged <b><[^>]+>Page One<\/a><\/b> in <a [^>]+>%%test_workspace%%<\/a> as <a[^>]+>taggy/   |                |
-| body-like  | qr/Tester One<\/a> tagged <b><[^>]+>Page Two<\/a><\/b> in <a [^>]+>%%test_workspace%%<\/a> as <a[^>]+>saggy/   |                |
-| body-like  | qr/Tester Two<\/a> tagged <b><[^>]+>Page Three<\/a><\/b> in <a [^>]+>%%test_workspace%%<\/a> as <a[^>]+>taggy/ |                |
-| body-like  | qr/Tester Two<\/a> tagged <[^>]+>Tester One<\/a> <a[^>]+>downer/                                               |                |
+| body-like  | qr/Tester One<\/a><\/span> tagged <b><[^>]+>Page One<\/a><\/b> in <a [^>]+>%%test_workspace%%<\/a> as <a[^>]+>taggy/   |                |
+| body-like  | qr/Tester One<\/a><\/span> tagged <b><[^>]+>Page Two<\/a><\/b> in <a [^>]+>%%test_workspace%%<\/a> as <a[^>]+>saggy/   |                |
+| body-like  | qr/Tester Two<\/a><\/span> tagged <b><[^>]+>Page Three<\/a><\/b> in <a [^>]+>%%test_workspace%%<\/a> as <a[^>]+>taggy/ |                |
+| body-like  | qr/Tester Two<\/a><\/span> tagged <[^>]+>\s*<[^>]+>Tester One<\/a><\/span> <a[^>]+>downer/                                               |                |
 
 
 | Comment     | GET one event (limit) |                  |
