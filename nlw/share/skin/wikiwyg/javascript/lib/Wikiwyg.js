@@ -1090,6 +1090,8 @@ this.addGlobal().setup_wikiwyg = function() {
 
     ww.starting_edit = false;
     ww.start_nlw_wikiwyg = function() {
+        if (Socialtext.page_type == 'spreadsheet') return;
+
         if (ww.starting_edit) {
             return;
         }
