@@ -369,12 +369,20 @@ proto.insert_html = function(html, triedSetFocus) {
 
     var id = "marquee-" + (Date.now ? Date.now() : (new Date()).getTime());
 
+    if (triedSetFocus) {
+        /* Counter the move-right effect of re-focusing (cf. {bz: 1962}),
+         * by moving leftward by one character.  Ugly, but it works.
+         */
+        range.move('character', -1);
+    }
+
     range.execCommand('insertmarquee', false, id);
 
     var $newNode = $('#'+id, this.get_edit_document());
     if ($newNode.size() == 0)  {
-        /* {bz: 2756} - We're left with no choice but re-focus and have IE8
-         * move the cursor rightward -- {bz: 1692} is the lesser evil here.
+        /* {bz: 2756} - We're deliberately re-focus and have IE8 move
+         * the cursor rightward, then compensate for it in the second
+         * call to ourselves (see the triedSetFocus paragraph above).
          */
         $('#'+id).remove();
 
