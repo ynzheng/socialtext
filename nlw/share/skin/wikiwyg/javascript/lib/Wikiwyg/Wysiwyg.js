@@ -361,15 +361,29 @@ proto.insert_html = function(html) {
     var doc = this.get_edit_document();
     var range = this.__range;
     if (!range) {
-        range = this.get_edit_document().selection.createRange();
+        range = doc.selection.createRange();
     }
 
     if (range.boundingTop == 2 && range.boundingLeft == 2)
         return;
 
-    range.pasteHTML(html);
+    var id = "marquee-" + (Date.now ? Date.now() : (new Date()).getTime());
+
+    range.execCommand('insertmarquee', false, id);
     range.collapse(false);
     range.select();
+
+    var $newNode = $('#'+id, this.get_edit_document());
+    if ($newNode.size() == 0)  {
+        /* Hm, we trapped a bug. {bz: 2756} */
+        $('#'+id).remove();
+        alert("Sorry, please select some text first and try this command again.");
+        return;
+        /* return this.insert_html(html); */
+    }
+
+    $newNode.replaceWith(html);
+
     if (this.__range) {
         this.__range = null;
     }
