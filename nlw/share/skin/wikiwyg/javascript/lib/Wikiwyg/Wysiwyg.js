@@ -1194,11 +1194,13 @@ proto.do_new_table = function() {
             .unbind("click")
             .bind("click", function() {
                 do_table();
+                return false;
             });
         jQuery('.table-create .close')
             .unbind("click")
             .bind("click", function() {
                 self.closeTableDialog();
+                return false;
             });
         jQuery("#lightbox").one("lightbox-unload", function() {
             self.set_focus();
