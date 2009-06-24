@@ -3,7 +3,12 @@
 -
     '/data/log':
         'POST':
-            '*/*':              &default [Socialtext::Rest::Log, POST_form]
+            '*/*':     &default [Socialtext::Rest::Log, POST_form]
+-
+    '/data/test/:name':
+        'GET':
+            '*/*':     &default [Test::Socialtext::Rest, GET]
+        '*':                    [Test::Socialtext::Rest, bad_method]
 [%- END %]
 -
     '/data/jobs':
