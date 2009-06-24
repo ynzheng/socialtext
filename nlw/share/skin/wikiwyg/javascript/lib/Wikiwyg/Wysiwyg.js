@@ -370,8 +370,6 @@ proto.insert_html = function(html) {
     var id = "marquee-" + (Date.now ? Date.now() : (new Date()).getTime());
 
     range.execCommand('insertmarquee', false, id);
-    range.collapse(false);
-    range.select();
 
     var $newNode = $('#'+id, this.get_edit_document());
     if ($newNode.size() == 0)  {
@@ -383,6 +381,9 @@ proto.insert_html = function(html) {
     }
 
     $newNode.replaceWith(html);
+
+    range.collapse(false);
+    range.select();
 
     if (this.__range) {
         this.__range = null;
