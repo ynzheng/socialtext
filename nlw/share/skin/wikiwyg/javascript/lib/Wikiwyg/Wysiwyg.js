@@ -357,7 +357,7 @@ proto.get_selection_text = function() {
     return '';
 }
 
-proto.insert_html = function(html) {
+proto.insert_html = function(html, triedSetFocus) {
     var doc = this.get_edit_document();
     var range = this.__range;
     if (!range) {
@@ -373,11 +373,22 @@ proto.insert_html = function(html) {
 
     var $newNode = $('#'+id, this.get_edit_document());
     if ($newNode.size() == 0)  {
-        /* Hm, we trapped a bug. {bz: 2756} */
+        /* {bz: 2756} - We're left with no choice but re-focus and have IE8
+         * move the cursor rightward -- {bz: 1692} is the lesser evil here.
+         */
         $('#'+id).remove();
-        alert("Sorry, please select some text first and try this command again.");
-        return;
-        /* return this.insert_html(html); */
+
+        if (triedSetFocus) {
+            /* This should never happen -- at least until IE9 is released ;-) */
+            alert("Sorry, an IE bug prevented this action. Please select some text first and try again.");
+            return;
+        }
+        else {
+            this._hasFocus = false;
+            this.__range = null;
+            this.set_focus();
+            return this.insert_html(html, true);
+        }
     }
 
     $newNode.replaceWith(html);
