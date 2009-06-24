@@ -48,7 +48,7 @@ our ($H2Z, %H2Z);
     sub _h2z {
         my $self    = shift;
         my $text    = shift;
-        $text = Unicode::Japanese->new($text)->h2zKana->get();
+        $text = Unicode::Japanese->new($text)->h2zKana->get() || '';
         $text =~ s/($H2Z)/(exists $H2Z{$1} ? $H2Z{$1} : $1)/ego;
         return $text;
     }

@@ -14,11 +14,10 @@ END { ceq_kill() }
 
 ok(Socialtext::Job::Cmd->isa('Socialtext::Job'));
 
-fixtures( 'db', 'base_config' );
+fixtures(qw( db no-ceq-jobs ));
 
 my $Ceq_bin = ceq_bin();
 ok -x $Ceq_bin;
-Socialtext::Jobs->clear_jobs();
 ceq_config(
     period => 0.1,
     polling_period => 0.1,

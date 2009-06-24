@@ -1135,11 +1135,10 @@ SEND_EMAIL_NOTIFICATIONS: {
         ->update( email_notify_is_enabled => 1 );
 
     require Socialtext::EmailNotifyPlugin;
-    my @page_ids;
+    my @pages;
     no warnings 'once';
-    local *Socialtext::EmailNotifyPlugin::maybe_send_notifications
-        = sub { push @page_ids, $_[1] };
-
+    local *Socialtext::JobCreator::send_page_email_notifications
+        = sub { push @pages, $_[1] };
     expect_success(
         sub {
             Socialtext::CLI->new(
@@ -1149,15 +1148,15 @@ SEND_EMAIL_NOTIFICATIONS: {
         qr/\QEmail notifications were sent for the Start here page.\E/,
         'send-email-notifications success'
     );
-    is( scalar @page_ids, 1, 'one notification was sent' );
+    is( scalar @pages, 1, 'one notification was sent' );
     is(
-        $page_ids[0], 'start_here',
+        $pages[0]->id, 'start_here',
         'notification was sent for start_here page'
     );
 
     Socialtext::Workspace->new( name => 'admin' )
         ->update( email_notify_is_enabled => 0 );
-    @page_ids = ();
+    @pages= ();
 
     expect_failure(
         sub {
@@ -1168,15 +1167,15 @@ SEND_EMAIL_NOTIFICATIONS: {
         qr/\QEmail notifications are disabled for the admin workspace.\E/,
         'send-email-notifications with email notify disabled'
     );
-    is( scalar @page_ids, 0, 'no notifications were sent' );
+    is( scalar @pages, 0, 'no notifications were sent' );
 }
 
 SEND_WATCHLIST_EMAILS: {
     require Socialtext::WatchlistPlugin;
-    my @page_ids;
+    my @pages;
     no warnings 'once';
-    local *Socialtext::WatchlistPlugin::maybe_send_notifications
-        = sub { push @page_ids, $_[1] };
+    local *Socialtext::JobCreator::send_page_watchlist_emails
+        = sub { push @pages, $_[1] };
 
     expect_success(
         sub {
@@ -1187,8 +1186,8 @@ SEND_WATCHLIST_EMAILS: {
         qr/\QWatchlist emails were sent for the Start here page.\E/,
         'send-watchlist-emails success'
     );
-    is( scalar @page_ids, 1, 'one email was sent' );
-    is( $page_ids[0], 'start_here', 'email was sent for start_here page' );
+    is( scalar @pages, 1, 'one email was sent' );
+    is( $pages[0]->id, 'start_here', 'email was sent for start_here page' );
 }
 
 SHOW_WORKSPACE_CONFIG: {

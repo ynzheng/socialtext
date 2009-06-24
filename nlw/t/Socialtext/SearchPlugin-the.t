@@ -5,12 +5,10 @@ use strict;
 use warnings;
 
 use Test::Socialtext tests => 6;
-fixtures( 'admin' );
+fixtures(qw( admin no-ceq-jobs ));
 
 use Socialtext::Jobs;
 use Socialtext::Search::AbstractFactory;
-
-Socialtext::Jobs->clear_jobs();
 
 my $hub = new_hub('admin');
 Socialtext::Search::AbstractFactory->GetFactory->create_indexer('admin')

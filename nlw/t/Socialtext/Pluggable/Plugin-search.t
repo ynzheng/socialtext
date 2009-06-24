@@ -2,33 +2,21 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-
-use Test::Socialtext tests => 3;
-use Socialtext::User;
-use Socialtext::URI;
-use Socialtext::Account;
-use Socialtext::Workspace;
-use Socialtext::AppConfig;
-use Data::Dumper;
-fixtures( 'admin', 'exchange' );
-
+use Test::Socialtext tests => 2;
 use Socialtext::Jobs;
 use Socialtext::Search::AbstractFactory;
 
-Socialtext::Jobs->clear_jobs();
+fixtures(qw( admin no-ceq-jobs ));
+
+use_ok 'Socialtext::Pluggable::Plugin';
 
 my $hub = new_hub('admin');
 Socialtext::Search::AbstractFactory->GetFactory->create_indexer('admin')
     ->index_workspace('admin');
 ceqlotron_run_synchronously();
 
-use_ok 'Socialtext::Pluggable::Plugin';
-use_ok 'Socialtext::Pluggable::Adapter';
-
-my $system_user = Socialtext::User->SystemUser;
-my $adapter = Socialtext::Pluggable::Adapter->new;
 my $plug = Socialtext::Pluggable::Plugin->new;
-$plug->{hub} = $hub;
+$plug->hub($hub);
 
 #search
 my $pages = $plug->search(search_term => 'tag:welcome');
@@ -64,37 +52,3 @@ workspace_tour_table_of_contents
 
 my @page_ids = sort map { $_->{page_id} } @{$pages->{rows}};
 is_deeply \@page_ids, \@expected, "Tag search returned the right page results";
-exit;
-
-
-package Rest;
-use strict;
-use warnings;
-our %query;
-sub new { bless {}, $_[0] }
-sub getContent { 'content' }
-sub getContentPrefs { +{content => 'prefs'} }
-sub query { Query->new }
-sub request { Request->new }
-sub header {
-    my ($self, %headers) = @_;
-    $self->{out} ||= {};
-    $self->{out}{$_} = $headers{$_} for keys %headers;
-    return %{$self->{out}};
-}
-
-package Request;
-use strict;
-use warnings;
-our %in;
-sub new { bless {}, $_[0] }
-sub header_in { $in{$_[1]} }
-sub headers_in { %in }
-
-package Query;
-use strict;
-use warnings;
-our %p;
-sub new { bless {}, $_[0] }
-sub param { $p{$_[1]} }
-sub query_string { join ';', map { "$_=$p{$_}" } keys %p }

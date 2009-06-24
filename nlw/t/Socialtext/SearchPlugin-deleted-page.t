@@ -5,11 +5,8 @@ use strict;
 use warnings;
 
 use Test::Socialtext tests => 9;
-fixtures( 'admin' );
-
 use Test::Socialtext::Search;
-
-my $hub = Test::Socialtext::Search::hub();
+fixtures( 'admin' );
 
 {
     my $title = 'A Page with a Wacktastic Title';

@@ -1159,6 +1159,11 @@ sub _show_config {
     my $msg = 'Config for ' . $obj->name . " $thing_name\n\n";
     my $fmt = '%-32s: %s';
     my $hash = $obj->to_hash;
+    if ($thing_name eq 'Account') {
+        $hash->{all_users_workspace_name} = Socialtext::Workspace->new(
+                workspace_id => $hash->{all_users_workspace}
+        )->name() if defined $hash->{all_users_workspace};
+    }
     delete $hash->{name};
     for my $c ( sort keys %$hash ) {
         my $val = $hash->{$c};
@@ -1980,7 +1985,9 @@ sub send_email_notifications {
 
     my $page = $self->_require_page($hub);
 
-    $hub->email_notify()->maybe_send_notifications( $page->id() );
+    Socialtext::JobCreator->send_page_email_notifications($page);
+
+#  $hub->email_notify()->maybe_send_notifications( $page->id() );
 
     $self->_success( 'Email notifications were sent for the '
             . $page->metadata()->Subject()
@@ -1993,7 +2000,8 @@ sub send_watchlist_emails {
     my ( $hub, $main ) = $self->_require_hub();
     my $page = $self->_require_page($hub);
 
-    $hub->watchlist()->maybe_send_notifications( $page->id() );
+    Socialtext::JobCreator->send_page_watchlist_emails($page);
+#    $hub->watchlist()->maybe_send_notifications( $page->id() );
 
     $self->_success( 'Watchlist emails were sent for the '
             . $page->metadata()->Subject()

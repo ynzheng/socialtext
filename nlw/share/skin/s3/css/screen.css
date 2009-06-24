@@ -4238,7 +4238,7 @@ body#dashBoard div#controls div#controlsRight ul {
 }
 
 .galleryTitle span {
-    margin-left: 82px;
+    margin-left: 140px;
 }
 
 .gallerySection {
@@ -4278,9 +4278,14 @@ body#dashBoard div#controls div#controlsRight ul {
 .avatarPopup {
     position: absolute;
     display: none;
-    width: 252px;
     font-size: 90%;
     z-index: 1000;
+    -width: 300px;
+}
+
+.avatarPopup .top, .avatarPopup .bottom {
+    height: 19px;
+    width: 100%;
 }
 
 .avatarPopup .fn {
@@ -4291,8 +4296,12 @@ body#dashBoard div#controls div#controlsRight ul {
     background: #FFF;
     border: 1px solid black;
     padding: 6px;
-    min-height: 62px;
     text-align: left;
+    float: left;
+}
+
+.avatarPopup .inner .vcard {
+    min-height: 62px;
 }
 
 .avatarPopup img.avatarPhoto {

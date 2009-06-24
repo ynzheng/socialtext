@@ -194,7 +194,7 @@ proto.get_words = function() {
         return selection.match(/\r?\n(\r?\n|\*+ |\#+ |\=+ )/);
     }
 
-    t = this.area; // XXX needs "var"?
+    var t = this.area;
     var selection_start = t.selectionStart;
     var selection_end = t.selectionEnd;
 
@@ -2078,7 +2078,7 @@ proto.format_a = function(elem) {
                  .replace(/^\s+/, '') 
                  .replace(/\s+$/, '');
 
-    var href = elem.href;
+    var href = elem.getAttribute('href');
 
     if (! href) href = ''; // Necessary for <a name="xyz"></a>'s
     var link = this.make_wikitext_link(label, href, elem);
@@ -2146,7 +2146,7 @@ proto.is_italic = function(elem) {
 }
 
 proto.elem_is_wiki_link = function (elem) {
-    var href = elem.href || ''
+    var href = elem.getAttribute('href') || ''
     return jQuery(elem).attr('wiki_page')
         || (
             this.href_is_wiki_link(href)

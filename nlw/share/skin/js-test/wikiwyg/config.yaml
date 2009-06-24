@@ -1,4 +1,4 @@
-index_title: Socialtext Javascript Testing
+index_title: Socialtext Wikiwyg Javascript Testing
 import_libs:
   - ../../s3/javascript/Debug.js
   - ../../common/javascript/jquery-1.2.6.js

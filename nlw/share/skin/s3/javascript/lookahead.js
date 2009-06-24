@@ -109,10 +109,12 @@
                     self.clearLookahead();
                 }
                 else if (e.keyCode == KEYCODES.ENTER) {
-                if (self._items.length) {
-                        self.clickCurrent();
+                    if (self.opts.requireMatch) {
+                        if (self._items.length) {
+                            self.clickCurrent();
+                        }
                     }
-                    else if (!self.opts.requireMatch) {
+                    else {
                         self.acceptInputValue();
                     }
                 }

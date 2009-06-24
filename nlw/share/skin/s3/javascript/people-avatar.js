@@ -19,7 +19,7 @@ Person.prototype = {
     },
 
     linkText: function() {
-        return this.isFollowing() ? loc('Stop Following this person')
+        return this.isFollowing() ? loc('Stop following this person')
                                   : loc('Follow this person');
     },
 
@@ -89,8 +89,17 @@ Person.prototype = {
 Avatar = function (node) {
     var self = this;
     this.node = node;
-    $(node).mouseover(function(){ self.mouseOver() });
-    $(node).mouseout(function(){ self.mouseOut() });
+    $(node)
+        .unbind('mouseover')
+        .unbind('mouseout')
+        .mouseover(function(){ self.mouseOver() })
+        .mouseout(function(){ self.mouseOut() });
+};
+
+// Class method for creating all avatar popups
+Avatar.createAll = function() {
+    $('.person.authorized')
+        .each(function() { new Avatar(this) });
 };
 
 Avatar.prototype = {
@@ -127,39 +136,34 @@ Avatar.prototype = {
             .addClass('avatarPopup')
             .mouseover(function() { self.mouseOver() })
             .mouseout(function() { self.mouseOut() })
-            .append(this.contentNode)
             .appendTo('body');
 
-        var $img1 = $('<img/>')
-            .addClass('top')
-            .attr('src', nlw_make_s3_path('/images/avatarPopupTop.png'))
-            .prependTo(this.popup);
-        this.makeTransparent($img1);
-
         // Add quote bubbles
-        var $img2 = $('<img/>')
-            .addClass('bottom')
-            .attr('src', nlw_make_s3_path('/images/avatarPopupBottom.png'))
+        this.makeBubble('top', '/images/avatarPopupTop.png')
             .appendTo(this.popup);
-        this.makeTransparent($img2);
+
+        this.popup.append(this.contentNode)
+        this.popup.append('<div class="clear"></div>');
+
+        this.makeBubble('bottom', '/images/avatarPopupBottom.png')
+            .appendTo(this.popup);
     },
 
-    makeTransparent: function($img) {
+    makeBubble: function(className, src) {
+        var src = nlw_make_s3_path(src);
+        var $div = $('<div></div>').addClass(className);
 	if ($.browser.msie && $.browser.version < 7) {
-            var args = "src='" + $img.attr('src') + "', sizingMethod='scale'";
-            var filter = "progid:DXImageTransform.Microsoft"
-                       + ".AlphaImageLoader(" + args + ")";
-
-            $('<div></div>')
-                .insertAfter($img)
-                .attr('class', $img.attr('class'))
-                .css({
-                    'filter': filter,
-                    'height': '19px',
-                    'width': '252px'
-                });
-            $img.remove();
+            var args = "src='" + src + "', sizingMethod='crop'";
+            $div.css(
+                'filter',
+                "progid:DXImageTransform.Microsoft"
+                + ".AlphaImageLoader(" + args + ")"
+            );
         }
+        else {
+            $div.css('background', 'transparent url('+src+') no-repeat');
+        }
+        return $div;
     },
 
     getUserInfo: function(userid) {
@@ -204,7 +208,8 @@ Avatar.prototype = {
 
         // min-height: 62px
         if ($.browser.msie) {
-            if (this.contentNode.height() < 65) this.contentNode.height(65);
+            var $vcard = $('.vcard', this.contentNode);
+            if ($vcard.height() < 65) $vcard.height(65);
         }
         
         this.mouseOver();
@@ -222,7 +227,11 @@ Avatar.prototype = {
     },
 
     show: function() {
-        var offset = $(this.node).offset();
+        // top was calculated based on $node's top, but if there was an
+        // avatar image, we want to position off of the avatar's top
+        var $img = $(this.node).find('img');
+        var $node = $img.size() ? $img : $(this.node);
+        var offset = $node.offset();
 
         // Check if the avatar is more than half of the way down the page
         var winOffset = $.browser.msie ? document.documentElement.scrollTop 
@@ -235,7 +244,7 @@ Avatar.prototype = {
         else {
             this.popup
                 .addClass('underneath')
-                .css('top', offset.top + $(this.node).height());
+                .css('top', offset.top + $node.height() + 5);
         }
 
         this.popup.css('left', offset.left - 43 ).fadeIn();
@@ -247,8 +256,6 @@ Avatar.prototype = {
 
 };
 
-$(function(){
-    $('.person.authorized').each(function() { new Avatar(this) });
-});
+$(function(){ Avatar.createAll() });
 
 })(jQuery);

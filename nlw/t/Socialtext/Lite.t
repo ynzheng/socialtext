@@ -5,7 +5,7 @@ use warnings;
 use strict;
 
 use Test::Socialtext tests => 40;
-fixtures( 'admin' );
+fixtures(qw( admin no-ceq-jobs ));
 
 use Socialtext::Page ();
 use Socialtext::Jobs;
@@ -13,8 +13,6 @@ use Socialtext::Jobs;
 BEGIN {
     use_ok("Socialtext::Lite");
 }
-
-Socialtext::Jobs->clear_jobs();
 
 my $Singapore = join '', map { chr($_) } 26032, 21152, 22369;
 

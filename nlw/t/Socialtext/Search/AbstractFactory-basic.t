@@ -3,32 +3,27 @@
 
 use strict;
 use warnings;
-
-# Stick this in a begin block, so that we create the fixture right away
-# Then, when we load Test::Socialtext::Search, it will clear the ceq queue
-BEGIN {
-    use Test::Socialtext tests => 9;
-    fixtures( 'admin' );
-}
+use Test::Socialtext tests => 9;
 use Test::Socialtext::Search;
 use Socialtext::Search::AbstractFactory;
 
-my $hub = Test::Socialtext::Search::hub();
+###############################################################################
+# Fixtures: clean admin no-ceq-jobs
+# - start with a clean slate; we expect only *one* page to be indexed
+# - need a workspace to work with
+# - but want no Ceq jobs, so *WE* control what gets indexed
+fixtures(qw( clean admin no-ceq-jobs ));
 
+###############################################################################
+# We only want this *ONE* Page indexed, not the whole WS.
 Socialtext::Search::AbstractFactory->GetFactory->create_indexer('admin')
     ->index_page('quick_start');
 
-# fast
-do_searches();
+# test for a simple entry
+search_for_term('the');
+
+# test the "AND"ing of terms
+search_for_term('the impossiblesearchterm', 'negate');
 
 # search for number (plucene simple no index numbers)
 search_for_term('1', 'negate');
-exit;
-
-
-sub do_searches {
-    # test for a simple entry
-    search_for_term('the');
-    # test the "AND"ing of terms
-    search_for_term('the impossiblesearchterm', 'negate');
-}

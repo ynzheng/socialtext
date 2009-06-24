@@ -838,6 +838,7 @@ proto.diffContent = function () {
 }
 
 proto.get_current_wikitext = function() {
+    if (!this.current_mode) return;
     if (this.current_mode.classname.match(/Wikitext/))
         return this.current_mode.toWikitext();
     var html = (this.current_mode.classname.match(/Wysiwyg/))
@@ -1089,6 +1090,8 @@ this.addGlobal().setup_wikiwyg = function() {
 
     ww.starting_edit = false;
     ww.start_nlw_wikiwyg = function() {
+        if (Socialtext.page_type == 'spreadsheet') return;
+
         if (ww.starting_edit) {
             return;
         }
@@ -1174,7 +1177,10 @@ this.addGlobal().setup_wikiwyg = function() {
             jQuery("#st-editing-tools-display").hide();
 
             nlw_edit_controls_visible = true;
-            ww.enableLinkConfirmations();
+
+            if (Socialtext.page_type == 'wiki') {
+                ww.enableLinkConfirmations();
+            }
 
             ww.is_editing = true;
 
@@ -1445,6 +1451,7 @@ this.addGlobal().setup_wikiwyg = function() {
         var rand = (''+Math.random()).replace(/\./, '');
         var input_field = jQuery('#st-tagqueue-field');
         var tag = input_field.val();
+        if (tag == '') return false;
         input_field.val('');
 
         var skip = false;

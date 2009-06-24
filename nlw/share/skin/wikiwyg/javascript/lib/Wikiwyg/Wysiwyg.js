@@ -98,8 +98,10 @@ proto.getInnerText = function() {
 }
 
 proto.set_inner_html = function(html) {
-    if (this.get_edit_document().body)
+    if (this.get_edit_document().body) {
         this.get_edit_document().body.innerHTML = html;
+        $(this.get_edit_document()).triggerHandler('change');
+    }
 }
 
 proto.apply_stylesheets = function() {
@@ -266,6 +268,7 @@ proto.do_pre = proto.format_command;
 proto.insert_html = function(html) { // See IE
     this.get_edit_window().focus();
     this.exec_command('inserthtml', html);
+    $(this.get_edit_document()).triggerHandler('change');
 }
 
 proto.do_unlink = function() {
@@ -370,6 +373,8 @@ proto.insert_html = function(html) {
     if (this.__range) {
         this.__range = null;
     }
+
+    $(this.get_edit_document()).triggerHandler('change');
 }
 
 proto.get_inner_html = function( cb ) {
@@ -452,6 +457,7 @@ proto.set_inner_html = function(html) {
     } else {
         try {
             this._editable_div.innerHTML = html;
+            $(this.get_edit_document()).triggerHandler('change');
         } catch (e) {
             try {
                  self._editable_div.parentNode.removeChild(self._editable_div);
@@ -711,7 +717,9 @@ proto.enableThis = function() {
 
         self.enable_keybindings();
         self.enable_pastebin();
-        self.set_focus();
+        if (!self.wikiwyg.config.noAutoFocus) {
+            self.set_focus();
+        }
         self.rebindHandlers();
         self.set_clear_handler();
 
@@ -1797,6 +1805,8 @@ var widgets_list = Wikiwyg.Widgets.widgets;
 var widget_data = Wikiwyg.Widgets.widget;
 
 proto.fromHtml = function(html) {
+    if (typeof html != 'string') html = '';
+
     if (Wikiwyg.is_ie) {
         html = html.replace(/<DIV class=wiki>([\s\S]*)<\/DIV>/gi, "$1");
 
@@ -1825,8 +1835,8 @@ proto.assert_padding_between_block_elements = function(html) {
     var doc = document.createElement("div");
     doc.innerHTML = html;
     if (doc.childNodes.length == 1) {
-        var h = doc.childNodes[0].innerHTML
-        doc.innerHTML = h
+        var h = doc.childNodes[0].innerHTML;
+        if (h) doc.innerHTML = h;
     }
 
     var node_is_a_block = function(node) {
@@ -2471,7 +2481,35 @@ proto.insert_real_image = function(widget, elem, cb) {
 }
 
 proto.insert_image = function (src, widget, widget_element, cb) {
-    var html = '<img src="' + src +
+    var html = '<img ';
+
+    if (!window.image_dimension_cache) {
+        window.image_dimension_cache = {};
+    }
+
+    var dim = window.image_dimension_cache[src];
+
+    html += 'onload="if (typeof(ss) != \'undefined\' && ss.editor) { var recalc = function () { try { ss.editor.DoPositionCalculations() } catch (e) { setTimeout(recalc, 500) } }; recalc() } ';
+
+    if (dim) {
+        html += '" width="' + dim[0] + '" height="' + dim[1] + '"';
+    }
+    else {
+        var srcEscaped = src.replace(/&/g,"&amp;")
+                            .replace(/"/g,"&quot;")
+                            .replace(/</g, "&lt;")
+                            .replace(/>/g, "&gt;")
+                            .replace(/'/g, "\\'")
+                            .replace(/\\/g, "\\\\");
+        html += 'if (!window.image_dimension_cache) window.image_dimension_cache = {};';
+        html += 'window.image_dimension_cache[' + "'";
+        html += srcEscaped;
+        html += "'" + '] = [ this.offsetWidth, this.offsetHeight ]; ';
+        html += "this.style.width = this.offsetWidth + 'px'; this.style.height = this.offsetHeight + 'px'";
+        html += '"';
+    }
+
+    html += ' src="' + src +
         '" widget="' + widget.replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + '" />';
     if ( widget_element ) {
         if ( widget_element.parentNode ) {

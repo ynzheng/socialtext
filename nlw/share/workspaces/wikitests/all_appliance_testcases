@@ -40,6 +40,7 @@ Dashboard, People, and Signals tests
 * [Test Case: Upload Update Gallery Widgets]
 * [Test Case: Add Remove Gallery Widgets]
 * [Test Case: Administer Dashboards]
+* [Test Case: Reset to Default Dashboard]
 
 *Note that we do not run Report Testcases as they require a special test setup in a dev env*
 Appliance testcases are run last because they do a backup/restore

@@ -28,7 +28,12 @@ use Socialtext::Validate qw( validate SCALAR_TYPE OPTIONAL_INT_TYPE HANDLE_TYPE 
         ($p{img_width}, $p{img_height}) = get_dimensions($file);
         my ($new_width, $new_height) = get_proportions(%p);
 
-        if ($new_width and $new_height) {
+        # only resize the image if it has to be resized, otherwise we trigger
+        # recompression of the image, which screws up images w/lossy
+        # compression algorithms (e.g. JPEGs)
+        if (    ($new_width  and ($new_width  != $p{img_width}))
+            and ($new_height and ($new_height != $p{img_height}))
+        ) {
             local $Socialtext::System::SILENT_RUN = 1;
             convert($file, $file, scale => "${new_width}x${new_height}");
         }

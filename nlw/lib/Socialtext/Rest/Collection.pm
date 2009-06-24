@@ -4,7 +4,6 @@ use warnings;
 use strict;
 use base 'Socialtext::Rest';
 
-use Date::Parse qw/str2time/;
 use Socialtext::JSON;
 use Socialtext::HTTP ':codes';
 use Socialtext::Timer;

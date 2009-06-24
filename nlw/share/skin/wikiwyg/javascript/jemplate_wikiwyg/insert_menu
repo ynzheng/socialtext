@@ -19,6 +19,7 @@
       <a onclick="return false" href="#" class="daddy">From Workspaces...</a>
       <ul>
        <li><a do="do_widget_include" onclick="return false;" href="#">A Page Include</a></li>
+       <li><a do="do_widget_ss" onclick="return false;" href="#">A Spreadsheet Include</a></li>
        <li><a do="do_widget_tag_list" onclick="return false;" href="#">Tagged Pages</a></li>
        <li><a do="do_widget_recent_changes" onclick="return false;" href="#">Recent Changes</a></li>
        <li><a do="do_widget_weblog_list" onclick="return false;" href="#">Blog Postings</a></li>
