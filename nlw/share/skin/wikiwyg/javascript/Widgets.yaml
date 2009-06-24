@@ -679,6 +679,8 @@ menu_hierarchy:
     sub_menu:
       - label: A page include
         widget: include
+      - label: A spreadsheet include
+        widget: ss
       - label: Tagged pages
         widget: tag_list
       - label: Recent changes
