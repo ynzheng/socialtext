@@ -1034,6 +1034,10 @@ CREATE INDEX ix_event_signal_at
 CREATE INDEX ix_event_signal_id_at
 	    ON event (signal_id, "at");
 
+CREATE INDEX ix_event_workspace_contrib
+	    ON event (page_workspace_id, "at")
+	    WHERE ((event_class = 'page') AND is_page_contribution("action"));
+
 CREATE INDEX ix_event_workspace_page
 	    ON event (page_workspace_id, page_id);
 
