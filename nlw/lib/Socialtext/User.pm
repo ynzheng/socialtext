@@ -18,7 +18,6 @@ use Socialtext::User::Deleted;
 use Socialtext::User::EmailConfirmation;
 use Socialtext::User::Factory;
 use Socialtext::User::Default::Users qw(:system-user :guest-user);
-use Socialtext::Workspace;
 use Email::Address;
 use Class::Field 'field';
 use Socialtext::l10n qw(system_locale loc);
@@ -620,6 +619,7 @@ sub workspace_count {
 
 sub workspaces_with_selected {
     my $self = shift;
+    require Socialtext::Workspace;      # lazy-load, to reduce startup impact
 
     my $sth = sql_execute(<<EOSQL, $self->user_id);
 SELECT uwr.workspace_id
@@ -698,6 +698,7 @@ EOSQL
     sub workspaces {
         my $self = shift;
         my %p = validate( @_, $spec );
+        require Socialtext::Workspace;      # lazy-load, to reduce startup impact
 
         my $selected_only_clause
             = $p{selected_only} ? 'AND is_selected = TRUE' : '';
@@ -1340,6 +1341,7 @@ sub send_confirmation_email {
     my $target_workspace;
 
     if ($self->confirmation_workspace_id) {
+        require Socialtext::Workspace;      # lazy-load, to reduce startup impact
         $target_workspace = new Socialtext::Workspace(workspace_id => $self->confirmation_workspace_id);
     }
     my %vars = (
@@ -1501,6 +1503,7 @@ sub confirm_email_address {
     return if $uce->is_password_change;
     my $target_workspace;
     if (my $wsid=$uce->workspace_id) {
+        require Socialtext::Workspace;      # lazy-load, to reduce startup impact
         $target_workspace = Socialtext::Workspace->new(workspace_id => $wsid);
     }
 

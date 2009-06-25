@@ -10,7 +10,6 @@ use Socialtext::SystemSettings qw(get_system_setting);
 use File::Basename qw(dirname);
 use Socialtext::URI;
 use Socialtext::AppConfig;
-use Socialtext::Workspace;
 use Socialtext;
 use File::Spec;
 use YAML;
@@ -37,6 +36,9 @@ sub new {
     my $class = shift;
     my %args = @_ % 2 ? () : (@_);
     my $self = $class->SUPER::new(@_);
+
+    require Socialtext::Workspace;      # lazy-load, to reduce startup impact
+
     $self->{_no_workspace} = Socialtext::NoWorkspace->new;
     $self->{_skin_name} = $args{name};
     return $self;

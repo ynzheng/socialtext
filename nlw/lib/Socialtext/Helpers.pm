@@ -14,7 +14,6 @@ use Socialtext::l10n qw/loc/;
 use Socialtext::Stax;
 use Socialtext::Timer;
 use Socialtext::String ();
-use Socialtext::Workspace;
 use Apache::Cookie;
 use Email::Address;
 use Email::Valid;
@@ -166,6 +165,7 @@ sub _get_workspace_list_for_template
 
 sub default_workspace {
     my $self = shift;
+    require Socialtext::Workspace;      # lazy-load, to reduce startup impact
     my $ws = Socialtext::Workspace->Default;
 
     return ( defined $ws && $ws->has_user( $self->hub->current_user ) )

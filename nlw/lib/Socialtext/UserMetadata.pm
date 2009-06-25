@@ -12,8 +12,6 @@ use Socialtext::Exceptions qw( data_validation_error param_error );
 use Socialtext::SQL 'sql_execute';
 use Socialtext::Validate qw( validate SCALAR_TYPE BOOLEAN_TYPE ARRAYREF_TYPE 
                              WORKSPACE_TYPE );
-use Socialtext::Account;
-
 use DateTime;
 use DateTime::Format::Pg;
 
@@ -85,6 +83,8 @@ sub new {
 
 sub create {
     my ( $class, %p ) = @_;
+
+    require Socialtext::Account;        # lazy-load, to reduce startup impact
 
     $class->_validate_and_clean_data(%p);
     $p{primary_account_id} ||= Socialtext::Account->Default->account_id;
@@ -159,6 +159,8 @@ sub creator {
 sub primary_account {
     my $self = shift;
     my $new_account = shift;
+
+    require Socialtext::Account;
 
     if ($new_account) {
         $new_account = ref($new_account)
