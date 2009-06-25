@@ -46,6 +46,7 @@ our @EXPORT = qw(
     setup_test_appconfig_dir
     formatted_like
     formatted_unlike
+    modules_loaded_by
 );
 
 our @EXPORT_OK = qw(
@@ -179,6 +180,28 @@ sub formatted_unlike() {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $formatted = main_hub()->viewer->text_to_html("$wikitext\n");
     unlike $formatted, $re, $name;
+}
+
+{
+    my %module_loaded_cache;
+
+    # get a hash-ref of modules loaded by some module
+    sub modules_loaded_by {
+        my $module = shift;
+        unless ($module_loaded_cache{$module}) {
+            my $script = 'print map { "$_\n" } keys %INC';
+            my @files  = `$^X -Ilib -M$module -e '$script'`;
+            if ($?) {
+                croak "failed to list modules loaded by '$module'; compile error?";
+            }
+            chomp @files;
+            map { $module_loaded_cache{$module}{$_}++ }
+                map { s{\.pm$}{}; $_ }
+                map { s{/}{::}g;  $_ }
+                @files;
+        }
+        return $module_loaded_cache{$module};
+    }
 }
 
 sub ceqlotron_run_synchronously() {
