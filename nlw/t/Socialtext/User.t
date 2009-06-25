@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 
-use Test::Socialtext tests => 35;
+use Test::Socialtext tests => 37;
 fixtures(qw( clean db ));
 use Socialtext::User;
 
@@ -251,4 +251,14 @@ user_workspaces: {
         $user->workspaces( limit => 2, offset => 1 )->all();
     is_deeply \@names, [ 'lookupbbb', 'lookupccc' ], 'correct limit and offset';
 
+}
+
+###############################################################################
+# TEST: ST::User doesn't trigger load of ST::Workspace (as that causes a ton
+# of stuff to get pulled in, which makes ST::User prohibitively expensive to
+# use).
+dont_load_workspace: {
+    my $loaded = modules_loaded_by('Socialtext::User');
+    ok  $loaded->{'Socialtext::User'}, 'ST::User loaded';
+    ok !$loaded->{'Socialtext::Workspace'}, '... ST::Workspace lazy-loaded';
 }
