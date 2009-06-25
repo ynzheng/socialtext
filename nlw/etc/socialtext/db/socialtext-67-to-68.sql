@@ -28,8 +28,12 @@ ALTER TABLE ONLY group_workspace_role
 CREATE INDEX group_workspace_role_workspace_id
     ON group_workspace_role (workspace_id);
 
+CREATE INDEX "ix_event_workspace_contrib"
+    ON event (page_workspace_id, "at")
+    WHERE event_class = 'page'::text AND is_page_contribution("action");
+
 UPDATE "System"
-   SET value = '68'
- WHERE field = 'socialtext-schema-version';
+    SET value = '68'
+  WHERE field = 'socialtext-schema-version';
 
 COMMIT;
