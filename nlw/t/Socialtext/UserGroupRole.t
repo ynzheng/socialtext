@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 14;
+use Test::Socialtext tests => 18;
 use Test::Exception;
 
 ###############################################################################
@@ -65,4 +65,14 @@ instantiation_with_real_data: {
         '... with the right inflated Group object';
     is $ugr->role->role_id, $role->role_id,
         '... with the right inflated Role object';
+}
+
+###############################################################################
+# TEST: ST::(User|Group|Role) are lazy-loaded
+lazy_load_modules: {
+    my $loaded = modules_loaded_by('Socialtext::UserGroupRole');
+    ok  $loaded->{'Socialtext::UserGroupRole'}, 'ST::UGR loaded';
+    ok !$loaded->{'Socialtext::User'},  '... ST::User lazy-loaded';
+    ok !$loaded->{'Socialtext::Group'}, '... ST::Group lazy-loaded';
+    ok !$loaded->{'Socialtext::Role'},  '... ST::Role lazy-loaded';
 }

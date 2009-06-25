@@ -3,9 +3,6 @@ package Socialtext::UserGroupRole;
 
 use Moose;
 use Socialtext::MooseX::SQL;
-use Socialtext::User;
-use Socialtext::Group;
-use Socialtext::Role;
 use namespace::clean -except => 'meta';
 
 has_column 'user_id' => (
@@ -50,7 +47,8 @@ sub _set_user_id {
 }
 
 sub _build_user {
-    my $self    = shift;
+    my $self = shift;
+    require Socialtext::User;           # lazy-load
     my $user_id = $self->user_id();
     my $user    = Socialtext::User->new(user_id => $user_id);
     unless ($user) {
@@ -66,6 +64,7 @@ sub _set_group_id {
 
 sub _build_group {
     my $self     = shift;
+    require Socialtext::Group;          # lazy-load
     my $group_id = $self->group_id();
     my $group    = Socialtext::Group->GetGroup(group_id => $group_id);
     unless ($group) {
@@ -81,6 +80,7 @@ sub _set_role_id {
 
 sub _build_role {
     my $self    = shift;
+    require Socialtext::Role;           # lazy-load
     my $role_id = $self->role_id();
     my $role    = Socialtext::Role->new(role_id => $role_id);
     unless ($role) {
