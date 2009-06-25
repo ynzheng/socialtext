@@ -3,9 +3,6 @@ package Socialtext::GroupWorkspaceRole;
 
 use Moose;
 use Socialtext::MooseX::SQL;
-use Socialtext::Group;
-use Socialtext::Workspace;
-use Socialtext::Role;
 use namespace::clean -except => 'meta';
 
 has_column 'group_id' => (
@@ -50,7 +47,8 @@ sub _set_group_id {
 }
 
 sub _build_group {
-    my $self     = shift;
+    my $self = shift;
+    require Socialtext::Group;          # lazy-load
     my $group_id = $self->group_id();
     my $group    = Socialtext::Group->GetGroup(group_id => $group_id);
     unless ($group) {
@@ -65,7 +63,8 @@ sub _set_workspace_id {
 }
 
 sub _build_workspace {
-    my $self      = shift;
+    my $self = shift;
+    require Socialtext::Workspace;      # lazy-load
     my $ws_id     = $self->workspace_id();
     my $workspace = Socialtext::Workspace->new(workspace_id => $ws_id);
     unless ($workspace) {
@@ -80,7 +79,8 @@ sub _set_role_id {
 }
 
 sub _build_role {
-    my $self    = shift;
+    my $self = shift;
+    require Socialtext::Role;           # lazy-load
     my $role_id = $self->role_id();
     my $role    = Socialtext::Role->new(role_id => $role_id);
     unless ($role) {
