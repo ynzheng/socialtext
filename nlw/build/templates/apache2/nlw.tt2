@@ -108,6 +108,10 @@
 
     AliasMatch ^/nlw/plugin/([^/]+)/(.*) [% config.static_dir %]/plugin/$1/share/$2
     <LocationMatch /nlw/plugin>
+    [%- IF config.is_dev %]
+        SetEnv PERL5LIB [% config.static_dir %]/../lib
+    [% END %]
+        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
         Order allow,deny
         Allow from all
         ExpiresDefault "access plus 1 years"
