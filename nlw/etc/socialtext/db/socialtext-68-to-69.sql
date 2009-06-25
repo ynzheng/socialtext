@@ -1,26 +1,32 @@
 BEGIN;
 
--- Rename the "account_id" column in the Groups table, so its obvious that
--- this is the *primary* account for the Group (not necessarily the _only_
--- account to which the Group members have access)
+CREATE TABLE group_workspace_role (
+    group_id     bigint  NOT NULL,
+    workspace_id bigint  NOT NULL,
+    role_id      integer NOT NULL
+);
 
-ALTER TABLE ONLY groups
-    DROP CONSTRAINT groups_account_id_fk;
+ALTER TABLE group_workspace_role
+    ADD CONSTRAINT group_workspace_role_group_fk
+    FOREIGN KEY (group_id)
+    REFERENCES groups(group_id) ON DELETE CASCADE;
 
-ALTER TABLE groups RENAME COLUMN account_id TO primary_account_id;
+ALTER TABLE group_workspace_role
+    ADD CONSTRAINT group_workspace_role_workspace_fk
+    FOREIGN KEY (workspace_id)
+    REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY groups
-    ADD CONSTRAINT groups_primary_account_id_fk
-        FOREIGN KEY (primary_account_id)
-            REFERENCES "Account" (account_id) ON DELETE CASCADE;
+ALTER TABLE group_workspace_role
+    ADD CONSTRAINT group_workspace_role_role_fk
+    FOREIGN KEY (role_id)
+    REFERENCES "Role"(role_id) ON DELETE CASCADE;
 
--- Add some missing indices
+ALTER TABLE ONLY group_workspace_role
+    ADD CONSTRAINT group_workspace_role_pk
+    PRIMARY KEY (group_id, workspace_id);
 
-CREATE INDEX user_group_role_group_id
-    ON user_group_role (group_id);
-
-CREATE INDEX watchlist_workspace_page
-    ON "Watchlist" (workspace_id, page_text_id);
+CREATE INDEX group_workspace_role_workspace_id
+    ON group_workspace_role (workspace_id);
 
 UPDATE "System"
    SET value = '69'
