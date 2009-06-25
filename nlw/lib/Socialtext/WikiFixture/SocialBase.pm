@@ -70,6 +70,21 @@ sub _handle_command {
     die "Unknown command for the fixture: ($command)\n";
 }
 
+=head2 set_nlw_cookie ( $username )
+
+Set the NLW cookie to a valid cookie for $username
+
+=cut
+
+sub set_nlw_cookie_for_user {
+    my ($self, $email) = @_;
+    my $user = Socialtext::User->Resolve($email);
+    require Socialtext::HTTP::Cookie;
+    my $user_id = $user->user_id;
+    my $mac = Socialtext::HTTP::Cookie->MAC_for_user_id($user_id);
+    $self->{_cookie} = "NLW-user=user_id&$user_id&MAC&$mac";
+}
+
 =head2 http_user_pass ( $username, $password )
 
 Set the HTTP username and password.
@@ -490,7 +505,7 @@ sub get {
     my ($self, $uri, $accept) = @_;
     $accept ||= 'text/html';
 
-    $self->_get($uri, [Accept => $accept]);
+    $self->_get($uri, [Accept => $accept, Cookie => $self->{_cookie}]);
 }
 
 =head2 cond_get ( uri, accept, ims, inm )
