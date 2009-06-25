@@ -357,19 +357,53 @@ proto.get_selection_text = function() {
     return '';
 }
 
-proto.insert_html = function(html) {
+proto.insert_html = function(html, triedSetFocus) {
     var doc = this.get_edit_document();
     var range = this.__range;
     if (!range) {
-        range = this.get_edit_document().selection.createRange();
+        range = doc.selection.createRange();
     }
 
     if (range.boundingTop == 2 && range.boundingLeft == 2)
         return;
 
-    range.pasteHTML(html);
+    var id = "marquee-" + (Date.now ? Date.now() : (new Date()).getTime());
+
+    if (triedSetFocus) {
+        /* Counter the move-right effect of re-focusing (cf. {bz: 1962}),
+         * by moving leftward by one character.  Ugly, but it works.
+         */
+        range.move('character', -1);
+    }
+
+    range.execCommand('insertmarquee', false, id);
+
+    var $newNode = $('#'+id, this.get_edit_document());
+    if ($newNode.size() == 0)  {
+        /* {bz: 2756} - We're deliberately re-focus and have IE8 move
+         * the cursor rightward, then compensate for it in the second
+         * call to ourselves (see the triedSetFocus paragraph above).
+         */
+        $('#'+id).remove();
+
+        if (triedSetFocus) {
+            /* This should never happen -- at least until IE9 is released ;-) */
+            alert("Sorry, an IE bug prevented this action. Please select some text first and try again.");
+            return;
+        }
+        else {
+            this._hasFocus = false;
+            this.__range = null;
+            this.set_focus();
+            return this.insert_html(html, true);
+        }
+    }
+
+    $newNode.replaceWith(html);
+
     range.collapse(false);
     range.select();
+
     if (this.__range) {
         this.__range = null;
     }
@@ -1179,11 +1213,13 @@ proto.do_new_table = function() {
             .unbind("click")
             .bind("click", function() {
                 do_table();
+                return false;
             });
         jQuery('.table-create .close')
             .unbind("click")
             .bind("click", function() {
                 self.closeTableDialog();
+                return false;
             });
         jQuery("#lightbox").one("lightbox-unload", function() {
             self.set_focus();
