@@ -252,7 +252,9 @@ my $VISIBLE_WORKSPACES = <<'EOSQL';
     FROM "WorkspaceRolePermission" wrp
     JOIN "Role" r USING (role_id)
     JOIN "Permission" p USING (permission_id)
-    WHERE r.name = 'guest' AND p.name = 'read'
+    WHERE
+        -- workspace vis
+        r.name = 'guest' AND p.name = 'read'
 EOSQL
 
 my $I_CAN_USE_THIS_WORKSPACE = <<"EOSQL";
@@ -575,7 +577,21 @@ sub _build_convos_sql {
         unless defined $filtered_opts{actor_id};
 
     local $self->{_skip_standard_opts} = 1;
-    $self->prepend_condition($CONVERSATIONS_WHERE, ($opts->{user_id}) x 5);
+
+    my $limit_public_to_contributed = <<EOSQL;
+        workspace_id IN
+        (
+            SELECT page_workspace_id AS workspace_id
+            FROM event has_contrib
+            WHERE has_contrib.event_class = 'page'
+              AND is_page_contribution(has_contrib.action)
+              AND has_contrib.actor_id = ?
+        ) AND
+EOSQL
+
+    (my $conv_where = $CONVERSATIONS_WHERE) =~
+        s/-- workspace vis/$limit_public_to_contributed/;
+    $self->prepend_condition($conv_where, ($opts->{user_id}) x 6);
 
     return $self->_build_standard_sql(\%filtered_opts);
 }
