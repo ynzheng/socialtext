@@ -191,6 +191,7 @@ sub new_changes {
     }
 
     Socialtext::Timer->Continue('new_changes_push_result');
+    local $Socialtext::Model::Page::No_result_times = 1;
     for my $page (@$pages_ref) {
         $self->push_result($page);
     }
