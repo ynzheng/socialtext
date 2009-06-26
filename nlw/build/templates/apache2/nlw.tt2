@@ -201,6 +201,7 @@ ErrorDocument 500 /static/html/500.html
         SSLEngine on
         SSLCertificateFile    [% config.ssl_base_dir %]/certs/[% config.nlw_server_hostname %].crt
         SSLCertificateKeyFile [% config.ssl_base_dir %]/private/[% config.nlw_server_hostname %].key
+        SSLProtocol All -SSLv2
         SetEnvIf User-Agent ".*MSIE.*" ssl-unclean-shutdown force-response-1.0
     </VirtualHost>
 [%- END %]
