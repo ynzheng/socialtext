@@ -243,6 +243,7 @@ use base 'Socialtext::Query::CGI';
 use Socialtext::CGI qw( cgi );
 
 cgi 'changes';
+cgi 'offset';
 
 ######################################################################
 package Socialtext::RecentChanges::Wafl;
