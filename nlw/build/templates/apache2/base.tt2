@@ -7,6 +7,7 @@ LoadModule expires_module       [% config.module_dir %]/mod_expires.so
 LoadModule headers_module       [% config.module_dir %]/mod_headers.so
 LoadModule proxy_module         [% config.module_dir %]/mod_proxy.so
 LoadModule proxy_http_module    [% config.module_dir %]/mod_proxy_http.so
+LoadModule deflate_module       [% config.module_dir %]/mod_deflate.so
 
 [%# xsendfile allows apache2 to serve attachments without the backend %]
 LoadModule xsendfile_module     [% config.module_dir %]/mod_xsendfile.so
