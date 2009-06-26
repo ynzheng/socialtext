@@ -126,6 +126,7 @@
         FileETag none
     </LocationMatch>
 
+    # DON'T cache RPC relay
     <Location "/nlw/plugin/widgets/rpc_relay.html">
         ExpiresDefault "access plus 1 seconds"
         FileETag none
