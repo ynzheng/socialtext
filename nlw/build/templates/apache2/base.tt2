@@ -7,26 +7,26 @@ LoadModule expires_module       [% config.module_dir %]/mod_expires.so
 LoadModule headers_module       [% config.module_dir %]/mod_headers.so
 LoadModule proxy_module         [% config.module_dir %]/mod_proxy.so
 LoadModule proxy_http_module    [% config.module_dir %]/mod_proxy_http.so
-LoadModule ssl_module           [% config.module_dir %]/mod_ssl.so
 
 [%# xsendfile allows apache2 to serve attachments without the backend %]
 LoadModule xsendfile_module     [% config.module_dir %]/mod_xsendfile.so
 XSendFile on
 XSendFileAllowAbove on
 
-<IfModule mod_ssl.c>
-    AddType application/x-x509-ca-cert .crt
-    AddType application/x-pkcs7-crl    .crl
-
-    SSLSessionCache  dbm:[% config.log_dir %]/ssl-cache
-    SSLSessionCacheTimeout  300
-    SSLMutex  default 
-</IfModule>
-
+# Standard HTTP port listener
 Listen [% config.frontend_ports.http %]
+
 [%- IF config.ssl_only OR config.use_ssl %]
-  [%#- Have SSL enabled server too %]
+  # SSL is enabled; listen for HTTPS connections too
   Listen [% config.frontend_ports.https %]
+  LoadModule ssl_module        [% config.module_dir %]/mod_ssl.so
+
+  AddType application/x-x509-ca-cert .crt
+  AddType application/x-pkcs7-crl    .crl
+
+  SSLSessionCache  dbm:[% config.log_dir %]/ssl-cache
+  SSLSessionCacheTimeout  300
+  SSLMutex  default 
 [%- END %]
 
 NameVirtualHost *:[% config.frontend_ports.http %]
