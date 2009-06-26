@@ -159,16 +159,3 @@ PerlModule  Socialtext::ModPerl
     SetEnv  NLWHTTPSRedirect  1
 [% vhost_common( 1 ) %]
 </VirtualHost>
-
-[%- IF config.eu_httpd_exists %]
-<VirtualHost 10.8.0.1:[% config.backend_ports.http %]>
-    ServerName www.eu.socialtext.net
-[% vhost_common( 1 ) %]
-</VirtualHost>
-
-<VirtualHost 10.8.0.1:[% config.backend_ports.https %]>
-    ServerName www.eu.socialtext.net
-    SetEnv  NLWHTTPSRedirect  1
-[% vhost_common( 1 ) %]
-</VirtualHost>
-[%- END %][%# config.eu_httpd_exists %]

@@ -15,19 +15,11 @@
 
     # unconditionally include local socialtext add-on rewrite rules on this system
     Include socialtext-conf.d/rewrite*
-[%- IF for_ssl_vhost %]
-    [%- IF config.eu_httpsd_exists %]
-        # include file for redirecting for the remote proxies (https)
-        Include conf.d/eu-httpsd.conf
-    [%- END %]
-[%- ELSE %]
+[%- UNLESS for_ssl_vhost %]
     [%- IF config.use_ssl && config.redirect_to_ssl %]
-        # include file for per-workspace redirection to ssl
+        # include file for per-workspace redirection to ssl, but only for
+        # non-SSL virts
         Include conf.d/redirect-to-ssl
-    [%- END %]
-    [%- IF config.eu_httpd_exists %]
-        # include file to redirect for the remote proxies
-        Include conf.d/eu-httpd.conf
     [%- END %]
 [%- END %]
 
@@ -36,9 +28,7 @@
     RewriteRule    ^(/(perl-)?status)$  $1 [L]
 [%- END %]
 [%- IF not (config.is_appliance || config.is_dev) %]
-    RewriteCond    %{HTTP_HOST}  !^www.eu.socialtext.net$
     RewriteCond    %{HTTP_HOST}  !^miki.socialtext.net$
-    Rewritecond    %{HTTP_HOST}  !^chalk.socialtext.net$
     RewriteCond    %{HTTP_HOST}  !^[% config.nlw_server_hostname %]:?\d*$
     RewriteRule    (.*)          http://[% config.nlw_server_hostname %]$1  [R,L,NE]
 [%- END %]
