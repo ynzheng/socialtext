@@ -951,6 +951,8 @@ sub _call_method {
             } split m/\s*,\s*/, $headers
         ];
     }
+    $headers ||= [];
+    push @$headers, Cookie => $self->{_cookie} if $self->{_cookie};
     my $start = time();
     $self->{http}->$method($self->{browser_url} . $uri, $headers, $body);
     $self->{_last_http_time} = time() - $start;
