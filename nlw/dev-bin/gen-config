@@ -719,13 +719,12 @@ sub standard_params {
     my %dirs = %{+shift};
 
     my %config = (
-        is_dev        => _bool($is_dev_install),
-        is_production => _bool($is_production),
-        is_appliance  => _bool($is_appliance),
-
-        socialtext_open     => _bool($socialtext_open),
-        apache_status       => $opts{'apache-status'},
-        server_admin        => get_build_setting('server-admin'),
+        is_dev          => _bool($is_dev_install),
+        is_production   => _bool($is_production),
+        is_appliance    => _bool($is_appliance),
+        socialtext_open => _bool($socialtext_open),
+        apache_status   => $opts{'apache-status'},
+        server_admin    => get_build_setting('server-admin'),
     );
 
     $config{nlw_server_hostname} = $opts{hostname} 
