@@ -1,6 +1,5 @@
 [% PROCESS 'shared/common.tt2' %]
 
-[%# XXX Make a macro to wrap these with <IfModule>s %]
 # Load modules
 LoadModule rewrite_module       [% config.module_dir %]/mod_rewrite.so
 LoadModule cgi_module           [% config.module_dir %]/mod_cgi.so
