@@ -45,7 +45,6 @@
 
     ProxyPreserveHost On
     ExpiresActive On
-    RewriteEngine On
 
     [%- BLOCK image_cache %]
         # image cache: [% cache_name %]
