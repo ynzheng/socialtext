@@ -15,29 +15,6 @@ LoadModule xsendfile_module     [% config.module_dir %]/mod_xsendfile.so
 XSendFile on
 XSendFileAllowAbove on
 
-[% IF config.is_mac %]
-# These are compiled into the apache2 binary in the Debian
-# apache2 package - but mac users may need to tweak this somehow
-#
-# mod_access
-# mod_alias
-# mod_auth
-# mod_autoindex
-# mod_mime
-# mod_negotation
-# mod_setenvif
-# mod_so - always compiled in on all platforms, I believe
-# mod_status
-
-LoadModule authz_host_module    [% config.module_dir %]/mod_authz_host.so
-LoadModule status_module        [% config.module_dir %]/mod_status.so
-LoadModule mime_module          [% config.module_dir %]/mod_mime.so
-LoadModule log_config_module    [% config.module_dir %]/mod_log_config.so
-LoadModule alias_module         [% config.module_dir %]/mod_alias.so
-LoadModule setenvif_module      [% config.module_dir %]/mod_setenvif.so
-LoadModule dir_module           [% config.module_dir %]/mod_dir.so
-[% END %]
-
 <IfModule mod_ssl.c>
     AddType application/x-x509-ca-cert .crt
     AddType application/x-pkcs7-crl    .crl

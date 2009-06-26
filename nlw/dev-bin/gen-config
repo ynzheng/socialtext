@@ -722,7 +722,6 @@ sub standard_params {
         is_dev        => _bool($is_dev_install),
         is_production => _bool($is_production),
         is_appliance  => _bool($is_appliance),
-        is_mac        => _bool( $^O eq 'darwin' ),
 
         socialtext_open     => _bool($socialtext_open),
         apache_status       => $opts{'apache-status'},
