@@ -94,8 +94,6 @@
         Allow from all
     </LocationMatch>
 
-    # Do not set ExpiresDefault!  That will cause firefox to cache redirects
-
     <Location /static>
         ExpiresDefault "access plus 1 years"
         FileETag none
