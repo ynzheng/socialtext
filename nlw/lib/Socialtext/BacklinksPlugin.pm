@@ -166,16 +166,7 @@ sub _get_links {
 
 sub all_backlinks {
     my $self = shift;
-    $self->almost_all_backlinks_for_page($self->hub->pages->current);
-}
-
-sub almost_all_backlinks_for_page {
-    my $self = shift;
-    my $page  = shift;
-
-    my @all = @{$self->all_backlinks_for_page($page)};
-
-    return \@all;
+    $self->all_backlinks_for_page($self->hub->pages->current);
 }
 
 sub all_backlink_pages_for_page {
