@@ -140,9 +140,9 @@
         FileETag none
     </Location>
 
-[%- IF config.is_dev %]
-    Redirect 301 /favicon.ico http://www.socialtext.net/favicon.ico
-[%- END %]
+    [%- IF config.is_dev %]
+        Redirect 301 /favicon.ico http://www.socialtext.net/favicon.ico
+    [%- END %]
 
     # Force IE8 to emulate IE7, to avoid IE8 rendering issues.
     Header set X-UA-Compatible IE=EmulateIE7
