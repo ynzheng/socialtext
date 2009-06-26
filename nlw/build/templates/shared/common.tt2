@@ -12,6 +12,7 @@ KeepAlive               On
 MaxKeepAliveRequests    100
 KeepAliveTimeout        15
 
+# Process limits
 MinSpareServers     [% config.servers.min_spare %]
 MaxSpareServers     [% config.servers.max_spare %]
 StartServers        [% config.servers.start %]
@@ -40,6 +41,7 @@ TypesConfig /etc/mime.types
 DefaultType text/plain
 HostnameLookups Off
 
+# Logging
 LogLevel warn
 LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %T %v" full
 LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %P %T" debug
