@@ -2,14 +2,15 @@
 package Socialtext::BacklinksPlugin;
 use strict;
 use warnings;
-
-use base 'Socialtext::Query::Plugin';
-
 use Class::Field qw( const );
 use Socialtext::Pages;
+use Socialtext::Model::Pages;
 use Socialtext::l10n qw(loc);
 use Socialtext::String();
 use Socialtext::Pageset;
+use Fatal qw/opendir/;
+
+use base 'Socialtext::Query::Plugin';
 
 sub class_id { 'backlinks' }
 const class_title          => 'Backlinks';
@@ -82,7 +83,6 @@ sub orphans_list {
     my $pages = $self->get_orphaned_pages();
 
     my %sortdir = %{ $self->sortdir };
-
     $self->_make_result_set( \%sortdir, $pages );
     $self->result_set->{hits} = @{$self->result_set->{rows}};
 
@@ -107,10 +107,17 @@ sub _make_result_set {
     }
     else {
         $self->result_set($self->new_result_set());
-        $self->result_set->{predicate} = 'action=orphans_list';
+        my $rs = $self->result_set;
+        $rs->{predicate} = 'action=orphans_list';
 
-        $self->push_result($_)
-            for sort { $b->metadata->{Date} cmp $a->metadata->{Date} } @{$pages};
+        {
+            local $Socialtext::Model::Page::No_result_times = 1;
+            $self->push_result($_) for @$pages;
+        }
+
+        $rs->{rows} = [
+            sort { $b->{Date} cmp $a->{Date} } @{ $rs->{rows} }
+        ];
     }
 
     $self->result_set->{title} = loc('Orphaned Pages');
@@ -193,7 +200,21 @@ sub _all_linked_pages_for_page {
 
     my $method = "_get_${type}_page_ids_for_page";
 
-    my @pages = map { $self->hub->pages->new_page($_) } $self->$method($page);
+    #my @pages = map { $self->hub->pages->new_page($_) } $self->$method($page);
+    my %args = (
+        hub => $self->hub,
+        workspace_id => $self->hub->current_workspace->workspace_id,
+        do_not_need_tags => 1,
+    );
+
+    my $page_ids = $self->$method($page);
+    my @pages;
+    for my $page_id (@$page_ids) {
+        my $page = Socialtext::Model::Pages->By_id(%args, page_id => $page_id);
+        $page = $self->hub->pages->new_page($page_id)
+            if ref($page) eq 'ARRAY';
+        push @pages, $page;
+    }
 
     # REVIEW: meh, this is oogly, but it's done
     if ($incipient) {
@@ -249,10 +270,15 @@ sub html_description {
 sub get_orphaned_pages {
     my $self = shift;
     return [] unless $self->hub->current_workspace->real;
-    my @pages = $self->hub->pages->all_active();
+    my $pages = Socialtext::Model::Pages->All_active(
+        hub => $self->hub,
+        workspace_id => $self->hub->current_workspace->workspace_id,
+        do_not_need_tags => 1,
+        limit => -1,
+    );
 
     my $orphans = [];
-    foreach my $page (@pages) {
+    foreach my $page (@$pages) {
         my $backlinks = $self->all_backlinks_for_page( $page );
         push( @$orphans, $page ) unless scalar(@$backlinks);
     }
@@ -285,22 +311,31 @@ sub _get_backlink_page_ids_for_page {
     my $self = shift;
     my $page = shift;
 
-    my $page_id = $page->id;
-    my $chunk = $self->SEPARATOR . $page_id;
-    my $dir = $self->_storage_directory . '/';
-    my $path = $dir . "*$chunk";
-    map { s/^$dir//; s/$chunk$//; $_} glob($path);
+    return $self->_link_hash->{$page->id}{back} || [];
 }
 
 sub _get_frontlink_page_ids_for_page {
     my $self = shift;
     my $page = shift;
 
-    my $page_id = $page->id;
-    my $chunk = $page_id . $self->SEPARATOR;
-    my $dir = $self->_storage_directory . '/';
-    my $path = $dir . "$chunk*";
-    map { s/^$dir//; s/^$chunk//; $_} glob($path);
+    return $self->_link_hash->{$page->id}{front} || [];
+}
+
+sub _link_hash {
+    my $self = shift;
+    return $self->{_link_hash} if $self->{_link_hash};
+
+    my $hash = {};
+    my $dir = $self->_storage_directory;
+    my $sep = $self->SEPARATOR;
+    opendir(my $dfh, $dir);
+    while (my $file = readdir($dfh)) {
+        my ($from, $to) = split $self->SEPARATOR, $file;
+        push @{ $hash->{$from}{front} }, $to;
+    }
+    closedir $dfh;
+
+    return $self->{_link_hash} = $hash;
 }
 
 sub _write_link {
