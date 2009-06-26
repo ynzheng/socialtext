@@ -48,7 +48,7 @@ proto.initializeObject = function() {
 }
 
 proto.toHtml = function(func) {
-    func(this.get_inner_html());
+    this.get_inner_html(func);
 }
 
 proto.clear_inner_html = function() {
@@ -88,8 +88,15 @@ proto.get_edit_document = function() { // See IE, below
     return this.get_edit_window().document;
 }
 
-proto.get_inner_html = function() {
-    return this.get_edit_document().body.innerHTML;
+proto.get_inner_html = function(cb) {
+    var innerHTML = this.get_edit_document().body.innerHTML;
+
+    if (cb) {
+        cb(innerHTML);
+        return;
+    }
+
+    return innerHTML;
 }
 
 proto.getInnerText = function() {
@@ -2042,7 +2049,7 @@ proto.setWidgetHandlers = function() {
         this.setWidgetHandler(imgs[ii]);
     }
 
-    if (jQuery.browser.msie)
+    if (jQuery.browser.msie && !this.wikiwyg.config.noRevertWidgetImages)
         this.revert_widget_images();
 
     if (jQuery(doc, win).data("mouseup_handler_set")) return;
