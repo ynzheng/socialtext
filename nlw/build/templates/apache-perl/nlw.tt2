@@ -120,7 +120,6 @@ PerlSetVar st_max_unshared_size 278528
 # This sets the minimum amount of shared memory the process must have.
 # PerlSetVar st_min_shared_size   70000
 
-[%- PROCESS 'apache-perl/modules.tt2' %]
 [%- IF config.inc -%]
     <Perl>
         use lib

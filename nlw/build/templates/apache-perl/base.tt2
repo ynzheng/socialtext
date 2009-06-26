@@ -3,8 +3,36 @@
 # Load modules
 ClearModuleList
 AddModule mod_so.c
-[%- PROCESS 'apache-perl/modules.tt2' %]
-  
+LoadModule  config_log_module       [% config.module_dir %]/mod_log_config.so
+LoadModule  mime_module             [% config.module_dir %]/mod_mime.so
+LoadModule  negotiation_module      [% config.module_dir %]/mod_negotiation.so
+LoadModule  alias_module            [% config.module_dir %]/mod_alias.so
+LoadModule  dir_module              [% config.module_dir %]/mod_dir.so
+LoadModule  rewrite_module          [% config.module_dir %]/mod_rewrite.so
+LoadModule  access_module           [% config.module_dir %]/mod_access.so
+LoadModule  auth_module             [% config.module_dir %]/mod_auth.so
+LoadModule  expires_module          [% config.module_dir %]/mod_expires.so
+LoadModule  headers_module          [% config.module_dir %]/mod_headers.so
+LoadModule  env_module              [% config.module_dir %]/mod_env.so
+LoadModule  setenvif_module         [% config.module_dir %]/mod_setenvif.so
+
+[%- IF config.ssl %]
+    LoadModule  ssl_module          [% config.module_dir %]/mod_ssl.so
+[%- END %]
+
+[%- IF config.apache_status %]
+    LoadModule  status_module       [% config.module_dir %]/mod_status.so
+    ExtendedStatus On
+[%- END %]
+
+[%# Mod_perl is statically linked on a VE, but not in a dev-env %]
+[%- IF config.is_dev %]
+    LoadModule  perl_module         [% config.module_dir %]/mod_perl.so
+[%- ELSE %]
+    AddModule   mod_perl.c
+[%- END %]
+
+# What ports are we listening on?  
 Port   [% config.backend_ports.http %]
 Listen [% config.backend_ports.http %]
 Listen [% config.backend_ports.https %]
