@@ -8,6 +8,7 @@ use Socialtext::Page;
 use Socialtext::File;
 use Socialtext::URI;
 use Socialtext::AppConfig;
+use Socialtext::Timer;
 use Carp qw/croak/;
 use base 'Socialtext::Page::Base';
 
@@ -18,6 +19,8 @@ lightweight and fast.  Users shouldn't call new_from_row(), but should
 instead be given objects via Socialtext::Model::Pages.
 
 =cut
+
+our $No_result_times = 0;
 
 my $SCRIPT_NAME = Socialtext::AppConfig->script_name();
 
@@ -36,20 +39,23 @@ sub new_from_row {
 sub to_result {
     my $self = shift;
 
+    Socialtext::Timer->Continue('model_to_result');
     my $user = $self->last_edited_by;
 
     my $result = {
         From     => $user->email_address,
         username => $user->username,
         Date     => "$self->{last_edit_time} GMT",
-        DateLocal => $self->datetime_for_user,
+        ($No_result_times ? ()
+            : (DateLocal => $self->datetime_for_user)),
         Subject  => $self->{name},
         Revision => $self->{current_revision_num},
         Summary  => $self->{summary},
         Type     => $self->{page_type},
         page_id  => $self->{page_id},
         create_time => $self->{create_time},
-        create_time_local => $self->createtime_for_user,
+        ($No_result_times ? () 
+            : (create_time_local => $self->createtime_for_user)),
         creator => $self->creator->username,
         page_uri => $self->uri,
         revision_count => $self->{revision_count},
@@ -60,7 +66,9 @@ sub to_result {
         is_spreadsheet => $self->is_spreadsheet,
         edit_summary => $self->{edit_summary},
         Locked     => $self->{locked},
+        ($No_result_times ? (page => $self) : ()),
     };
+    Socialtext::Timer->Pause('model_to_result');
 
     return $result;
 }

@@ -112,6 +112,7 @@
       [% IF ! last; last = rows.size; END %]
     <table class="dataTable pagelist" cellspacing="0">
       [% FOREACH row = rows %]
+        [% row = load_row_times(row) %]
         [% IF loop.count - 1 < offset %][% NEXT %][% END %]
         [% IF loop.count > last %][% BREAK %][% END %]
         [% IF loop.count % 2 %]<tr class="oddRow">[% ELSE %]<tr>[% END %]

@@ -112,8 +112,19 @@ sub display_results {
         direction              => $self->_direction || $sortdir->{$sortby},
         error_message          => $self->error_message,
         listview_extra_columns => $self->listview_extra_columns,
+        load_row_times         => \&load_row_times,
         @_,
     );
+}
+
+sub load_row_times {
+    my $row = shift;
+    my $page = $row->{page};
+    if ($page) {
+        $row->{DateLocal} ||= $page->datetime_for_user;
+        $row->{create_time_local} ||= $page->createtime_for_user;
+    }
+    return $row;
 }
 
 sub show_summaries {
