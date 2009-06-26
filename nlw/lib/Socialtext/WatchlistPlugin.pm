@@ -9,6 +9,7 @@ use Socialtext::EmailNotifier;
 use Socialtext::Watchlist;
 use Socialtext::l10n qw( loc );
 use Socialtext::Events;
+use Socialtext::Pageset;
 
 const class_id    => 'watchlist';
 const class_title => loc('Watchlist');
@@ -271,6 +272,7 @@ sub watchlist_changes {
         $self->result_set( $self->sorted_result_set( \%sortdir ) );
     }
     $self->result_set->{display_title} = loc("Pages You're Watching");
+    $self->result_set->{hits} = @{$self->result_set->{rows}};
 
     $self->write_result_set;
 
@@ -281,6 +283,10 @@ sub watchlist_changes {
         unplug_phrase =>
             "Click this button to save the pages you're "
             . 'watching for offline use.',
+        Socialtext::Pageset->new(
+            cgi => {$self->cgi->all},
+            total_entries => $self->result_set->{hits},
+        )->template_vars(),
     );
 }
 
@@ -295,4 +301,6 @@ cgi 'title';
 cgi 'watchlist';
 cgi 'selected';
 cgi 'id' => '-clean_path';
+cgi 'offset';
+
 1;

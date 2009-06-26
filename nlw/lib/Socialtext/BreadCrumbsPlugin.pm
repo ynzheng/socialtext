@@ -14,6 +14,7 @@ use Socialtext::File;
 use Socialtext::Paths;
 use Socialtext::l10n qw(loc);
 use Socialtext::String ();
+use Socialtext::Pageset;
 
 sub class_id { 'breadcrumbs' }
 const class_title => 'Recently Viewed';
@@ -69,6 +70,10 @@ sub breadcrumbs_list {
         unplug_uri    => "?action=unplug;breadcrumbs=1",
         unplug_phrase => loc('Click this button to save recently viewed pages to your computer for offline use.'),
         hide_sort_widget => 1,
+        Socialtext::Pageset->new(
+            cgi => {$self->cgi->all},
+            total_entries => $self->result_set->{hits},
+        )->template_vars(),
     );
 }
 
@@ -80,6 +85,7 @@ sub default_result_set {
     my $self = shift;
     $self->result_set($self->new_result_set);
     $self->push_result($_) for ($self->breadcrumb_pages());
+    $self->result_set->{hits} = @{$self->result_set->{rows}};
     return $self->result_set;
 }
 
@@ -185,4 +191,7 @@ package Socialtext::BreadCrumbs::CGI;
        
 use base 'Socialtext::Query::CGI';
 use Socialtext::CGI qw( cgi );
+
+cgi 'offset';
+
 1;

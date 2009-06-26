@@ -9,6 +9,7 @@ use Class::Field qw( const );
 use Socialtext::Pages;
 use Socialtext::l10n qw(loc);
 use Socialtext::String();
+use Socialtext::Pageset;
 
 sub class_id { 'backlinks' }
 const class_title          => 'Backlinks';
@@ -83,11 +84,16 @@ sub orphans_list {
     my %sortdir = %{ $self->sortdir };
 
     $self->_make_result_set( \%sortdir, $pages );
+    $self->result_set->{hits} = @{$self->result_set->{rows}};
 
     return $self->display_results(
         \%sortdir,
         feeds => $self->_feeds($self->hub->current_workspace),
         display_title => loc('Orphaned Pages'),
+        Socialtext::Pageset->new(
+            cgi => {$self->cgi->all},
+            total_entries => $self->result_set->{hits},
+        )->template_vars(),
     );
 }
 

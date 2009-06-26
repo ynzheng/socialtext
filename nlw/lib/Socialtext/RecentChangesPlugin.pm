@@ -4,6 +4,7 @@ use Socialtext::CategoryPlugin;
 use Socialtext::l10n qw/loc/;
 use Socialtext::Timer;
 use Socialtext::Model::Pages;
+use Socialtext::Pageset;
 use strict;
 use warnings;
 
@@ -93,7 +94,6 @@ sub recent_changes {
     Socialtext::Timer->Continue('get_result_set');
 
     $self->dont_use_cached_result_set();
-    #$self->default_result_set();
     $self->result_set( $self->sorted_result_set( $sortdir ) );
     if ($type eq 'all') {
         $self->result_set->{predicate} = "action=changes;changes=all";
@@ -107,6 +107,10 @@ sub recent_changes {
         feeds         => $self->_feeds( $self->hub->current_workspace ),
         unplug_uri    => "?action=unplug",
         unplug_phrase => loc('Click this button to save the [_1] most recent pages to your computer for offline use.', $self->hub->tiddly->default_count),
+        Socialtext::Pageset->new(
+            cgi => {$self->cgi->all},
+            total_entries => $self->result_set->{hits},
+        )->template_vars(),
     );
 }
 
@@ -172,6 +176,7 @@ sub new_changes {
             hub => $self->hub,
             workspace_id => $self->hub->current_workspace->workspace_id,
             limit => -1,
+            do_not_need_tags => 1,
         );
     }
     else {
