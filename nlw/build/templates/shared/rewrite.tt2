@@ -59,19 +59,19 @@
 
     # this first one is only here for sake of doc-pages, everything
     # else should use /static
-    RewriteRule    /.*/base/(.+)            /static/skin/s2/$1  [R,L]
-    RewriteRule    ^/static/[\.0-9]+/(.+)$  /static/$1  [PT,L]
+    RewriteRule    /.*/base/(.+)                /static/skin/s2/$1  [R,L]
+    RewriteRule    ^/static/[\.0-9]+/(.+)$      /static/$1          [PT,L]
 
-    RewriteRule    ^/nlw/plugin/[\.0-9]+/(.+)$  /nlw/plugin/$1  [PT,L]
-    RewriteRule    ^/nlw/plugin/:[^/]+/(.+)$  /nlw/plugin/$1  [PT,L]
+    RewriteRule    ^/nlw/plugin/[\.0-9]+/(.+)$  /nlw/plugin/$1      [PT,L]
+    RewriteRule    ^/nlw/plugin/:[^/]+/(.+)$    /nlw/plugin/$1      [PT,L]
 
-    RewriteRule    ^/ig/ifpc_relay /nlw/plugin/widgets/ifpc_relay.html [R,L]
+    RewriteRule    ^/ig/ifpc_relay              /nlw/plugin/widgets/ifpc_relay.html [R,L]
 
 [%- IF not (config.is_appliance) %]
-    RewriteRule    ^/my/$        http://www.socialtext.net/
+    RewriteRule    ^/my/$       http://www.socialtext.net/
 [%- END %]
 
-    RewriteRule    ^/control/           /nlw/control/  [R,L]
+    RewriteRule    ^/control/   /nlw/control/  [R,L]
 
     # backwards compat for old-style /foo/member/index.cgi links
     RewriteRule    ^(/\w+)/member/(.*)  $1/$2          [R,L]
@@ -79,14 +79,14 @@
     RewriteRule    ^/lite/?$ / [R,L]
     RewriteRule    ^/lite/page/([^/]+)$ /lite/page/$1/ [R,L,NE]
 
-    RewriteRule    !^/data(/.*)?$   -  [C]
-    RewriteRule    !^/nlw    -  [C]
-    RewriteRule    !^/challenge - [C]
-    RewriteRule    !^/logos  -  [C]
-    RewriteRule    !^/favicon\.ico  -  [C]
+    RewriteRule    !^/data(/.*)?$   -   [C]
+    RewriteRule    !^/nlw           -   [C]
+    RewriteRule    !^/challenge     -   [C]
+    RewriteRule    !^/logos         -   [C]
+    RewriteRule    !^/favicon\.ico  -   [C]
     RewriteRule    ^/([^/\.]+)/?$  /$1/index.cgi  [R,L,NE]
-    RewriteRule    ^/([^/\.]+)/emailprefs$ /$1/index.cgi?action=preferences_settings&preferences_class_id=email_notify [R,L,NE,QSA]
-    RewriteRule    ^/([^/\.]+)/watchlistprefs$ /$1/index.cgi?action=preferences_settings&preferences_class_id=watchlist [R,L,NE,QSA]
+    RewriteRule    ^/([^/\.]+)/emailprefs$      /$1/index.cgi?action=preferences_settings&preferences_class_id=email_notify [R,L,NE,QSA]
+    RewriteRule    ^/([^/\.]+)/watchlistprefs$  /$1/index.cgi?action=preferences_settings&preferences_class_id=watchlist    [R,L,NE,QSA]
 
     # Not sure why DirectoryIndex does not work, but because of the
     # way that directive works in Apache2 it probably doesn't matter
