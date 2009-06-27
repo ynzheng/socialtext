@@ -389,6 +389,7 @@ cgi 'page_id';
 cgi 'sortby';
 cgi 'direction';
 cgi 'summaries';
+cgi 'offset';
 
 1;
 
