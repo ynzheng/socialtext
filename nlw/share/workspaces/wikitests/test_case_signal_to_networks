@@ -28,6 +28,7 @@
 
 | *Comment* | Test Case: Signal to Networks. Signal to primary account |  |
 | set | mark | primary |
+| set | network | signals-%%start_time%% |
 | include | [Test Case: Signals Page] |  |
 
 | *Comment* | Test Case: Signal to Networks. Enable signals in secondary account |  |
@@ -47,6 +48,7 @@
 
 | *Comment* | Test Case: Signal to Networks. Signal to All Networks |  |
 | set | mark | All |
+| set | network | 2 networks |
 | include | [Test Case: Signals Page] |  |
 
 | *Comment* | Test Case: Signal to Networks TEARDOWN |  |
