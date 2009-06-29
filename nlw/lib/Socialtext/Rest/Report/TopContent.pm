@@ -67,8 +67,38 @@ override 'GET_json' => sub {
     return $self->error(400, 'Bad request', $@) if $@;
 
     $self->rest->header(-type => 'application/json');
-    return encode_json({ pages => \@pages});
+    return encode_json({
+        pages => \@pages,
+        meta  => {
+            account   => $self->_account_data( $report ),
+            workspace => $self->_workspace_data( $report ),
+        },
+    });
 };
+
+sub _account_data {
+    my $self    = shift;
+    my $report  = shift;
+
+    # it is required that we either have a valid workspace or a valid
+    # account.
+    my $account = $report->account || $report->workspace->account();
+
+    return { name => $account->name };
+}
+
+sub _workspace_data {
+    my $self      = shift;
+    my $report    = shift;
+    my $workspace = $report->workspace;
+
+    return {} unless $workspace;
+
+    return {
+        title => $workspace->title,
+        uri   => $workspace->uri,
+    }
+}
 
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);
 1;
