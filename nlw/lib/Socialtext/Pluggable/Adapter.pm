@@ -142,10 +142,6 @@ for my $plugin (__PACKAGE__->plugins) {
     eval "require $plugin";
     die $@ if $@;
     $plugin->register;
-
-    for my $hook ($plugin->rest_hooks) {
-        push @{$hooks{$hook->{name}}}, $hook;
-    }
 }
 
 sub make {
@@ -167,15 +163,6 @@ sub make {
         system( 'make', 'all' ) and die "Error calling make in $dir/$name: $!";
         close($lock);
     }
-}
-
-sub rest_hooks {
-    my $class = shift;
-    my @rest_hooks;
-    for my $plugin ($class->plugins) {
-        push @rest_hooks, $plugin->rests;
-    }
-    return @rest_hooks;
 }
 
 sub register {

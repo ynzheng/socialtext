@@ -27,7 +27,6 @@ my $prod_ver = Socialtext->product_version;
 
 my %hooks;
 my %content_types;
-my %rest_hooks;
 my %rests;
 
 field hub => -weak;
@@ -174,19 +173,6 @@ sub current_page {
 sub current_workspace { $_[0]->hub->current_workspace }
 sub current_workspace_id { $_[0]->current_workspace->workspace_id }
 
-sub add_rest {
-    my ($self,$path,$sub) = @_;
-    my $class = ref($self) || $self;
-    push @{$rests{$class}}, {
-        $path => [ 'Socialtext::Pluggable::Adapter', "_rest_hook_$sub"],
-    };
-    push @{$rest_hooks{$class}}, {
-        method => $sub,
-        name => $sub,
-        class => $class,
-    };
-}
-
 sub add_hook {
     my ($self,$hook,$method) = @_;
     my $class = ref($self) || $self;
@@ -215,18 +201,6 @@ sub content_types {
     my $self = shift;
     my $class = ref($self) || $self;
     return $content_types{$class}
-}
-
-sub rest_hooks {
-    my $self = shift;
-    my $class = ref($self) || $self;
-    return $rest_hooks{$class} ? @{$rest_hooks{$class}} : ();
-}
-
-sub rests {
-    my $self = shift;
-    my $class = ref($self) || $self;
-    return $rests{$class} ? @{$rests{$class}} : ();
 }
 
 # Object Methods
