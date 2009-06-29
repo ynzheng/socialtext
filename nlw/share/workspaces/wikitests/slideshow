@@ -11,14 +11,14 @@ pushing all the editor buttons ???
 
 Visit in IE 6 and IE 7 and Safari
 
-| *Comment* |  automation for visual inspection of UI screens |  |
+| *Comment* | automation for visual inspection of UI screens |  |
 | *Comment* | See SlideShow Plus for automation reguiring high permissions |  |
 
 | set_default | wiki | %%workspace%% | defaults to the test workspace |
 | set_default | pt | 5000 | defaults to five seconds |
 | set_default | popup | 8000 | cancel popups in 8 seconds |
 
-| *Comment* |  enabling unplugged and expanding sidebar |  |
+| *Comment* | enabling unplugged and expanding sidebar |  |
 | st-admin | set-workspace-config --workspace %%wiki%% enable_unplugged 1 |  |
 | st-admin | set-workspace-config --workspace %%wiki%% allows_skin_upload 1 |  |
 
@@ -37,20 +37,20 @@ Visit in IE 6 and IE 7 and Safari
 | *Comment* | Watch page Advanced Getting Around |  |
 
 | open_ok | /%%wiki%%/?Advanced Getting Around |  |
-| *Comment* |  SEE Watch, then Watch |  |
+| *Comment* | SEE Watch, then Watch |  |
 | st-watch-page | 1 |  |
 | st-is-watched | 1 |  |
 
-| *Comment* |  SEE Stop Watching on page |  |
+| *Comment* | SEE Stop Watching on page |  |
 | pause | %%pt%% |  |
 
 | clickAndWait | link=My Watchlist |
-| *Comment* |  SEE Advanced Getting Around on Watchlist |
+| *Comment* | SEE Advanced Getting Around on Watchlist |
 | pause | %%pt%% |
 
 | st-watch-page | 0 | Advanced Getting Around |
 | st-is-watched | 0 | Advanced Getting Around |
-| *Comment* |  SEE Stopped Watching from Watchlist |  |
+| *Comment* | SEE Stopped Watching from Watchlist |  |
 | pause | %%pt%% |  |
 
 * all the tabs in the list view
@@ -266,7 +266,7 @@ Post by Email popup
 
 #| verifyConfirmation | If you click 'OK', all edit changes will be lost! | |
 
-| *Comment* |  Test Edit Summaries Feature |  |
+| *Comment* | Test Edit Summaries Feature |  |
 | open_ok | /%%wiki%%/index.cgi?Advanced Getting Around |  |
 | click_ok | st-edit-button-link |  |
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |
@@ -282,20 +282,20 @@ Post by Email popup
 | clickAndWait | st-save-button-link |  |
 | clickAndWait | //a[contains(@href,'?action=revision_list')] |  |
 
-| *Comment* |  SEE Revisions List with Edit Summary at %%start_time%% |  |
+| *Comment* | SEE Revisions List with Edit Summary at %%start_time%% |  |
 | pause | %%pt%% |  |
 | click_and_wait | link=Compare Revisions |  |
 
-| *Comment* |  SEE Revisions Compare with Edit Summary at %%start_time%% |  |
+| *Comment* | SEE Revisions Compare with Edit Summary at %%start_time%% |  |
 | pause | %%pt%% |  |
 | click_and_wait | //table[@id='revision-compare-table']//tr[2]//td[2]//a |  |
 
-| *Comment* |  SEE Revision view with Edit Summary at %%start_time%% |  |
+| *Comment* | SEE Revision view with Edit Summary at %%start_time%% |  |
 | pause | %%pt%% |  |
 
 | open_ok | /%%wiki%%/index.cgi?Start Here |  |
 | click_ok | link=Comment |  |
-| *Comment* |  See Comment UI in page |  |
+| *Comment* | See Comment UI in page |  |
 | pause | %%popup%% |  |
 
 * all dialogs in the Tools menu EXCEPT Email
@@ -305,22 +305,22 @@ Post by Email popup
 | open_ok | /%%wiki%%/index.cgi?Advanced Getting Around |  |
 
 | click_ok | link=Duplicate Page |  |
-| *Comment* |  SEE Duplicate Page |  |
+| *Comment* | SEE Duplicate Page |  |
 | pause | %%popup%% |  |
 | click_ok | link=Cancel |  |
 
 | click_ok | link=Rename Page |  |
-| *Comment* |  SEE Rename Page |  |
+| *Comment* | SEE Rename Page |  |
 | pause | %%popup%% |  |
 | click_ok | link=Cancel |  |
 
 | click_ok | link=Copy Page to Workspace |  |
-| *Comment* |  SEE Copy Page |  |
+| *Comment* | SEE Copy Page |  |
 | pause | %%popup%% |  |
 | click_ok | link=Cancel |  |
 
 | click_ok | link=Delete Page |  |
-| *Comment* |  SEE Delete Page |  |
+| *Comment* | SEE Delete Page |  |
 | pause | %%popup%% |  |
 | click_ok | link=Cancel |  |
 
@@ -376,18 +376,18 @@ Post by Email popup
 | open_ok | /%%wiki%%/index.cgi?Advanced Getting Around |  |
 | wait_for_element_visible_ok | st-tags-addlink | 30000 |
 | click_ok | st-tags-addlink |  |
-| *Comment* |  SEE add tag box open |  |
+| *Comment* | SEE add tag box open |  |
 | pause | %%pt%% |  |
 | wait_for_element_visible_ok | st-tags-field | 30000 |
 | type_ok | st-tags-field | FOOBAR |
-| *Comment* |  SEE FOOBAR in tag box |  |
+| *Comment* | SEE FOOBAR in tag box |  |
 | pause | %%pt%% |  |
 | click_ok | st-tags-plusbutton-link |  |
-| *Comment* |  SEE FOOBAR tag |  |
+| *Comment* | SEE FOOBAR tag |  |
 
 * Incoming link(s)
 
-| *Comment* |  SEE incoming links in sidebar |
+| *Comment* | SEE incoming links in sidebar |
 | pause | %%pt%% |
 
 * page revisions view
@@ -400,43 +400,43 @@ Post by Email popup
 | wait_for_element_visible_ok | st-save-button-link |
 | clickAndWait | link=Save |  |
 | clickAndWait | //a[contains(@href,'?action=revision_list')] |  |
-| *Comment* |  SEE Revisions List |  |
+| *Comment* | SEE Revisions List |  |
 | pause | %%pt%% |  |
 
 compare two revisions view unformatted
 
 | clickAndWait | link=Compare Revisions |
-| *Comment* |  SEE two UNFORMATTED Revisions |
+| *Comment* | SEE two UNFORMATTED Revisions |
 | pause | %%pt%% |
 
 compare two revisions view formatted
 
 | clickAndWait | link=View Formatted |
-| *Comment* |  SEE two FORMATTED Revisions with IMAGE |
+| *Comment* | SEE two FORMATTED Revisions with IMAGE |
 | pause | %%pt%% |
 
 compare two revisions view unformatted
 
 | clickAndWait | //a[contains(@href,'mode=source')] |
-| *Comment* |  SEE two UNFORMATTED Revisions |
+| *Comment* | SEE two UNFORMATTED Revisions |
 | pause | %%pt%% |
 
 single revision view formatted
 
 | clickAndWait | //a[contains(@href,'action=revision_view')] |
-| *Comment* |  SEE one previous FORMATTED Revision |
+| *Comment* | SEE one previous FORMATTED Revision |
 | pause | %%pt%% |
 
 single revision view unformatted
 
 | click_ok | link=Source View |
-| *Comment* |  SEE one previous SOURCE Revision |
+| *Comment* | SEE one previous SOURCE Revision |
 | pause | %%pt%% |
 
 back to current revision view
 
 | clickAndWait | link=Back To Current Revision |
-| *Comment* |  SEE CURRENT Revision |
+| *Comment* | SEE CURRENT Revision |
 | pause | %%pt%% |
 
 * login screen
@@ -475,7 +475,7 @@ Lightbox screens:
 | open_ok | %%wiki%%?action=new_page |  |
 | wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_ok | st-save-button-link |  |
-| *Comment* |  SEE SAVE PAGE AS LIGHTBOX |  |
+| *Comment* | SEE SAVE PAGE AS LIGHTBOX |  |
 | *Comment* | DO NOT CANCEL |  |
 | pause | %%pt%% |  |
 | click_ok | st-newpage-save-savebutton |  |
@@ -574,20 +574,20 @@ Lightbox screens:
 
 | open_ok | /%%wiki%%/index.cgi?action=weblog_display;category=recent%20changes |  |
 | click_ok | link=Comment |  |
-| *Comment* |  comment popup with editing UI (except Safari) |  |
+| *Comment* | comment popup with editing UI (except Safari) |  |
 | pause | %%popup%% |  |
 
 | click_ok | link=Edit this post |  |
-| *Comment* |  SEE post open for editing |  |
+| *Comment* | SEE post open for editing |  |
 | pause | %%pt%% |  |
 | pause | %%pt%% | extra pause for editing post |
 
 | open_ok | /%%wiki%%/index.cgi?action=weblog_display;category=recent%20changes |  |
 | click_ok | link=Permalink |  |
-| *Comment* |  SEE permalink page view |  |
+| *Comment* | SEE permalink page view |  |
 | pause | %%pt%% |  |
 | open_ok | /%%wiki%%/index.cgi?action=weblog_display;category=recent%20changes |  |
-| *Comment* |  SEE weblog page view |  |
+| *Comment* | SEE weblog page view |  |
 | pause | %%pt%% |  |
 | click_ok | link=Print |  |
 | *Comment* | SlideShow CANCEL WEBLOG PRINT popup |  |
@@ -682,6 +682,7 @@ Lightbox screens:
 | *Comment* | Account Logo testing moved to Slideshow Plus |  |
 
 | include | [ControlShow] |  |
+| include | [PaginateShow] |  |
 
 moved Edit Tips to end because FF on galena can't close it. Bug.
 

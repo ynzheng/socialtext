@@ -1,0 +1,82 @@
+This is the slideshow for the paginated listviews.
+It is strictly for clicking and viewing, not functional testing.
+
+This test case is an aid to visually observing each screen type in the application. The test case cycles through screens, printing outSEE instructions to the test person. The test person should observe the browser under test at eachSEE point along the way. The test person may pause at any point to examine the screen visually using CTRL-Z to suspend the testing process and the unix command `fg` to resume it.
+
+| *Comment* | automation for visual inspection of control and console UI screens |  |
+
+| set | pws | pageme-workspace-%%start_time%% |  |
+| set_default | pt | 5000 | defaults to five seconds |
+| st-admin | create-workspace --name %%pws%% --title %%pws%% |  |  |
+| st-admin | add-member --username %%username%% --workspace %%pws%% |  |  |
+| st-create-pages | %%pws%% | 200 |  |
+
+| open_ok | /%%pws%%/ |  |
+| click_ok | link=What's New |  |
+| wait_for_element_visible_ok | link=2 | 30000 |
+| *Comment* | SEE First page of pagination UI |  |
+| *Comment* | SEE FIRST/PREVIOUS are not links |  |
+| pause | %%pt%% |  |
+| pause | %%pt%% |  |
+
+| click_ok | link=2 |  |
+| wait_for_element_visible_ok | link=3 | 30000 |
+| *Comment* | SEE second page of pagination UI |  |
+| *Comment* | SEE first/previous ARE links |  |
+| pause | %%pt%% |  |
+| pause | %%pt%% |  |
+
+| click_ok | link=5 |  |
+| *Comment* | SEE Page 5 displayed |  |
+| wait_for_element_visible_ok | link=7 | 30000 |
+| pause | %%pt%% |  |
+
+| click_ok | link=Next |  |
+| *Comment* | SEE NEXT clicked, Page 6 displayed |  |
+| wait_for_element_visible_ok | link=8 |  |
+| pause | %%pt%% |  |
+| pause | %%pt%% |  |
+
+| click_ok | link=Last |  |
+| pause | %%pt%% |
+| *Comment* | SEE Results of clicking LAST link |  |
+| *Comment* | SEE Results of clicking LAST and next disabled, display is at end of list |  |
+| pause | %%pt%% |
+| pause | %%pt%% |
+
+| wait_for_element_visible_ok | link=Orphaned Pages |  |
+| click_ok | link=Orphaned Pages |  |
+| wait_for_element_visible_ok | link=2 | 30000 |
+| *Comment* | SEE First page of Orphan pagination UI |  |
+| *Comment* | SEE FIRST/PREVIOUS are not links |  |
+| pause | %%pt%% |  |
+| pause | %%pt%% |  |
+
+| click_ok | link=2 |  |
+| wait_for_element_visible_ok | link=4 | 30000 |
+| *Comment* | SEE second page of Orphan pagination UI |  |
+| *Comment* | SEE first/previous ARE links |  |
+| pause | %%pt%% |  |
+| pause | %%pt%% |  |
+
+| click_ok | link=5 |  |
+| *Comment* | SEE Page 5 displayed |  |
+| wait_for_element_visible_ok | link=7 | 30000 |
+| pause | %%pt%% |  |
+
+| click_ok | link=Next |  |
+| *Comment* | SEE NEXT clicked, Page 6 displayed |  |
+| wait_for_element_visible_ok | link=8 | 30000 |
+| pause | %%pt%% |  |
+| pause | %%pt%% |  |
+
+| click_ok | link=Last |  |
+| pause | %%pt%% |  |
+| *Comment* | SEE Results of clicking LAST link |  |
+| *Comment* | SEE Results of clicking LAST and next disabled, display is at end of list |  |
+| pause | %%pt%% |  |
+| pause | %%pt%% |  |
+
+| st-admin | delete-workspace --w %%pws%% |  |
+
+| *Comment* | PaginateShow COMPLETED |  |
