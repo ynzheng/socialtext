@@ -1738,9 +1738,9 @@ proto.get_editable_div = function () {
             });
 
             doc.attachEvent("onactivate", function() {
-                 if (! self._ieSelectionBookmark) {
-                     return;
-                 }
+                 var bookmark = self._ieSelectionBookmark;
+                 if (!bookmark) return;
+                 self._ieSelectionBookmark = null;
 
                  try {
                      var range = doc.body.createTextRange();
