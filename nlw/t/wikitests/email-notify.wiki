@@ -10,7 +10,6 @@
 | set | pref_suffix | email_notify__links_only=condensed&email_notify__sort_order=name&Button=save                 |
 
 
-
 | Comment | System pages should not get emailed out |
 
 | set             | noreply         | noreply@socialtext.com      |       |
@@ -27,7 +26,7 @@
 | job-count       | EmailNotifyUser | 0                           |       |
 | remove-member   | %%noreply%%     | %%workspace%%               |       |
 
-
+----
 
 | Comment | Edit two pages check for notify jobs |
 
@@ -112,7 +111,7 @@
 | job-count            | EmailNotifyUser | 0 |
 | email-like           | __NO CONTENT!__ |   |
 
-
+----
 
 | Comment | Edit a page, then change notify pref to 0 BEFORE EmailNotifyUser |
 
@@ -139,7 +138,7 @@ This also tests the email notify sort order and the display details prefs.
 | code-is   | 200                      |                                      |
 | body-like | Preferences saved        |                                      |
 
-
+----
 
 | Comment | Edit a page, then change notify pref to 4320 after EmailNotifyUser |
 
@@ -191,7 +190,7 @@ Set things back to "normal"
 | code-is   | 200                      |                                      |
 | body-like | Preferences saved        |                                      |
 
-
+----
 
 | Comment | Set the notify_freq shorter |
 
@@ -240,3 +239,21 @@ Set things back to "normal"
 | post-form | /%%workspace%%/index.cgi | %%pref_prefix%%=1440&%%pref_suffix%% |
 | code-is   | 200                      |                                      |
 | body-like | Preferences saved        |                                      |
+
+----
+
+| Comment | Users removed from workspace should not get notifications | |
+| clear-email |                 |                      |       |
+| edit_page   | %%workspace%%   | Foo                  | O hai |
+| job-count   | EmailNotify     | 1                    |       |
+| job-exists  | EmailNotify     | %%workspace_id%%-foo |       |
+| st-process-jobs |                 |                              |
+| job-count       | EmailNotify     | 0                            |
+| job-count       | EmailNotifyUser | 1                            |
+| job-exists      | EmailNotifyUser | %%workspace_id%%-%%user_id%% |
+| remove-member | %%email_address%% | %%workspace%% |
+| st-fast-forward-jobs | 1500            |   |
+| st-process-jobs      |                 |   |
+| job-count            | EmailNotifyUser | 0 |
+| email-like           | __NO CONTENT!__ |   |
+| add-member | %%email_address%% | %%workspace%% |
