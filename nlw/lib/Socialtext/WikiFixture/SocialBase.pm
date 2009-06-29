@@ -759,6 +759,7 @@ Clear any log lines.
 
 sub st_clear_log {
     my $self = shift;
+    $self->{_log} = '';
     my $lr = $self->_logreader;
     while ($lr->read_line) {}
 }
@@ -771,7 +772,6 @@ sub _logreader {
     );
 }
 
-
 =head2 log-like
 
 Checks that the nlw.log matches your expected output.
@@ -782,13 +782,13 @@ sub log_like {
     my $self = shift;
     my $expected = shift;
 
-    my $log = '';
+    $self->{_log} ||= '';
     my $lr = $self->_logreader;
     while(my $line = $lr->read_line) {
-        $log .= "$line\n";
+        $self->{_log} .= "$line\n";
     }
 
-    like $log, qr/$expected/, 'log-like';
+    like $self->{_log}, qr/$expected/, 'log-like';
 }
 
 =head2 st-clear-signals
