@@ -7,7 +7,6 @@ use Socialtext::Pages;
 use Socialtext::Model::Pages;
 use Socialtext::l10n qw(loc);
 use Socialtext::String();
-use Socialtext::Pageset;
 use Fatal qw/opendir/;
 
 use base 'Socialtext::Query::Plugin';
@@ -90,10 +89,6 @@ sub orphans_list {
         \%sortdir,
         feeds => $self->_feeds($self->hub->current_workspace),
         display_title => loc('Orphaned Pages'),
-        Socialtext::Pageset->new(
-            cgi => {$self->cgi->all},
-            total_entries => $self->result_set->{hits},
-        )->template_vars(),
     );
 }
 
@@ -389,7 +384,6 @@ cgi 'page_id';
 cgi 'sortby';
 cgi 'direction';
 cgi 'summaries';
-cgi 'offset';
 
 1;
 
