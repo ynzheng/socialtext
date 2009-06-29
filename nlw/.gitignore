@@ -306,3 +306,4 @@ t/wikitests/people/person_links.wiki
 t/wikitests/signals/events_activities_public_private.wiki
 t/rest_files/atom.xml
 lib/Socialtext/JSON/Proxy.pm
+t/rest_files/time.pl
