@@ -4,9 +4,11 @@
 
 | *Comment* | Test Case: Signals Page |  |
 
+| set-default | acc | %%hostname%% |
 | set-default | ws | %%workspace%% |
 | set-default | member | %%email%% |
 | set-default | mark | single |
+| set-default | network | %%hostname%% |
 
 | st-admin | update-page --workspace %%ws%% --email %%member%% --page "Signals Page Edit Summary %%start_time%%" < %%wikitest_client_files%%wikitest_toc.txt | The "Signals Page Edit Summary %%start_time%%" page has been created. |
 
@@ -76,6 +78,7 @@
 | wait_for_text_present_ok | Way Back In History %%start_time%% %%mark%% | 120000 |
 | wait_for_text_present_ok | I May Be Kinda Slow %%start_time%% %%mark%% | 120000 |
 | text_like | //body | qr/Signal.+Page.+Edit.+Summary.+%%start_time%% %%mark%%/ism |
+| text_like | //body | qr/You.+to.+%%network%%/ism |  |
 
 | *Comment* | Test Case: Signals widget. Wait for automatic refresh to "one minute ago" in page |  |
 | wait_for_text_present_ok | one minute ago | 120000 |

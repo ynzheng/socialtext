@@ -142,18 +142,38 @@ sub _run_htmldoc {
 sub _get_html {
     my $self = shift;
     my $page_name = shift;
-    my $page = $self->hub->pages->new_from_name( $page_name );
+
+    my $initial_ws = $self->hub->current_workspace;
+
+    my ($workspace_name, $page_id);
+
+    if ($page_name =~ /:/) {
+        ($workspace_name, $page_id) = split(/:/, $page_name, 2);
+
+        if ($workspace_name ne $self->hub->current_workspace->name) {
+            my $ws = Socialtext::Workspace->new(name => $workspace_name);
+            $self->hub->current_workspace($ws);
+        } 
+    }
+    else {
+        $workspace_name = $initial_ws->name;
+        $page_id = $page_name;
+    }
+
+    my $page = $self->hub->pages->new_from_name( $page_id );
 
     # Old school here.  htmldoc doesn't support the &trade; entitity, and it
     # doesn't support Unicode.
     local *Socialtext::Formatter::TradeMark::html = sub {'<SUP>TM</SUP>'};
-    return "<html><head><title>"
+    my $html = "<html><head><title>"
         . $page->metadata->Subject
         . "</title><body>"
         . $page->to_absolute_html(
             undef,
             link_dictionary => Socialtext::PdfExport::LinkDictionary->new )
         . "</body></html>";
+    $self->hub->current_workspace($initial_ws) if ($initial_ws->name ne $workspace_name);
+    return $html;    
 }
 
 

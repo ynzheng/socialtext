@@ -69,11 +69,6 @@ sub rtf_export {
                 errors => [loc('No page name given')] );
         }
 
-        my $page_id = $self->hub->pages->new_from_name( $page_name )->id;
-        unless ( grep (/^$page_id$/,@page_ids)) {
-            Socialtext::Exception::DataValidation->throw(
-                errors => [loc("An invalid page name was given: [_1]", $page_name)] );
-        }
     }
 
     my $index;
@@ -114,17 +109,36 @@ sub export {
     my $content_ref = shift;
 
     my @page_names = ref $page_name ? @$page_name : ($page_name);
+    my $initial_ws = $self->hub->current_workspace;
+    my %workspaces = ( 
+        $self->hub->current_workspace->name => $self->hub->current_workspace
+    );
 
     my $html = join "\n<HR/>\n", map { 
-        my $page = $self->hub->pages->new_from_uri( $_ );
+        my ($workspace_name, $page_id);
+
+        if (/:/) {
+            ($workspace_name, $page_id) = split(/:/, $_, 2);
+
+            if ($workspace_name ne $self->hub->current_workspace->name) {
+                $workspaces{$workspace_name} ||= Socialtext::Workspace->new(name => $workspace_name);
+                $self->hub->current_workspace($workspaces{$workspace_name});
+            }
+        }
+        else {
+            $page_id = $_;
+            $self->hub->current_workspace($initial_ws);
+        }
+
+        my $page = $self->hub->pages->new_from_uri( $page_id );
         "<h1>" . $page->title . "</h1>" . $self->_get_html($page) 
     } @page_names;
-
+    $self->hub->current_workspace($initial_ws);
+    
     $$content_ref = HTML::FormatRTFWithImages->format_string(
         $html,
         fontname_headings => "Verdana",
     );
-
 }
 
 sub _get_html {

@@ -24,6 +24,8 @@ sub do_work {
             && length $user->email_address
             && !$user->requires_confirmation();
 
+    return $self->completed unless $ws->has_user($user);
+
     loc_lang(system_locale());
 
     my $pages = $self->_pages_to_send;

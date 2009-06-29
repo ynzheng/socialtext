@@ -9,10 +9,7 @@
 | set | to_ws_user | %%to_ws%%@%%wikiemail%% |
 
 | *Comment* | Test Case: Join. Create new acct, self-join ws in it, and brand new (workspace == new user) |  |
-| *Comment* | Test Case: Join. Default allow_self_register is YES |  |
 | st-admin | create-account --name "%%acct%%" | created |
-| st-admin | enable-plugin --account "%%acct%%" --plugin dashboard |  |
-| st-admin | enable-plugin --account "%%acct%%" --plugin signals |  |
 
 | *Comment* | Test Case: Join. Create the self-join workspace %%acct%% |  |
 | st-admin | create-workspace --name %%acct_ws%% --title "%%acct%%" --account "%%acct%%" | created |
@@ -26,6 +23,7 @@
 
 | *Comment* | Test Case: Join. Add %%username%% to %%to_ws%% so he can login and click the new user's verification link |  |
 | st-admin | add-workspace-admin --w %%to_ws%% --u %%username%% |  |
+| st-config | set self_registration 1 | Wrote updated config file |
 
 | *Comment* | Test Case: Join. Logged-in user joins immediately, primary account unchanged |  |
 | open_ok | /%%acct_ws%% |  |
@@ -37,8 +35,14 @@
 | wait_for_element_visible_ok | link=Comment | 5000 |
 | st-admin | get-user-account --u %%username%% | Primary account for "%%username%%" is %%hostname%%. |
 
-| *Comment* | Test Case: Join. New user joins and registers |  |
+| *Comment* | Test Case: Join. Disable self register and verify |  |
 | st-logout |  |  |
+| st-config | set self_registration 0 | Wrote updated config file |
+| open_ok | /%%acct_ws%% |  |
+| wait_for_element_not_present_ok | link=Join | 5000 |
+| st-config | set self_registration 1 | Wrote updated config file |
+
+| *Comment* | Test Case: Join. New user joins and registers |  |
 | open_ok | /%%acct_ws%% |  |
 | wait_for_element_visible_ok | link=Join | 30000 |
 | wait_for_element_not_present_ok | link=Edit | 5000 |
@@ -66,6 +70,9 @@
 | click_and_wait | login_btn |  |
 
 | *Comment* | Test Case: Join. Navigate to the confirmation email |  |
+| text_like | workspaceName | %%to_ws%% |
+| *Comment* | Wait 60 seconds for the confirmation email to arrive |  |
+| pause | 60000 |  |
 | wait_for_element_visible_ok | link=What's New | 30000 |
 | click_and_wait | link=What's New |  |
 | wait_for_element_visible_ok | link=Welcome to the %%acct%% workspace - please confirm your email to join | 30000 |
