@@ -80,7 +80,7 @@ sub resource_to_html {
         push @column_order, sort keys %avail;
     }
 
-    $self->_template_render('data/job_stats.html' => { 
+    return $self->template_render('data/job_stats.html' => { 
         job_stats => $job_stats,
         columns => \@column_order,
     });
