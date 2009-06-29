@@ -164,6 +164,9 @@
         # MSIE masquerades as Netscape, but it is fine
         BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
 
+        # Safari doesn't like compressed JS, so *only* compress HTML content
+        BrowserMatch Safari gzip-only-text/html
+
         # Don't compress images
         SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary
 
