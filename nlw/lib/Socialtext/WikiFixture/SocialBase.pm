@@ -772,14 +772,9 @@ sub _logreader {
     );
 }
 
-=head2 log-like
-
-Checks that the nlw.log matches your expected output.
-
-=cut
-
-sub log_like {
+sub _log_test {
     my $self = shift;
+    my $cmd = shift;
     my $expected = shift;
 
     $self->{_log} ||= '';
@@ -788,7 +783,30 @@ sub log_like {
         $self->{_log} .= "$line\n";
     }
 
-    like $self->{_log}, qr/$expected/, 'log-like';
+    no strict 'refs';
+    $cmd->($self->{_log}, qr/$expected/, $cmd);
+}
+
+=head2 log-like
+
+Checks that the nlw.log matches your expected output.
+
+=cut
+
+sub log_like {
+    my $self = shift;
+    $self->_log_test('like', @_);
+}
+
+=head2 log-unlike
+
+Checks that the nlw.log doesn't match your regexp.
+
+=cut
+
+sub log_unlike {
+    my $self = shift;
+    $self->_log_test('unlike', @_);
 }
 
 =head2 st-clear-signals
