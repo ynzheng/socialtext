@@ -9,8 +9,8 @@ TraceEnable off
 # back-end.  ST::InitHandler will disable them in the back-end by default, but
 # in such a way that they _could_ be re-enabled as needed (e.g. for NTLM Auth)
 KeepAlive               On
-MaxKeepAliveRequests    100
-KeepAliveTimeout        15
+MaxKeepAliveRequests    50
+KeepAliveTimeout        10
 
 # Process limits
 MinSpareServers     [% config.servers.min_spare %]
