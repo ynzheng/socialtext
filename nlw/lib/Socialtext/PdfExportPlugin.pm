@@ -143,13 +143,23 @@ sub _get_html {
     my $self = shift;
     my $page_name = shift;
 
-    my ($workspace_name, $page_id) = split /\:/, $page_name;
     my $initial_ws = $self->hub->current_workspace;
 
-    if ($workspace_name ne $self->hub->current_workspace->name) {
-        my $ws = Socialtext::Workspace->new(name => $workspace_name);
-        $self->hub->current_workspace($ws);
-    } 
+    my ($workspace_name, $page_id);
+
+    if ($page_name =~ /:/) {
+        ($workspace_name, $page_id) = split(/:/, $page_name, 2);
+
+        if ($workspace_name ne $self->hub->current_workspace->name) {
+            my $ws = Socialtext::Workspace->new(name => $workspace_name);
+            $self->hub->current_workspace($ws);
+        } 
+    }
+    else {
+        $workspace_name = $initial_ws->name;
+        $page_id = $page_name;
+    }
+
     my $page = $self->hub->pages->new_from_name( $page_id );
 
     # Old school here.  htmldoc doesn't support the &trade; entitity, and it

@@ -115,11 +115,21 @@ sub export {
     );
 
     my $html = join "\n<HR/>\n", map { 
-        my ($workspace_name, $page_id) = split /\:/, $_;
-        if ($workspace_name ne $self->hub->current_workspace->name) {
-            $workspaces{$workspace_name} = Socialtext::Workspace->new(name => $workspace_name) if (!exists($workspaces{$workspace_name}));
-            $self->hub->current_workspace($workspaces{$workspace_name});
+        my ($workspace_name, $page_id);
+
+        if (/:/) {
+            ($workspace_name, $page_id) = split(/:/, $_, 2);
+
+            if ($workspace_name ne $self->hub->current_workspace->name) {
+                $workspaces{$workspace_name} ||= Socialtext::Workspace->new(name => $workspace_name);
+                $self->hub->current_workspace($workspaces{$workspace_name});
+            }
         }
+        else {
+            $page_id = $_;
+            $self->hub->current_workspace($initial_ws);
+        }
+
         my $page = $self->hub->pages->new_from_uri( $page_id );
         "<h1>" . $page->title . "</h1>" . $self->_get_html($page) 
     } @page_names;
