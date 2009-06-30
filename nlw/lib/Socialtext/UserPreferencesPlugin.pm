@@ -130,7 +130,7 @@ sub save {
                     uniqkey => "$ws_id-$user_id",
                 );
             }
-            else {
+            elsif ($seconds != 0) {
                 Socialtext::JobCreator->move_jobs_by(
                     funcname => $job_type,
                     uniqkey => "$ws_id-$user_id",
