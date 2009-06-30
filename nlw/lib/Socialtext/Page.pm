@@ -808,6 +808,7 @@ sub add_comment {
     $self->metadata->update( user => $self->hub->current_user );
     my $user = $self->hub->current_user;
 
+    $self->metadata->RevisionSummary(loc('(comment)'));
     $self->store( user => $user );
 
     my $summary = $self->preview_text($wikitext);
