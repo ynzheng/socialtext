@@ -30,9 +30,6 @@ override 'GET_json' => sub {
             start_time => $self->start,
             duration   => $self->duration,
             type       => 'raw',
-            query_args => {
-                top => 12,
-            },
         }, $user,
     ) };
     return $self->error(400, 'Bad request', $@) if $@;
