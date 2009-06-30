@@ -293,6 +293,7 @@ my %ToDoModules = map { $_ => 1 } qw(
     Test::Live
     Test::SeleniumRC
     Test::Socialtext
+    Test::Socialtext::Rest
     Test::Socialtext::Account
     Test::Socialtext::CGIOutput
     Test::Socialtext::Ceqlotron
