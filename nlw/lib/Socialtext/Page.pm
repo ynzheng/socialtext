@@ -78,8 +78,10 @@ sub new {
 
     return if $p{id} && length $p{id} > _MAX_PAGE_ID_LENGTH;
 
+    Socialtext::Timer->Continue('page_new');
     my $self = $class->SUPER::new(%p);
     $self->metadata($self->new_metadata($self->id));
+    Socialtext::Timer->Pause('page_new');
     return $self;
 }
 
