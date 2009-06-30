@@ -11,7 +11,7 @@ use Test::Socialtext;
 use Test::Socialtext::Search;
 use Socialtext::Search::Config;
 
-fixtures( 'admin' );
+fixtures(qw( admin no-ceq-jobs ));
 
 plan tests => 19;
 
