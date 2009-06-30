@@ -8,6 +8,7 @@ use Test::Socialtext;
 use Socialtext::User;
 use Getopt::Long;
 use Time::HiRes qw/tv_interval gettimeofday/;
+use IO::All;
 
 $| = 1;
 srand(time);
@@ -17,11 +18,15 @@ my $page;
 my $pages = 5000;
 my $tags  = 100;
 my $tags_per_page = 3;
+my $attachment;
 GetOptions(
     'pages=s' => \$pages,
     'tags=s'  => \$tags,
     'tags-per-page=s' => \$tags_per_page,
+    'attachment=s' => \$attachment,
 ) or usage();
+
+die "No such attachment $attachment" if $attachment and !-f $attachment;
 
 
 my $overall_start = [gettimeofday];
@@ -35,6 +40,15 @@ for ( 1 .. $pages ) {
         creator => Socialtext::User->SystemUser,
         categories => random_tags(),
     );
+    if ($attachment) {
+        my $attach = $hub->attachments->new_attachment(
+            id => 'blah',
+            page_id => $page->id,
+            filename => $attachment,
+        );
+        $attach->save($attachment);
+        $attach->store( user => Socialtext::User->SystemUser );
+    }
     print tv_interval($start), "\n";
 }
 print "Created $pages pages in " . tv_interval($overall_start) . "ms\n";
