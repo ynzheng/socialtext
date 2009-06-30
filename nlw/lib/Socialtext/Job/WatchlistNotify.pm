@@ -14,7 +14,7 @@ override '_freq_for_user' => sub {
     my $self = shift;
     my $user = shift;
     my $prefs = $self->hub->preferences->new_for_user($user->email_address);
-    return $prefs->{watchlist_notify_frequency}->value;
+    return $prefs->{watchlist_notify_frequency}->value * 60;
 };
 
 

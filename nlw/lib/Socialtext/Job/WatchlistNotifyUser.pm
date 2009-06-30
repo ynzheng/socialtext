@@ -51,7 +51,7 @@ override '_links_only' => sub {
 override '_frequency_pref' => sub {
     my $self = shift;
     my $prefs = shift;
-    return $prefs->{watchlist_notify_frequency}->value;
+    return $prefs->{watchlist_notify_frequency}->value * 60;
 };
 
 __PACKAGE__->meta->make_immutable;

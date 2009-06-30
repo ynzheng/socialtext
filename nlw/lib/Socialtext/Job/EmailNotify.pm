@@ -18,7 +18,7 @@ sub _freq_for_user {
     my $self = shift;
     my $user = shift;
     my $prefs = $self->hub->preferences->new_for_user($user->email_address);
-    return $prefs->{notify_frequency}->value;
+    return $prefs->{notify_frequency}->value * 60;
 }
 sub _get_applicable_users {
     my $self = shift;
@@ -53,7 +53,7 @@ sub do_work {
         my $freq = $self->_freq_for_user($user);
         next unless $freq;
 
-        my $after = $t + $freq*60;
+        my $after = $t + $freq;
         my $job = TheSchwartz::Moosified::Job->new(
             funcname => $job_class,
             priority => -64,
