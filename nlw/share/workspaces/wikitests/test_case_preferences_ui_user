@@ -1,0 +1,271 @@
+Commands
+
+create_account 	%%acc%% 	all plugins are enabled
+account_config 	%%acc%% 	skin_name 	zehnder
+disable_account_plugin 	%%acc%% 	signals
+create_user 	%%user%% 	password 	%%acc%% 	%%names%%
+create_workspace 	%%ws%% 	%%acc%%
+set_ws_permissions 	%%ws%% 	public-read-only
+workspace_config 	%%ws%% 	allows_page_locking 	1
+add_member 	%%user%% 	%%ws%%
+add_workspace_admin 	%%user%% 	%%ws%%
+set_business_admin 	%%user%% 	1
+set_technical_admin 	%%user%% 	1
+set_business_admin 	%%user%% 	0
+set_technical_admin 	%%user%% 	0
+
+| *Comment* | START Test Case: Preferences UI User |  |
+| set | new_account | userPrefs.%%start_time%% |
+| set | new_ws | userPrefs-%%start_time%% |
+| set | new_user | userPrefs.%%start_time%%@ken.socialtext.net |
+| set | new_name | userPrefs %%start_time%% |
+
+| *Comment* | Test Case: Preferences UI User create acct/ws/member |  |  |  |
+| create_account | %%new_account%% |  |  |  |
+| create_user | %%new_user%% | 123456 | %%new_account%% | %%new_name%% |
+| create_workspace | %%new_ws%% | %%new_account%% |  |  |
+| workspace-config | %%new_ws%% | email_notify_is_enabled | 1 |  |
+| add_member | %%new_user%% | %%new_ws%% |  |  |
+
+| *Comment* | Test Case: Preferences UI User login to %%new_ws%% |  |
+| st-logout |
+| open | /%%new_ws%% |  |
+| wait_for_element_visible_ok | username | 30000 |
+| wait_for_element_visible_ok | password | 30000 |
+| type_ok | username | %%new_user%% |  |
+| type_ok | password | 123456 |  |
+| click_and_wait | login_btn |  |
+
+| *Comment* | Test Case: Preferences UI User. email notification. Every day, chronologically, full info |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Email Notification |  |
+| text_like | contentContainer | How often |
+| text_like | contentContainer | What order |
+| text_like | contentContainer | What information |
+| is_selected_ok | email_notify__notify_frequency | label=Every Day |
+| verifyValue | email_notify__sort_order | chrono |
+| verifyValue | email_notify__links_only | expanded |
+
+^ END
+
+| *Comment* | Test Case: Preferences UI User verify settings menu |  |
+| click_and_wait | link=Settings |  |
+| text_like | contentLeft | Users |
+| text_like | contentLeft | My Settings |
+| text_like | contentLeft | List All Users |
+| text_like | contentLeft | Signals |
+| text_like | contentLeft | Private Messages |
+| text_like | contentLeft | Workspaces |
+| text_like | contentLeft | My Workspaces |
+| text_like | contentLeft | Preferences |
+| text_like | contentLeft | Unsubscribe |
+| text_like | contentLeft | Create New Weblog |
+| text_like | contentLeft | Page Editing |
+| text_like | contentLeft | Screen Layout |
+| text_like | contentLeft | Email Notification |
+| text_like | contentLeft | Your Notepad |
+| text_like | contentLeft | What's New |
+| text_like | contentLeft | Syndicate |
+| text_like | contentLeft | Time |
+| text_like | contentLeft | Watchlist |
+| text_like | contentLeft | Weblogs |
+
+| text_unlike | contentLeft | Manage All Users |
+| text_unlike | contentLeft | Invite New Users |
+| text_unlike | contentLeft | Create New Workspace |
+| text_unlike | contentLeft | Clone This Workspace |
+| text_unlike | contentLeft | Workspace Appearance |
+| text_unlike | contentLeft | Workspace Features |
+| text_unlike | contentLeft | Workspace Privacy |
+
+| *Comment* | Test Case: Preferences UI User test page editing functionality |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Page Editing |  |
+
+| *Comment* | Test Case: Preferences UI User. default is on. Turn it off. |  |
+| text_like | contentContainer | Double-click to edit a page? |
+| value_is | wikiwyg__wikiwyg_double | on |
+| uncheck_ok | wikiwyg__wikiwyg_double |  |
+| value_is | wikiwyg__wikiwyg_double | off |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| value_is | wikiwyg__wikiwyg_double | off |
+
+| *Comment* | Test Case: Preferences UI User. Is it off? Turn it on. |  |
+| text_like | contentContainer | Double-click to edit a page? |
+| value_is | wikiwyg__wikiwyg_double | off |
+| check_ok | wikiwyg__wikiwyg_double |  |
+| value_is | wikiwyg__wikiwyg_double | on |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| text_like | contentContainer | Double-click to edit a page? |
+| value_is | wikiwyg__wikiwyg_double | on |
+
+| *Comment* | Test Case: Preferences UI User. Is it on? Save without changing value. |  |
+| text_like | contentContainer | Double-click to edit a page? |
+| value_is | wikiwyg__wikiwyg_double | on |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| text_like | contentContainer | Double-click to edit a page? |
+| value_is | wikiwyg__wikiwyg_double | on |
+
+| *Comment* | Test Case: Preferences UI User. Reset name and pwd |  |
+| click_and_wait | link=My Settings |  |
+| text_like | contentContainer | qr/First Name:/i |
+| text_like | contentContainer | qr/New password:/i |
+| type_ok | first_name | First %%start_time%% |
+| type_ok | last_name | Last %%start_time%% |
+| type_ok | old_password | 123456 |
+| type_ok | new_password | 654321 |
+| type_ok | new_password_retype | 654321 |
+| click_and_wait | link=Save |  |
+| text_like | qr/Saved/i |  |
+
+| *Comment* | Test Case: Preferences UI User. login with new name and pwd |  |
+| st-logoutin | %%new_user%% | 654321 |
+| open_ok | /%%new_ws%% |  |
+| wait_for_element_visible_ok | link=Settings | 30000 |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=My Settings |  |
+| verifyValue | first_name | First %%start_time%% |
+| verifyValue | last_name | Last %%start_time%% |
+
+| *Comment* | Test Case: Preferences UI User. Set name with existing values. |  |
+| click_and_wait | link=Save |  |
+| text_like | qr/Saved/i |  |
+| verifyValue | first_name | First %%start_time%% |
+| verifyValue | last_name | Last %%start_time%% |
+
+| *Comment* | Test Case: Preferences UI User. Screen Layout |  |
+
+| *Comment* | Test Case: Preferences UI User. Recently Viewed off. Turn it on. |  |
+| click_and_wait | link=Screen Layout |  |
+| text_like | contentContainer | Should hovering |
+| text_like | contentContainer | Include Recently |
+| value_is | display__mouseover_length | on |
+| value_is | display__include_breadcrumbs | off |
+| check_ok | display__include_breadcrumbs |  |
+| value_is | display__include_breadcrumbs | on |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| value_is | display__include_breadcrumbs | on |
+| value_is | display__mouseover_length | on |
+| open_ok | /%%new_ws%%/index.cgi?Announcements and Links |  |
+| text_like | contentContainer | Recently Viewed |
+
+| *Comment* | Test Case: Preferences UI User. Recently Viewed on. Turn it and hovering off. |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Screen Layout |  |
+| text_like | contentContainer | Should hovering |
+| text_like | contentContainer | Include Recently |
+| value_is | display__mouseover_length | on |
+| value_is | display__include_breadcrumbs | on |
+| uncheck_ok | display__mouseover_length |  |
+| uncheck_ok | display__include_breadcrumbs |  |
+| value_is | display__include_breadcrumbs | off |
+| value_is | display__mouseover_length | off |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| value_is | display__include_breadcrumbs | off |
+| value_is | display__mouseover_length | off |
+| open_ok | /%%new_ws%%/index.cgi?Announcements and Links |  |
+| text_unlike | contentContainer | Recently Viewed |
+
+| *Comment* | Test Case: Preferences UI User. Recently Viewed and Hovering off. both on |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Screen Layout |  |
+| text_like | contentContainer | Should hovering |
+| text_like | contentContainer | Include Recently |
+| value_is | display__mouseover_length | off |
+| value_is | display__include_breadcrumbs | off |
+| check_ok | display__mouseover_length |  |
+| check_ok | display__include_breadcrumbs |  |
+| value_is | display__include_breadcrumbs | on |
+| value_is | display__mouseover_length | on |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| value_is | display__include_breadcrumbs | on |
+| value_is | display__mouseover_length | on |
+
+| *Comment* | Test Case: Preferences UI User. Save without modifications |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Screen Layout |  |
+| text_like | contentContainer | Should hovering |
+| text_like | contentContainer | Include Recently |
+| value_is | display__mouseover_length | on |
+| value_is | display__include_breadcrumbs | on |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| value_is | display__include_breadcrumbs | on |
+| value_is | display__mouseover_length | on |
+
+| *Comment* | Test Case: Preferences UI User test what's new functionality |  |
+| open_ok | /%%new_ws%%/index.cgi?action=preferences_settings;preferences_class_id=recent_changes |  |
+| click_ok | recent_changes__include_in_pages |  |
+| click_and_wait | link=Save |  |
+| open_ok | /%%new_ws%%/index.cgi?Announcements and Links |  |
+| wait_for_text_present_ok | First Post | 30000 |
+| text_like | contentContainer | First Post in No Brackets %%start_time%% Weblog |
+
+| *Comment* | Test Case: Preferences UI User test syndicate functionality |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Syndicate |  |
+| text_like | contentContainer | How many posts |
+
+| *Comment* | Test Case: Preferences UI User test time functionality |  |
+| click_and_wait | link=Time |  |
+| text_like | contentContainer | What time zone |
+| text_like | contentContainer | How should Daylight |
+| text_like | contentContainer | How should displayed |
+| text_like | contentContainer | Should times be |
+| text_like | contentContainer | Should seconds be |
+
+| *Comment* | Test Case: Preferences UI User test watchlist functionality |  |
+| click_and_wait | link=Watchlist |  |
+| text_like | contentContainer | How frequently would |
+| text_like | contentContainer | What information about |
+| text_like | contentContainer | How many items |
+
+| *Comment* | Test Case: Preferences UI User test weblogs functionality |  |
+| open_ok | /%%new_ws%%/index.cgi?action=preferences_settings;preferences_class_id=weblog |  |
+| text_like | contentContainer | How many posts |
+
+| *Comment* | Test Case: Preferences UI User test unsubscribe functionality |  |
+| click_and_wait | link=Unsubscribe |  |
+| wait_for_element_present_ok | //input[@value='Unsubscribe from the %%new_ws%% workspace'] | 30000 |
+| click_and_wait | //input[@value='Unsubscribe from the %%new_ws%% workspace'] |  |
+| st-login | %%new_user%% | 654321 |
+| text_like | errors-and-messages | You are not authorized to view this workspace. |
+
+| *Comment* | Test Case: Preferences UI User can turn email notification on and off |  |
+| st-admin | add-member --email %%new_user%% --workspace %%new_ws%% |  |
+| open_ok | /%%new_ws%%/index.cgi?action=users_settings |  |
+| wait_for_element_visible_ok | link=Private Messages | 30000 |
+| click_ok | link=Private Messages | 30000 |
+| wait_for_text_present_ok | Send Socialtext Signals private messages as email: | 10000 |
+| wait_for_element_visible_ok | dm_sends_email | 10000 |
+| is_checked_ok | dm_sends_email |  |
+| uncheck_ok | dm_sends_email |  |
+| click_and_wait | link=Save |  |
+| click_and_wait | link=My Workspaces |  |
+| text_like | contentContainer | %%new_ws%% |
+| click_ok | link=Private Messages | 10000 |
+| wait_for_text_present_ok | Send Socialtext Signals private messages as email: | 10000 |
+| verify_value | dm_sends_email | off |
+
+| *Comment* | Test Case: Settings: Signals does appear if signals plugin is disabled for account, but I have a signals-enabled workspace for another acct |  |
+| st-admin | disable-plugin --plugin signals --account %%new_account%% |  |
+| open_ok | /%%new_ws%%/index.cgi?action=users_settings |  |
+| wait_for_element_present_ok | link=My Settings | 10000 |
+| wait_for_element_present_ok | link=Private Messages | 10000 |
+| st-admin | remove-member --email %%new_user%% --workspace %%new_ws%% |  |
+| *Comment* | Test Case: Settings: Signalsn't does appear if signals plugin is disabled for account |  |
+| open_ok | /?action=users_settings |  |
+| wait_for_element_present_ok | link=My Settings | 10000 |
+| text_unlike | //body | Private Messages |
+
+| *Comment* | Test Case: Preferences UI User Teardown |  |
+| st-admin | purge-page --w %%new_ws%% --p first_post_in_brackets_%%start_time%%_weblog | qr/.+ was purged .+/ |
+| st-admin | purge-page --w %%new_ws%% --p first_post_in_no_brackets_%%start_time%%_weblog | qr/.+ was purged .+/ |
+
+| *Comment* | Test Case: Preferences UI User COMPLETED |
