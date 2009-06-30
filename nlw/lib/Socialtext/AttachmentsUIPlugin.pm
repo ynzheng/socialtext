@@ -15,6 +15,8 @@ use Socialtext::TT2::Renderer;
 use Socialtext::l10n qw(loc system_locale);
 use Socialtext::BrowserDetect;
 use Socialtext::Timer;
+use Socialtext::Pageset;
+use Memoize;
 
 sub class_id { 'attachments_ui' }
 const class_title => 'Attachments';
@@ -229,14 +231,19 @@ sub attachments_listall {
     my $sortby = $self->cgi->sortby || 'filename';
     my $direction = $self->cgi->direction || $self->sortdir->{$sortby};
 
+    my $attachments = $self->hub->attachments->all_in_workspace();
     $self->screen_template('view/attachmentslist');
     $self->render_screen(
-        rows =>
-            $self->_table_rows( $self->hub->attachments->all_in_workspace() ),
+        rows => $self->_table_rows( $attachments ),
         display_title => loc("All Files"),
         sortby => $sortby,
         sortdir => $self->sortdir,
         direction => $direction,
+        predicate => 'action=attachments_listall',
+        Socialtext::Pageset->new(
+            cgi => {$self->cgi->all},
+            total_entries => scalar(@$attachments),
+        )->template_vars(),
     );
 }
 
@@ -246,29 +253,30 @@ sub _table_rows {
 
     my @rows;
     for my $att (@$attachments) {
-        my $page = $self->hub->pages->new_page( $att->{page_id} );
+        my $page = $att->{page} || $self->hub->pages->new_page($att->{page_id});
 
         push @rows, {
-            link      => $self->_attachment_download_link($att),
+            link      => sub { $self->_attachment_download_link($att) },
             id        => $att->{id},
             filename  => $att->{filename},
             subject   => $page->title,
             user      => $att->{from},
-            date      => $self->hub->timezone->date_local( $att->{date} ),
+            date      => sub { $self->hub->timezone->date_local( $att->{date} ) },
             page_uri  => $page->uri,
-            page_link =>
-                Socialtext::Helpers->page_display_link_from_page($page),
+            page_link => sub {
+                Socialtext::Helpers->page_display_link_from_page($page) },
             size                => $att->{length},
             human_readable_size =>
                 $self->_human_readable_size( $att->{length} ),
             page_is_locked => $page->locked,
-            user_can_modify => $self->hub->checker->can_modify_locked( $page ),
+            user_can_modify => sub { $self->hub->checker->can_modify_locked( $page ) },
         };
     }
 
     return $self->sorted_result_set( \@rows );
 }
 
+memoize('_human_readable_size', NORMALIZER => sub { $_[1] });
 sub _human_readable_size {
     my ( $self, $size ) = @_;
 
@@ -441,5 +449,6 @@ cgi 'as_page';
 cgi 'attachment_id';
 cgi 'page_id';
 cgi 'size';
+cgi 'offset';
 
 1;

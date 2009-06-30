@@ -14,10 +14,15 @@
     [% IF checker.check_permission('delete') %]
       <form action="[% script_name %]" method="post">
     [% END %]
+    [% predicate_with_params = BLOCK %]?[% predicate %];scope=[% scope %];orig_search_term=[% search_term %];sortby=[% sortby %];direction=[% direction || sortdir.$sortby %][%- END %]
     <table class="dataTable attachmentlist">
       <tr>
         <th width="1%"><input id="st-listview-selectall" type="checkbox" /></th>
         <th class="toggle"><div class="toggle">
+            [% IF pager %]
+            &mdash;
+            [% PROCESS list_pager %] 
+            [% END %]
         </div></th>
         <th class="sort">[% loc('Sort by:') %]
           <select id="sort-picker" onchange="sort_by();">
@@ -36,7 +41,11 @@
           }
         </script>
       </tr>
+      [% IF ! offset; offset = 0; END %]
+      [% IF ! last; last = rows.size; END %]
       [% FOREACH row = rows %]
+        [% IF loop.count - 1 < offset %][% NEXT %][% END %]
+        [% IF loop.count > last %][% BREAK %][% END %]
         [% IF loop.count % 2 %]<tr class="oddRow">[% ELSE %]<tr>[% END %]
         <td>
           [% IF row.page_is_locked AND ! row.user_can_modify %]
@@ -55,6 +64,14 @@
         </tr>
       [% END %]
     </table><!-- dataTable END -->
+      [% IF pager && pager.total_entries %]
+        <table class="dataTable pagelist" cellspacing="0">
+          <tr>
+            <th width="30" style="border-right: 0">&nbsp;</th>
+            <th class="toggle">[% PROCESS list_pager %]</th>
+          </tr>
+        </table>
+      [% END %]
     [% IF checker.check_permission('delete') %]
         <input type="submit" value="[% loc('Delete Selected Attachments') %]" name="button"/>
         <input type="hidden" name="action" value="attachments_delete" />
@@ -69,4 +86,9 @@
   [% IF sortby == field %]
     <option value="sortby=[% field %];direction=[% direction == 'asc' ? 'desc' : 'asc' %]">[% name %] [% direction == 'asc' ? '(&darr;)' : '(&uarr;)' %]</option>
   [% END %]
+[% END %]
+
+[% BLOCK list_pager %]
+    <b>[% loc('Showing [_1] - [_2] of [_3] total.', offset + 1, last, pager.total_entries) %]</b>
+    [% INCLUDE "view/paging" %]
 [% END %]

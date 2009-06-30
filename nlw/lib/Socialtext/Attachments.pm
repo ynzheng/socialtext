@@ -17,6 +17,7 @@ use Socialtext::Indexes;
 use Socialtext::Page;
 use Readonly;
 use Socialtext::Validate qw( validate SCALAR_TYPE BOOLEAN_TYPE HANDLE_TYPE USER_TYPE );
+use Memoize;
 
 sub class_id { 'attachments' }
 field 'attachment_set';
@@ -140,13 +141,15 @@ sub all_serialized {
 sub all_in_workspace {
     my $self = shift;
     my @attachments;
+    Socialtext::Timer->Continue('all_attach');
     my $hash = $self->index->read_only_hash;
-
     for my $page_id (keys %$hash) {
-        next unless Socialtext::Page->new( hub => $self->hub, id => $page_id )->active;
+        my $p = Socialtext::Page->new( hub => $self->hub, id => $page_id );
+        next unless $p->active;
         my $entry = $hash->{$page_id};
-        $self->_add_attachment_from_index(\@attachments, $entry);
+        $self->_add_attachment_from_index(\@attachments, $entry, $p);
     }
+    Socialtext::Timer->Pause('all_attach');
     return \@attachments;
 }
 
@@ -185,17 +188,20 @@ sub _add_attachment_from_index {
     my $self = shift;
     my $attachments_ref = shift;
     my $entry = shift;
+    my $page = shift;
 
     push @$attachments_ref, map {
         {
             %$_,
             from => $self->_extract_username_or_email_address( $_->{from} ),
+            page => $page,
         }
     } grep {
         -e $self->plugin_directory . '/' . $_->{page_id} . '/' . $_->{id};
     } values %$entry;
 }
 
+memoize('_extract_username_or_email_address', NORMALIZER => sub { $_[1] });
 sub _extract_username_or_email_address {
     my $self = shift;
     my $from = shift;
