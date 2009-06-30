@@ -6,18 +6,18 @@ use warnings;
 use Socialtext::Resting::Getopt qw/get_rester/;
 use Getopt::Long;
 
+my $port = $> + 20000;
+my $r = get_rester();
+$r->server("http://localhost:$port") unless $r->server;
+$r->username('devnull1@socialtext.com') unless $r->username;
+$r->password('d3vnu11l') unless $r->password;
+
 my %args;
 GetOptions( \%args,
     'class=s',
     'url=s',
 ) or die;
 
-my $port = $> + 20000;
-my $r = get_rester(
-    server => "http://localhost:$port",
-    username => 'devnull1@socialtext.com',
-    password => 'd3vnu11l',
-);
 
-
+print "Setting webhook on " . $r->server . "\n";
 print $r->put_webhook( %args ), "\n";
