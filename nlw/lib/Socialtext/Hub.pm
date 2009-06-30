@@ -171,8 +171,8 @@ sub handle_validation_error {
         $msg = loc('Malformed query.') . '<br />';
     }
     my $support_address = Socialtext::AppConfig->support_address();
-    $msg .=
-        loc('Please <a href="[_1]">Contact Support</a> if you think it should have worked.', $support_address) ;
+    my $support_form_link = 
+    $msg .= loc('Please contact Socialtext support using the <a href="http://www.socialtext.com/customers/support_request.php">Technical Support Request</a> form and describe the the time the error occurred, and what you were attempting to do prior to the error.');
     $self->fail_home_with_warning( $msg, $error );
 }
 
