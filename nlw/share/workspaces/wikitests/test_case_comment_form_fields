@@ -16,6 +16,7 @@
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | st-newpage-pagename-edit | fields_testpage_%%start_time%% |
 | type_ok | wikiwyg_wikitext_textarea | fields_testpage_content_%%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 
 | *Comment* | Test Case: Comment Form Fields: fill in Comment Fields |

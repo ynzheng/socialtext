@@ -21,6 +21,7 @@ Automated backup and restore testing
 | type_ok | st-newpage-pagename-edit | Backup Restore %%start_time%% |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | Backup Restore content %%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 | open_ok | /admin/index.cgi?action=recent_changes |  |
 | click_and_wait | link=Backup Restore %%start_time%% |  |
@@ -123,6 +124,7 @@ Automated backup and restore testing
 | type_ok | st-newpage-pagename-edit | Backup Restore 3 %%start_time%% |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | Backup Restore 3 content %%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 | open_ok | /admin/index.cgi?action=recent_changes |  |
 | click_and_wait | link=Backup Restore 3 %%start_time%% |  |
@@ -147,6 +149,7 @@ Automated backup and restore testing
 | type_ok | st-newpage-pagename-edit | Backup Restore %%workspace%% %%start_time%% |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | Backup Restore %%workspace%% content %%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 | open_ok | /%%workspace%%/index.cgi?action=recent_changes |  |
 | click_and_wait | link=Backup Restore %%workspace%% %%start_time%% |  |

@@ -8,6 +8,7 @@
 | type_ok | wikiwyg_wikitext_textarea | Delete Page Content %%start_time%% |
 | wait_for_element_visible_ok | st-newpage-pagename-edit | 30000 |
 | type_ok | st-newpage-pagename-edit | Delete Page %%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 
 | *Comment* | Tools: Delete Page: Create backlinking page |  |
@@ -18,6 +19,7 @@
 | type_ok | wikiwyg_wikitext_textarea | `[Delete Page %%start_time%%]` |
 | wait_for_element_visible_ok | st-newpage-pagename-edit | 30000 |
 | type_ok | st-newpage-pagename-edit | Backlink Page %%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 
 | *Comment* | Tools: Delete Page: delete the page |  |
@@ -53,6 +55,7 @@
 | click_and_wait | st-create-content-savelink |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | New Content %%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 
 | open_ok | /%%workspace%%/index.cgi?action=revision_list;page_name=delete_page_%%start_time%% |  |

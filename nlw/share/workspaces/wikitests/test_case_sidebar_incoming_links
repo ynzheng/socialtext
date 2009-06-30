@@ -10,6 +10,7 @@ Navigate to a page known to have zero incoming links | system displays "There ar
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | st-newpage-pagename-edit | TC Incoming Links %%start_time%% |
 | type_ok | wikiwyg_wikitext_textarea | [TC Incoming Links New Page %%start_time%%] |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | clickAndWait | st-save-button-link |  |
 
 | text_like | link=TC Incoming Links New Page %%start_time%% | TC Incoming Links New Page %%start_time%% |
@@ -25,6 +26,7 @@ edit and save new page | existing page appears in new page incoming links
 | click_and_wait | st-create-content-savelink |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | TC Incoming Links New Page %%start_time%% content |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | clickAndWait | st-save-button-link |  |
 
 | text_like | link=TC Incoming Links %%start_time%% | TC Incoming Links %%start_time%% |

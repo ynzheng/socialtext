@@ -8,6 +8,7 @@
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |
 | click_ok | link=Wiki Text |  |
 | type_ok | st-newpage-pagename-edit | %%start_time%% npno 1 |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_ok | st-save-button-link |  |
 
 | *Comment* | Test Case: New Page No Overwrite save with existing title should fail |  |
@@ -24,6 +25,7 @@
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_ok | st-save-button-link |  |
 
 | *Comment* | Test Case: New Page No Overwrite: Untitled Page should fail |  |
@@ -51,11 +53,13 @@
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_ok | st-save-button-link |  |
 | wait_for_element_visible_ok | st-newpage-save-cancelbutton | 30000 |
 | click_ok | st-newpage-save-cancelbutton |  |
 
 | *Comment* | Test Case: New Page No Overwrite: test Page Already Exists cancel |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_ok | st-save-button-link |  |
 | type_ok | st-newpage-save-pagename | %%start_time%% npno 1 |
 | wait_for_element_visible_ok | st-newpage-save-savebutton | 30000 |
@@ -64,6 +68,7 @@
 | click_ok | st-newpage-duplicate-cancelbutton | clickAndWait does not work for cancel button |
 
 | *Comment* | Test Case: New Page No Overwrite: Overwrite should fail - try append instead |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_ok | st-save-button-link |  |
 | wait_for_element_visible_ok | st-newpage-save-pagename | 30000 |
 | type_ok | st-newpage-save-pagename | %%start_time%% npno 1 |
@@ -82,6 +87,7 @@
 | open_ok | /%%workspace%%/index.cgi?action=new_page |  |
 | wait_for_element_present_ok | st-newpage-pagename-edit | 30000 |
 | type_ok | st-newpage-pagename-edit | %%start_time%% npno 1 |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_ok | st-save-button-link |  |
 | wait_for_element_visible_ok | st-newpage-duplicate-option-suggest | 30000 |
 | check_ok | st-newpage-duplicate-option-suggest |  |

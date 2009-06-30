@@ -38,6 +38,7 @@ open_ok | /%%workspace%%/index.cgi?action=weblog_display&category=test_%%start_t
 | type_ok | st-newpage-pagename-edit | Post 1 %%start_time%% |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | Post 1 Content %%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 | text_like | contentContainer | qr/Post 1 %%start_time%%.+Post 1 Content %%start_time%%.+Comment.+Edit this post.+Permalink/smi |
 
@@ -53,6 +54,7 @@ open_ok | /%%workspace%%/index.cgi?action=weblog_display&category=test_%%start_t
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | Edit 1 %%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 | text_like | contentContainer | Edit 1 %%start_time%% |
 | click_and_wait | link=Permalink |  |

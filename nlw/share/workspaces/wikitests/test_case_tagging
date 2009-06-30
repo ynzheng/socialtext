@@ -13,6 +13,7 @@ Look ahead: start to type "fo" | sidebar autosuggests "foo", "foo bar", "foster 
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | tag page %%start_time%% content |
 | type_ok | st-newpage-pagename-edit | tag page %%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | clickAndWait | st-save-button-link |  |
 
 | *Comment* | Test Case: Tagging. fog tag added |  |

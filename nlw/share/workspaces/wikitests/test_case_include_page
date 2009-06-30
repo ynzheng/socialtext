@@ -19,6 +19,7 @@ Repeat test using Miki/Lite access.
 | type_ok | st-newpage-pagename-edit | TC Include Page %%start_time%% |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | `{include: [%%title%%]}` |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 | wait_for_element_visible_ok | link=%%title%% | 30000 |
 | text_like | //div[@class='wiki-include-title'] | %%title%% |
@@ -33,6 +34,7 @@ Repeat test using Miki/Lite access.
 | verifyValue | wikiwyg_wikitext_textarea | qr/.+This quick tour.+/ |
 
 | *Comment* | Test Case: Include Page. Verify backlink to including page |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link | Save is easier than Cancel |
 | wait_for_element_visible_ok | link=TC Include Page %%start_time%% | 30000 |
 | text_like | link=TC Include Page %%start_time%% | TC Include Page %%start_time%% |
@@ -187,6 +189,7 @@ Incipient include works in browser and MIKI
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | `{include: [%%tcipii%%]}` |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 | wait_for_element_visible_ok | link=%%tcipii%% | 30000 |
 | text_like | //div[@class='wiki-include-title'] | %%tcipii%% |
@@ -252,6 +255,7 @@ Include a page from a different workspace. This test assumes the existence of he
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | `{include: help-en [socialtext documentation]}` |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 | wait_for_element_visible_ok | link=socialtext documentation | 30000 |
 | text_like | st-page-titletext | TC Include Page %%start_time%% |

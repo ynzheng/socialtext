@@ -9,6 +9,7 @@
 
 | *Comment* | Test Case: Untitled Page title field is empty after focus |  |
 | text_unlike | st-newpage-pagename-edit | Untitled Page |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_ok | st-save-button-link |  |
 | wait_for_element_visible_ok | st-newpage-save-pagename | 5000 |
 | click_ok | st-newpage-save-cancelbutton |  |
@@ -26,6 +27,7 @@
 
 | *Comment* | Test Case: Untitled Page save attempt using bad title |  |
 | type_ok | st-newpage-pagename-edit | `Untitled ---------- &&&&& ---- PaGe` |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_ok | st-save-button-link |  |
 | wait_for_element_visible_ok | st-newpage-save-pagename | 5000 |
 

@@ -28,6 +28,7 @@
 | type_ok | st-tagqueue-field | TagYoYoYo %%start_time%% |
 | click_ok | st-tagqueue-addbutton |  |
 | click_ok | st-tagqueue-close |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | clickAndWait | st-save-button-link |  |
 | wait_for_element_present_ok | st-edit-button-link |  |
 
@@ -55,6 +56,7 @@
 | type_ok | st-tagqueue-field | tamborine %%start_time%% |
 | click_ok | st-tagqueue-addbutton |  |
 | click_ok | st-tagqueue-close |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | clickAndWait | st-save-button-link |  |
 | wait_for_element_present_ok | st-edit-button-link |  |
 

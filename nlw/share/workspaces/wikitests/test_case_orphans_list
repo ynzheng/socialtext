@@ -91,6 +91,7 @@ edit a page to include a link to an orphan page | link appears in page
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | `[orphan %%start_time%% 0002]` |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 
 | *Comment* | Test Case: Orphans List. second page should no longer be orphan |  |

@@ -17,6 +17,7 @@ Set test_string to such a string, then make a widget with that as the link text,
 | type_ok | wikiwyg_wikitext_textarea | `"%%test_string%%"{link: help [Socialtext Documentation]}` |
 | click_ok | link=Rich Text |  |
 | pause | 5000 | no choice but to pause until Simple interface appears |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 
 The only way to tell things went wrong was to know that the final result should be on a line by itself, matching `/^\s*%%test_string_escaped%%$/m`

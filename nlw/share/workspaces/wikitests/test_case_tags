@@ -22,6 +22,7 @@ use or create a workspace with several tags and tagged pages
 | type_ok | st-tagqueue-field | Tag 1 %%start_time%% |
 | click_ok | st-tagqueue-addbutton |  |
 | click_ok | st-tagqueue-close |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | clickAndWait | st-save-button-link |  |
 
 | *Comment* | Test Case: Tags Create tag 12 |  |
@@ -37,6 +38,7 @@ use or create a workspace with several tags and tagged pages
 | type_ok | st-tagqueue-field | Tag 1 %%start_time%% |
 | click_ok | st-tagqueue-addbutton |  |
 | click_ok | st-tagqueue-close |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | clickAndWait | st-save-button-link |  |
 
 | *Comment* | Test Case: Tags Create tag2 page tagged tag2 |  |
@@ -52,6 +54,7 @@ use or create a workspace with several tags and tagged pages
 | type_ok | st-tagqueue-field | Tag 2 %%start_time%% |
 | click_ok | st-tagqueue-addbutton |  |
 | click_ok | st-tagqueue-close |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | clickAndWait | st-save-button-link |  |
 
  click on several tag links | Category (Tag) page with table containing links to tagged pages appears

@@ -20,6 +20,7 @@
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | Weblog Archive %%start_time%% content |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 | wait_for_element_visible_ok | //a[contains(@href,'caller_action=weblog_display#edit')] | 30000 |
 | text_like | contentRight | Weblog Archive %%start_time%% content |

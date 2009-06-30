@@ -12,6 +12,7 @@
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | st-newpage-pagename-edit | Created Page %%start_time%% |
 | type_ok | wikiwyg_wikitext_textarea | I have created a page called Created Page %%start_time%%. woot. |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 
 | open_ok | /%%workspace%%/?jabberwocky |  |
@@ -38,6 +39,7 @@
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | conversation edits Created Page %%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 
 | *comment* | Test Case: Create conversation comments on slithy |  |
