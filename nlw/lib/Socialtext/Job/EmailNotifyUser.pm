@@ -133,7 +133,7 @@ sub _links_only {
 sub _frequency_pref {
     my $self = shift;
     my $prefs = shift;
-    return $prefs->{notify_frequency}->value;
+    return $prefs->{notify_frequency}->value * 60;
 }
 
 __PACKAGE__->meta->make_immutable;
