@@ -50,6 +50,9 @@ Person.prototype = {
                 Socialtext.watchlist[self.id] = self.best_full_name;
                 self.updateFollowLink();
                 self.addPeopleEntry();
+                if ($.isFunction(self.onFollow)) {
+                    self.onFollow();
+                }
             }
         });
     },
@@ -64,6 +67,9 @@ Person.prototype = {
                 delete Socialtext.watchlist[self.id];
                 self.updateFollowLink();
                 self.removePeopleEntry();
+                if ($.isFunction(self.onStopFollowing)) {
+                    self.onStopFollowing();
+                }
             }
         });
     },
