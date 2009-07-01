@@ -126,8 +126,8 @@ sub _make_getter {
                 }
             );
         };
-       Socialtext::Timer->Pause("GET_$content_type");
-       if ($@) {
+        Socialtext::Timer->Pause("GET_$content_type");
+        if ($@) {
             st_log->info("Rest Collection Error: $@");
             my $e;
             if (Exception::Class->caught('Socialtext::Exception::Auth')) {
