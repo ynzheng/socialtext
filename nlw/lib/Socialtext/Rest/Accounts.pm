@@ -11,15 +11,40 @@ use Socialtext::Account;
 use Socialtext::Exceptions;
 use base 'Socialtext::Rest::Collection';
 
-sub allowed_methods {'GET, HEAD, PUT, POST'}
+sub allowed_methods {'GET, POST'}
 
 field errors        => [];
 
-# We punt to the permission handling stuff below.
 sub permission { +{ GET => undef } }
 
 sub collection_name {
     'Accounts';
+}
+
+sub _entities_for_query {
+    my $self  = shift;
+    my $rest  = $self->rest();
+    my $user  = $rest->user();
+    my $query = $rest->query->param('q') || '';
+
+    if ( $user->is_business_admin && $query eq 'all' ) {
+        return ( Socialtext::Account->All()->all() );
+    }
+    return ( $user->accounts() );
+}
+
+sub _entity_hash {
+    my $self    = shift;
+    my $account = shift;
+
+    return $account->hash_representation;
+}
+
+sub element_list_item {
+    my $self = shift;
+    my $hash = shift;
+
+    return "<li>$hash->{account_name}</li>";
 }
 
 sub POST {

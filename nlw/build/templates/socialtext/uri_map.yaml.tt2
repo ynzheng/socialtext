@@ -364,6 +364,10 @@
         'POST':
             '*/*':              [Socialtext::Rest::Accounts, bad_type]
             'application/json': [Socialtext::Rest::Accounts, POST]
+        'GET':
+            '*/*':              [Socialtext::Rest::Accounts, bad_type]
+            'application/json': [Socialtext::Rest::Accounts, GET_json]
+            'text/html':        [Socialtext::Rest::Accounts, GET_html]
         '*':                    [Socialtext::Rest::Accounts, bad_method]
 -
     '/data/accounts/:acct/users':
