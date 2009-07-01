@@ -29,6 +29,8 @@
                     </select>
                 [% ELSIF pref.datatype == 'workspace' %]
                     <input value="[% pref.value %]" name="up_[% pref.name %]" class="workspace_setting"/>
+                [% ELSIF pref.datatype == 'account' %]
+                    <input value="[% pref.value %]" name="up_[% pref.name %]" class="account_setting"/>
                 [% ELSIF pref.datatype == 'page' %]
                     <input value="[% pref.value %]" name="up_[% pref.name %]" class="page_setting"/>
                 [% ELSIF pref.datatype == 'bool' %]
