@@ -8,7 +8,6 @@ use strict;
 # classes.
 
 use Class::Field 'field';
-use Date::Parse qw(str2time);
 use DateTime;
 use DateTime::Format::HTTP;
 use Date::Parse qw/str2time/;
