@@ -1,6 +1,8 @@
 package Socialtext::Events::Stream;
 use Moose::Role;
 use MooseX::AttributeHelpers;
+use Socialtext::Events::FilterParams;
+use Clone qw/clone/;
 use namespace::clean -except => 'meta';
 
 with 'Socialtext::Events::Source';
@@ -39,9 +41,9 @@ sub construct_source {
     return $class->new(
         @_,
         viewer => $self->viewer,
+        user => $self->user,
         limit => $self->effective_limit,
-        before => $self->before,
-        after => $self->after,
+        filter => clone($self->filter),
     );
 }
 
@@ -54,10 +56,7 @@ sub prepare {
     $self->skipped($self->offset ? undef : 1); # no skip if no offset
     $self->remaining($self->limit);
 
-    $self->_queue([]);
-    for my $src (@{$self->sources}) {
-        $self->_push_queue($src);
-    }
+    $self->_init_queue;
 
     return;
 }
@@ -149,11 +148,19 @@ sub _push_queue {
         push @$queue, $new_pair;
     }
     else {
-        # TODO: use a heap
-        @$queue = sort {$b->[0] <=> $a->[0]} @$queue, $new_pair;
+        # TODO: use a heap, maybe (this sort is stable, however)
+        @$queue = sort {$b->[0] <=> $a->[0]} $new_pair, @$queue;
     }
 
     return;
+}
+
+sub _init_queue {
+    my $self = shift;
+    my @queue = sort {$b->[0] <=> $a->[0]} 
+        map { [$_->peek, $_] }
+        @{ $self->sources };
+    $self->_queue(\@queue);
 }
 
 1;
