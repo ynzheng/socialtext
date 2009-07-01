@@ -381,6 +381,13 @@
             'text/x-yaml':      [Socialtext::Rest::AccountUsers, GET_yaml]
         '*':                    [Socialtext::Rest::AccountUsers, bad_method]
 -
+    '/data/accounts/:acct/workspaces':
+        'GET':
+            '*/*':              [Socialtext::Rest::AccountWorkspaces, bad_type]
+            'text/html':        [Socialtext::Rest::AccountWorkspaces, GET_html]
+            'application/json': [Socialtext::Rest::AccountWorkspaces, GET_json]
+        '*':                    [Socialtext::Rest::AccountWorkspaces, bad_method]
+-
     '/data/accounts/:acct/logo':
         'GET':
             '*/*':       [Socialtext::Rest::AccountLogo, bad_type]
