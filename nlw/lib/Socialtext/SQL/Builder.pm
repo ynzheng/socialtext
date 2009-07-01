@@ -10,6 +10,7 @@ our @EXPORT = ();
 our @EXPORT_OK = qw(
     sql_nextval
     sql_update sql_insert sql_insert_many
+    sql_abstract
 );
 our %EXPORT_TAGS = (
     'all' => \@EXPORT_OK,
@@ -171,11 +172,29 @@ sub sql_insert_many {
     return $sth;
 }
 
+=head2 sql_abstract()
+
+Returns an instance of C<SQL::Abstract::Limit> suitable for use with our
+database.  See C<SQL::Abstract> for basic usage.
+
+Provided in the spirit of TIMTOWTDI.
+
+=cut
+
+sub sql_abstract {
+    require SQL::Abstract::Limit;
+    return SQL::Abstract::Limit->new(
+        logic => 'and',
+        @_,
+        limit_dialect => 'LimitOffset',
+    );
+}
+
 1;
 __END__
 =head1 SEE ALSO
 
-C<Socialtext::SQL>, C<DBD::Pg>
+C<Socialtext::SQL>, C<DBD::Pg>, C<SQL::Abstract>, C<SQL::Abstract::Limit>
 
 =head1 AUTHOR
 
