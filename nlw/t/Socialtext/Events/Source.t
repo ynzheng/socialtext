@@ -9,17 +9,18 @@ BEGIN {
 }
 
 {
-
     package Socialtext::Events::Stream::Test;
     use Moose;
     with 'Socialtext::Events::Stream';
+
+    has '+filter' => (default => sub { Socialtext::Events::FilterParams->new });
 
     sub _build_sources {
         my $self = shift;
         my @sources;
         for my $feed (2,1,3) {
             my $src = $self->construct_source(
-                'Socialtext::Events::Source::Test' => 
+                'Socialtext::Events::Source::Example' => 
                 _events => [
                     [1_234_567_894 . ".0000$feed" + 0.0, {feed=>$feed,nr=>4}],
                     [1_234_567_893 . ".0000$feed" + 0.0, {feed=>$feed,nr=>3}],
@@ -38,7 +39,7 @@ BEGIN {
     has 'feed' => (is => 'rw', isa => 'Str');
     has 'nr' => (is => 'rw', isa => 'Str');
 
-    package Socialtext::Events::Source::Test;
+    package Socialtext::Events::Source::Example;
     use Moose;
     with 'Socialtext::Events::Source';
 
@@ -47,8 +48,10 @@ BEGIN {
     sub prepare {
         my $self = shift;
         my $evs = $self->_events;
+        my $before = $self->filter->before || 0x7fffffff;
+        my $after = $self->filter->after || 0;
         @$evs = grep { 
-            $_->[0] > $self->after && $_->[0] < $self->before
+            $_->[0] > $after && $_->[0] < $before
         } @$evs;
     }
 
@@ -138,7 +141,9 @@ Limit_and_offset: {
 Before: {
     my $stream = Socialtext::Events::Stream::Test->new(
         viewer => Socialtext::User->new(user_id => 111),
-        before => 1_234_567_892,
+        filter => Socialtext::Events::FilterParams->new(
+            before => 1_234_567_892,
+        )
     );
     isa_ok $stream => 'Socialtext::Events::Stream::Test';
     $stream->prepare();
@@ -154,6 +159,32 @@ Before: {
     $ev = $stream->next;
     is $ev->feed, 1;
     is $ev->nr, 1;
+
+    ok !defined($stream->next), 'end of stream';
+}
+
+Before_and_after: {
+    my $stream = Socialtext::Events::Stream::Test->new(
+        viewer => Socialtext::User->new(user_id => 111),
+        filter => Socialtext::Events::FilterParams->new(
+            before => 1_234_567_894,
+            after => 1_234_567_893,
+        )
+    );
+    isa_ok $stream => 'Socialtext::Events::Stream::Test';
+    $stream->prepare();
+
+    my $ev = $stream->next;
+    is $ev->feed, 3;
+    is $ev->nr, 3;
+
+    $ev = $stream->next;
+    is $ev->feed, 2;
+    is $ev->nr, 3;
+
+    $ev = $stream->next;
+    is $ev->feed, 1;
+    is $ev->nr, 3;
 
     ok !defined($stream->next), 'end of stream';
 }
