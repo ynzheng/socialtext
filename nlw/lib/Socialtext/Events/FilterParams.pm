@@ -26,10 +26,12 @@ sub has_param ($@) {
         is => 'rw',
         traits => [AutoFilterParam],
         predicate => "has_$name",
+        clearer => "clear_$name",
         @_,
     );
 }
 
+has_param 'action'            => (isa => bunch_of('Str'));
 has_param 'actor_id'          => (isa => bunch_of('Int'));
 has_param 'person_id'         => (isa => bunch_of('Int'));
 has_param 'page_id'           => (isa => bunch_of('Str'));
@@ -46,13 +48,22 @@ has 'following' => (is => 'rw', isa => 'Bool');
 has 'followed'  => (is => 'rw', isa => 'Bool');
 has 'contribs'  => (is => 'rw', isa => 'Bool');
 
+sub generate_standard_filter {
+    my $self = shift;
+    my @attrs = grep { $_->does(AutoFilterParam) }
+        $self->meta->get_all_attributes;
+    return $self->generate_filter(@attrs);
+}
+
 sub generate_filter {
     my $self = shift;
     my $meta = $self->meta;
 
     my @filter;
     for my $field (@_) {
-        my $attr = $meta->find_attribute_by_name($field);
+        my $attr = ref($field)
+            ? $field
+            : $meta->find_attribute_by_name($field);
         croak "unknown param '$field'" unless $attr;
         croak "param '$field' must be handled manually" 
             unless ($attr->does(AutoFilterParam));
