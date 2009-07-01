@@ -353,7 +353,7 @@ div#controls {
 	background: url(../images/controlsTile.png) repeat-x top left;
 }
 
-body#contentPage div#controls,body#settingsPage div#controls,body#dashBoard div#controls, body#revisions div#controls,body#settingsPage div#controls {
+body#contentPage div#controls,body#settingsPage div#controls,body#dashBoard div#controls, body#revisions div#controls,body#settingsPage div#controls, #socialcalc-header {
 	height: 44px;
 	background: url(../images/contentControlsTile.png) repeat-x top left;
 }
