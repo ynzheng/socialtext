@@ -286,7 +286,6 @@ sub st_create_pages {
     
     my $user = Socialtext::User->new(username => $self->{'username'});
     my $hub = new_hub($workspace);
-    print "----\n ( $workspace ) ( $numberpages ) ----\n";
     for (my $idx=0; $idx<$numberpages;$idx++) {
         my $title = "test page " . $idx;
         Socialtext::Page->new(hub => $hub)->create(

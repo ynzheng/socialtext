@@ -44,6 +44,7 @@
 | wait_for_element_not_present_ok | link=Next | 30000 |
 
 | *Comment* | Test case: What's New Pagination Teardown |  |
+
 | st-admin | delete-workspace --w %%pws%% |  |
 
 | *Comment* | Test case: What's New Pagination COMPLETED |  |
