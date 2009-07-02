@@ -24,6 +24,7 @@ BEGIN {
         for my $feed (2,1,3) {
             my $src = $self->construct_source(
                 'Socialtext::Events::Source::Example' => 
+                id => $feed,
                 _events => [
                     [1_234_567_894 . ".0000$feed" + 0.0, {feed=>$feed,nr=>4}],
                     [1_234_567_893 . ".0000$feed" + 0.0, {feed=>$feed,nr=>3}],
@@ -33,6 +34,11 @@ BEGIN {
             );
             push @sources, $src;
         }
+        push @sources, $self->construct_source(
+            'Socialtext::Events::Source::Example' => 
+            _events => [],
+            id => 'the empty one',
+        );
         return \@sources;
     }
 
@@ -46,6 +52,7 @@ BEGIN {
     use Moose;
     with 'Socialtext::Events::Source';
 
+    has 'id' => (is => 'ro', isa => 'Str');
     has '_events' => (is => 'ro', isa => 'ArrayRef', required => 1);
 
     sub prepare {
@@ -60,6 +67,7 @@ BEGIN {
 
     sub peek {
         my $self = shift;
+        return unless @{$self->_events};
         my $head = $self->_events->[0];
         return unless $head;
         return $head->[0];

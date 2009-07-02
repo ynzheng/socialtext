@@ -141,7 +141,8 @@ sub _build__queue {
     $_->prepare for @{$self->sources};
 
     my @queue = sort {$b->[0] <=> $a->[0]} 
-        map { [$_->peek, $_] }
+        grep { defined $_->[0] }
+        map { [$_->peek || undef, $_] }
         @{ $self->sources };
 
     return \@queue;
