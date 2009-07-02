@@ -38,6 +38,8 @@ sub add_report_test_data {
     }
     $sth->execute(@common, 'Untitled Page',  'view_page', 1) || die $sth->errstr;
     $sth->execute(@common, 'untitled_page',  'view_page', 1) || die $sth->errstr;
+    $sth->execute(@common, 'Untitled Spreadsheet',  'view_page', 1) || die $sth->errstr;
+    $sth->execute(@common, 'untitled_spreadsheet',  'view_page', 1) || die $sth->errstr;
 
     $dbh->commit;
 };

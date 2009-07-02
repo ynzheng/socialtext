@@ -9,8 +9,9 @@ function trim(value) {
 function is_reserved_pagename(pagename) {
     if (pagename && pagename.length > 0) {
         var name = nlw_name_to_id(trim(pagename));
-        var untitled = nlw_name_to_id(loc('Untitled Page'))
-        return name == untitled;
+        var untitled = nlw_name_to_id(loc('Untitled Page'));
+        var untitledspreadsheet = nlw_name_to_id(loc('Untitled Spreadsheet'));
+        return (name == untitled) || (name == untitledspreadsheet);
     }
     else {
         return false;
@@ -643,7 +644,7 @@ $(function() {
         );
     });
 
-    if ( Socialtext.new_page && Socialtext.page_title != loc("Untitled Page") && !location.href.toString().match(/action=display;/)) {
+    if ( Socialtext.new_page && Socialtext.page_title != loc("Untitled Page") && Socialtext.page_title != loc("Untitled Spreadsheet") &&!location.href.toString().match(/action=display;/)) {
         $("#st-create-content-link").trigger("click", { title: Socialtext.page_title })
     }
     else if (Socialtext.new_page||

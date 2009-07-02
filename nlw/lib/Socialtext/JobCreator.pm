@@ -32,6 +32,7 @@ sub index_attachment {
     my $search_config = shift;
 
     return if ($attachment->page_id eq 'untitled_page');
+    return if ($attachment->page_id eq 'untitled_spreadsheet');
     return if ($attachment->loaded && $attachment->temporary);
 
     return $self->insert(
@@ -51,6 +52,7 @@ sub index_page {
     my $search_config = shift;
 
     return if $page->id eq 'untitled_page';
+    return if $page->id eq 'untitled_spreadsheet';
 
     my @job_ids;
 

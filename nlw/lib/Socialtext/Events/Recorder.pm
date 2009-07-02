@@ -79,6 +79,8 @@ sub _validate_insert_params {
     die "can't save events for untitled_page"
         if ($p->{page} && $p->{page} eq 'untitled_page');
 
+    die "can't save events for untitled_spreadsheet"
+        if ($p->{page} && $p->{page} eq 'untitled_spreadsheet');
 }
 
 =head2 record_event()

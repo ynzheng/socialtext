@@ -847,6 +847,10 @@ sub store {
         die loc('"[_1]" is a reserved name. Please use a different name.',
             'Untitled Page');
     }
+    if ($self->id eq 'untitled_spreadsheet') {
+        die loc('"[_1]" is a reserved name. Please use a different name.',
+            'Untitled Spreadsheet');
+    }
 
     # Make sure we have minimal metadata needed to store a page
     $self->metadata->update( user => $p{user} )
@@ -2188,6 +2192,8 @@ sub is_bad_page_title {
     # Can't have a page named "Untitled Page"
     my $untitled_page = Socialtext::String::title_to_id( loc("Untitled Page") );
     return 1 if Socialtext::String::title_to_id($title) eq $untitled_page;
+    my $untitled_spreadsheet = Socialtext::String::title_to_id( loc("Untitled Spreadsheet") );
+    return 1 if Socialtext::String::title_to_id($title) eq $untitled_spreadsheet;
 
     return 0;
 }

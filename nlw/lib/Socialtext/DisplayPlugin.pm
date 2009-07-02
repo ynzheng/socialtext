@@ -59,7 +59,10 @@ sub page_info {
 sub new_page {
     my $self = shift;
 
-    my $title = $self->cgi->new_blog_entry ? $self->hub->pages->new_page_title : loc('Untitled Page');
+    my $title = $self->cgi->new_blog_entry ? $self->hub->pages->new_page_title : 
+        (
+            ($self->cgi->page_type && $self->cgi->page_type eq "spreadsheet") ? loc('Untitled Spreadsheet') : loc('Untitled Page')
+        );
     my $page = $self->hub->pages->new_from_name($title);
     my $uri = 'action=display';
 
