@@ -77,6 +77,45 @@ This test case is an aid to visually observing each screen type in the applicati
 | pause | %%pt%% |  |
 | pause | %%pt%% |  |
 
+| open_ok | /%%workspace%%/ |  |  |
+| wait_for_element_visible_ok | link=What's New | 30000 |
+| click_ok | link=What's New |  |
+| wait_for_element_visible_ok | link=All Files | 30000 |
+| click_ok | link=All Files |  |
+| wait_for_element_visible_ok | link=2 | 30000 |
+| *Comment* | SEE First page of All Files |  |
+| *Comment* | SEE FIRST/PREVIOUS are not links |  |
+| pause | %%pt%% |  |
+| pause | %%pt%% |  |
+
+| click_ok | link=2 |  |
+| pause | %%pt%% |  |
+| *Comment* | SEE second page of All Files pagination UI |  |
+| *Comment* | SEE first/previous ARE links |  |
+| pause | %%pt%% |  |
+
+| click_ok | link=4 |  |
+| pause | %%pt%% |  |
+| *Comment* | SEE Page 4 displayed |  |
+| wait_for_element_visible_ok | link=Next | 30000 |
+| pause | %%pt%% |  |
+| pause | %%pt%% |  |
+
+| click_ok | link=Next |  |
+| pause | %%pt%% |  |
+| *Comment* | SEE NEXT clicked, Page 5 displayed |  |
+| pause | %%pt%% |  |
+| pause | %%pt%% |  |
+
+| click_ok | link=Last |  |
+| pause | %%pt%% |  |
+| *Comment* | SEE NEXT clicked, Page 6 displayed |  |
+| pause | %%pt%% |  |
+| *Comment* | SEE Results of clicking LAST link - LAST is no longer link |  |
+| *Comment* | SEE Only 5 pages displayed at a time, display is at end of list |  |
+| pause | %%pt%% |  |
+| pause | %%pt%% |  |
+
 | st-admin | delete-workspace --w %%pws%% |  |
 
 | *Comment* | PaginateShow COMPLETED |  |
