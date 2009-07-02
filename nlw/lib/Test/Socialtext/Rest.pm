@@ -24,3 +24,19 @@ sub GET {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Test::Socialtext::Rest - An extension to the rest API for tests
+
+=head1 SYNOPSIS
+
+GET /data/test/:file_or_script
+
+=head1 DESCRIPTION
+
+This module provides a method for testing HTTP and HTTPS connections. When perform a GET on /data/test/filename, the contents of t/rest_files/filename are returned. However, if file is executable, the data printed to STDOUT is returned rather than the contents of the file.
+
+=cut
