@@ -11,24 +11,21 @@ has 'sources' => (
     is => 'ro', isa => 'ArrayRef[Socialtext::Events::Source]',
     lazy_build => 1,
 );
+requires '_build_sources';
 
 has 'offset' => ( is => 'ro', isa => 'Int', default => 0 );
 
-has 'skipped' => (
-    is => 'rw', isa => 'Bool', default => undef
-);
-
-has 'remaining' => (
+has '_remaining' => (
     is => 'rw', isa => 'Int',
     metaclass => 'Counter',
     provides => {
-        dec => 'dec_remaining', 
-    }
+        dec => '_dec_remaining', 
+    },
 );
+has '_assembled' => ( is => 'rw', isa => 'Bool', default => undef );
+has '_skipped' => ( is => 'rw', isa => 'Bool', default => undef );
 
-has '_queue' => ( is => 'rw', isa => 'ArrayRef', init_arg => undef );
-
-requires '_build_sources';
+has '_queue' => ( is => 'rw', isa => 'ArrayRef', init_arg => undef, lazy_build => 1 );
 
 sub effective_limit {
     my $self = shift;
@@ -47,16 +44,25 @@ sub construct_source {
     );
 }
 
+# force the creation of all sources
+sub assemble {
+    my $self = shift;
+    return if $self->_assembled;
+    for my $src (@{$self->sources}) {
+        $src->assemble if $src->does('Socialtext::Events::Stream');
+    }
+    $self->_assembled(1);
+}
+
 sub prepare {
     my $self = shift;
-    for my $src (@{$self->sources}) {
-        $src->prepare;
-    }
 
-    $self->skipped($self->offset ? undef : 1); # no skip if no offset
-    $self->remaining($self->limit);
+    $self->assemble;
+    $self->_skipped($self->offset ? undef : 1); # no skip if no offset
+    $self->_remaining($self->limit);
 
-    $self->_init_queue;
+    my $q = $self->_queue; # force builder
+    $self->_check_if_done();
 
     return;
 }
@@ -64,11 +70,11 @@ sub prepare {
 sub next {
     my $self = shift;
 
-    return unless $self->remaining;
+    return unless $self->_remaining;
 
-    unless ($self->skipped) {
+    unless ($self->_skipped) {
         $self->_skip_ahead($self->offset);
-        $self->skipped(1);
+        $self->_skipped(1);
     }
 
     my $next;
@@ -77,26 +83,28 @@ sub next {
         $self->_push_queue($src);
     }
 
-    $self->dec_remaining;
+    $self->_dec_remaining;
+    $self->_check_if_done();
     return $next;
 }
 
 sub skip {
     my $self = shift;
-    return unless $self->remaining;
+    return unless $self->_remaining;
     $self->_skip_ahead(1);
-    $self->dec_remaining;
+    $self->_dec_remaining;
+    $self->_check_if_done();
     return;
 }
 
 sub peek {
     my $self = shift;
 
-    return unless $self->remaining;
+    return unless $self->_remaining;
 
-    unless ($self->skipped) {
+    unless ($self->_skipped) {
         $self->_skip_ahead($self->offset);
-        $self->skipped(1);
+        $self->_skipped(1);
     }
 
     my $epoch = $self->_peek_queue;
@@ -113,6 +121,30 @@ sub _skip_ahead {
         $src->skip;
         $self->_push_queue($src);
     }
+    $self->_check_if_done();
+}
+
+sub _check_if_done {
+    my $self = shift;
+    if ($self->_has_queue && @{$self->_queue} == 0) {
+        $self->_clear_queue;
+        $self->clear_sources;
+        $self->_assembled(undef);
+        $self->_remaining(0);
+    }
+}
+
+
+sub _build__queue {
+    my $self = shift;
+
+    $_->prepare for @{$self->sources};
+
+    my @queue = sort {$b->[0] <=> $a->[0]} 
+        map { [$_->peek, $_] }
+        @{ $self->sources };
+
+    return \@queue;
 }
 
 sub _peek_queue {
@@ -136,31 +168,17 @@ sub _push_queue {
     my $new_epoch = $src->peek;
     return unless $new_epoch;
 
-    my $new_pair = [$new_epoch,$src];
-    my $queue = $self->_queue;
-    if (!@$queue) {
-        @$queue = ($new_pair);
-    }
-    elsif ($queue->[0][0] < $new_epoch) {
-        unshift @$queue, $new_pair;
-    }
-    elsif ($queue->[$#$queue][0] > $new_epoch) {
-        push @$queue, $new_pair;
+    my $pair = [$new_epoch,$src];
+    my $q = $self->_queue;
+    if (@$q == 0 || $q->[0][0] < $new_epoch) {
+        unshift @$q, $pair;
     }
     else {
         # TODO: use a heap, maybe (this sort is stable, however)
-        @$queue = sort {$b->[0] <=> $a->[0]} $new_pair, @$queue;
+        @$q = sort {$b->[0] <=> $a->[0]} $pair, @$q;
     }
 
     return;
-}
-
-sub _init_queue {
-    my $self = shift;
-    my @queue = sort {$b->[0] <=> $a->[0]} 
-        map { [$_->peek, $_] }
-        @{ $self->sources };
-    $self->_queue(\@queue);
 }
 
 1;

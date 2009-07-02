@@ -1,5 +1,8 @@
-
-use Test::More qw/no_plan/;
+#!perl
+# @COPYRIGHT@
+use warnings;
+use strict;
+use Test::More tests => 68;
 use mocked 'Socialtext::User';
 
 BEGIN {
@@ -36,8 +39,8 @@ BEGIN {
     package Socialtext::Events::Event::Test;
     use Moose;
     extends 'Socialtext::Events::Event';
-    has 'feed' => (is => 'rw', isa => 'Str');
-    has 'nr' => (is => 'rw', isa => 'Str');
+    has 'feed' => (is => 'rw', isa => 'Str', required => 1);
+    has 'nr' => (is => 'rw', isa => 'Str', required => 1);
 
     package Socialtext::Events::Source::Example;
     use Moose;
@@ -68,6 +71,9 @@ BEGIN {
         return unless $head;
         return Socialtext::Events::Event::Test->new(
             at_epoch => $head->[0],
+            at => $head->[0],
+            actor_id => 1,
+            action => 'test',
             %{$head->[1]}
         );
     }
@@ -172,6 +178,7 @@ Before_and_after: {
         )
     );
     isa_ok $stream => 'Socialtext::Events::Stream::Test';
+    $stream->assemble();
     $stream->prepare();
 
     my $ev = $stream->next;
