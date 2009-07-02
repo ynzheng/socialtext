@@ -1742,12 +1742,17 @@ proto.get_editable_div = function () {
                      return;
                  }
 
+                 if (self._isActivating) return;
+                 self._isActivating = true;
+
                  try {
                      var range = doc.body.createTextRange();
                      range.moveToBookmark(self._ieSelectionBookmark);
                      range.collapse();
                      range.select();
                  } catch (e) {};
+
+                 self._isActivating = false;
             });
         } 
 
