@@ -430,7 +430,7 @@ sub choose_password {
     my $hash = $self->{args}{hash};
     return $self->_redirect('/nlw/login.html') unless $hash;
 
-        my $user = $self->_find_user_for_email_confirmation_hash( $r, $hash );
+    my $user = $self->_find_user_for_email_confirmation_hash( $r, $hash );
     unless ($user) {
         return $self->_redirect('/nlw/login.html');
     }
@@ -451,11 +451,21 @@ sub choose_password {
         return $self->_redirect("/nlw/choose_password.html?hash=$hash");
     }
 
-    $user->confirm_email_address;
-    $self->session->add_message(loc('Your password has been set and you can now login.'));
-    $self->session->add_message(loc('<p style="font-style: italic">(You can also <a target="_blank" href="http://www.socialtext.com/products/desktop_download.php">Get Socialtext Desktop</a> and log in with the same password.)'));
+    my $expire = $self->{args}{remember} ? '+12M' : '';
+    Socialtext::Apache::User::set_login_cookie( $r, $user->user_id, $expire );
 
-    return $self->_redirect("/nlw/login.html");
+    $user->confirm_email_address;
+    $user->record_login;
+
+    my $dest = $self->{args}{redirect_to};
+    unless ($dest) {
+        $dest = "/";
+    }
+
+    st_log->info( "LOGIN: " . $user->email_address . " destination: $dest" );
+
+    $self->session->write;
+    $self->redirect($dest);
 }
 
 sub resend_confirmation {
