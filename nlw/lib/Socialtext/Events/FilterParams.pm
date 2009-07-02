@@ -1,6 +1,7 @@
 package Socialtext::Events::FilterParams;
 use Moose;
 use Carp qw/croak/;
+use MooseX::StrictConstructor;
 use namespace::clean -except => 'meta';
 
 use constant AutoFilterParam => 'Socialtext::Events::FilterParams::AutoFilterParam';
