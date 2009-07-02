@@ -102,9 +102,13 @@ sub last_edit_time { $_[0]->{last_edit_time} }
 sub add_tag        { push @{ shift->{tags} }, @_ }
 sub hub            { $_[0]->{hub} || die "No hub was given to the page object"}
 sub is_spreadsheet { $_[0]->{page_type} eq 'spreadsheet' }
+sub type           { $_[0]->{page_type} }
 sub current_revision_num { $_[0]->{current_revision_num} }
 sub revision_count { $_[0]->{revision_count} }
 sub locked         { $_[0]->{locked} }
+
+sub workspace_name  { $_[0]->{workspace_name} }
+sub workspace_title { $_[0]->{workspace_title} }
 
 sub tags {
     my $self = shift;
@@ -128,6 +132,7 @@ sub hash_representation {
         revision_id    => $self->{current_revision_id},
         revision_count => $self->{revision_count},
         workspace_name => $self->{workspace_name},
+        workspace_title => $self->{workspace_title},
         type           => $self->{page_type},
         tags           => $self->{tags},
         page_uri       => $self->full_uri,

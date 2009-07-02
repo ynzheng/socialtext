@@ -191,6 +191,7 @@ sub _fetch_pages {
         <<EOT,
 SELECT page.workspace_id, 
        "Workspace".name AS workspace_name, 
+       "Workspace".title AS workspace_title, 
        page.page_id, 
        page.name, 
        page.last_editor_id AS last_editor_id, 
