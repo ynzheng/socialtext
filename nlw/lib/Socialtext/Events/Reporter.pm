@@ -431,24 +431,36 @@ sub get_events_page_contribs {
     my $self = shift;
     my $opts = ref($_[0]) eq 'HASH' ? $_[0] : {@_};
 
-    $self->add_condition(
-        q{event_class = 'page' AND is_page_contribution(action)}
-    );
-    local $self->{_skip_visibility} = 1;
-    my ($sql, $args) = $self->_build_standard_sql($opts);
-
     my %opts_slice = map { $_ => $opts->{$_} }
-        qw(limit count offset before after followed);
+        grep { exists $opts->{$_} }
+        qw(actor_id before after followed tag_name);
+
+    my $limit = $opts->{limit} || $opts->{count} || 50;
+    my $offset = $opts->{offset} || 0;
+
+    require Socialtext::Events::FilterParams;
+    require Socialtext::Events::Stream::Pages;
+
+    my $stream = Socialtext::Events::Stream::Pages->new(
+        viewer => $self->viewer,
+        limit => $limit,
+        offset => $offset,
+        filter => Socialtext::Events::FilterParams->new(
+            contributions => 1,
+            %opts_slice,
+        ),
+    );
 
     Socialtext::Timer->Continue('get_page_contribs');
-    #$Socialtext::SQL::PROFILE_SQL = 1;
-    my $sth = sql_execute($sql, @$args);
-    #$Socialtext::SQL::PROFILE_SQL = 0;
-    my $result = $self->decorate_event_set($sth);
+    $stream->prepare();
+    my @result;
+    while (my $e = $stream->next) {
+        push @result, $e->build_hash({});
+    }
     Socialtext::Timer->Pause('get_page_contribs');
 
-    return @$result if wantarray;
-    return $result;
+    return @result if wantarray;
+    return \@result;
 }
 
 sub get_events_activities {

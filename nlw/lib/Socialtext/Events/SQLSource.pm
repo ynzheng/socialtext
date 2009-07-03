@@ -26,8 +26,8 @@ sub _build_sql_results {
     my $self = shift;
     my ($sql, $binds) = $self->query_and_binds();
     my $sth = sql_execute($sql, @$binds);
-    my $rows = $sth->fetchall_arrayref({}) || [];
-    return $rows;
+    return [] unless $sth->rows > 0;
+    return $sth->fetchall_arrayref({});
 }
 
 sub prepare {
@@ -45,6 +45,11 @@ sub peek {
 sub skip {
     shift->next_sql_result;
     return;
+}
+
+sub columns {
+    return 'at, EXTRACT(epoch FROM at) AS at_epoch, '.
+        'action, actor_id, tag_name, context';
 }
 
 1;
