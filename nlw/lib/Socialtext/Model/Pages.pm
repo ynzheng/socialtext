@@ -17,7 +17,6 @@ sub By_seconds_limit {
     my $limit         = $p{count} || $p{limit};
     my $tag           = $p{tag} || $p{category};
     my $hub           = $p{hub};
-    my $no_tags       = $p{do_not_need_tags};
 
     Socialtext::Timer->Continue('By_seconds_limit');
     my $where;
@@ -43,7 +42,8 @@ sub By_seconds_limit {
         bind         => \@bind,
         order_by     => 'page.last_edit_time DESC',
         workspace_id => $workspace_id,
-        do_not_need_tags => $no_tags,
+        do_not_need_tags => $p{do_not_need_tags},
+        deleted_ok   => $p{deleted_ok},
     );
     Socialtext::Timer->Pause('By_seconds_limit');
     return $pages;
@@ -123,7 +123,8 @@ sub By_id {
         workspace_id     => $workspace_id,
         where            => $where,
         bind             => $bind,
-        do_not_need_tags => $do_not_need_tags,
+        do_not_need_tags => $p{do_not_need_tags},
+        deleted_ok       => $p{deleted_ok},
     );
     unless (@$pages) {
         return if $no_die;
@@ -146,6 +147,7 @@ sub _fetch_pages {
         order_by         => undef,
         limit            => undef,
         do_not_need_tags => 0,
+        deleted_ok       => undef,
         @_,
     );
 
@@ -156,6 +158,11 @@ sub _fetch_pages {
         $p{where} .= ' AND ' if $p{where};
         $p{where} .= 'LOWER(page_tag.tag) = LOWER(?)';
         push @{ $p{bind} }, $p{tag};
+    }
+
+    my $deleted = '1=1';
+    unless ($p{deleted_ok}) {
+        $deleted = $p{deleted} ? 'deleted' : 'NOT deleted';
     }
 
     my $workspace_filter = '';
@@ -210,13 +217,12 @@ SELECT page.workspace_id,
     FROM page 
         JOIN "Workspace" USING (workspace_id)
         $more_join
-    WHERE page.deleted = ?::bool
+    WHERE $deleted
       $page_workspace_filter
       $p{where}
     $order_by
     $limit
 EOT
-        $p{deleted},
         @workspace_ids,
         @{ $p{bind} },
     );
@@ -285,7 +291,7 @@ SELECT * FROM (
            last_edit_time AT TIME ZONE 'UTC' AS last_edit_time_utc, 
            page_type 
       FROM page
-     WHERE deleted = 'false'::bool 
+     WHERE NOT deleted
        AND workspace_id = ? 
        AND name ~* ?
        $and_type
@@ -309,7 +315,7 @@ sub ChangedCount {
 
     my $sth = sql_execute(<<EOT,
 SELECT count(*) FROM page
-    WHERE deleted = 'false'::bool
+    WHERE NOT deleted
       AND workspace_id = ?
       AND last_edit_time > ('now'::timestamptz - ?::interval)
 EOT
