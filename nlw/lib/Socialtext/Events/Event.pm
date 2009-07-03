@@ -10,6 +10,7 @@ has 'at_dt' => ( is => 'ro', isa => 'DateTime', lazy_build => 1 );
 
 has 'actor_id' => (is => 'ro', isa => 'Int', required => 1 );
 has 'action' => (is => 'ro', isa => 'Str', required => 1 );
+has 'tag_name' => (is => 'ro', isa => 'Str');
 has 'context' => (is => 'ro', isa => 'Maybe[HashRef]');
 
 # roles/extending classes should hook this with an 'after' sub
@@ -23,6 +24,7 @@ sub build_hash {
     $hash->{actor}{id} = $self->actor_id;
     $hash->{actor}{uri} = "/data/people/".$self->actor_id;
 
+    $hash->{tag_name} = $self->tag_name if defined $self->tag_name;
     $hash->{action} = $self->action;
 
     $hash->{context} = $self->context;
