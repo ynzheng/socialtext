@@ -29,7 +29,7 @@ enum 'PageEventAction' => qw(
 
 has '+action' => (isa => 'PageEventAction');
 has 'page_workspace_id' => (is => 'ro', isa => 'Int', required => 1);
-has 'page_id' => (is => 'ro', isa => 'Int', required => 1);
+has 'page_id' => (is => 'ro', isa => 'Str', required => 1);
 
 has 'workspace' => (
     is => 'ro', isa => 'Socialtext::Workspace',
@@ -42,12 +42,9 @@ has 'page' => (
     handles => {
         page_title => 'title',
         page_name => 'title',
-        page_type => 'page_type',
-        is_spreadsheet => 'is_spreadsheet',
-        locked => 'locked',
+        page_type => 'type',
         workspace_name => 'workspace_name',
         workspace_title => 'workspace_title',
-        page_hash => 'hash_representation',
     },
 );
 
@@ -55,13 +52,14 @@ sub _build_workspace {
     Socialtext::Workspace->new(workspace_id => $_[0]->page_workspace_id);
 }
 
-sub _build_model_page {
+sub _build_page {
     my $self = shift;
 
     my $page = Socialtext::Model::Pages->By_id(
         workspace_id => $self->page_workspace_id,
         page_id => $self->page_id,
         do_not_need_tags => 1,
+        deleted_ok => 1,
     );
 }
 
