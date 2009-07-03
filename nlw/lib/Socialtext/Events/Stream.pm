@@ -4,13 +4,15 @@ use MooseX::AttributeHelpers;
 use MooseX::StrictConstructor;
 use MooseX::Traits;
 use Clone qw/clone/;
+use Socialtext::SQL qw/:exec/;
 use Socialtext::Events::FilterParams;
+use Array::Heap;
 use namespace::clean -except => 'meta';
 
 with 'Socialtext::Events::Source';
 
 has 'sources' => (
-    is => 'ro', isa => 'ArrayRef[Socialtext::Events::Source]',
+    is => 'rw', isa => 'ArrayRef[Socialtext::Events::Source]',
     lazy_build => 1,
 );
 
@@ -161,13 +163,16 @@ sub _check_if_done {
 sub _build__queue {
     my $self = shift;
 
-    $_->prepare for @{$self->sources};
+    my @sources = grep {
+        $_->prepare;
+        defined $_->peek;
+    } @{$self->sources};
 
-    my @queue = sort {$b->[0] <=> $a->[0]} 
-        grep { defined $_->[0] }
-        map { [$_->peek || undef, $_] }
-        @{ $self->sources };
+    # negate to reverse order
+    my @queue = map { [-$_->peek, $_] } @sources;
+    make_heap @queue;
 
+    $self->sources(\@sources);
     return \@queue;
 }
 
@@ -175,12 +180,12 @@ sub _peek_queue {
     my $self = shift;
     my $first = $self->_queue->[0];
     return unless $first;
-    return $first->[0];
+    return -$first->[0];
 }
 
 sub _shift_queue {
     my $self = shift;
-    my $first = shift @{$self->_queue};
+    my $first = pop_heap @{$self->_queue};
     return unless $first;
     return $first->[1];
 }
@@ -189,24 +194,15 @@ sub _push_queue {
     my $self = shift;
     my $src = shift;
 
+    return unless $src;
     my $new_epoch = $src->peek;
     return unless $new_epoch;
-
-    my $pair = [$new_epoch,$src];
-    my $q = $self->_queue;
-    if (@$q == 0 || $q->[0][0] < $new_epoch) {
-        unshift @$q, $pair;
-    }
-    else {
-        # TODO: use a heap, maybe (this sort is stable, however)
-        @$q = sort {$b->[0] <=> $a->[0]} $pair, @$q;
-    }
-
+    push_heap @{$self->_queue}, [-$new_epoch,$src];
     return;
 }
 
 
-sub _account_ids_for_plugin {
+sub account_ids_for_plugin {
     my $self = shift;
     my $plugin = shift;
 
