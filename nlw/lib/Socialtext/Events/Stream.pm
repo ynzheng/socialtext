@@ -1,8 +1,10 @@
 package Socialtext::Events::Stream;
-use Moose::Role;
+use Moose;
 use MooseX::AttributeHelpers;
-use Socialtext::Events::FilterParams;
+use MooseX::StrictConstructor;
+use MooseX::Traits;
 use Clone qw/clone/;
+use Socialtext::Events::FilterParams;
 use namespace::clean -except => 'meta';
 
 with 'Socialtext::Events::Source';
@@ -11,7 +13,6 @@ has 'sources' => (
     is => 'ro', isa => 'ArrayRef[Socialtext::Events::Source]',
     lazy_build => 1,
 );
-requires '_build_sources';
 
 has 'offset' => ( is => 'ro', isa => 'Int', default => 0 );
 
@@ -204,4 +205,54 @@ sub _push_queue {
     return;
 }
 
+
+sub _account_ids_for_plugin {
+    my $self = shift;
+    my $plugin = shift;
+
+    my $sql;
+    my @bind;
+    if ($self->user_id == $self->viewer_id) {
+        $sql = qq{
+            SELECT DISTINCT account_id
+            FROM account_user viewr
+            JOIN account_plugin USING (account_id)
+            WHERE plugin = ?
+                AND viewr.user_id = ?
+        };
+        @bind = ($plugin, $self->viewer_id);
+    }
+    else {
+        $sql = qq{
+            SELECT DISTINCT account_id
+            FROM account_user viewr
+            JOIN account_plugin USING (account_id)
+            JOIN account_user usr USING (account_id)
+            WHERE plugin = ?
+                AND viewr.user_id = ?
+                AND usr.user_id = ?
+        };
+        @bind = ($plugin, $self->viewer_id, $self->user_id);
+    }
+
+    my $sth = sql_execute($sql, @bind);
+    my $rows = $sth->fetchall_arrayref;
+    my @ids = map {$_->[0]} @$rows;
+    return \@ids;
+}
+
+sub _build_sources {
+    my $self = shift;
+
+    my @sources;
+    $self->add_sources(\@sources);
+    return \@sources;
+}
+
+sub add_sources {
+    my $self = shift;
+    my $sources = shift;
+} # no-op
+
+__PACKAGE__->meta->make_immutable;
 1;
