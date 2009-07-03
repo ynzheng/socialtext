@@ -4,6 +4,12 @@ use strict;
 use warnings;
 
 use Time::HiRes qw( time );
+use Carp qw/croak/;
+
+use base qw/Exporter/;
+our $VERSION = 1.0;
+our @EXPORT = ();
+our @EXPORT_OK = qw(&time_this);
 
 our $Timings = {};
 
@@ -26,6 +32,7 @@ sub Report {
 sub Start {
     my $class = shift;
     my $timed = shift;
+    local $@;
     $Timings->{$timed}->{counter}++;
     $Timings->{$timed}->{timer} = $class->new();
 }
@@ -33,6 +40,7 @@ sub Start {
 sub Pause {
     my $class = shift;
     my $timed = shift;
+    local $@;
     if (ref($Timings->{$timed}->{timer}) 
         && $Timings->{$timed}->{counter} <= 1) {
         $Timings->{$timed}->{counter}--;
@@ -44,6 +52,7 @@ sub Pause {
 sub Continue {
     my $class = shift;
     my $timed = shift;
+    local $@;
     if (ref($Timings->{$timed}->{timer})) {
         $class->Stop($timed);
     }
@@ -54,6 +63,7 @@ sub Continue {
 sub Stop {
     my $class = shift;
     my $timed = shift;
+    local $@;
     $Timings->{$timed}->{timer} = $Timings->{$timed}->{timer}->elapsed()
         if ref($Timings->{$timed}->{timer});
 }
@@ -76,6 +86,13 @@ sub start_timing {
 sub elapsed {
     my $self = shift;
     return time() - $self->{_start_time};
+}
+
+sub time_this(&$) {
+    __PACKAGE__->Continue($_[1]);
+    eval { $_[0]->() };
+    __PACKAGE__->Pause($_[1]);
+    croak $@ if $@;
 }
 
 1;

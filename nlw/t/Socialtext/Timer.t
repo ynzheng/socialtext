@@ -2,7 +2,8 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::More tests => 12;
+use Test::More tests => 15;
+use Test::Exception;
 use mocked 'Time::HiRes';
 
 # Note: This module uses a mocked Time::HiRes so that we can test with
@@ -82,6 +83,24 @@ Singleton_pause_twice: {
     is $timings->{overall}, '5.000',
         "overall time equals 5 - $timings->{overall}";
     is $timings->{pausable}, '2.000',
-        "pausable time equals 1 - $timings->{pausable}";
+        "pausable time equals 2 - $timings->{pausable}";
 }
+
+Time_this: {
+    Socialtext::Timer->Reset();
+    Socialtext::Timer::time_this {
+        my $x = 1;
+    } 'rock';
+    throws_ok {
+        Socialtext::Timer::time_this {
+            die "what the";
+        } 'rock';
+    } qr#what the at t/Socialtext/Timer.t#;
+
+    my $timings = Socialtext::Timer->Report();
+    is $timings->{overall}, '5.000',
+        "overall time equals 5 - $timings->{overall}";
+    is $timings->{rock}, '2.000', "rock timings - $timings->{rock}";
+}
+
 exit;
