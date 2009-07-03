@@ -45,9 +45,8 @@ has_param 'after'  => (isa => 'Num', sql_builder => '_sb_after');
 # These params require special implementation so the caller should handle
 # them.  SQLSource may have some hints.
 
-has 'following' => (is => 'rw', isa => 'Bool');
 has 'followed'  => (is => 'rw', isa => 'Bool');
-has 'contribs'  => (is => 'rw', isa => 'Bool');
+has 'contributions'  => (is => 'rw', isa => 'Bool');
 
 sub generate_standard_filter {
     my $self = shift;
