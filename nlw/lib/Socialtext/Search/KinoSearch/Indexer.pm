@@ -60,6 +60,7 @@ sub new {
             current_user => Socialtext::User->SystemUser,
         ),
     );
+    $self->hub->registry->load;
 
     _debug("Loaded Hub with workspace '$ws_name'.");
 
