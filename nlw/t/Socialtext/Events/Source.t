@@ -2,7 +2,7 @@
 # @COPYRIGHT@
 use warnings;
 use strict;
-use Test::More tests => 68;
+use Test::More tests => 78;
 use mocked 'Socialtext::User';
 
 BEGIN {
@@ -35,9 +35,7 @@ BEGIN {
             push @sources, $src;
         }
         push @sources, $self->construct_source(
-            'Socialtext::Events::Source::Example' => 
-            _events => [],
-            id => 'the empty one',
+            'Socialtext::Events::EmptySource'
         );
         return \@sources;
     }
@@ -47,6 +45,12 @@ BEGIN {
     extends 'Socialtext::Events::Event';
     has 'feed' => (is => 'rw', isa => 'Str', required => 1);
     has 'nr' => (is => 'rw', isa => 'Str', required => 1);
+
+    after 'build_hash' => sub {
+        my $self = shift;
+        my $hash = shift;
+        $hash->{test} = $self->feed.'-'.$self->nr;
+    };
 
     package Socialtext::Events::Source::Example;
     use Moose;
@@ -200,6 +204,44 @@ Before_and_after: {
     $ev = $stream->next;
     is $ev->feed, 1;
     is $ev->nr, 3;
+
+    ok !defined($stream->next), 'end of stream';
+}
+
+All: {
+    my $stream = Socialtext::Events::Stream::Test->new(
+        viewer => Socialtext::User->new(user_id => 111),
+        filter => Socialtext::Events::FilterParams->new(
+            before => 1_234_567_892,
+        )
+    );
+    isa_ok $stream => 'Socialtext::Events::Stream::Test';
+    $stream->prepare();
+    my $all = $stream->all();
+    ok ref($all) eq 'ARRAY', 'got the whole array';
+    isa_ok $all->[0] => 'Socialtext::Events::Event::Test';
+
+    my @got = map { [$_->feed,$_->nr] } @$all;
+    is_deeply \@got, [ [3,1], [2,1], [1,1] ];
+
+    ok !defined($stream->next), 'end of stream';
+}
+
+All_hashes: {
+    my $stream = Socialtext::Events::Stream::Test->new(
+        viewer => Socialtext::User->new(user_id => 111),
+        filter => Socialtext::Events::FilterParams->new(
+            before => 1_234_567_892,
+        )
+    );
+    isa_ok $stream => 'Socialtext::Events::Stream::Test';
+    $stream->prepare();
+    my $all = $stream->all_hashes();
+    ok ref($all) eq 'ARRAY', 'got the whole array';
+    ok !Scalar::Util::blessed($all->[0]), 'elements aren\'t references';
+
+    my @got = map { $_->{test} } @$all;
+    is_deeply \@got, [ "3-1", "2-1", "1-1" ];
 
     ok !defined($stream->next), 'end of stream';
 }
