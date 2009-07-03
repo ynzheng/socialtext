@@ -263,6 +263,7 @@ sub preferences_object {
 
     $self->{preferences_object}
                = $self->preferences->new_for_user( $self->current_user->email_address );
+    $self->{preferences_object}->hub->current_user( $self->current_user );
     $self->last_prefs_userid($self->current_user->user_id);
 
     return $self->{preferences_object};

@@ -106,9 +106,10 @@ sub import_workspace {
 
         unless ($self->{noindex}) {
             chdir( $old_cwd );
-            Socialtext::Search::AbstractFactory->GetFactory->create_indexer(
-                $self->{workspace}->name )
-                ->index_workspace( $self->{workspace}->name );
+            my $idx = Socialtext::Search::AbstractFactory->GetFactory
+                ->create_indexer($self->{workspace}->name);
+            $idx->hub->current_user( Socialtext::User->SystemUser );
+            $idx->index_workspace( $self->{workspace}->name );
         }
 
         st_log()
