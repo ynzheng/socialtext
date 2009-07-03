@@ -14,13 +14,12 @@ BEGIN {
 {
     package Socialtext::Events::Stream::Test;
     use Moose;
-    with 'Socialtext::Events::Stream';
+    extends 'Socialtext::Events::Stream';
 
-    has '+filter' => (default => sub { Socialtext::Events::FilterParams->new });
-
-    sub _build_sources {
+    after 'add_sources' => sub {
         my $self = shift;
-        my @sources;
+        my $sources = shift;
+
         for my $feed (2,1,3) {
             my $src = $self->construct_source(
                 'Socialtext::Events::Source::Example' => 
@@ -32,13 +31,16 @@ BEGIN {
                     [1_234_567_891 . ".0000$feed" + 0.0, {feed=>$feed,nr=>1}],
                 ]
             );
-            push @sources, $src;
+            push @$sources, $src;
         }
-        push @sources, $self->construct_source(
+        push @$sources, $self->construct_source(
             'Socialtext::Events::EmptySource'
         );
-        return \@sources;
-    }
+    };
+
+    has '+filter' => (
+        default => sub { Socialtext::Events::FilterParams->new }
+    );
 
     package Socialtext::Events::Event::Test;
     use Moose;
