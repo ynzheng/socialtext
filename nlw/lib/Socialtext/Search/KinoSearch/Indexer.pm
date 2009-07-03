@@ -14,6 +14,7 @@ use YAML;
 use Socialtext::Hub;
 use Socialtext::Workspace;
 use Socialtext::Page;
+use Socialtext::User;
 use Socialtext::Attachment;
 use Socialtext::Attachments;
 use Socialtext::Log qw(st_log);
@@ -53,7 +54,14 @@ sub new {
     # Create hub
     my $ws = Socialtext::Workspace->new( name => $ws_name );
     die "Cannot create workspace '$ws_name'" unless defined $ws;
-    $self->hub( Socialtext::Hub->new( current_workspace => $ws ) );
+    $self->hub(
+        Socialtext::Hub->new(
+            current_workspace => $ws,
+            current_user => Socialtext::User->SystemUser,
+        ),
+    );
+    $self->hub->registry->load;
+
     _debug("Loaded Hub with workspace '$ws_name'.");
 
     # This is a bit redundant here, as we'll do it again later on the various
