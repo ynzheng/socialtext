@@ -471,14 +471,11 @@ sub get_events_page_contribs {
 
     Socialtext::Timer->Continue('get_page_contribs');
     $stream->prepare();
-    my @result;
-    while (my $e = $stream->next) {
-        push @result, $e->build_hash({});
-    }
+    my $result = $stream->all_hashes();
     Socialtext::Timer->Pause('get_page_contribs');
 
-    return @result if wantarray;
-    return \@result;
+    return @$result if wantarray;
+    return $result;
 }
 
 sub get_events_activities {
