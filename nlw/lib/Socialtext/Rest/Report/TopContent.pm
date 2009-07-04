@@ -33,7 +33,9 @@ override 'GET_json' => sub {
         }, $user,
     ) };
     return $self->error(400, 'Bad request', $@) if $@;
-    return $self->not_authorized unless $report->is_viewable_by($user);
+    my $authorized = eval { $report->is_viewable_by($user) };
+    warn $@ if $@;
+    return $self->not_authorized unless $authorized;
 
     my @pages;
     eval { 
@@ -64,13 +66,18 @@ override 'GET_json' => sub {
     return $self->error(400, 'Bad request', $@) if $@;
 
     $self->rest->header(-type => 'application/json');
-    return encode_json({
-        pages => \@pages,
-        meta  => {
-            account   => $self->_account_data( $report ),
-            workspace => $self->_workspace_data( $report ),
-        },
-    });
+    my $json;
+    eval {
+        $json = encode_json({
+            pages => \@pages,
+            meta  => {
+                account   => $self->_account_data( $report ),
+                workspace => $self->_workspace_data( $report ),
+            },
+        });
+    };
+    return $self->error(400, 'Bad request', $@) if $@;
+    return $json;
 };
 
 sub _account_data {
@@ -79,7 +86,11 @@ sub _account_data {
 
     # it is required that we either have a valid workspace or a valid
     # account.
-    my $account = $report->account || $report->workspace->account();
+    my $account = $report->account;
+    if ($report->workspace) {
+        $account ||= $report->workspace->account();
+    }
+    die "Could not find an account!" unless $account;
 
     return { name => $account->name };
 }
