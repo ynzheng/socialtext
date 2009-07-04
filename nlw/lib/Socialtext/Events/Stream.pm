@@ -13,7 +13,12 @@ with 'Socialtext::Events::Source';
 
 has 'sources' => (
     is => 'rw', isa => 'ArrayRef[Socialtext::Events::Source]',
+    metaclass => 'Collection::List',
     lazy_build => 1,
+    auto_deref => 1,
+    provides => {
+        count => 'source_count',
+    },
 );
 
 has 'offset' => ( is => 'ro', isa => 'Int', default => 0 );
@@ -28,7 +33,11 @@ has '_remaining' => (
 has '_assembled' => ( is => 'rw', isa => 'Bool', default => undef );
 has '_skipped' => ( is => 'rw', isa => 'Bool', default => undef );
 
-has '_queue' => ( is => 'rw', isa => 'ArrayRef', init_arg => undef, lazy_build => 1 );
+has '_queue' => (
+    is => 'rw', isa => 'ArrayRef',
+    init_arg => undef,
+    lazy_build => 1,
+);
 
 sub effective_limit {
     my $self = shift;
@@ -73,7 +82,7 @@ sub all_hashes {
 sub assemble {
     my $self = shift;
     return if $self->_assembled;
-    for my $src (@{$self->sources}) {
+    for my $src ($self->sources) {
         $src->assemble if $src->does('Socialtext::Events::Stream');
     }
     $self->_assembled(1);
@@ -88,8 +97,7 @@ sub prepare {
 
     my $q = $self->_queue; # force builder
     $self->_check_if_done();
-
-    return;
+    return @$q > 0;
 }
 
 sub next {
@@ -164,15 +172,13 @@ sub _build__queue {
     my $self = shift;
 
     my @sources = grep {
-        $_->prepare;
-        defined $_->peek;
-    } @{$self->sources};
+        $_->prepare && defined $_->peek;
+    } $self->sources;
 
     # negate to reverse order
     my @queue = map { [-$_->peek, $_] } @sources;
     make_heap @queue;
 
-    $self->sources(\@sources);
     return \@queue;
 }
 

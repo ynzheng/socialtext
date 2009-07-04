@@ -2,7 +2,7 @@
 # @COPYRIGHT@
 use warnings;
 use strict;
-use Test::More tests => 78;
+use Test::More tests => 89;
 use mocked 'Socialtext::User';
 
 BEGIN {
@@ -69,6 +69,8 @@ BEGIN {
         @$evs = grep { 
             $_->[0] > $after && $_->[0] < $before
         } @$evs;
+
+        return @$evs > 0;
     }
 
     sub peek {
@@ -104,7 +106,7 @@ Happy_path: {
         viewer => Socialtext::User->new(user_id => 111),
     );
     isa_ok $stream => 'Socialtext::Events::Stream::Test';
-    $stream->prepare();
+    ok $stream->prepare();
 
     ok $stream->peek;
 
@@ -127,7 +129,7 @@ Limit: {
         limit => 4,
     );
     isa_ok $stream => 'Socialtext::Events::Stream::Test';
-    $stream->prepare();
+    ok $stream->prepare();
 
     $stream->skip for (1..3);
 
@@ -145,7 +147,7 @@ Limit_and_offset: {
         offset => 4,
     );
     isa_ok $stream => 'Socialtext::Events::Stream::Test';
-    $stream->prepare();
+    ok $stream->prepare();
 
     $stream->skip for (1 .. 3);
 
@@ -166,7 +168,7 @@ Before: {
         )
     );
     isa_ok $stream => 'Socialtext::Events::Stream::Test';
-    $stream->prepare();
+    ok $stream->prepare();
 
     my $ev = $stream->next;
     is $ev->feed, 3;
@@ -193,7 +195,7 @@ Before_and_after: {
     );
     isa_ok $stream => 'Socialtext::Events::Stream::Test';
     $stream->assemble();
-    $stream->prepare();
+    ok $stream->prepare();
 
     my $ev = $stream->next;
     is $ev->feed, 3;
@@ -218,7 +220,7 @@ All: {
         )
     );
     isa_ok $stream => 'Socialtext::Events::Stream::Test';
-    $stream->prepare();
+    ok $stream->prepare();
     my $all = $stream->all();
     ok ref($all) eq 'ARRAY', 'got the whole array';
     isa_ok $all->[0] => 'Socialtext::Events::Event::Test';
@@ -237,7 +239,7 @@ All_hashes: {
         )
     );
     isa_ok $stream => 'Socialtext::Events::Stream::Test';
-    $stream->prepare();
+    ok $stream->prepare();
     my $all = $stream->all_hashes();
     ok ref($all) eq 'ARRAY', 'got the whole array';
     ok !Scalar::Util::blessed($all->[0]), 'elements aren\'t references';
@@ -246,4 +248,18 @@ All_hashes: {
     is_deeply \@got, [ "3-1", "2-1", "1-1" ];
 
     ok !defined($stream->next), 'end of stream';
+}
+
+Empty: {
+    my $stream = Socialtext::Events::Stream::Test->new(
+        viewer => Socialtext::User->new(user_id => 111),
+        filter => Socialtext::Events::FilterParams->new(
+            before => 100,
+        )
+    );
+    isa_ok $stream => 'Socialtext::Events::Stream::Test';
+    ok !$stream->prepare();
+    my $all = $stream->all();
+    ok ref($all) eq 'ARRAY', 'got the whole array';
+    is scalar(@$all), 0, 'empty array';
 }

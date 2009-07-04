@@ -26,7 +26,7 @@ has 'filter' => (
     handles => [qw(before after)],
 );
 
-requires 'prepare';
+requires 'prepare'; # returns false if no results
 requires 'peek';
 requires 'next';
 requires 'skip';
@@ -35,9 +35,9 @@ package Socialtext::Events::EmptySource;
 use Moose;
 with 'Socialtext::Events::Source';
 
-sub prepare { }
+sub prepare { undef }
 sub peek    { undef }
 sub next    { undef }
-sub skip    { }
+sub skip    { undef }
 
 1;
