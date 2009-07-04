@@ -1,7 +1,7 @@
 #!perl
 use warnings;
 use strict;
-use Test::More tests => 14;
+use Test::More tests => 12;
 use Test::Exception;
 use mocked 'Socialtext::SQL', qw/:test/;
 use mocked 'Socialtext::User';
@@ -26,6 +26,10 @@ BEGIN {
             -nest => $self->filter->generate_filter(
                 qw(before after actor_id person_id tag_name)
             ),
+            -or => [
+                this => \["IN (?)", "this-arg"],
+                that => \["IN (?)", "that-arg"],
+            ],
         );
 
         my $sa = sql_abstract();
@@ -44,7 +48,7 @@ Exercise_params: {
     my $filter = Socialtext::Events::FilterParams->new();
     isa_ok $filter => 'Socialtext::Events::FilterParams';
 
-    for my $illegal (qw(followed following contribs)) {
+    for my $illegal (qw(followed contributions)) {
         ok $filter->can($illegal);
         throws_ok {
             $filter->generate_filter($illegal);
@@ -67,14 +71,15 @@ Happy_path: {
     my $viewer = Socialtext::User->new(user_id => 222);
     my $source = Socialtext::Events::SQLSource::Test->new(
         viewer => $viewer,
-        filter => $filter,
         limit => 5,
+        filter => $filter,
     );
 
+    sql_mock_row_count(0);
     lives_ok { $source->_build_sql_results };
     sql_ok(
         name => 'verbose generation',
-        args => [54321, 12345, 27, 'sqeak', 'squak'],
+        args => [54321, 12345, 27, 'sqeak', 'squak', 'this-arg','that-arg'],
         sql => q{
             SELECT * FROM event_page_contrib
             WHERE ( (
@@ -86,6 +91,11 @@ Happy_path: {
                     AND actor_id = ?
                     AND person_id IS NULL
                     AND tag_name IN ( ?, ? )
+                )
+                AND (
+                    this IN (?)
+                    OR
+                    that IN (?)
                 )
             ) )
             ORDER BY at DESC
