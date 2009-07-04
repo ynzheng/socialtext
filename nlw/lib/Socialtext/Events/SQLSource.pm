@@ -31,8 +31,8 @@ sub _build_sql_results {
 }
 
 sub prepare {
-    shift->sql_results;
-    return;
+    my $r = shift->sql_results; # force builder
+    return @$r > 0;
 }
 
 sub peek {
