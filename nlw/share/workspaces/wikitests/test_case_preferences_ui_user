@@ -1,22 +1,6 @@
-Commands
-
-create_account 	%%acc%% 	all plugins are enabled
-account_config 	%%acc%% 	skin_name 	zehnder
-disable_account_plugin 	%%acc%% 	signals
-create_user 	%%user%% 	password 	%%acc%% 	%%names%%
-create_workspace 	%%ws%% 	%%acc%%
-set_ws_permissions 	%%ws%% 	public-read-only
-workspace_config 	%%ws%% 	allows_page_locking 	1
-add_member 	%%user%% 	%%ws%%
-add_workspace_admin 	%%user%% 	%%ws%%
-set_business_admin 	%%user%% 	1
-set_technical_admin 	%%user%% 	1
-set_business_admin 	%%user%% 	0
-set_technical_admin 	%%user%% 	0
-
 | *Comment* | START Test Case: Preferences UI User |  |
 | set | new_account | userPrefs.%%start_time%% |
-| set | new_ws | userPrefs-%%start_time%% |
+| set | new_ws | userprefs-%%start_time%% |
 | set | new_user | userPrefs.%%start_time%%@ken.socialtext.net |
 | set | new_name | userPrefs %%start_time%% |
 
@@ -25,60 +9,434 @@ set_technical_admin 	%%user%% 	0
 | create_user | %%new_user%% | 123456 | %%new_account%% | %%new_name%% |
 | create_workspace | %%new_ws%% | %%new_account%% |  |  |
 | workspace-config | %%new_ws%% | email_notify_is_enabled | 1 |  |
-| add_member | %%new_user%% | %%new_ws%% |  |  |
+
+| *Comment* | Test Case: Preferences UI User. use st-admin to avoid workspace administration |  |
+| st-admin | add_member --e %%new_user%% --w %%new_ws%% | is now a member |
 
 | *Comment* | Test Case: Preferences UI User login to %%new_ws%% |  |
-| st-logout |
+| st-logout |  |  |
 | open | /%%new_ws%% |  |
 | wait_for_element_visible_ok | username | 30000 |
 | wait_for_element_visible_ok | password | 30000 |
-| type_ok | username | %%new_user%% |  |
-| type_ok | password | 123456 |  |
+| type_ok | username | %%new_user%% |
+| type_ok | password | 123456 |
 | click_and_wait | login_btn |  |
 
-| *Comment* | Test Case: Preferences UI User. email notification. Every day, chronologically, full info |  |
+`----------------------------------------------------------------------`
+
+| *Comment* | Test Case: Preferences UI User. Signals notification. Default is on |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Private Messages |  |
+| text_like | Send Socialtext Signals private messages as email |  |
+| value_is | dm_sends_email | on |
+
+| *Comment* | Test Case: Preferences UI User. Signals notification. Turn it off |  |
+| uncheck_ok | dm_sends_email |  |
+| value_is | dm_sends_email | off |
+| click_and_wait | link=Save |  |
+| text_like | qr/Changes Saved/i |  |
+| value_is | dm_sends_email | off |
+
+| *Comment* | Test Case: Preferences UI User. Signals notification. Save without changing value. |  |
+| click_and_wait | link=Save |  |
+| text_like | qr/Changes Saved/i |  |
+| value_is | dm_sends_email | off |
+
+| *Comment* | Test Case: Preferences UI User. Signals notification. Cancel chooses previous values |  |
+| check_ok | dm_sends_email |  |
+| value_is | dm_sends_email | on |
+| click_ok | link=Cancel |  |
+| value_is | dm_sends_email | off |
+
+| *Comment* | Test Case: Preferences UI User. Signals notification. Navigate away, return, verify value |  |
+| click_and_wait | link=My Settings |  |
+| click_and_wait | link=Private Messages |  |
+| value_is | dm_sends_email | off |
+
+| *Comment* | Test Case: Preferences UI User. Signals notification. Turn it back on |  |
+| check_ok | dm_sends_email |  |
+| value_is | dm_sends_email | on |
+| click_and_wait | link=Save |  |
+| text_like | qr/Changes Saved/i |  |
+| value_is | dm_sends_email | on |
+
+| *Comment* | Test Case: Preferences UI User: Signals does appear if signals is disabled for account but is enabled for another acct |  |
+| st-admin | enable-plugin --plugin signals --account %%hostname%% |  |
+| st-admin | add-member --email %%new_user%% --workspace %%workspace%% | is now a member |
+| disable_account_plugin | %%new_account%% | signals |
+| click_and_wait | link=Settings |  |
+| wait_for_element_present_ok | link=Private Messages | 10000 |
+| st-admin | remove-member --email %%new_user%% --workspace %%workspace%% | no longer a member |
+
+| *Comment* | Test Case: Preferences UI User: Signals does not appear if signals plugin is disabled for account |  |
+| open_ok | /%%new_ws%%/?action=users_settings |  |
+| text_unlike | //body | Private Messages |
+| st-admin | enable-plugin --plugin signals --account %%new_account%% |  |
+
+| *Comment* | Test Case: Preferences UI User: My Workspaces |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=My Workspaces |  |
+| text_like | contentRight | %%new_ws%% |
+| text_unlike | contentRight | help-en |
+| add_member | %%new_user%% | %%workspace%% |
+| click_and_wait | link=My Workspaces |  |
+| text_like | contentRight | %%new_ws%% |
+| text_like | contentRight | %%title%% |
+| text_like | contentRight | %%workspace%% |
+| text_unlike | contentRight | help-en |
+| st-admin | remove-member --w %%workspace%% --e %%new_user%% | is no longer |
+| click_and_wait | link=My Workspaces |  |
+| text_like | contentRight | %%new_ws%% |
+| text_unlike | contentRight | %%workspace%% |
+| text_unlike | contentRight | help-en |
+
+| *Comment* | Test Case: Preferences UI User: List All |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=List All Users |  |
+| text_like | contentRight | %%new_name%% |
+| add_member | %%username%% | %%new_ws%% |
+| click_and_wait | link=List All Users |  |
+| text_like | contentRight | %%new_name%% |
+| text_like | contentRight | %%username%% |
+
+| *Comment* | Test Case: Preferences UI User. Time. Defaults: Pacific, auto, M-D, 12, no |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Time |  |
+| text_like | contentContainer | What time zone should times be displayed in |
+| text_like | contentContainer | How should Daylight Savings/Summer Time be handled |
+| text_like | contentContainer | How should displayed dates be formatted |
+| text_like | contentContainer | Should times be displayed in 12-hour or 24-hour format |
+| text_like | contentContainer | Should seconds be included on displayed times |
+| is_selected_ok | timezone__timezone | label=-0800 Pacific |
+| is_selected_ok | timezone__dst | label=automatic, United States |
+| is_selected_ok | timezone__date_display_format | value=mmm_d |
+| is_selected_ok | timezone__time_display_12_24 | value=12 |
+| verifyValue | //input[@name='timezone__time_display_seconds'] | off |
+
+| *Comment* | Test Case: Preferences UI User. Time. Nome, on, mmm_d_yyyy, 24,on |  |
+| select_ok | timezone__timezone | label=-1100 Nome |
+| select_ok | timezone__dst | label=currently in DST |
+| select_ok | timezone__date_display_format | value=mmm_d_yyyy |
+| select_ok | timezone__time_display_12_24 | value=24 |
+| check_ok | //input[@name='timezone__time_display_seconds'] | on |
+| is_selected_ok | timezone__timezone | label=-1100 Nome |
+| is_selected_ok | timezone__dst | label=currently in DST |
+| is_selected_ok | timezone__date_display_format | value=mmm_d_yyyy |
+| is_selected_ok | timezone__time_display_12_24 | value=24 |
+| value_is | //input[@name='timezone__time_display_seconds'] | on |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| is_selected_ok | timezone__timezone | label=-1100 Nome |
+| is_selected_ok | timezone__dst | label=currently in DST |
+| is_selected_ok | timezone__date_display_format | value=mmm_d_yyyy |
+| is_selected_ok | timezone__time_display_12_24 | value=24 |
+| value_is | //input[@name='timezone__time_display_seconds'] | on |
+
+| *Comment* | Test Case: Preferences UI User. Time. Save without changing values |  |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| is_selected_ok | timezone__timezone | label=-1100 Nome |
+| is_selected_ok | timezone__dst | label=currently in DST |
+| is_selected_ok | timezone__date_display_format | value=mmm_d_yyyy |
+| is_selected_ok | timezone__time_display_12_24 | value=24 |
+| value_is | //input[@name='timezone__time_display_seconds'] | on |
+
+| *Comment* | Test Case: Preferences UI User. Time. Cancel chooses previous values |  |
+| select_ok | timezone__timezone | label=-0800 Pacific |
+| select_ok | timezone__dst | label=automatic, United States |
+| select_ok | timezone__date_display_format | value=mmm_d |
+| select_ok | timezone__time_display_12_24 | value=12 |
+| uncheck_ok | //input[@name='timezone__time_display_seconds'] |  |
+| click_ok | link=Cancel |  |
+| is_selected_ok | timezone__timezone | label=-1100 Nome |
+| is_selected_ok | timezone__dst | label=currently in DST |
+| is_selected_ok | timezone__date_display_format | value=mmm_d_yyyy |
+| is_selected_ok | timezone__time_display_12_24 | value=24 |
+| value_is | //input[@name='timezone__time_display_seconds'] | on |
+
+| *Comment* | Test Case: Preferences UI User. Time. Navigate away, return, verify values |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Time |  |
+| is_selected_ok | timezone__timezone | label=-1100 Nome |
+| is_selected_ok | timezone__dst | label=currently in DST |
+| is_selected_ok | timezone__date_display_format | value=mmm_d_yyyy |
+| is_selected_ok | timezone__time_display_12_24 | value=24 |
+| value_is | //input[@name='timezone__time_display_seconds'] | on |
+
+| *Comment* | Test Case: Preferences UI User. Watchlist Notification. Defaults: Every day, chronologically, full info |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Watchlist |  |
+| text_like | contentContainer | How frequently would you like to receive watchlist emails |
+| text_like | contentContainer | What information about changed pages do you want in email digests |
+| is_selected_ok | watchlist__watchlist_notify_frequency | label=Every Day |
+| verifyValue | //input[@value='expanded'] | on |
+
+| *Comment* | Test Case: Preferences UI User. Watchlist Notification. Set: Every Minute, expanded |  |
+| select_ok | watchlist__watchlist_notify_frequency | label=Every Minute |
+| check_ok | //input[@value='expanded'] |  |
+| is_selected_ok | watchlist__watchlist_notify_frequency | label=Every Minute |
+| verifyValue | //input[@value='expanded'] | on |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| is_selected_ok | watchlist__watchlist_notify_frequency | label=Every Minute |
+| verifyValue | //input[@value='expanded'] | on |
+
+| *Comment* | Test Case: Preferences UI User. Watchlist Notification. Set: Every week, reverse chronologically, condensed |  |
+| select_ok | watchlist__watchlist_notify_frequency | label=Every Week |
+| check_ok | //input[@value='condensed'] |  |
+| is_selected_ok | watchlist__watchlist_notify_frequency | label=Every Week |
+| verifyValue | //input[@value='condensed'] | on |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| is_selected_ok | watchlist__watchlist_notify_frequency | label=Every Week |
+| verifyValue | //input[@value='condensed'] | on |
+
+| *Comment* | Test Case: Preferences UI User. Watchlist Notification. Save without changing values |  |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| is_selected_ok | watchlist__watchlist_notify_frequency | label=Every Week |
+| verifyValue | //input[@value='condensed'] | on |
+
+| *Comment* | Test Case: Preferences UI User. Watchlist Notification. Cancel chooses previous values |  |
+| select_ok | watchlist__watchlist_notify_frequency | label=Never |
+| check_ok | //input[@value='expanded'] |  |
+| is_selected_ok | watchlist__watchlist_notify_frequency | label=Never |
+| verifyValue | //input[@value='expanded'] | on |
+| click_ok | link=Cancel |  |
+| is_selected_ok | watchlist__watchlist_notify_frequency | label=Every Week |
+| verifyValue | //input[@value='condensed'] | on |
+
+| *Comment* | Test Case: Preferences UI User. Watchlist Notification. Navigate away, return, verify values |  |
+| click_and_wait | link=My Settings |  |
+| click_and_wait | link=Watchlist |  |
+| text_like | contentContainer | How frequently would you like to receive watchlist emails |
+| text_like | contentContainer | What information about changed pages do you want in email digests |
+| is_selected_ok | watchlist__watchlist_notify_frequency | label=Every Week |
+| verifyValue | //input[@value='condensed'] | on |
+
+| *Comment* | Test Case: Preferences UI User. Watchlist Notification. Special case: Never |  |
+| select_ok | watchlist__watchlist_notify_frequency | label=Never |
+| is_selected_ok | watchlist__watchlist_notify_frequency | label=Never |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| is_selected_ok | watchlist__watchlist_notify_frequency | label=Never |
+
+| *Comment* | Test Case: Preferences UI User Weblogs. Default: 10 posts |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | //a[@href='?action=preferences_settings;preferences_class_id=weblog'] |  |
+| text_like | contentContainer | How many posts should be displayed in weblog view |
+| is_selected_ok | weblog__weblog_depth | label=10 |
+
+| *Comment* | Test Case: Preferences UI User Weblogs. 50 posts |  |
+| select_ok | weblog__weblog_depth | label=50 |
+| is_selected_ok | weblog__weblog_depth | label=50 |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| is_selected_ok | weblog__weblog_depth | label=50 |
+
+| *Comment* | Test Case: Preferences UI User Weblogs. Cancel preserves value |  |
+| select_ok | weblog__weblog_depth | label=25 |
+| is_selected_ok | weblog__weblog_depth | label=25 |
+| click_ok | link=Cancel |  |
+| is_selected_ok | weblog__weblog_depth | label=50 |
+
+| *Comment* | Test Case: Preferences UI User Weblogs. Save without changing values |  |
+| is_selected_ok | weblog__weblog_depth | label=50 |
+| click_ok | link=Save |  |
+| is_selected_ok | weblog__weblog_depth | label=50 |
+
+| *Comment* | Test Case: Preferences UI User Weblogs. Navigate away, come back, verify |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | //a[@href='?action=preferences_settings;preferences_class_id=weblog'] |  |
+| text_like | contentContainer | How many posts should be displayed in weblog view |
+| is_selected_ok | weblog__weblog_depth | label=50 |
+
+| *Comment* | Test Case: Preferences UI User Syndicate. Default: 10 posts |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Syndicate |  |
+| text_like | contentContainer | How many posts should be displayed in outgoing feeds |
+| is_selected_ok | syndicate__syndication_depth | label=10 |
+
+| *Comment* | Test Case: Preferences UI User Syndicate. 50 posts |  |
+| select_ok | syndicate__syndication_depth | label=50 |
+| is_selected_ok | syndicate__syndication_depth | label=50 |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| is_selected_ok | syndicate__syndication_depth | label=50 |
+
+| *Comment* | Test Case: Preferences UI User Syndicate. Cancel preserves value |  |
+| select_ok | syndicate__syndication_depth | label=25 |
+| is_selected_ok | syndicate__syndication_depth | label=25 |
+| click_ok | link=Cancel |  |
+| is_selected_ok | syndicate__syndication_depth | label=50 |
+
+| *Comment* | Test Case: Preferences UI User Syndicate. Save without changing values |  |
+| is_selected_ok | syndicate__syndication_depth | label=50 |
+| click_ok | link=Save |  |
+| is_selected_ok | syndicate__syndication_depth | label=50 |
+
+| *Comment* | Test Case: Preferences UI User Syndicate. Navigate away, come back, verify |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Syndicate |  |
+| text_like | contentContainer | How many posts should be displayed in outgoing feeds |
+| is_selected_ok | syndicate__syndication_depth | label=50 |
+
+| *Comment* | Test Case: Preferences UI User: create new weblog |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Create New Weblog |  |
+| text_like | contentContainer | Create A Weblog |
+| type_ok | weblog_title | No Brackets %%start_time%% Weblog |
+| click_and_wait | link=Save |  |
+| text_like | contentContainer | First Post in No Brackets %%start_time%% Weblog |
+
+| *Comment* | Test Case: Preferences UI: User new weblog with brackets |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Create New Weblog |  |
+| text_like | contentContainer | Create A Weblog |
+| type_ok | weblog_title | `[Brackets] %%start_time%%` |
+| click_and_wait | link=Save |  |
+| text_like | contentContainer | `First Post in [Brackets] %%start_time%% Weblog` |
+
+| *Comment* | Test Case: Preferences UI User. What's New. Defaults: Last week, display off, 4 items |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | //a[@href='?action=preferences_settings;preferences_class_id=recent_changes'] |  |
+| text_like | contentContainer | What time interval |
+| text_like | contentContainer | Display as a side box |
+| text_like | contentContainer | How many items from that time period |
+| is_selected_ok | recent_changes__changes_depth | label=Last Week |
+| value_is | recent_changes__include_in_pages | off |
+| is_selected_ok | recent_changes__sidebox_changes_depth | label=4 |
+
+| *Comment* | Test Case: Preferences UI User. What's New. Set: Last 2 Days, on, 20 items |  |
+| select_ok | recent_changes__changes_depth | label=Last 2 Days |
+| check_ok | recent_changes__include_in_pages |  |
+| select_ok | recent_changes__sidebox_changes_depth | label=20 |
+| is_selected_ok | recent_changes__changes_depth | label=Last 2 Days |
+| value_is | recent_changes__include_in_pages | on |
+| is_selected_ok | recent_changes__sidebox_changes_depth | label=20 |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| is_selected_ok | recent_changes__changes_depth | label=Last 2 Days |
+| value_is | recent_changes__include_in_pages | on |
+| is_selected_ok | recent_changes__sidebox_changes_depth | label=20 |
+| open_ok | /%%new_ws%% |
+| text_like | contentRight | What's New |
+| text_like | contentRight | First Post in No Brackets %%start_time%% Weblog |
+| text_like | contentRight | `First Post in [Brackets] %%start_time%% Weblog` |
+
+| *Comment* | Test Case: Preferences UI User. What's New. Set: Last Month, off, 2 items |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | //a[@href='?action=preferences_settings;preferences_class_id=recent_changes'] |  |
+| select_ok | recent_changes__changes_depth | label=Last Month |
+| uncheck_ok | recent_changes__include_in_pages |  |
+| select_ok | recent_changes__sidebox_changes_depth | label=2 |
+| is_selected_ok | recent_changes__changes_depth | label=Last Month |
+| value_is | recent_changes__include_in_pages | off |
+| is_selected_ok | recent_changes__sidebox_changes_depth | label=2 |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| is_selected_ok | recent_changes__changes_depth | label=Last Month |
+| value_is | recent_changes__include_in_pages | off |
+| is_selected_ok | recent_changes__sidebox_changes_depth | label=2 |
+| open_ok | /%%new_ws%% |  |
+| text_unlike | contentRight | What's New |
+| text_unlike | contentRight | First Post in No Brackets %%start_time%% Weblog |
+| text_unlike | contentRight | `First Post in [Brackets] %%start_time%% Weblog` |
+
+| *Comment* | Test Case: Preferences UI User. What's New. Save without changing values |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | //a[@href='?action=preferences_settings;preferences_class_id=recent_changes'] |  |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| is_selected_ok | recent_changes__changes_depth | label=Last Month |
+| value_is | recent_changes__include_in_pages | off |
+| is_selected_ok | recent_changes__sidebox_changes_depth | label=2 |
+
+| *Comment* | Test Case: Preferences UI User. What's New. Cancel chooses previous values |  |
+| select_ok | recent_changes__changes_depth | label=Last 2 Days |
+| check_ok | recent_changes__include_in_pages |  |
+| select_ok | recent_changes__sidebox_changes_depth | label=20 |
+| is_selected_ok | recent_changes__changes_depth | label=Last 2 Days |
+| value_is | recent_changes__include_in_pages | on |
+| is_selected_ok | recent_changes__sidebox_changes_depth | label=20 |
+| click_ok | link=Cancel |  |
+| is_selected_ok | recent_changes__changes_depth | label=Last Month |
+| value_is | recent_changes__include_in_pages | off |
+| is_selected_ok | recent_changes__sidebox_changes_depth | label=2 |
+
+| *Comment* | Test Case: Preferences UI User. Email Notification. Defaults: Every day, chronologically, full info |  |
 | click_and_wait | link=Settings |  |
 | click_and_wait | link=Email Notification |  |
 | text_like | contentContainer | How often |
 | text_like | contentContainer | What order |
 | text_like | contentContainer | What information |
 | is_selected_ok | email_notify__notify_frequency | label=Every Day |
-| verifyValue | email_notify__sort_order | chrono |
-| verifyValue | email_notify__links_only | expanded |
+| verifyValue | //input[@value='chrono'] | on |
+| verifyValue | //input[@value='expanded'] | on |
 
-^ END
+| *Comment* | Test Case: Preferences UI User. Email Notification. Set: Every Minute, page name, expanded |  |
+| select_ok | email_notify__notify_frequency | label=Every Minute |
+| check_ok | //input[@value='name'] |  |
+| check_ok | //input[@value='expanded'] |  |
+| is_selected_ok | email_notify__notify_frequency | label=Every Minute |
+| verifyValue | //input[@value='name'] | on |
+| verifyValue | //input[@value='expanded'] | on |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| is_selected_ok | email_notify__notify_frequency | label=Every Minute |
+| verifyValue | //input[@value='name'] | on |
+| verifyValue | //input[@value='expanded'] | on |
 
-| *Comment* | Test Case: Preferences UI User verify settings menu |  |
-| click_and_wait | link=Settings |  |
-| text_like | contentLeft | Users |
-| text_like | contentLeft | My Settings |
-| text_like | contentLeft | List All Users |
-| text_like | contentLeft | Signals |
-| text_like | contentLeft | Private Messages |
-| text_like | contentLeft | Workspaces |
-| text_like | contentLeft | My Workspaces |
-| text_like | contentLeft | Preferences |
-| text_like | contentLeft | Unsubscribe |
-| text_like | contentLeft | Create New Weblog |
-| text_like | contentLeft | Page Editing |
-| text_like | contentLeft | Screen Layout |
-| text_like | contentLeft | Email Notification |
-| text_like | contentLeft | Your Notepad |
-| text_like | contentLeft | What's New |
-| text_like | contentLeft | Syndicate |
-| text_like | contentLeft | Time |
-| text_like | contentLeft | Watchlist |
-| text_like | contentLeft | Weblogs |
+| *Comment* | Test Case: Preferences UI User. Email Notification. Set: Every week, reverse chronologically, condensed |  |
+| select_ok | email_notify__notify_frequency | label=Every Week |
+| check_ok | //input[@value='reverse'] |  |
+| check_ok | //input[@value='condensed'] |  |
+| is_selected_ok | email_notify__notify_frequency | label=Every Week |
+| verifyValue | //input[@value='reverse'] | on |
+| verifyValue | //input[@value='condensed'] | on |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| is_selected_ok | email_notify__notify_frequency | label=Every Week |
+| verifyValue | //input[@value='reverse'] | on |
+| verifyValue | //input[@value='condensed'] | on |
 
-| text_unlike | contentLeft | Manage All Users |
-| text_unlike | contentLeft | Invite New Users |
-| text_unlike | contentLeft | Create New Workspace |
-| text_unlike | contentLeft | Clone This Workspace |
-| text_unlike | contentLeft | Workspace Appearance |
-| text_unlike | contentLeft | Workspace Features |
-| text_unlike | contentLeft | Workspace Privacy |
+| *Comment* | Test Case: Preferences UI User. Email Notification. Save without changing values |  |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| is_selected_ok | email_notify__notify_frequency | label=Every Week |
+| verifyValue | //input[@value='reverse'] | on |
+| verifyValue | //input[@value='condensed'] | on |
 
-| *Comment* | Test Case: Preferences UI User test page editing functionality |  |
+| *Comment* | Test Case: Preferences UI User. Email Notification. Cancel chooses previous values |  |
+| select_ok | email_notify__notify_frequency | label=Never |
+| check_ok | //input[@value='chrono'] |  |
+| check_ok | //input[@value='expanded'] |  |
+| is_selected_ok | email_notify__notify_frequency | label=Never |
+| verifyValue | //input[@value='chrono'] | on |
+| verifyValue | //input[@value='expanded'] | on |
+| click_ok | link=Cancel |  |
+| is_selected_ok | email_notify__notify_frequency | label=Every Week |
+| verifyValue | //input[@value='reverse'] | on |
+| verifyValue | //input[@value='condensed'] | on |
+
+| *Comment* | Test Case: Preferences UI User. Email Notification. Navigate away, return, verify values |  |
+| click_and_wait | link=My Settings |  |
+| click_and_wait | link=Email Notification |  |
+| text_like | contentContainer | How often |
+| text_like | contentContainer | What order |
+| text_like | contentContainer | What information |
+| is_selected_ok | email_notify__notify_frequency | label=Every Week |
+| verifyValue | //input[@value='reverse'] | on |
+| verifyValue | //input[@value='condensed'] | on |
+
+| *Comment* | Test Case: Preferences UI User. Email Notification. Special case: Never |  |
+| select_ok | email_notify__notify_frequency | label=Never |
+| is_selected_ok | email_notify__notify_frequency | label=Never |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| is_selected_ok | email_notify__notify_frequency | label=Never |
+
+| *Comment* | Test Case: Preferences UI User. Page Editing: double-click to edit |  |
 | click_and_wait | link=Settings |  |
 | click_and_wait | link=Page Editing |  |
 
@@ -92,24 +450,32 @@ set_technical_admin 	%%user%% 	0
 | value_is | wikiwyg__wikiwyg_double | off |
 
 | *Comment* | Test Case: Preferences UI User. Is it off? Turn it on. |  |
-| text_like | contentContainer | Double-click to edit a page? |
 | value_is | wikiwyg__wikiwyg_double | off |
 | check_ok | wikiwyg__wikiwyg_double |  |
 | value_is | wikiwyg__wikiwyg_double | on |
 | click_and_wait | link=Save |  |
 | text_like | qr/Preferences Saved/i |  |
-| text_like | contentContainer | Double-click to edit a page? |
 | value_is | wikiwyg__wikiwyg_double | on |
 
 | *Comment* | Test Case: Preferences UI User. Is it on? Save without changing value. |  |
-| text_like | contentContainer | Double-click to edit a page? |
 | value_is | wikiwyg__wikiwyg_double | on |
 | click_and_wait | link=Save |  |
 | text_like | qr/Preferences Saved/i |  |
+| value_is | wikiwyg__wikiwyg_double | on |
+
+| *Comment* | Test Case: Preferences UI User. Page Editing. Cancel chooses previous values |  |
+| uncheck_ok | wikiwyg__wikiwyg_double |  |
+| value_is | wikiwyg__wikiwyg_double | off |
+| click_ok | link=Cancel |  |
+| value_is | wikiwyg__wikiwyg_double | on |
+
+| *Comment* | Test Case: Preferences UI User. Page Editing. Navigate away, return, verify value |  |
+| click_and_wait | link=My Settings |  |
+| click_and_wait | link=Page Editing |  |
 | text_like | contentContainer | Double-click to edit a page? |
 | value_is | wikiwyg__wikiwyg_double | on |
 
-| *Comment* | Test Case: Preferences UI User. Reset name and pwd |  |
+| *Comment* | Test Case: Preferences UI User. My Settings. Reset name and pwd |  |
 | click_and_wait | link=My Settings |  |
 | text_like | contentContainer | qr/First Name:/i |
 | text_like | contentContainer | qr/New password:/i |
@@ -136,24 +502,38 @@ set_technical_admin 	%%user%% 	0
 | verifyValue | first_name | First %%start_time%% |
 | verifyValue | last_name | Last %%start_time%% |
 
-| *Comment* | Test Case: Preferences UI User. Screen Layout |  |
+| *Comment* | Test Case: Preferences UI User. My Settings. Cancel chooses previous values |  |
+| type_ok | first_name | Cancel First %%start_time%% |
+| type_ok | last_name | Cancel Last %%start_time%% |
+| click_ok | link=Cancel |  |
+| verifyValue | first_name | First %%start_time%% |
+| verifyValue | last_name | Last %%start_time%% |
 
-| *Comment* | Test Case: Preferences UI User. Recently Viewed off. Turn it on. |  |
+| *Comment* | Test Case: Preferences UI User. My Settings. Navigate away, return, verify value |  |
+| click_and_wait | link=Page Editing |  |
+| click_and_wait | link=My Settings |  |
+| verifyValue | first_name | First %%start_time%% |
+| verifyValue | last_name | Last %%start_time%% |
+
+| *Comment* | Test Case: Preferences UI User. Screen Layout. Defaults: hover on, include breadcrumbs off |  |
+| click_and_wait | link=Settings |  |
 | click_and_wait | link=Screen Layout |  |
 | text_like | contentContainer | Should hovering |
 | text_like | contentContainer | Include Recently |
 | value_is | display__mouseover_length | on |
 | value_is | display__include_breadcrumbs | off |
+
+| *Comment* | Test Case: Preferences UI User. Screen Layout. hover on, include breadcrumbs on |  |
 | check_ok | display__include_breadcrumbs |  |
 | value_is | display__include_breadcrumbs | on |
 | click_and_wait | link=Save |  |
 | text_like | qr/Preferences Saved/i |  |
-| value_is | display__include_breadcrumbs | on |
 | value_is | display__mouseover_length | on |
-| open_ok | /%%new_ws%%/index.cgi?Announcements and Links |  |
+| value_is | display__include_breadcrumbs | on |
+| open_ok | /%%new_ws%% |  |
 | text_like | contentContainer | Recently Viewed |
 
-| *Comment* | Test Case: Preferences UI User. Recently Viewed on. Turn it and hovering off. |  |
+| *Comment* | Test Case: Preferences UI User. hover off, include breadcrumbs off |  |
 | click_and_wait | link=Settings |  |
 | click_and_wait | link=Screen Layout |  |
 | text_like | contentContainer | Should hovering |
@@ -162,110 +542,88 @@ set_technical_admin 	%%user%% 	0
 | value_is | display__include_breadcrumbs | on |
 | uncheck_ok | display__mouseover_length |  |
 | uncheck_ok | display__include_breadcrumbs |  |
-| value_is | display__include_breadcrumbs | off |
 | value_is | display__mouseover_length | off |
+| value_is | display__include_breadcrumbs | off |
 | click_and_wait | link=Save |  |
 | text_like | qr/Preferences Saved/i |  |
-| value_is | display__include_breadcrumbs | off |
 | value_is | display__mouseover_length | off |
-| open_ok | /%%new_ws%%/index.cgi?Announcements and Links |  |
+| value_is | display__include_breadcrumbs | off |
+| open_ok | /%%new_ws%% |  |
 | text_unlike | contentContainer | Recently Viewed |
 
-| *Comment* | Test Case: Preferences UI User. Recently Viewed and Hovering off. both on |  |
+| *Comment* | Test Case: Preferences UI User. Screen Layout. Navigate away, return, verify off value |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Screen Layout |  |
+| value_is | display__mouseover_length | off |
+| value_is | display__include_breadcrumbs | off |
+
+| *Comment* | Test Case: Preferences UI User. hover off, breadcrumbs on |  |
+| uncheck_ok | display__mouseover_length |  |
+| check_ok | display__include_breadcrumbs |  |
+| value_is | display__mouseover_length | off |
+| value_is | display__include_breadcrumbs | on |
+| click_and_wait | link=Save |  |
+| text_like | qr/Preferences Saved/i |  |
+| value_is | display__mouseover_length | off |
+| value_is | display__include_breadcrumbs | on |
+| open_ok | /%%new_ws%% |  |
+| text_like | contentContainer | Recently Viewed |
+
+| *Comment* | Test Case: Preferences UI User. Save Screen Layout without modifications |  |
 | click_and_wait | link=Settings |  |
 | click_and_wait | link=Screen Layout |  |
 | text_like | contentContainer | Should hovering |
 | text_like | contentContainer | Include Recently |
 | value_is | display__mouseover_length | off |
-| value_is | display__include_breadcrumbs | off |
-| check_ok | display__mouseover_length |  |
-| check_ok | display__include_breadcrumbs |  |
 | value_is | display__include_breadcrumbs | on |
-| value_is | display__mouseover_length | on |
 | click_and_wait | link=Save |  |
 | text_like | qr/Preferences Saved/i |  |
+| value_is | display__mouseover_length | off |
 | value_is | display__include_breadcrumbs | on |
-| value_is | display__mouseover_length | on |
 
-| *Comment* | Test Case: Preferences UI User. Save without modifications |  |
-| click_and_wait | link=Settings |  |
+| *Comment* | Test Case: Preferences UI User. Screen Layout cancel |  |
+| check_ok | display__mouseover_length |  |
+| uncheck_ok | display__include_breadcrumbs |  |
+| value_is | display__mouseover_length | on |
+| value_is | display__include_breadcrumbs | off |
+| click_ok | link=Cancel |  |
+| value_is | display__mouseover_length | off |
+| value_is | display__include_breadcrumbs | on |
+
+| *Comment* | Test Case: Preferences UI User. Screen Layout. Navigate away, return, verify value |  |
+| click_and_wait | link=Page Editing |  |
+| click_and_wait | link=Screen Layout |  |
+| value_is | display__mouseover_length | off |
+| value_is | display__include_breadcrumbs | on |
+
+| *Comment* | Test Case: Preferences UI User. Screen Layout. Restore Defaults: hover on, include breadcrumbs off |  |
 | click_and_wait | link=Screen Layout |  |
 | text_like | contentContainer | Should hovering |
 | text_like | contentContainer | Include Recently |
+| check_ok | display__mouseover_length |  |
+| uncheck_ok | display__include_breadcrumbs |  |
 | value_is | display__mouseover_length | on |
-| value_is | display__include_breadcrumbs | on |
+| value_is | display__include_breadcrumbs | off |
 | click_and_wait | link=Save |  |
 | text_like | qr/Preferences Saved/i |  |
-| value_is | display__include_breadcrumbs | on |
 | value_is | display__mouseover_length | on |
+| value_is | display__include_breadcrumbs | off |
 
-| *Comment* | Test Case: Preferences UI User test what's new functionality |  |
-| open_ok | /%%new_ws%%/index.cgi?action=preferences_settings;preferences_class_id=recent_changes |  |
-| click_ok | recent_changes__include_in_pages |  |
-| click_and_wait | link=Save |  |
-| open_ok | /%%new_ws%%/index.cgi?Announcements and Links |  |
-| wait_for_text_present_ok | First Post | 30000 |
-| text_like | contentContainer | First Post in No Brackets %%start_time%% Weblog |
-
-| *Comment* | Test Case: Preferences UI User test syndicate functionality |  |
+| *Comment* | Test Case: Preferences UI User: User test unsubscribe functionality |  |
 | click_and_wait | link=Settings |  |
-| click_and_wait | link=Syndicate |  |
-| text_like | contentContainer | How many posts |
-
-| *Comment* | Test Case: Preferences UI User test time functionality |  |
-| click_and_wait | link=Time |  |
-| text_like | contentContainer | What time zone |
-| text_like | contentContainer | How should Daylight |
-| text_like | contentContainer | How should displayed |
-| text_like | contentContainer | Should times be |
-| text_like | contentContainer | Should seconds be |
-
-| *Comment* | Test Case: Preferences UI User test watchlist functionality |  |
-| click_and_wait | link=Watchlist |  |
-| text_like | contentContainer | How frequently would |
-| text_like | contentContainer | What information about |
-| text_like | contentContainer | How many items |
-
-| *Comment* | Test Case: Preferences UI User test weblogs functionality |  |
-| open_ok | /%%new_ws%%/index.cgi?action=preferences_settings;preferences_class_id=weblog |  |
-| text_like | contentContainer | How many posts |
-
-| *Comment* | Test Case: Preferences UI User test unsubscribe functionality |  |
 | click_and_wait | link=Unsubscribe |  |
 | wait_for_element_present_ok | //input[@value='Unsubscribe from the %%new_ws%% workspace'] | 30000 |
 | click_and_wait | //input[@value='Unsubscribe from the %%new_ws%% workspace'] |  |
-| st-login | %%new_user%% | 654321 |
+| st-logout |  |  |
+| open | /%%new_ws%% |  |
+| text_like | You must login to view this page |  |
+| wait_for_element_visible_ok | username | 30000 |
+| wait_for_element_visible_ok | password | 30000 |
+| type_ok | username | %%new_user%% |
+| type_ok | password | 654321 |
+| click_and_wait | login_btn |  |
 | text_like | errors-and-messages | You are not authorized to view this workspace. |
 
-| *Comment* | Test Case: Preferences UI User can turn email notification on and off |  |
-| st-admin | add-member --email %%new_user%% --workspace %%new_ws%% |  |
-| open_ok | /%%new_ws%%/index.cgi?action=users_settings |  |
-| wait_for_element_visible_ok | link=Private Messages | 30000 |
-| click_ok | link=Private Messages | 30000 |
-| wait_for_text_present_ok | Send Socialtext Signals private messages as email: | 10000 |
-| wait_for_element_visible_ok | dm_sends_email | 10000 |
-| is_checked_ok | dm_sends_email |  |
-| uncheck_ok | dm_sends_email |  |
-| click_and_wait | link=Save |  |
-| click_and_wait | link=My Workspaces |  |
-| text_like | contentContainer | %%new_ws%% |
-| click_ok | link=Private Messages | 10000 |
-| wait_for_text_present_ok | Send Socialtext Signals private messages as email: | 10000 |
-| verify_value | dm_sends_email | off |
-
-| *Comment* | Test Case: Settings: Signals does appear if signals plugin is disabled for account, but I have a signals-enabled workspace for another acct |  |
-| st-admin | disable-plugin --plugin signals --account %%new_account%% |  |
-| open_ok | /%%new_ws%%/index.cgi?action=users_settings |  |
-| wait_for_element_present_ok | link=My Settings | 10000 |
-| wait_for_element_present_ok | link=Private Messages | 10000 |
-| st-admin | remove-member --email %%new_user%% --workspace %%new_ws%% |  |
-| *Comment* | Test Case: Settings: Signalsn't does appear if signals plugin is disabled for account |  |
-| open_ok | /?action=users_settings |  |
-| wait_for_element_present_ok | link=My Settings | 10000 |
-| text_unlike | //body | Private Messages |
-
-| *Comment* | Test Case: Preferences UI User Teardown |  |
-| st-admin | purge-page --w %%new_ws%% --p first_post_in_brackets_%%start_time%%_weblog | qr/.+ was purged .+/ |
-| st-admin | purge-page --w %%new_ws%% --p first_post_in_no_brackets_%%start_time%%_weblog | qr/.+ was purged .+/ |
+| *Comment* | Test Case: Preferences UI User No Teardown |  |
 
 | *Comment* | Test Case: Preferences UI User COMPLETED |
