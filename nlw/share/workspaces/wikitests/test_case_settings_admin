@@ -28,25 +28,25 @@
 | text_like | contentLeft | Weblogs |
 | text_unlike | contentLeft | List All Users |
 
-| *Comment* | Test Case: Settings: Admin test Manage All Users functionality |  |
-| st-admin | create-user --email user_%%start_time%%@ken.socialtext.net --password 123456 |  |
-| st-admin | add-member --email user_%%start_time%%@ken.socialtext.net --workspace %%workspace%% |  |
-| click_and_wait | link=Manage All Users |  |
-| text_like | contentContainer | user_%%start_time%%@ken.socialtext.net |
-| st-should-be-admin | user_%%start_time%%@ken.socialtext.net | 1 |
-| st-logoutin | user_%%start_time%%@ken.socialtext.net | 123456 |
-| text_like | Add Members |  |
-| st-logoutin |  |  |
-
 | *Comment* | Test Case: Settings: Admin test Invite New Users functionality |  |
 | click_and_wait | link=Settings |  |
 | click_and_wait | link=Invite New Users |  |
 | type_ok | users_new_ids | invite_%%start_time%%@ken.socialtext.net |
-| text_like | contentContainer | If you wish |
+| text_like | contentContainer | If you wish, you can include a personal message |
 | click_and_wait | link=Invite |  |
 | st-logoutin | invite_%%start_time%%@ken.socialtext.net |  |
 | text_like | errors-and-messages | You need to confirm |
+| st-admin | confirm-user --email invite_%%start_time%%@ken.socialtext.net --password 123456 |
 | st-login |  |  |
+
+| *Comment* | Test Case: Settings: Admin test Manage All Users functionality |  |
+| click_and_wait | link=Settings |  |
+| click_and_wait | link=Manage All Users |  |
+| text_like | contentContainer | invite_%%start_time%%@ken.socialtext.net |
+| st-should-be-admin | invite_%%start_time%%@ken.socialtext.net | 1 |
+| st-logoutin | invite_%%start_time%%@ken.socialtext.net | 123456 |
+| text_like | workspaceNav | Add Members |
+| st-logoutin |  |  |
 
 | *Comment* | Test Case: Settings: Admin workspace title cannot begin with a dash |  |
 | click_and_wait | link=Settings |  |
@@ -81,9 +81,9 @@
 | location_like | /newspace-%%start_time%%/index.cgi?newspace_%%start_time%% |  |
 | click_and_wait | link=Settings |  |
 | click_and_wait | link=Workspace Appearance |  |
-| type_ok | title | New Title %%start_time%% |
-| text_unlike | contentContainer | choose an image |
 | text_like | contentContainer | When users click |
+| text_like | contentContainer | This is the title of your workspace |
+| type_ok | title | New Title %%start_time%% |
 | click_and_wait | link=Save |  |
 | open_ok | /newspace-%%start_time%% |  |
 | location_like | /newspace-%%start_time%%/index.cgi?new_title_%%start_time%% |  |
@@ -92,7 +92,7 @@
 | *Comment* | Test Case: Settings: Admin set up testing weblog |  |
 | click_and_wait | link=Settings |  |
 | click_and_wait | link=Time |  |
-| click_ok | timezone__time_display_seconds |  |
+| check_ok | timezone__time_display_seconds |  |
 | click_and_wait | link=Save |  |
 
 | click_and_wait | link=Create New Weblog |  |
@@ -100,6 +100,7 @@
 | click_and_wait | link=Save |  |
 
 | wait_for_text_present_ok | New Post | 30000 |
+| wait_for_element_visible_ok | st-weblog-newpost-button | 30000 |
 | click_and_wait | st-weblog-newpost-button |  |
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |
 | click_ok | link=Wiki Text |  |
@@ -107,6 +108,7 @@
 | type_ok | st-newpage-pagename-edit | post2 %%start_time%% |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | post2 %%start_time%% content |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 
 | *Comment* | Test Case: Settings: Admin test weblog sort order using newspace-%%start_time%% |  |
@@ -116,6 +118,7 @@
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
 | type_ok | wikiwyg_wikitext_textarea | edit |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 
 | text_like | contentContainer | qr/edit.+post2 %%start_time%%/ |
@@ -131,15 +134,14 @@
 | click_ok | document.forms[1].sort_weblogs_by_create[0] |  |
 | click_and_wait | link=Save |  |
 | click_and_wait | link=Time |  |
-| click_ok | timezone__time_display_seconds |  |
+| uncheck_ok | timezone__time_display_seconds |  |
 | click_and_wait | link=Save |  |
 
-*Privacy features are tested in separate test cases.*
+*Privacy features and workspace skin are tested in separate test cases.*
 
 | *Comment* | Test Case: Settings: Admin Teardown |  |
 | st-admin | delete-workspace --workspace newspace-%%start_time%% --no-export |  |
 | st-admin | delete-workspace --workspace newspace-clone-%%start_time%% --no-export |  |
 | st-admin | remove-member --email invite_%%start_time%%@ken.socialtext.net --workspace %%workspace%% |  |
-| st-admin | remove-member --email user_%%start_time%%@ken.socialtext.net --workspace %%workspace%% |  |
 
 | *Comment* | Test Case: Settings: Admin COMPLETED |
