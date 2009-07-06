@@ -101,6 +101,7 @@ sub By_id {
     my $workspace_id     = $p{workspace_id};
     my $page_id          = $p{page_id};
     my $do_not_need_tags = $p{do_not_need_tags};
+    my $no_die           = $p{no_die};
 
     my $where;
     my $bind;
@@ -125,6 +126,7 @@ sub By_id {
         do_not_need_tags => $do_not_need_tags,
     );
     unless (@$pages) {
+        return if $no_die;
         my $pg_ids = join(',', (ref($page_id) ? @$page_id : ($page_id)));
         die "No page(s) found for ($workspace_id, $pg_ids)"
     }

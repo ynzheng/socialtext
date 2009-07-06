@@ -76,29 +76,29 @@ my $page_six = Socialtext::Page->new(hub => $hub)->create(
 
 # Test _get_backlink_page_ids_for_page
 {
-    my @link_ids = $backlinks->_get_backlink_page_ids_for_page($page_one);
-    is scalar(@link_ids), 1, 'page one should only have one page that links to it';
-    @link_ids = $backlinks->_get_backlink_page_ids_for_page($page_two);
-    is scalar(@link_ids), 1, 'page two should only have one page that links to it';;
-    @link_ids = $backlinks->_get_backlink_page_ids_for_page($page_four);
-    is scalar(@link_ids), 1, 'page four should have two pages that links to it';;
-    @link_ids = $backlinks->_get_backlink_page_ids_for_page($page_five);
-    is scalar(@link_ids), 2, 'page five should have two pages that links to it';;
+    my $link_ids = $backlinks->_get_backlink_page_ids_for_page($page_one);
+    is scalar(@$link_ids), 1, 'page one should only have one page that links to it';
+    $link_ids = $backlinks->_get_backlink_page_ids_for_page($page_two);
+    is scalar(@$link_ids), 1, 'page two should only have one page that links to it';
+    $link_ids = $backlinks->_get_backlink_page_ids_for_page($page_four);
+    is scalar(@$link_ids), 1, 'page four should have two pages that links to it';;
+    $link_ids = $backlinks->_get_backlink_page_ids_for_page($page_five);
+    is scalar(@$link_ids), 2, 'page five should have two pages that links to it';
 }
 
 # Test _get_frontlink_page_ids_for_page
 TEST_FRONTLINK_IDS: {
-    my @link_ids = $backlinks->_get_frontlink_page_ids_for_page($page_one);
-    is scalar(@link_ids), 4,
+    my $link_ids = $backlinks->_get_frontlink_page_ids_for_page($page_one);
+    is scalar(@$link_ids), 4,
         'page one should have four pages that it links to';
-    @link_ids = $backlinks->_get_frontlink_page_ids_for_page($page_two);
-    is scalar(@link_ids), 2,
+    $link_ids = $backlinks->_get_frontlink_page_ids_for_page($page_two);
+    is scalar(@$link_ids), 2,
         'page two should have two page that it links to';
-    @link_ids = $backlinks->_get_frontlink_page_ids_for_page($page_four);
-    is scalar(@link_ids), 1,
+    $link_ids = $backlinks->_get_frontlink_page_ids_for_page($page_four);
+    is scalar(@$link_ids), 1,
         'page four should have one page that it links to';
-    @link_ids = $backlinks->_get_frontlink_page_ids_for_page($page_five);
-    is scalar(@link_ids), 1,
+    $link_ids = $backlinks->_get_frontlink_page_ids_for_page($page_five);
+    is scalar(@$link_ids), 1,
         'page five should have one page that it links to';
 }
 
@@ -149,6 +149,7 @@ sub check_frontlinks {
     my $page = shift;
     my $titles = shift;
     my $incipients = shift;
+    local $Test::Builder::Level = $Test::Builder::Level+1;
 
     my @pages = sort { $a->title cmp $b->title }
         $backlinks->all_frontlink_pages_for_page($page);
