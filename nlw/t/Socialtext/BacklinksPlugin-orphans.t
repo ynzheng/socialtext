@@ -30,22 +30,22 @@ my $page_one = Socialtext::Page->new( hub => $hub )->create(
 {
     my $orphan_pages = $backlinks->get_orphaned_pages;
 
-    my @backlinks = $backlinks->_get_backlink_page_ids_for_page(
+    my $backlinks = $backlinks->_get_backlink_page_ids_for_page(
         $pages->new_from_name( 'backlink sampler' )
     );
 
-    ok(scalar(@backlinks) == 0, 'no backlinks for backlink sampler');
+    ok(scalar(@$backlinks) == 0, 'no backlinks for backlink sampler');
     ok(scalar @$orphan_pages, 'there are some orphans');
     ok(grep(/^backlink_sampler$/, map {$_->id} @$orphan_pages),
         "The orphan pages contains backlink sampler");
 }
 
 {
-    my @calling_pages = $backlinks->_get_backlink_page_ids_for_page(
+    my $calling_pages = $backlinks->_get_backlink_page_ids_for_page(
         $pages->new_from_name( 'smartass5' )
     );
     
-    ok(grep(/^backlink_sampler$/, @calling_pages),
+    ok(grep(/^backlink_sampler$/, @$calling_pages),
         "The smartass5 page has a caller of backlink sampler");
 }
 
