@@ -1415,9 +1415,11 @@ proto.convert_html_to_wikitext = function(html, isWholeDocument) {
                 if (this.nodeType == 3) {
                     if (this.previousSibling && this.previousSibling.nodeType == 1 && this.previousSibling.nodeName != 'BR' ) {
                         if (self._is_block_level_node(this.previousSibling)) {
-                            return;
+                            this.nodeValue = this.nodeValue.replace(/^\n/, '');
                         }
-                        this.nodeValue = this.nodeValue.replace(/^\n/, ' ');
+                        else {
+                            this.nodeValue = this.nodeValue.replace(/^\n/, ' ');
+                        }
                     }
                     else {
                         this.nodeValue = this.nodeValue.replace(/^\n/, '');
@@ -1425,9 +1427,11 @@ proto.convert_html_to_wikitext = function(html, isWholeDocument) {
 
                     if (this.nextSibling && this.nextSibling.nodeType == 1 && this.nextSibling.nodeName != 'BR' ) {
                         if (self._is_block_level_node(this.nextSibling)) {
-                            return;
+                            this.nodeValue = this.nodeValue.replace(/\n$/, '');
                         }
-                        this.nodeValue = this.nodeValue.replace(/\n$/, ' ');
+                        else {
+                            this.nodeValue = this.nodeValue.replace(/\n$/, ' ');
+                        }
                     }
                     else {
                         this.nodeValue = this.nodeValue.replace(/\n$/, '');

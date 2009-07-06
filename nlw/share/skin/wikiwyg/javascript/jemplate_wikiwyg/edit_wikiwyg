@@ -128,17 +128,26 @@
 <div class="lightbox" id="st-newpage-duplicate-interface">
     <form onsubmit="return false;">
         <div class="title" id="st-newpage-duplicate-title">[% loc('Page Already Exists') %]</div>
+        <br />
         <p class="st-newpage-duplicate-prompt">[% loc('There is <span id="st-newpage-duplicate-emphasis">already a page</span> named <a id="st-newpage-duplicate-link" href="#" target="">XXX</a>. Would you like to:')%]</p>
-        <p class="st-newpage-duplicate-option"><input type="radio" name="st-newpage-duplicate-option" id="st-newpage-duplicate-option-different" value="different"/> [% loc('Save with a different name:')%] <input id="st-newpage-duplicate-pagename" size="40" type="text" name="pagename"/></p>
-        <p class="st-newpage-duplicate-option"><input type="radio" name="st-newpage-duplicate-option" id="st-newpage-duplicate-option-suggest" value="suggest"/> [% loc('Save the page with the name "<span id="st-newpage-duplicate-suggest">XXX</span>"')%]</p>
-        <p class="st-newpage-duplicate-option"><input type="radio" name="st-newpage-duplicate-option" id="st-newpage-duplicate-option-append" value="append"/> [% loc('Append your text to the bottom of the existing page named:')%] "<span id="st-newpage-duplicate-appendname">XXX</span>"</p>
-        <div class="buttons" id="st-newpage-duplicate-buttons">
-            <table width="100%" border="0">
-            <tr>
-            <td align="right"><input type="button" id="st-newpage-duplicate-cancelbutton" value="[% loc('Cancel') %]"/></td>
-            <td width="70px" align="right"><input type="button" id="st-newpage-duplicate-okbutton" value="[% loc('Ok') %]"/></td>
-            </tr>
-            </table>
+        <p class="st-newpage-duplicate-option"><label><input type="radio" name="st-newpage-duplicate-option" id="st-newpage-duplicate-option-different" value="different"/> [% loc('Save with a different name:')%]</label> <input id="st-newpage-duplicate-pagename" size="40" type="text" name="pagename"/></p>
+        <p class="st-newpage-duplicate-option"><label><input type="radio" name="st-newpage-duplicate-option" id="st-newpage-duplicate-option-suggest" value="suggest"/> [% loc('Save the page with the name "<span id="st-newpage-duplicate-suggest">XXX</span>"')%]</label></p>
+        <p class="st-newpage-duplicate-option"><label><input type="radio" name="st-newpage-duplicate-option" id="st-newpage-duplicate-option-append" value="append"/> [% loc('Append your text to the bottom of the existing page named:')%] "<span id="st-newpage-duplicate-appendname">XXX</span>"</label></p>
+        <div id="st-newpage-duplicate-buttons" style="float: right">
+            <ul class="widgetButton" style="float:left; padding:10px">
+                <li class="flexButton">
+                    <a class="submit genericOrangeButton" id="st-newpage-duplicate-okbutton" href="#">
+                        [% loc('OK') %]
+                    </a>
+                </li>
+            </ul>
+            <ul class="widgetButton" style="float:left; padding:10px">
+                <li class="flexButton">
+                    <a class="close genericOrangeButton" id="st-newpage-duplicate-cancelbutton" href="#">
+                        [% loc('Cancel') %]
+                    </a>
+                </li>
+            </ul>
         </div>
     </form>
 </div>

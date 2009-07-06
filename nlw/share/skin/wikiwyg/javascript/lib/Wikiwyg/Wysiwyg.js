@@ -1738,9 +1738,12 @@ proto.get_editable_div = function () {
             });
 
             doc.attachEvent("onactivate", function() {
-                 var bookmark = self._ieSelectionBookmark;
-                 if (!bookmark) return;
-                 self._ieSelectionBookmark = null;
+                 if (! self._ieSelectionBookmark) {
+                     return;
+                 }
+
+                 if (self._isActivating) return;
+                 self._isActivating = true;
 
                  try {
                      var range = doc.body.createTextRange();
@@ -1748,6 +1751,8 @@ proto.get_editable_div = function () {
                      range.collapse();
                      range.select();
                  } catch (e) {};
+
+                 self._isActivating = false;
             });
         } 
 

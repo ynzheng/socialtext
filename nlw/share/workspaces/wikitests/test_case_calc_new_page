@@ -2,6 +2,7 @@
 
 | *Comment* | Test Case: Calc New Page |  |
 | st-admin | enable-plugin --p socialcalc --w %%workspace%% |  |
+| st-admin | update-page --email %%email%% --workspace %%workspace%% --page "np ss %%start_time%%" < %%wikitest_client_files%%wikitest.txt | The "np ss %%start_time%%" page has been created. |
 
 | open_ok | /%%workspace%%/index.cgi?action=display;page_type=spreadsheet;page_name=ns%20%%start_time%%#edit |  |
 | wait_for_element_visible_ok | st-save-button-link |  |
@@ -13,9 +14,29 @@
 
 | open_ok | /%%workspace%%/index.cgi?action=display;page_type=spreadsheet;page_name=ns%20%%start_time%%#edit |  |
 | wait_for_element_visible_ok | st-save-button-link |  |
+| wait_for_element_visible_ok | st-sum-range-button-link |  |
+| pause | 5000 |  |
 | click_and_wait | st-save-button-link |  |
+| wait_for_element_visible_ok | st-edit-button-link | 30000 |
 | wait_for_element_present_ok | link=Export to CSV | 30000 |
-| pause | 30000 |  |
+
+| open_ok | /%%workspace%%/index.cgi?action=display;page_type=spreadsheet;page_name=Untitled%20Spreadsheet#edit |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
+| wait_for_element_visible_ok | st-newpage-pagename-edit | 30000 |
+| *Comment* | Test Case: Calc New Page. try to save with existing page title | np ss %%start_time%% |
+| type_ok | st-newpage-pagename-edit | np ss %%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
+| click_ok | st-save-button-link |  |
+
+| *Comment* | Test Case: Calc New Page. Page Already Exists |  |
+| *Comment* | Test Case: Calc New Page. Use duplicate option different |  |
+| wait_for_element_visible_ok | st-newspreadsheet-duplicate-option-different | 30000 |
+| check_ok | st-newspreadsheet-duplicate-option-different |  |
+| wait_for_element_visible_ok | st-newspreadsheet-duplicate-option-different | 30000 |
+| type_ok | st-newspreadsheet-duplicate-pagename | np ss %%start_time%% 2 |
+| wait_for_element_present_ok | st-newpage-duplicate-okbutton | 30000 |
+| click_and_wait | st-newspreadsheet-duplicate-okbutton |  |
+| location_like | /%%workspace%%/index.cgi?np_ss_%%start_time%%_2 |  |
 
 | *Comment* | Test Case: Calc New Page Teardown |  |
 | st-admin | purge-page --workspace %%workspace%% --page ns_%%start_time%% | was purged |

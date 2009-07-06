@@ -180,7 +180,7 @@ $(function() {
 
     var _gz = '';
 
-    if (Socialtext.accept_encoding && Socialtext.accept_encoding.match(/\bgzip\b/)) {
+    if (!$.browser.safari && Socialtext.accept_encoding && Socialtext.accept_encoding.match(/\bgzip\b/)) {
         _gz = '.gz';
     }
 
