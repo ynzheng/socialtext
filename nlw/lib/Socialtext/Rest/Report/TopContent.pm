@@ -69,7 +69,7 @@ override 'GET_json' => sub {
     my $json;
     eval {
         $json = encode_json({
-            pages => \@pages,
+            rows => \@pages,
             meta  => {
                 account   => $self->_account_data( $report ),
                 workspace => $self->_workspace_data( $report ),
