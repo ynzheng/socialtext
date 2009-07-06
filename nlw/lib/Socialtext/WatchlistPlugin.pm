@@ -26,7 +26,6 @@ sub register {
     $registry->add( action     => 'remove_from_watchlist' );
     $registry->add( preference => $self->watchlist_notify_frequency );
     $registry->add( preference => $self->watchlist_links_only );
-    $registry->add( preference => $self->watchlist_dashboard_length );
 }
 
 sub init {
