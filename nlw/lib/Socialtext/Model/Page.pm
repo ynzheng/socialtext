@@ -96,7 +96,8 @@ sub id             { $_[0]->{page_id} }
 sub uri            { $_[0]->{page_id} }
 sub summary        { $_[0]->{summary} }
 sub edit_summary   { $_[0]->{edit_summary} }
-sub deleted        { $_[0]->{deleted} }
+sub deleted        {   $_[0]->{deleted} }
+sub active         { ! $_[0]->{deleted} }
 sub last_edit_time { $_[0]->{last_edit_time} }
 sub add_tag        { push @{ shift->{tags} }, @_ }
 sub hub            { $_[0]->{hub} || die "No hub was given to the page object"}

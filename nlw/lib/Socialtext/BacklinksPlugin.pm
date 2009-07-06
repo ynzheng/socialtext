@@ -205,14 +205,14 @@ sub _all_linked_pages_for_page {
         hub => $self->hub,
         workspace_id => $self->hub->current_workspace->workspace_id,
         do_not_need_tags => 1,
+        no_die => 1,
     );
 
     my $page_ids = $self->$method($page);
     my @pages;
     for my $page_id (@$page_ids) {
         my $page = Socialtext::Model::Pages->By_id(%args, page_id => $page_id);
-        $page = $self->hub->pages->new_page($page_id)
-            if ref($page) eq 'ARRAY';
+        $page ||= $self->hub->pages->new_page($page_id);
         push @pages, $page;
     }
 
@@ -330,8 +330,11 @@ sub _link_hash {
     my $sep = $self->SEPARATOR;
     opendir(my $dfh, $dir);
     while (my $file = readdir($dfh)) {
+        next if $file =~ /^\.\.?$/;
+
         my ($from, $to) = split $self->SEPARATOR, $file;
         push @{ $hash->{$from}{front} }, $to;
+        push @{ $hash->{$to}{back} }, $from;
     }
     closedir $dfh;
 
