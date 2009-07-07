@@ -37,7 +37,8 @@
 | wait_for_element_visible_ok | //a[@id='gallery-remove-Google Calendar'] | 30000 |
 | text_like | //a[@id='gallery-remove-Google Calendar'] | `(remove)` |
 | click_ok | //a[@id='gallery-remove-Google Calendar'] |  |
-| wait_for_text_present_ok | Are you sure you want to remove the "Google Calendar" widget? | 30000 |
+| wait_for_text_present_ok | Are you sure | 30000 |
+| text_like | qr/Are you sure you want to remove the.+Google Calendar.+widget?/ |  |
 | wait_for_element_visible_ok | link=Yes | 30000 |
 | click_ok | link=Yes |  |
 
@@ -53,7 +54,8 @@
 
 | *Comment* | Test Case: Add Remove Gallery Widgets restore a 3rd party widget |  |
 | click_ok | //a[@id='gallery-restore-Google Calendar'] |  |
-| wait_for_text_present_ok | Are you sure you want to restore the "Google Calendar" widget? | 30000 |
+| wait_for_text_present_ok | Are you sure | 30000 |
+| text_like | qr/Are you sure you want to restore the.+Google Calendar.+widget?/ |  |
 | wait_for_element_visible_ok | link=Yes | 30000 |
 | click_ok | link=Yes |  |
 
@@ -73,10 +75,11 @@
 | click_and_wait | link=Add Content |  |
 | wait_for_element_visible_ok | link=Manage Gallery for Accounts | 30000 |
 | click_and_wait | link=Manage Gallery for Accounts |  |
-| wait_for_element_visible_ok | //a[@id='gallery-remove-Cheeky Quote'] | 30000 |
-| text_like | //a[@id='gallery-remove-Cheeky Quote'] | `(remove)` |
-| click_ok | //a[@id='gallery-remove-Cheeky Quote'] |  |
-| wait_for_text_present_ok | Are you sure you want to remove the "Cheeky Quote" widget? | 30000 |
+| wait_for_element_visible_ok | //a[contains(@id,'gallery-remove-Cheeky')] | 30000 |
+| text_like | //a[contains(@id,'gallery-remove-Cheeky')] | `(remove)` |
+| click_ok | //a[contains(@id,'gallery-remove-Cheeky')] |  |
+| wait_for_text_present_ok | Are you sure | 30000 |
+| text_like | qr/Are you sure you want to remove the.+Cheeky.+widget?/ |  |
 | wait_for_element_visible_ok | link=Yes | 30000 |
 | click_ok | link=Yes |  |
 
@@ -86,13 +89,14 @@
 | click_and_wait | link=Add Content |  |
 | wait_for_element_visible_ok | link=Manage Gallery for Accounts | 30000 |
 | click_and_wait | link=Manage Gallery for Accounts |  |
-| wait_for_element_visible_ok | //a[@id='gallery-restore-Cheeky Quote'] | 30000 |
-| wait_for_element_not_present_ok | //a[@id='gallery-remove-Cheeky Quote'] | 30000 |
-| text_like | //a[@id='gallery-restore-Cheeky Quote'] | `(restore)` |
+| wait_for_element_visible_ok | //a[contains(@id,'gallery-restore-Cheeky')] | 30000 |
+| text_like | //a[contains(@id,'gallery-restore-Cheeky')] | `(restore)` |
+| wait_for_element_not_present_ok | //a[contains(@id,'gallery-remove-Cheeky')] | 30000 |
 
 | *Comment* | Test Case: Add Remove Gallery Widgets restore an uploaded widget |  |
-| click_ok | //a[@id='gallery-restore-Cheeky Quote'] |  |
-| wait_for_text_present_ok | Are you sure you want to restore the "Cheeky Quote" widget? | 30000 |
+| click_ok | //a[contains(@id,'gallery-restore-Cheeky')] |  |
+| wait_for_text_present_ok | Are you sure | 30000 |
+| text_like | qr/Are you sure you want to restore the.+Cheeky.+widget?/ |  |
 | wait_for_element_visible_ok | link=Yes | 30000 |
 | click_ok | link=Yes |  |
 
@@ -102,9 +106,9 @@
 | click_and_wait | link=Add Content |  |
 | wait_for_element_visible_ok | link=Manage Gallery for Accounts | 30000 |
 | click_and_wait | link=Manage Gallery for Accounts |  |
-| wait_for_element_visible_ok | //a[@id='gallery-remove-Cheeky Quote'] | 30000 |
-| text_like | //a[@id='gallery-remove-Cheeky Quote'] | `(remove)` |
-| text_like | //a[@id='gallery-update-Cheeky Quote'] | `(update)` |
+| wait_for_element_visible_ok | //a[contains(@id,'gallery-remove-Cheeky')] | 30000 |
+| text_like | //a[contains(@id,'gallery-remove-Cheeky')] | `(remove)` |
+| text_like | //a[contains(@id,'gallery-update-Cheeky')] | `(update)` |
 | text_unlike | contentContainer | `(restore)` |  |
 
 | *Comment* | Test Case: Add Remove Gallery Widgets remove for delete an uploaded widget |  |
@@ -113,10 +117,11 @@
 | click_and_wait | link=Add Content |  |
 | wait_for_element_visible_ok | link=Manage Gallery for Accounts | 30000 |
 | click_and_wait | link=Manage Gallery for Accounts |  |
-| wait_for_element_visible_ok | //a[@id='gallery-remove-Cheeky Quote'] | 30000 |
-| text_like | //a[@id='gallery-remove-Cheeky Quote'] | `(remove)` |
-| click_ok | //a[@id='gallery-remove-Cheeky Quote'] |  |
-| wait_for_text_present_ok | Are you sure you want to remove the "Cheeky Quote" widget? | 30000 |
+| wait_for_element_visible_ok | //a[contains(@id,'gallery-remove-Cheeky')] | 30000 |
+| text_like | //a[contains(@id,'gallery-remove-Cheeky')] | `(remove)` |
+| click_ok | //a[contains(@id,'gallery-remove-Cheeky')] |  |
+| wait_for_text_present_ok | Are you sure | 30000 |
+| text_like | qr/Are you sure you want to remove the.+Cheeky.+widget?/ |  |
 | wait_for_element_visible_ok | link=Yes | 30000 |
 | click_ok | link=Yes |  |
 
@@ -126,13 +131,14 @@
 | click_and_wait | link=Add Content |  |
 | wait_for_element_visible_ok | link=Manage Gallery for Accounts | 30000 |
 | click_and_wait | link=Manage Gallery for Accounts |  |
-| wait_for_element_visible_ok | //a[@id='gallery-restore-Cheeky Quote'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-delete-Cheeky Quote'] | 30000 |
-| wait_for_element_not_present_ok | //a[@id='gallery-remove-Cheeky Quote'] | 30000 |
-| text_like | //a[@id='gallery-restore-Cheeky Quote'] | `(restore)` |
-| text_like | //a[@id='gallery-delete-Cheeky Quote'] | `(delete)` |
-| click_ok | //a[@id='gallery-delete-Cheeky Quote'] |  |
-| wait_for_text_present_ok | Are you sure you want to permanently remove the "Cheeky Quote" widget? | 30000 |
+| wait_for_element_visible_ok | //a[contains(@id,'gallery-restore-Cheeky')] | 30000 |
+| wait_for_element_visible_ok | //a[contains(@id,'gallery-delete-Cheeky')] | 30000 |
+| wait_for_element_not_present_ok | //a[contains(@id,'gallery-remove-Cheeky')] | 30000 |
+| text_like | //a[contains(@id,'gallery-restore-Cheeky')] | `(restore)` |
+| text_like | //a[contains(@id,'gallery-delete-Cheeky')] | `(delete)` |
+| click_ok | //a[contains(@id,'gallery-delete-Cheeky')] |  |
+| wait_for_text_present_ok | Are you sure | 30000 |
+| text_like | qr/Are you sure you want to permanently remove the.+Cheeky.+widget?/ |  |
 | wait_for_element_visible_ok | link=Yes | 30000 |
 | click_ok | link=Yes |  |
 
