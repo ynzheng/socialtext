@@ -1,4 +1,4 @@
-package Socialtext::Rest::Report::TopPeople;
+package Socialtext::Rest::Report::ActiveMembers;
 # @COPYRIGHT@
 use Moose;
 use Socialtext::JSON qw/encode_json/;
