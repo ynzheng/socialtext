@@ -8,16 +8,16 @@ extends 'Socialtext::Rest::ReportAdapter';
 
 =head1 NAME
 
-Socialtext::Rest::Report::TopPeople - top peopl
+Socialtext::Rest::Report::ActiveMembers - Active Members
 
 =head1 SYNOPSIS
 
-  GET /data/reports/top_people/now/-1week
+  GET /data/reports/active_members/now/-1week
 
 =head1 DESCRIPTION
 
 Shows the top viewers/editors/watchers/emailers/signalers
-in a workspace or account.
+in an account.
 
 =cut
 
@@ -26,7 +26,7 @@ override 'GET_json' => sub {
     my $user = $self->rest->user;
 
     my $report = eval { $self->adapter->_build_report(
-        'TopContentByUser', {
+        'TopUsers', {
             start_time => $self->start,
             duration   => $self->duration,
             type       => 'raw',
@@ -67,7 +67,6 @@ override 'GET_json' => sub {
         rows => \@users,
         meta  => {
             account   => $self->_account_data( $report ),
-            workspace => $self->_workspace_data( $report ),
         },
     });
 };
@@ -76,24 +75,10 @@ sub _account_data {
     my $self    = shift;
     my $report  = shift;
 
-    # it is required that we either have a valid workspace or a valid
-    # account.
-    my $account = $report->account || $report->workspace->account();
+    # it is required that we have a valid account.
+    my $account = $report->account;
 
     return { name => $account->name };
-}
-
-sub _workspace_data {
-    my $self      = shift;
-    my $report    = shift;
-    my $workspace = $report->workspace;
-
-    return {} unless $workspace;
-
-    return {
-        title => $workspace->title,
-        uri   => $workspace->uri,
-    }
 }
 
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);
