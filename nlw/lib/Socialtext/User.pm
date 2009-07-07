@@ -10,7 +10,7 @@ use Socialtext::Validate qw( validate SCALAR_TYPE BOOLEAN_TYPE ARRAYREF_TYPE WOR
 use Socialtext::AppConfig;
 use Socialtext::Log qw(st_log);
 use Socialtext::MultiCursor;
-use Socialtext::SQL qw(sql_execute sql_selectrow);
+use Socialtext::SQL qw(sql_execute sql_selectrow sql_singlevalue);
 use Socialtext::TT2::Renderer;
 use Socialtext::URI;
 use Socialtext::UserMetadata;
@@ -365,6 +365,15 @@ sub accounts {
         Socialtext::Timer->Pause('user_accts');
         return (wantarray ? @accounts : \@accounts);
     }
+}
+
+sub is_in_account {
+    my $self = shift;
+    my $account = shift;
+
+    return sql_singlevalue(<<EOT, $account->account_id, $self->user_id);
+SELECT 1 FROM account_user WHERE account_id = ? AND user_id = ?
+EOT
 }
 
 sub shared_accounts {
