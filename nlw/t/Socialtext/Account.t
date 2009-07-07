@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 92;
+use Test::Socialtext tests => 93;
 use Test::Socialtext::User;
 use Test::Exception;
 use Socialtext::File;
@@ -40,6 +40,10 @@ my $socialtext = Socialtext::Account->Socialtext;
 isa_ok( $socialtext, 'Socialtext::Account' );
 ok( $socialtext->is_system_created, 'Unknown account is system-created' );
 users_are($socialtext, ['system-user', 'guest']);
+is_deeply [ sort @{$socialtext->user_ids} ],
+  [ sort (Socialtext::User->SystemUser->user_id, 
+          Socialtext::User->Guest->user_id) ],
+  'user_ids() works';
 
 eval { Socialtext::Account->create( name => 'Test Account' ) };
 like( $@, qr/already in use/, 'cannot create two accounts with the same name' );

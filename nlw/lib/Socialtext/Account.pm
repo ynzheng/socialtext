@@ -430,6 +430,21 @@ sub users {
         Socialtext::User->ByAccountId( account_id => $self->account_id, @_ );
 }
 
+sub user_ids {
+    my $self = shift;
+    Socialtext::Timer->Continue('acct_user_ids');
+    my $sth = sql_execute(<<EOSQL, $self->account_id);
+        SELECT user_id
+            FROM user_account
+            WHERE primary_account_id = ?
+EOSQL
+
+    my $users = [ map { $_->[0] } @{$sth->fetchall_arrayref} ];
+    Socialtext::Timer->Pause('acct_user_ids');
+    return $users;
+}
+
+
 sub user_count {
     my $self = shift;
     my $primary_only = shift;
