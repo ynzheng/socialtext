@@ -3430,6 +3430,11 @@ body div#controls div#st-editing-tools-edit ul li a.disabled {
     width: 140px;
 }
 
+.widget .widgetContent .fixedSetting {
+    height: 20px;
+    font-style: italic;
+}
+
 /* People list classes
 -------------------------------------------------------------- */
 
@@ -3674,14 +3679,6 @@ table.pagelist.dataTable th {
 
 table.widgetUserPrefs {
     width: 95%;
-}
-
-table.widgetUserPrefs tr.widgetUserPref_workspace th {
-    width: 10%;
-}
-
-table.widgetUserPrefs tr.widgetUserPref_workspace select {
-    width: 100%;
 }
 
 table.widgetUserPrefs td.widgetUserPrefsButtons {

@@ -28,9 +28,29 @@
                         [% END %]
                     </select>
                 [% ELSIF pref.datatype == 'workspace' %]
-                    <input value="[% pref.value %]" name="up_[% pref.name %]" class="workspace_setting"/>
+                    <select class="workspace_setting" name="up_[% pref.name %]">
+                        [% UNLESS pref.required %]
+                            <option value="" [% IF pref.value == '' %]selected="selected"[% END %]>All</option>
+                        [% END %]
+                        [% FOR ws = workspaceslist %]
+                            <option account="[% ws.account %]" value="[% ws.name %]" [% IF ws.name == pref.value %]selected="selected"[% END %]>
+                                [% ws.label %]
+                            </option>
+                        [% END %]
+                    </select>
                 [% ELSIF pref.datatype == 'account' %]
-                    <input value="[% pref.value %]" name="up_[% pref.name %]" class="account_setting"/>
+                    [% IF user.accounts.size == 1 %]
+                    <input value="[% user.accounts.0.account_id %]" type="hidden"/>
+                    <div class="fixedSetting">[% user.accounts.0.name %]</div>
+                    [% ELSE %]
+                    <select class="account_setting" name="up_[% pref.name %]">
+                    [% FOR account = user.accounts %]
+                        <option value="[% account.name %]" [% IF account.name == pref.value %]selected="selected"[% END %]>
+                            [% account.name %]
+                        </option>
+                    [% END %]
+                    </select>
+                    [% END %]
                 [% ELSIF pref.datatype == 'page' %]
                     <input value="[% pref.value %]" name="up_[% pref.name %]" class="page_setting"/>
                 [% ELSIF pref.datatype == 'bool' %]

@@ -121,7 +121,7 @@
                   <li style="background-color: #eee;">&nbsp;</li>
                 [% END %]
                 [% FOREACH workspaceslist %]
-                <li><a href="[% link %]">[% label | label_ellipsis(30) %]&nbsp;
+                <li><a href="/[% name %]">[% label | label_ellipsis(30) %]&nbsp;
                  [% IF label == default_workspace.label %]
                    ([% loc('Default') %])
                  [% END %]
