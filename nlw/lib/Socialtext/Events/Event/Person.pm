@@ -2,8 +2,6 @@ package Socialtext::Events::Event::Person;
 use Moose;
 use MooseX::StrictConstructor;
 use Moose::Util::TypeConstraints;
-use Socialtext::Model::Pages;
-use Socialtext::Workspace;
 use namespace::clean -except => 'meta';
 
 extends 'Socialtext::Events::Event';

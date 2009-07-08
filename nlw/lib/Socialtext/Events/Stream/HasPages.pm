@@ -6,7 +6,6 @@ use namespace::clean -except => 'meta';
 
 requires 'assemble';
 requires 'add_sources';
-requires 'account_ids_for_plugin';
 
 has 'workspace_ids' => (
     is => 'rw', isa => 'ArrayRef[Int]',
@@ -24,7 +23,6 @@ sub _build_workspace_ids {
 
     # TODO: respect a page_workspace_id param (with permission check)
 
-    local $Socialtext::SQL::PROFILE_SQL = 1;
     my $sth = sql_execute(q{
         SELECT workspace_id FROM "UserWorkspaceRole" WHERE user_id = $1
 
@@ -34,9 +32,7 @@ sub _build_workspace_ids {
         FROM "WorkspaceRolePermission" wrp
         JOIN "Role" r USING (role_id)
         JOIN "Permission" p USING (permission_id)
-        WHERE
-            -- workspace vis
-            r.name = 'guest' AND p.name = 'read'
+        WHERE r.name = 'guest' AND p.name = 'read'
     }, $self->viewer_id);
 
     my $rows = $sth->fetchall_arrayref;

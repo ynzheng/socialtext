@@ -11,6 +11,7 @@ use Socialtext::Statistics qw( stat_call );
 use DateTime;
 # use POSIX;
 use Readonly;
+use Carp;
 use Socialtext::Authz;
 use Socialtext::Permission 'ST_READ_PERM';
 use Socialtext::Validate qw( validate SCALAR_TYPE USER_TYPE WORKSPACE_TYPE );
@@ -80,9 +81,10 @@ sub debug {
     my $self = shift;
     no warnings;
     if ($self->is_in_cgi) {
-        eval q{use CGI::Carp qw(fatalsToBrowser)}; die $@ if $@;
-        $SIG{__DIE__} = sub { CGI::Carp::confess(@_) }
+#         eval q{use CGI::Carp qw(fatalsToBrowser)}; die $@ if $@;
+#         $SIG{__DIE__} = sub { CGI::Carp::confess(@_) }
     }
+    $SIG{__DIE__} = sub { Carp::confess(@_) };
     $self->using_debug(1);
     return $self;
 }

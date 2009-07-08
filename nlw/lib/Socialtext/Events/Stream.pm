@@ -2,14 +2,16 @@ package Socialtext::Events::Stream;
 use Moose;
 use MooseX::AttributeHelpers;
 use MooseX::StrictConstructor;
-use MooseX::Traits;
 use Clone qw/clone/;
 use Socialtext::SQL qw/:exec/;
 use Socialtext::Events::FilterParams;
 use Array::Heap;
 use namespace::clean -except => 'meta';
 
-with 'Socialtext::Events::Source';
+with 'Socialtext::Events::Source', 'MooseX::Traits';
+
+# new_with_traits() will apply this prefix to traits:
+has '+_trait_namespace' => (default => 'Socialtext::Events::Stream');
 
 has 'sources' => (
     is => 'rw', isa => 'ArrayRef[Socialtext::Events::Source]',

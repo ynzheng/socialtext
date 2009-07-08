@@ -9,7 +9,10 @@ with 'Socialtext::Events::Source', 'Socialtext::Events::SQLSource';
 has 'workspace_id' => ( is => 'ro', isa => 'Int', required => 1 );
 
 sub next { 
-    Socialtext::Events::Event::Page->new($_[0]->next_sql_result);
+    my $self = shift;
+    my $e = Socialtext::Events::Event::Page->new($self->next_sql_result);
+    $e->source($self);
+    return $e;
 }
 
 sub query_and_binds {
@@ -26,12 +29,7 @@ sub query_and_binds {
     $self->add_where_clauses(\@where);
 
     if ($self->filter->followed) {
-        push @where, actor_id => [
-            \q{IN (SELECT person_id2
-                   FROM person_watched_people__person
-                   WHERE person_id1=?)},
-            $self->viewer_id
-        ];
+        push @where, actor_id => [$self->followed_clause, $self->viewer_id];
     }
 
     my $sa = sql_abstract();
