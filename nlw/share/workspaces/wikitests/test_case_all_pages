@@ -2,37 +2,16 @@
 
 | *Comment* | Test Case: All Pages create four pages |  |
 
-| set | apws | all-pages-%%start_time%% |
-| st-admin | create-workspace --name %%apws%% --title %%apws%% |  |
-| st-admin | add-member --email %%email%% --workspace %%apws%% |  |
-| st-admin | update-page --email %%email%% --workspace %%apws%% --page "all pages %%start_time%% 0001" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0001" page has been created. |
-| st-admin | update-page --email %%email%% --workspace %%apws%% --page "all pages %%start_time%% 0002" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0002" page has been created. |
-| st-admin | update-page --email %%email%% --workspace %%apws%% --page "all pages %%start_time%% 0003" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0003" page has been created. |
-| st-admin | update-page --email %%email%% --workspace %%apws%% --page "all pages %%start_time%% 0004" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0004" page has been created. |
+| set | new_ws | all-pages-%%start_time%% |
+| include | [Create Clean Workspace] |  |
 
-| *Comment* | Test Case: All Pages PURGE and defeat pagination |  |
-| st-admin | purge-page --w %%apws%% --page advanced_getting_around | was purged |
-| st-admin | purge-page --w %%apws%% --page announcements_and_links | was purged |
-| st-admin | purge-page --w %%apws%% --page central_page_important_links | was purged |
-| st-admin | purge-page --w %%apws%% --page congratulations_you_know_how_to_use_a_workspace | was purged |
-| st-admin | purge-page --w %%apws%% --page conversations | was purged |
-| st-admin | purge-page --w %%apws%% --page document_library_template | was purged |
-| st-admin | purge-page --w %%apws%% --page documents_that_people_are_working_on | was purged |
-| st-admin | purge-page --w %%apws%% --page expense_report_template | was purged |
-| st-admin | purge-page --w %%apws%% --page how_do_i_find_my_way_around | was purged |
-| st-admin | purge-page --w %%apws%% --page how_do_i_make_links | was purged |
-| st-admin | purge-page --w %%apws%% --page learning_resources | was purged |
-| st-admin | purge-page --w %%apws%% --page lists_of_pages | was purged |
-| st-admin | purge-page --w %%apws%% --page meeting_agendas | was purged |
-| st-admin | purge-page --w %%apws%% --page people | was purged |
-| st-admin | purge-page --w %%apws%% --page member_directory | was purged |
-| st-admin | purge-page --w %%apws%% --page project_plans | was purged |
-| st-admin | purge-page --w %%apws%% --page quick_start | was purged |
-| st-admin | purge-page --w %%apws%% --page what_else_is_here | was purged |
-| st-admin | purge-page --w %%apws%% --page what_if_i_make_a_mistake | was purged |
+| st-admin | update-page --email %%email%% --workspace %%new_ws%% --page "all pages %%start_time%% 0001" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0001" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%new_ws%% --page "all pages %%start_time%% 0002" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0002" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%new_ws%% --page "all pages %%start_time%% 0003" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0003" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%new_ws%% --page "all pages %%start_time%% 0004" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0004" page has been created. |
 
 | *Comment* | Test Case: All Pages list view |  |
-| open_ok | /%%apws%%/index.cgi?action=recent_changes |  |
+| open_ok | /%%new_ws%%/index.cgi?action=recent_changes |  |
 | text_like | Changes in Last |  |
 | clickAndWait | link=All Pages |  |
 | text_like | All Pages ( |  |
@@ -53,9 +32,9 @@
 | text_like | contentContainer | qr/all pages %%start_time%% 0001.+all pages %%start_time%% 0004/ |
 
 | *Comment* | Test Case: All Pages add a new page |  |
-| st-admin | update-page --email %%email%% --workspace %%apws%% --page "all pages %%start_time%% 0005" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0005" page has been created. |
+| st-admin | update-page --email %%email%% --workspace %%new_ws%% --page "all pages %%start_time%% 0005" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0005" page has been created. |
 
-| open_ok | /%%apws%%/index.cgi?action=recent_changes |  |
+| open_ok | /%%new_ws%%/index.cgi?action=recent_changes |  |
 | clickAndWait | link=All Pages |  |
 | select_and_wait | sort-picker | Revisions |
 
@@ -72,8 +51,8 @@
 | text_like | contentContainer | qr/all pages %%start_time%% 0002.+all pages %%start_time%% 0001/ |
 
 | *Comment* | Test Case: All Pages create Rev 2 |  |
-| st-admin | update-page --email %%email%% --workspace %%apws%% --page "all pages %%start_time%% 0005" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0005" page has been updated. |
-| open_ok | /%%apws%%/index.cgi?action=recent_changes |  |
+| st-admin | update-page --email %%email%% --workspace %%new_ws%% --page "all pages %%start_time%% 0005" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0005" page has been updated. |
+| open_ok | /%%new_ws%%/index.cgi?action=recent_changes |  |
 | clickAndWait | link=All Pages |  |
 
 | *Comment* | Test Case: All Pages sort Revisions desc |  |
@@ -101,9 +80,9 @@
 | text_like | contentContainer | qr/all pages %%start_time%% 0002.+all pages %%start_time%% 0001/ |
 
 | *Comment* | Test Case: All Pages delete page |  |
-| st-admin | purge-page --w %%apws%% --p all_pages_%%start_time%%_0004 | purged |
+| st-admin | purge-page --w %%new_ws%% --p all_pages_%%start_time%%_0004 | purged |
 
-| open_ok | /%%apws%%/index.cgi?action=recent_changes |  |
+| open_ok | /%%new_ws%%/index.cgi?action=recent_changes |  |
 | clickAndWait | link=All Pages |  |
 | text_unlike | contentContainer | all pages %%start_time%% 0004 |
 
@@ -115,10 +94,10 @@ contains %%email%% as a substring and that messes up other tests like Test Case:
 
 | set | s_user | %%start_time%%@%%start_time%%.socialtext.net |
 | st-admin | create-user --email %%s_user%% --password 123456 |  |
-| st-admin | add-member --email %%s_user%% --workspace %%apws%% |  |
-| st-admin | update-page --email %%s_user%% --workspace %%apws%% --page "all pages %%start_time%% 0003" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0003" page has been updated. |
+| st-admin | add-member --email %%s_user%% --workspace %%new_ws%% |  |
+| st-admin | update-page --email %%s_user%% --workspace %%new_ws%% --page "all pages %%start_time%% 0003" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0003" page has been updated. |
 
-| open_ok | /%%apws%%/index.cgi?action=changes&changes=all |  |
+| open_ok | /%%new_ws%%/index.cgi?action=changes&changes=all |  |
 | clickAndWait | link=All Pages |  |
 
 | *Comment* | label=Last Edited By (asc) |  |
@@ -148,6 +127,6 @@ contains %%email%% as a substring and that messes up other tests like Test Case:
 
 | *Comment* | Test Case: All Pages Teardown. No need to login again. |  |
 
-| st-admin | delete-workspace --workspace %%apws%% --no-export | The %%apws%% workspace has been deleted. |
+| st-admin | delete-workspace --workspace %%new_ws%% --no-export | The %%new_ws%% workspace has been deleted. |
 
 | *Comment* | Test Case: All Pages COMPLETED |  |
