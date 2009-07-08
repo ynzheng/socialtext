@@ -1,113 +1,117 @@
-| *Comment* | START Test Case: Orphans List |  |
+| *Comment* | Test Case: Tools: Copy Page to Workspace |
 
-(↑) (↓)
+| set | newspace | newspace-%%start_time%% |
+| set | newtitle | Newspace %%start_time%% |
 
-Find or create several pages that have no incoming links. This creates orphan pages. | pages are created
+| *Comment* | Test Case: Tools: Copy Page to Workspace. Create a target workspace |  |
+| st-admin | create-workspace --name %%newspace%% --title "%%newtitle%%" | A new workspace named "%%newspace%%" was created. |
+| st-admin | add-member --email %%email%% --workspace %%newspace%% | %%username%% is now a member of the %%newspace%% workspace. |
 
-| st-admin | update-page --email %%email%% --workspace %%workspace%% --page "orphan %%start_time%% 0001" < %%wikitest_client_files%%wikitest.txt | The "orphan %%start_time%% 0001" page has been created. |
-| st-admin | update-page --email %%email%% --workspace %%workspace%% --page "orphan %%start_time%% 0002" < %%wikitest_client_files%%wikitest.txt | The "orphan %%start_time%% 0002" page has been created. |
-| st-admin | update-page --email %%email%% --workspace %%workspace%% --page "orphan %%start_time%% 0003" < %%wikitest_client_files%%wikitest.txt | The "orphan %%start_time%% 0003" page has been created. |
+| *Comment* | Test Case: Tools: Copy Page to Workspace Create test page |  |
+| open_ok | /%%workspace%%/index.cgi?action=new_page |  |
+| wait_for_element_visible_ok | link=Wiki Text | 30000 |
+| click_ok | link=Wiki Text |  |
+| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| wait_for_element_visible_ok | st-newpage-pagename-edit | 30000 |
+| type_ok | st-newpage-pagename-edit | Copy This Page %%start_time%% |
+| type_ok | wikiwyg_wikitext_textarea | Copy This Page %%start_time%% content |
 
-Create a page by a different user
+| *Comment* | Test Case: Tools: Copy Page to Workspace Create test tag |  |
+| wait_for_element_visible_ok | st-edit-mode-tagbutton | 30000 |
+| click_ok | st-edit-mode-tagbutton |  |
+| wait_for_element_visible_ok | st-tagqueue-field | 30000 |
+| type_ok | st-tagqueue-field | Copy This Tag %%start_time%% |
+| click_ok | st-tagqueue-addbutton |  |
+| click_ok | st-tagqueue-close |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
+| click_and_wait | st-save-button-link |  |
 
-| set | orphan_email | `aaa.orphan.%%start_time%%@ken.socialtext.net` |
-| st-admin | create-user --e %%orphan_email%% --p 123456 |  |
-| st-admin | add-member --w %%workspace%% --e %%orphan_email%% | is now a member |
-| st-admin | update-page --email %%orphan_email%% --workspace %%workspace%% --page "orphan %%start_time%% 0004" < %%wikitest_client_files%%wikitest.txt | The "orphan %%start_time%% 0004" page has been created. |
+TODO: upload a file and test for Keep Attachments
 
-"What's New -> Orphans List"<http://.../> | list of links to orphan pages appears
+| *Comment* | Test Case: Tools: Copy Page to Workspace. Copy the page |  |
+| click_ok | link=Copy Page to Workspace |  |
+| wait_for_element_visible_ok | st-copy-workspace | 30000 |
+| wait_for_element_visible_ok | st-copy-newname | 30000 |
+| wait_for_element_visible_ok | st-copy-savelink | 30000 |
 
-| *Comment* | Test Case: Orphans List. Orphan page list |  |
-| open_ok | /%%workspace%%/index.cgi?action=orphans_list |  |
-| text_like | link=orphan %%start_time%% 0001 | orphan %%start_time%% 0001 |
-| text_like | link=orphan %%start_time%% 0002 | orphan %%start_time%% 0002 |
-| text_like | link=orphan %%start_time%% 0003 | orphan %%start_time%% 0003 |
-| text_like | link=orphan %%start_time%% 0004 | orphan %%start_time%% 0004 |
+| select_ok | st-copy-workspace | label=%%newtitle%% |
+| type_ok | st-copy-newname | Page Copied %%start_time%% |
+| click_ok | st-copy-savelink |  |
 
-| *Comment* | Test Case: Orphans List Sorting Title asc |  |
-| select_and_wait | sort-picker | label=Title |
-| text_like | contentContainer | qr/orphan %%start_time%% 0001.+orphan %%start_time%% 0002.+orphan %%start_time%% 0003.+orphan %%start_time%% 0004/ |
-| *Comment* | Test Case: Orphans List Sorting Title desc |  |
-| select_and_wait | sort-picker | label=Title (↓) |
-| text_like | contentContainer | qr/orphan %%start_time%% 0004.+orphan %%start_time%% 0003.+orphan %%start_time%% 0002.+orphan %%start_time%% 0001/ |
+| *Comment* | Test Case: Tools: Copy Page to Workspace. Should return to the same WS,
+NOT the target WS |  |
+| location_like | /%%workspace%%/index.cgi?copy_this_page_%%start_time%% |  |
+| wait_for_element_visible_ok | contentRight | 30000 |
+| text_like | contentRight | Copy This Tag %%start_time%% |
+| text_like | st-page-titletext | Copy This Page %%start_time%% |
+| text_like | contentContainer | Copy This Page %%start_time%% content |
 
-| *Comment* | Test Case: Orphans List Sorting Last Edited By asc |  |
-| select_and_wait | sort-picker | label=Last Edited By |
-
-| text_like | contentContainer | qr/orphan %%start_time%% 0004.+orphan %%start_time%% 0001.+orphan %%start_time%% 0002.+orphan %%start_time%% 0003/ |
-
-| *Comment* | Test Case: Orphans List Sorting Last Edited By desc |  |
-| select_and_wait | sort-picker | label=Last Edited By (↓) |
-
-| text_like | contentContainer | qr/orphan %%start_time%% 0003.+orphan %%start_time%% 0002.+orphan %%start_time%% 0001.+orphan %%start_time%% 0004/ |
-
-| *Comment* | Test Case: Orphans List Sorting Date desc |  |
-| select_and_wait | sort-picker | label=Date Last Edited |
-| text_like | contentContainer | qr/orphan %%start_time%% 0004.+orphan %%start_time%% 0003.+orphan %%start_time%% 0002.+orphan %%start_time%% 0001/ |
-| select_and_wait | sort-picker | label=Date Last Edited (↑) |
-| text_like | contentContainer | qr/orphan %%start_time%% 0001.+orphan %%start_time%% 0002.+orphan %%start_time%% 0003.+orphan %%start_time%% 0004/ |
-
-| *Comment* | Test Case: Orphans List Sorting Revisions. Create rev 2 for page 0002 |  |
-| st-admin | update-page --email %%orphan_email%% --workspace %%workspace%% --page "orphan %%start_time%% 0002" < %%wikitest_client_files%%wikitest.txt | The "orphan %%start_time%% 0002" page has been updated. |
-
-| *Comment* | Test Case: Orphans List Sorting reload the Orphans List to see new revisions |  |
-| open_ok | /%%workspace%%/index.cgi?action=orphans_list |  |
-
-| *Comment* | Test Case: Orphans List Sorting revisions desc |  |
-| select_and_wait | sort-picker | label=Revisions |
-| text_like | contentContainer | qr/orphan %%start_time%% 0002.+orphan %%start_time%% 0001.+orphan %%start_time%% 0003.+orphan %%start_time%% 0004/ |
-| *Comment* | Test Case: Orphans List Sorting revisions asc |  |
-| select_and_wait | sort-picker | label=Revisions (↑) |
-| text_like | contentContainer | qr/orphan %%start_time%% 0001.+orphan %%start_time%% 0003.+orphan %%start_time%% 0004.+orphan %%start_time%% 0002/ |
-
-| *Comment* | Test Case: Orphans List Sorting Date Created desc |  |
-| select_and_wait | sort-picker | label=Date Created |
-| text_like | contentContainer | qr/orphan %%start_time%% 0004.+orphan %%start_time%% 0003.+orphan %%start_time%% 0002.+orphan %%start_time%% 0001/ |
-| *Comment* | Test Case: Orphans List Sorting revisions asc |  |
-| select_and_wait | sort-picker | label=Date Created (↑) |
-| text_like | contentContainer | qr/orphan %%start_time%% 0001.+orphan %%start_time%% 0002.+orphan %%start_time%% 0003.+orphan %%start_time%% 0004/ |
-
-click on several links | correct page appear
-
-| *Comment* | Test Case: Orphans List. Orphan page links work |  |
-| click_and_wait | link=orphan %%start_time%% 0001 |  |
-| text_like | st-page-titletext | orphan %%start_time%% 0001 |
-| open_ok | /%%workspace%%/index.cgi?action=orphans_list |  |
-| click_and_wait | link=orphan %%start_time%% 0002 |  |
-| text_like | st-page-titletext | orphan %%start_time%% 0002 |
-
-observe Incoming Links in sidepanel | there are no Incoming Links for any orphan page
-
-| *Comment* | Test Case: Orphans List. Orphan page has no incoming links |  |
-| text_like | contentRight | qr/There are no pages that link to this page yet/i |
-| open_ok | /%%workspace%%/?orphan %%start_time%% 0001 |  |
-| text_like | contentRight | qr/There are no pages that link to this page yet/i |
-
-edit a page to include a link to an orphan page | link appears in page
-
-| *Comment* | Test Case: Orphans List. Create a link to the second orphan page |  |
+| *Comment* | Test Case: Tools: Copy Page to Workspace. Edit the original the page |  |
+| open_ok | /%%workspace%%/?Copy This Page %%start_time%% |  |
 | click_ok | st-edit-button-link |  |
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |
 | click_ok | link=Wiki Text |  |
 | wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
-| type_ok | wikiwyg_wikitext_textarea | `[orphan %%start_time%% 0002]` |
+| type_ok | wikiwyg_wikitext_textarea | Copy This Page %%start_time%% NEW content |
 | wait_for_element_visible_ok | st-save-button-link | 30000 |
 | click_and_wait | st-save-button-link |  |
 
-| *Comment* | Test Case: Orphans List. second page should no longer be orphan |  |
-| open_ok | /%%workspace%%/index.cgi?action=orphans_list |  |
-| text_unlike | contentContainer | orphan %%start_time%% 0002 |
-| text_like | contentContainer | orphan %%start_time%% 0001 |
+| *Comment* | Test Case: Tools: Copy Page to Workspace. Copy the edited page and Cancel |  |
+| click_ok | link=Copy Page to Workspace |  |
+| wait_for_element_visible_ok | st-copy-workspace | 30000 |
+| wait_for_element_visible_ok | st-copy-newname | 30000 |
+| wait_for_element_visible_ok | st-copy-savelink | 30000 |
 
-| *Comment* | Test Case: Orphans list. delete page |  |
-| st-admin | purge-page --w %%workspace%% --p orphan_%%start_time%%_0003 | was purged |
-| open_ok | /%%workspace%%/index.cgi?action=orphans_list |  |
-| text_unlike | contentContainer | orphan %%start_time%% 0003 |
-| text_like | contentContainer | orphan %%start_time%% 0001 |
+| type_ok | st-copy-newname | Untitled Page |
+| click_ok | st-copy-savelink |  |
+| wait_for_element_visible_ok | st-copy-error | 30000 |
+| text_like | st-copy-error | The page name you selected, "Untitled Page", is not allowed. Please enter or change the page name. |
+| click_ok | st-copy-cancellink |  |
 
-| *Comment* | Test Case: Orphans List. Tearing down orphans list data |  |
-| st-admin | purge-page --w %%workspace%% --p orphan_%%start_time%%_0001 | was purged |
-| st-admin | purge-page --w %%workspace%% --p orphan_%%start_time%%_0002 | was purged |
-| st-admin | purge-page --w %%workspace%% --p orphan_%%start_time%%_0004 | was purged |
+TODO: come back and finish this test when {bz: 1039} is fixed. Can't seem to click st-copy-savelink multiple times. That could be a problem with Selenium or with the dialog boxes.
 
-| *Comment* | Test Case Orphans List COMPLETED |  |
+| *Comment* | Test Case: Tools: Copy Page to Workspace. Copy the edited page |  |
+| click_and_wait | link=Home | navigate away and back |
+| open_ok | /%%workspace%%/?Copy This Page %%start_time%% |  |
+| click_ok | link=Copy Page to Workspace |  |
+| wait_for_element_visible_ok | st-copy-workspace | 30000 |
+| wait_for_element_visible_ok | st-copy-savelink | 30000 |
+| wait_for_element_visible_ok | st-copy-newname | 30000 |
+
+| select_ok | st-copy-workspace | label=%%newtitle%% |
+| type_ok | st-copy-newname | Page Copied %%start_time%% |
+| click_ok | st-copy-savelink |  |
+| wait_for_element_visible_ok | st-copy-error | 30000 |
+| text_like | st-copy-error | The new page name you selected, "Page Copied %%start_time%%", is already in use |
+| click_ok | st-copy-savelink |  |
+
+| *Comment* | Test Case: Tools: Copy Page to Workspace. verify copy of edited page |  |
+| open_ok | /%%newspace%%/index.cgi?action=revision_list;page_name=page_copied_%%start_time%% |  |
+| text_like | contentContainer | qr/revision 2/i |
+| click_and_wait | link=Compare Revisions |  |
+| text_like | contentContainer | Copy This Page %%start_time%% content |
+| text_like | contentContainer | Copy This Page %%start_time%% NEW content |
+
+| *Comment* | Test Case: Tools: Copy Page to Workspace. verify tag copied |  |
+| click_ok | link=Back To Current Revision |  |
+| wait_for_element_visible_ok | link=Copy This Tag %%start_time%% | 30000 |
+| text_like | link=Copy This Tag %%start_time%% | Copy This Tag %%start_time%% |
+
+| *Comment* | Test Case: Tools: Copy Page to Workspace. User with one WS cannot Copy |  |
+| st-admin | create-user --email newuser_%%start_time%%@ken.socialtext.net --password 123456 |  |
+| st-admin | add-member --email newuser_%%start_time%%@ken.socialtext.net --workspace %%newspace%% |  |
+| st-logout |  |  |
+| open_ok | /%%newspace%%/?Page Copied %%start_time%% |  |
+| type_ok | username | newuser_%%start_time%%@ken.socialtext.net |
+| type_ok | password | 123456 |
+| click_and_wait | login_btn |  |
+
+| *Comment* | Test Case: Tools: Copy Page to Workspace. User has no copy to workspace menu item. |  |
+| text_unlike | //body | Copy Page to Workspace |
+
+| *Comment* | Test Case: Tools: Copy Page to Workspace Teardown |  |
+
+| st-admin | purge-page --w %%workspace%% --page copy_this_page_%%start_time%% | was purged |
+| st-admin | delete-workspace --workspace %%newspace%% --no-export | The %%newspace%% workspace has been deleted. |
+
+| *Comment* | Test Case: Tools: Copy Page to Workspace COMPLETED |
