@@ -17,7 +17,10 @@ has 'sql_results' => (
 
 # write 'next' like this:
 # sub next {
-#     My::Event::Type->new(shift->next_sql_result);
+#     my $self = shift;
+#     my $e = My::Event::Type->new(shift->next_sql_result);
+#     $e->source($self);
+#     return $e;
 # }
 requires 'next';
 requires 'query_and_binds';
@@ -50,6 +53,12 @@ sub skip {
 sub columns {
     return 'at, EXTRACT(epoch FROM at) AS at_epoch, '.
         'action, actor_id, tag_name, context';
+}
+
+sub followed_clause {
+    return q{IN (SELECT person_id2
+                 FROM person_watched_people__person
+                 WHERE person_id1=?)};
 }
 
 1;

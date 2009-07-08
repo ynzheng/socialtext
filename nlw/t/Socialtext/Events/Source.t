@@ -90,6 +90,8 @@ BEGIN {
             at => $head->[0],
             actor_id => 1,
             action => 'test',
+            source => $self,
+            context => undef,
             %{$head->[1]}
         );
     }

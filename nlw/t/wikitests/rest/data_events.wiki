@@ -182,19 +182,26 @@ Test case for `/data/events`(GET and POST).
 | body-like   | qr/Tester One.*tagged.*Page Two.*in.*%%test_workspace%%.*as.*saggy.*\./   |             |
 | body-unlike | qr/Tester Two.*tagged.*Page Three.*in.*%%test_workspace%%.*as.*taggy.*\./ |             |
 
-| Comment     | Filter by event_class           |                  |
-| get         | /data/events?event_class=page   | application/json |
-| code-is     | 200                             |                  |
-| has-header  | Cache-Control                   | qr/private/      |
-| body-like   | "id":"page_one"                 |                  |
-| body-like   | "id":"page_three"               |                  |
-| body-like   | "id":"page_two"                 |                  |
-| get         | /data/events?event_class=monkey | application/json |
-| code-is     | 200                             |                  |
-| has-header  | Cache-Control                   | qr/private/      |
-| body-unlike | "id":"page_one"                 |                  |
-| body-unlike | "id":"page_three"               |                  |
-| body-unlike | "id":"page_two"                 |                  |
+| Comment         | Filter by event_class         |                  |
+| get             | /data/events?event_class=page | application/json |
+| code-is         | 200                           |                  |
+| has-header      | Cache-Control                 | qr/private/      |
+| json-parse      |                               |                  |
+| json-array-size | 3                             |                  |
+| body-like       | "id":"page_one"               |                  |
+| body-like       | "id":"page_three"             |                  |
+| body-like       | "id":"page_two"               |                  |
+
+
+| get             | /data/events?event_class=monkey | application/json |
+| code-is         | 200                             |                  |
+| has-header      | Cache-Control                   | qr/private/      |
+| json-parse      |                                 |                  |
+| json-array-size | 0                               |                  |
+| body-unlike     | "id":"page_one"                 |                  |
+| body-unlike     | "id":"page_three"               |                  |
+| body-unlike     | "id":"page_two"                 |                  |
+
 
 | Comment   | Filter by follower_id                               |                                    |
 | get       | /data/events?event_class=person&followed=1          | application/json                   |
@@ -243,6 +250,8 @@ Test case for `/data/events`(GET and POST).
 | code-is     | 200                                   |                  |
 | has-header  | Cache-Control                         | qr/private/      |
 | body-unlike | "tag_name":"downer"                   |                  |
+
+^^ Later
 
 | Comment          | Filter by workspace_id                          |                            |
 | get              | /data/workspaces/%%test_workspace%%             | application/json           |

@@ -7,10 +7,18 @@ use Socialtext::SQL qw/sql_execute/;
 use Socialtext::JSON qw/decode_json/;
 use Socialtext::User;
 use Socialtext::Pluggable::Adapter;
-use Socialtext::Timer;
+use Socialtext::Timer qw/time_this/;
 use Class::Field qw/field/;
 use Socialtext::WikiText::Parser::Messages;
 use Socialtext::WikiText::Emitter::Messages::HTML;
+
+use Socialtext::Events::FilterParams;
+use Socialtext::Events::Stream;
+use Socialtext::Events::Stream::HasPages;
+use Socialtext::Events::Stream::HasPeople;
+use Socialtext::Events::Stream::HasSignals;
+use Socialtext::Events::Stream::Pages;
+use Socialtext::Events::Stream::Regular;
 
 field 'viewer';
 
@@ -418,13 +426,66 @@ sub get_events {
     my $self   = shift;
     my $opts = ref($_[0]) eq 'HASH' ? $_[0] : {@_};
 
-    if ($opts->{event_class} && !(ref $opts->{event_class}) &&
-        $opts->{event_class} eq 'page' && $opts->{contributions})
+    my $evc = delete $opts->{event_class};
+    if ($evc && !(ref $evc) && $evc eq 'page' && $opts->{contributions})
     {
         return $self->get_events_page_contribs($opts);
     }
 
-    return $self->_get_events($opts);
+    my %opts_slice = map { $_ => $opts->{$_} }
+        grep { exists $opts->{$_} }
+        qw(before after actor_id person_id followed tag_name);
+
+    my $limit = $opts->{limit} || $opts->{count} || 50;
+    my $offset = $opts->{offset} || 0;
+    
+    my %construct = (
+        viewer => $self->viewer,
+        user => $self->viewer,
+        limit => $limit,
+        offset => $offset,
+        filter => Socialtext::Events::FilterParams->new(
+            %opts_slice,
+        )
+    );
+    
+    my $result = [];
+    time_this {
+        my $stream;
+
+        if (!$evc) {
+            $stream = Socialtext::Events::Stream::Regular->new(
+                %construct
+            );
+        }
+        else {
+            # These are prefixed with 'Socialtext::Events::Stream'
+            my %trait_map = (
+                page => 'HasPages',
+                person => 'HasPeople',
+                signal => 'HasSignals',
+            );
+            my @traits = map { $trait_map{$_} ? $trait_map{$_} : () }
+                @{ref($evc) ? $evc : [$evc]};
+
+            if (!@traits) {
+                warn 'all event class parameters are unsupported';
+            }
+            else {
+                $stream = Socialtext::Events::Stream->new_with_traits(
+                    %construct,
+                    traits => \@traits,
+                );
+            }
+        }
+        if ($stream) {
+            $stream->prepare();
+            $result = $stream->all_hashes();
+        }
+    } 'get_events';
+
+    return @$result if wantarray;
+    return $result;
 }
 
 sub get_events_page_contribs {
@@ -438,23 +499,21 @@ sub get_events_page_contribs {
     my $limit = $opts->{limit} || $opts->{count} || 50;
     my $offset = $opts->{offset} || 0;
 
-    require Socialtext::Events::FilterParams;
-    require Socialtext::Events::Stream::Pages;
+    my $result = [];
+    time_this {
+        my $stream = Socialtext::Events::Stream::Pages->new(
+            viewer => $self->viewer,
+            limit => $limit,
+            offset => $offset,
+            filter => Socialtext::Events::FilterParams->new(
+                contributions => 1,
+                %opts_slice,
+            ),
+        );
 
-    my $stream = Socialtext::Events::Stream::Pages->new(
-        viewer => $self->viewer,
-        limit => $limit,
-        offset => $offset,
-        filter => Socialtext::Events::FilterParams->new(
-            contributions => 1,
-            %opts_slice,
-        ),
-    );
-
-    Socialtext::Timer->Continue('get_page_contribs');
-    $stream->prepare();
-    my $result = $stream->all_hashes();
-    Socialtext::Timer->Pause('get_page_contribs');
+        $stream->prepare();
+        $result = $stream->all_hashes();
+    } 'get_page_contribs';
 
     return @$result if wantarray;
     return $result;
