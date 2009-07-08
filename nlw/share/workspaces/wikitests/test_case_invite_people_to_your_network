@@ -87,10 +87,6 @@ TODO: verify cannot actually issue invitations via URL
 | type_ok | password | %%password%% |
 | type_ok | password2 | %%password%% |
 | click_and_wait | link=Register |  |
-| text_like | Your password has been set and you can now login |  |
-| type_ok | username | %%to_ws_user%% |
-| type_ok | password | %%password%% |
-| click_and_wait | link=Log in |  |
 
 | *Comment* | Test Case: Invite people. log in and go to dashboard. No workspaces |  |
 | text_like | qr/Welcome.+New User/i |  |
