@@ -42,23 +42,23 @@ sub handler {
 
     # XXX this may not interact with auth handling appropriately (i think)
     if ( my $e = $@ ) {
-         if (Exception::Class->caught('Socialtext::WebApp::Exception::Redirect')) {
-             my $location = $e->message;
-             $rest->header(
-                 -status => HTTP_302_Found,
-                 -Location => $location,
-             );
-             return '';
-         }
-         # REVIEW: What uses this?
-         if (Exception::Class->caught('Socialtext::WebApp::Exception::Forbidden')) {
-             $self->not_authorized();
-         }
-         # XXX Socialtext::Rest does not throw an exception when
-         # Params Validate notices the current_workspace parameter
-         # is not set because the URI does not have a valid workspace
-         # in it.
-         if (Exception::Class->caught('Socialtext::WebApp::Exception::NotFound') or $e =~ /current_workspace/ ) {
+        if (Exception::Class->caught('Socialtext::WebApp::Exception::Redirect')) {
+            my $location = $e->message;
+            $rest->header(
+                -status => HTTP_302_Found,
+                -Location => $location,
+            );
+            return '';
+        }
+        # REVIEW: What uses this?
+        if (Exception::Class->caught('Socialtext::WebApp::Exception::Forbidden')) {
+            $self->not_authorized();
+        }
+        # XXX Socialtext::Rest does not throw an exception when
+        # Params Validate notices the current_workspace parameter
+        # is not set because the URI does not have a valid workspace
+        # in it.
+        if (Exception::Class->caught('Socialtext::WebApp::Exception::NotFound') or $e =~ /current_workspace/ ) {
             # XXX authenticated users get redirected to the workspace list,
             # while everyone else just goes to "/" (which may redirect
             # elsewhere as needed).
@@ -67,21 +67,21 @@ sub handler {
                 -status   => HTTP_302_Found,
                 -Location => $redirect_to,
             );
-             return ''; # XXX real content here!
-         }
-         unless (Exception::Class->caught('MasonX::WebApp::Exception::Abort')) {
-             return $self->_handle_error($e);
-         }
-     }
+            return ''; # XXX real content here!
+        }
+        unless (Exception::Class->caught('MasonX::WebApp::Exception::Abort')) {
+            return $self->_handle_error($e);
+        }
+    }
 
-     # headers are set via Socialtext::Headers
-     # we need to call print on them to get them
-     # set into the rest->header object
-     $self->hub->headers->print();
+    # headers are set via Socialtext::Headers
+    # we need to call print on them to get them
+    # set into the rest->header object
+    $self->hub->headers->print();
 
-     # does content need to be encoded or decoded?
-     return $html;
- }
+    # does content need to be encoded or decoded?
+    return $html;
+}
 
 
 # XXX do good logging and reporting please
