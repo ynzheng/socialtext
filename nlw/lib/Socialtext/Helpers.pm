@@ -178,6 +178,17 @@ sub default_workspace {
         : undef;
 }
 
+sub signals_only {
+    my $self = shift;
+    eval "require Socialtext::Appliance::Config";
+
+    # Appliance Code is probably not installed if there's an error.
+    return 0 if $@;
+
+    my $config = Socialtext::Appliance::Config->new;
+    return $config->value('signals_only');
+}
+
 sub _get_history_list_for_template
 {
     my $self = shift;
@@ -281,8 +292,7 @@ sub global_template_vars {
             $self->hub->current_workspace->allows_page_locking &&
             !$self->hub->checker->check_permission('lock'),
         role_for_user      => $cur_ws->role_for_user(user=>$cur_user) || undef,
-        signals_only       =>
-            Socialtext::Appliance::Config->new()->value('signals_only'),
+        signals_only       => $self->signals_only,
     );
 
     # We're disabling the history global nav functionality for now, until its
