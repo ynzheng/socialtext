@@ -40,11 +40,24 @@ sub root {
     # logged in users go to the Workspace List
     my $user = $rest->user();
     if ($user and not $user->is_guest) {
-        my $ws_list_uri = $is_mobile ? '/lite/workspace_list' : 'action=workspace_list';
-        return $self->redirect( $ws_list_uri );
+        my $redirect_to;
+        if ( $self->signals_only ) {
+            $redirect_to = '/?signals';
+        }
+        else {
+            $redirect_to = $is_mobile
+                ? '/lite/workspace_list'
+                : 'action=workspace_list';
+        }
+        return $self->redirect( $redirect_to );
     }
 
     return $self->redirect_to_login;
+}
+
+sub signals_only {
+    my $self = shift;
+    return $self->hub->helpers->signals_only;
 }
 
 sub user_name {
