@@ -2,6 +2,8 @@ package Socialtext::Events::Stream::HasPages;
 use Moose::Role;
 use Socialtext::SQL qw/:exec/;
 use Socialtext::Events::Source::Workspace;
+use List::Util qw/first/;
+use List::MoreUtils qw/uniq/;
 use namespace::clean -except => 'meta';
 
 requires 'assemble';
@@ -21,8 +23,7 @@ before 'assemble' => sub {
 sub _build_workspace_ids {
     my $self = shift;
 
-    # TODO: respect a page_workspace_id param (with permission check)
-
+    # TODO: respect group membership
     my $sth = sql_execute(q{
         SELECT workspace_id FROM "UserWorkspaceRole" WHERE user_id = $1
 
@@ -38,7 +39,21 @@ sub _build_workspace_ids {
     my $rows = $sth->fetchall_arrayref;
     my @ids = map {$_->[0]} @$rows;
 
-    return \@ids;
+    if ($self->filter->has_page_workspace_id) {
+        my $wses = $self->filter->page_workspace_id;
+        if (!defined $wses) {
+            # just use visible workspaces
+        }
+        elsif (ref($wses)) {
+            my %wanted = map { $_ => 1 } @$wses;
+            @ids = grep { $wanted{$_} } @ids;
+        }
+        else {
+            @ids = first {$wses==$_} @ids;
+        }
+    }
+
+    return [grep {defined} @ids];
 }
 
 after 'add_sources' => sub {

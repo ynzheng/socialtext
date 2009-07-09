@@ -29,6 +29,8 @@ sub is_direct_signal {
 
 sub _build_html_body {
     my $self = shift;
+    my $ctx = $self->context_hash;
+    die "no context hash" unless $ctx;
     my $parser = Socialtext::WikiText::Parser::Messages->new(
        receiver => Socialtext::WikiText::Emitter::Messages::HTML->new(
            callbacks => {
@@ -36,7 +38,7 @@ sub _build_html_body {
            },
        )
     );
-    return $parser->parse($self->context_hash->{body});
+    return $parser->parse($ctx->{body});
 }
 
 after 'build_hash' => sub {

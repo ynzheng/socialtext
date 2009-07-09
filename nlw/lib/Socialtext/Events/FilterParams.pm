@@ -75,7 +75,7 @@ sub generate_filter {
         elsif ($attr->has_value($self)) {
             my $val = $attr->get_value($self);
             $val = {-in => $val} if ('ARRAY' eq ref($val));
-            push @filter, $field => $val;
+            push @filter, $attr->name => $val;
         }
     }
 
