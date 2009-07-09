@@ -150,10 +150,14 @@ sub _get_html {
     if ($page_name =~ /:/) {
         ($workspace_name, $page_id) = split(/:/, $page_name, 2);
 
-        if ($workspace_name ne $self->hub->current_workspace->name) {
+        if ($workspace_name && $workspace_name ne $self->hub->current_workspace->name) {
             my $ws = Socialtext::Workspace->new(name => $workspace_name);
             $self->hub->current_workspace($ws);
-        } 
+        }
+        else {
+            $workspace_name = $initial_ws->name;
+        }
+
     }
     else {
         $workspace_name = $initial_ws->name;

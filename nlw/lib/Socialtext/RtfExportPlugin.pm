@@ -120,9 +120,13 @@ sub export {
         if (/:/) {
             ($workspace_name, $page_id) = split(/:/, $_, 2);
 
-            if ($workspace_name ne $self->hub->current_workspace->name) {
+            if ($workspace_name && $workspace_name ne $self->hub->current_workspace->name) {
                 $workspaces{$workspace_name} ||= Socialtext::Workspace->new(name => $workspace_name);
                 $self->hub->current_workspace($workspaces{$workspace_name});
+            }
+            else {
+                $workspace_name = $initial_ws->name;
+                $self->hub->current_workspace($initial_ws);
             }
         }
         else {
