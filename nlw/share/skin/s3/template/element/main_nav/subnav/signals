@@ -1,0 +1,13 @@
+[% FILTER decorate('nav_signals') %]
+<li class="submenu"><a id="st-wiki-subnav-link-people" href="http://socialtext.com/products/signals.php">[% loc("Signals") %]</a>
+  <ul class="level2 withimage" id="global-people-directory">
+  [% IF user.is_guest %]
+    <li class="emptynotice">[% loc("You must register or be logged in to use this feature.") %]</li>
+  [% ELSE %]
+    <li class="notinstallednotice"><span class="product-name">[% loc("Socialtext Signals") %]</span> [% loc("provides social messaging integrated with Socialtext's enterprise collaboration platform. While it provides a lot of the same great benefits of other micro-sharing tools like Twitter&#0153;, Socialtext Signals also provides additional benefits because the messaging occurs in the context of people within an organization working transparently and collaborating on common goals.") %]</li>
+      <li class="notinstallednotice"><a href="http://socialtext.com/products/signals.php">[% loc("Try Socialtext Signals") %]</a></li>
+      <li class="notinstallednotice">[% loc("If this link does not work for you, contact") %] <a href="mailto:sales@socialtext.com">sales@socialtext.com</a></li>
+  [% END %]
+  </ul>
+</li>
+[% END %]

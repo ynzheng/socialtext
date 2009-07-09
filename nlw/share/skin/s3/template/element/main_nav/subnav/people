@@ -1,0 +1,13 @@
+[% FILTER decorate('nav_people') %]
+<li class="submenu"><a id="st-wiki-subnav-link-people" href="http://socialtext.com/products/features/Enable-People.php">[% loc("People") %]</a>
+  <ul class="level2 withimage" id="global-people-directory">
+  [% IF user.is_guest %]
+    <li class="emptynotice">[% loc("...lists the people you are following. You must register or be logged in to use this feature.") %]</li>
+  [% ELSE %]
+    <li class="notinstallednotice"><span class="product-name">[% loc("Socialtext People") %]</span> [% loc("is a people directory with robust social networking features. You can find contact information for your colleagues, discover people with expertise and common interests, and find valuable information through your social connections.") %]</li>
+      <li class="notinstallednotice"><a href="http://socialtext.com/products/features/Enable-People.php">[% loc("Try Socialtext People") %]</a></li>
+      <li class="notinstallednotice">[% loc("If this link does not work for you, contact") %] <a href="mailto:sales@socialtext.com">sales@socialtext.com</a></li>
+  [% END %]
+  </ul>
+</li>
+[% END %]

@@ -1,0 +1,10 @@
+[% IF history %]
+<li class="submenu"><a id="st-wiki-subnav-link-my-history" href="?action=breadcrumbs_list">[% loc("My History") %]</a>
+  <ul class="level2" id="global-recently-viewed">
+   <li class="dropaction"><a href="?action=breadcrumbs_list">[% loc("All My Recently Viewed") %]...</a></li>
+  [% FOREACH history %]
+  <li><a href="[% link %]">[% label | label_ellipsis(30) %]</a></li>
+  [% END %]
+  </ul>
+</li>
+[% END %]

@@ -308,3 +308,6 @@ t/rest_files/atom.xml
 lib/Socialtext/JSON/Proxy.pm
 t/rest_files/time.pl
 bin/st-remove-expired-proxy-cache
+lib/Socialtext/Pluggble/Plugin/SimpleAppliance.pm
+lib/Socialtext/Pluggable/Plugin/SimpleAppliance.pm
+lib/Socialtext/Pluggable/Plugin/SignalsAppliance.pm

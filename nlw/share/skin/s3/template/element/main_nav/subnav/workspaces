@@ -1,0 +1,25 @@
+<li class="submenu"><a id="st-wiki-subnav-link-workspaces" href="?action=workspaces_listall">[% loc("Workspaces") %]</a>
+  <ul class="level2" id="global-workspace-list">
+  [% IF workspaceslist.size %]
+    <li class="dropaction"><a href="?action=workspaces_listall">[% loc("All My Workspaces") %]...</a></li>
+    [% IF default_workspace %]
+      <li class="dropaction">
+        <a id="default-workspace-link" href="[% default_workspace.link %]">
+         [% default_workspace.label %]&nbsp;([% loc('Default') %])
+        </a></li>
+      <li style="background-color: #eee;">&nbsp;</li>
+    [% END %]
+    [% FOREACH workspaceslist %]
+    <li><a href="/[% name %]">[% label | label_ellipsis(30) %]&nbsp;
+     [% IF label == default_workspace.label %]
+       ([% loc('Default') %])
+     [% END %]
+    </a></li>
+    [% END %]
+  [% ELSIF user.is_guest %]
+    <li class="emptynotice">[% loc("...lists the workspaces you belong to. You must be logged in to see your list.") %]</li>
+  [% ELSE %]
+    <li class="emptynotice">[% loc("Currently, you are not a member of any workspaces.") %]</li>
+  [% END %]
+  </ul>
+</li>
