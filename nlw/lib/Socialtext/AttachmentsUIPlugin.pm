@@ -261,6 +261,7 @@ sub _table_rows {
             filename  => $att->{filename},
             subject   => $page->title,
             user      => $att->{from},
+            date_str  => $att->{date},
             date      => sub { $self->hub->timezone->date_local( $att->{date} ) },
             page_uri  => $page->uri,
             page_link => sub {
@@ -368,6 +369,7 @@ sub _gen_sort_closure {
         }
     }
     else { # anythinge else, most likely a string
+        $sortby = 'date_str' if $sortby eq 'date';
         if ( $direction eq 'asc' ) {
             return sub {
                 lc( $a->{$sortby} ) cmp lc( $b->{$sortby} )
