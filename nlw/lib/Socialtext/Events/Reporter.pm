@@ -434,7 +434,7 @@ sub get_events {
 
     my %opts_slice = map { $_ => $opts->{$_} }
         grep { exists $opts->{$_} }
-        qw(before after actor_id person_id followed tag_name);
+        qw(action before after page_id page_workspace_id actor_id person_id followed tag_name);
 
     my $limit = $opts->{limit} || $opts->{count} || 50;
     my $offset = $opts->{offset} || 0;

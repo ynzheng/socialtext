@@ -251,8 +251,6 @@ Test case for `/data/events`(GET and POST).
 | has-header  | Cache-Control                         | qr/private/      |
 | body-unlike | "tag_name":"downer"                   |                  |
 
-^^ Later
-
 | Comment          | Filter by workspace_id                          |                            |
 | get              | /data/workspaces/%%test_workspace%%             | application/json           |
 | set-from-content | workspace_id                                    | qr/"workspace_id":"(\d+)"/ |

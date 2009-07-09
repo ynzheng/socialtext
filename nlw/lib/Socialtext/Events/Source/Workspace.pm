@@ -26,7 +26,7 @@ sub query_and_binds {
         'page_workspace_id' => $self->workspace_id,
     );
 
-    $self->add_where_clauses(\@where);
+    push @where, -nest => $self->filter->generate_standard_filter();
 
     if ($self->filter->followed) {
         push @where, actor_id => [$self->followed_clause, $self->viewer_id];
@@ -37,12 +37,6 @@ sub query_and_binds {
         'event', $self->columns, \@where, 'at DESC', $self->limit
     );
     return $sql, \@binds;
-}
-
-sub add_where_clauses {
-    my $self = shift;
-    my $where = shift;
-    push @$where, -nest => $self->filter->generate_standard_filter();
 }
 
 around 'columns' => sub {
