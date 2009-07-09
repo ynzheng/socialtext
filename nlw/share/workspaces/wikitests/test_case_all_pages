@@ -1,132 +1,117 @@
-| *Comment* | Test Case: All Pages |  |
-
-| *Comment* | Test Case: All Pages create four pages |  |
+| *Comment* | Test Case: Calc All Pages |  |
 
 | set | new_ws | all-pages-%%start_time%% |
-| include | [Create Clean Workspace] |  |
+| st-admin | create-workspace --name %%new_ws%% --title %%new_ws%% --empty |  |
+| st-admin | add-member --email %%email%% --workspace %%new_ws%% |  |
+| st-admin | enable-plugin --plugin socialcalc --workspace %%new_ws%% |  |
 
-| st-admin | update-page --email %%email%% --workspace %%new_ws%% --page "all pages %%start_time%% 0001" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0001" page has been created. |
-| st-admin | update-page --email %%email%% --workspace %%new_ws%% --page "all pages %%start_time%% 0002" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0002" page has been created. |
-| st-admin | update-page --email %%email%% --workspace %%new_ws%% --page "all pages %%start_time%% 0003" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0003" page has been created. |
-| st-admin | update-page --email %%email%% --workspace %%new_ws%% --page "all pages %%start_time%% 0004" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0004" page has been created. |
+| *Comment* | Test Case: Calc All Pages Set up |  |
+| open_ok | /%%new_ws%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0001%%start_time%%#edit |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
+| pause | 5000 | I hate pause; needed for entire page load |
+| click_and_wait | st-save-button-link |  |
+| open_ok | /%%new_ws%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0002%%start_time%%#edit |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
+| pause | 5000 | I hate pause; needed for entire page load |
+| click_and_wait | st-save-button-link |  |
+| open_ok | /%%new_ws%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0003%%start_time%%#edit |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
+| pause | 5000 | I hate pause; needed for entire page load |
+| click_and_wait | st-save-button-link |  |
+| open_ok | /%%new_ws%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0004%%start_time%%#edit |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
+| pause | 5000 | I hate pause; needed for entire page load |
+| click_and_wait | st-save-button-link |  |
 
-| *Comment* | Test Case: All Pages list view |  |
-| open_ok | /%%new_ws%%/index.cgi?action=recent_changes |  |
-| text_like | Changes in Last |  |
-| clickAndWait | link=All Pages |  |
-| text_like | All Pages ( |  |
+| *Comment* | Test Case: Calc All Pages name sorting |  |
+| open_ok | /%%new_ws%%/index.cgi?action=changes&changes=all |  |
 
-| *Comment* | Test Case: All Pages Sorting tests |  |
-| select_and_wait | sort-picker | Revisions |
+| text_like | contentContainer | All Pages ( |
+| click_and_wait | link=allpages spreadsheet0001%%start_time%% |  |
+| text_like | st-page-titletext | allpages spreadsheet0001%%start_time%% |
 
-| *Comment* | Test Case: All Pages sort Title asc |  |
+| open_ok | /%%new_ws%%/index.cgi?action=changes&changes=all |  |
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Title |
-| text_like | contentContainer | qr/all pages %%start_time%% 0001.+all pages %%start_time%% 0004/ |
-
-| *Comment* | Test Case: All Pages sort Title desc |  |
+| text_like | contentContainer | qr/allpages spreadsheet0001%%start_time%%.+allpages spreadsheet0004%%start_time%%/ |
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Title (↓) |
-| text_like | contentContainer | qr/all pages %%start_time%% 0004.+all pages %%start_time%% 0001/ |
+| text_like | contentContainer | qr/allpages spreadsheet0004%%start_time%%.+allpages spreadsheet0001%%start_time%%/ |
 
-| *Comment* | Test Case: All Pages sort Title asc |  |
-| select_and_wait | sort-picker | label=Title (↑) |
-| text_like | contentContainer | qr/all pages %%start_time%% 0001.+all pages %%start_time%% 0004/ |
+| *Comment* | Test Case: Calc All Pages. Open and Save for a later edit time |  |
+| open_ok | /%%new_ws%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0005%%start_time%%#edit |  |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
+| pause | 5000 | I hate pause; needed for entire page load |
+| click_and_wait | st-save-button-link |  |
 
-| *Comment* | Test Case: All Pages add a new page |  |
-| st-admin | update-page --email %%email%% --workspace %%new_ws%% --page "all pages %%start_time%% 0005" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0005" page has been created. |
-
-| open_ok | /%%new_ws%%/index.cgi?action=recent_changes |  |
-| clickAndWait | link=All Pages |  |
+| open_ok | /%%new_ws%%/index.cgi?action=changes&changes=all |  |
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | Revisions |
 
-| *Comment* | Test Case: All Pages default sort Date desc |  |
+| *Comment* | Test Case: Calc All Pages reopen. Date sort. |  |
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Date Last Edited |
-| text_like | contentContainer | qr/all pages %%start_time%% 0005.+all pages %%start_time%% 0004/ |
-
-| *Comment* | Test Case: All Pages sort Date asc |  |
+| text_like | contentContainer | qr/allpages spreadsheet0005%%start_time%%.+allpages spreadsheet0004%%start_time%%/ |
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Date Last Edited (↑) |
-| text_like | contentContainer | qr/all pages %%start_time%% 0002.+all pages %%start_time%% 0003/ |
+| text_like | contentContainer | qr/allpages spreadsheet0004%%start_time%%.+allpages spreadsheet0005%%start_time%%/ |
 
-| *Comment* | Test Case: All Pages sort Date desc |  |
-| select_and_wait | sort-picker | label=Date Last Edited (↓) |
-| text_like | contentContainer | qr/all pages %%start_time%% 0002.+all pages %%start_time%% 0001/ |
+| *Comment* | Test Case: Calc All Pages revision sort |  |
+| open_ok | /%%new_ws%%/index.cgi?action=changes&changes=all |
+| click_and_wait | link=allpages spreadsheet0004%%start_time%% |  |
 
-| *Comment* | Test Case: All Pages create Rev 2 |  |
-| st-admin | update-page --email %%email%% --workspace %%new_ws%% --page "all pages %%start_time%% 0005" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0005" page has been updated. |
-| open_ok | /%%new_ws%%/index.cgi?action=recent_changes |  |
-| clickAndWait | link=All Pages |  |
+| wait_for_element_visible_ok | st-edit-button-link |  |
+| click_ok | st-edit-button-link |  |
+| wait_for_element_visible_ok | st-save-button-link |  |
+| pause | 5000 | I hate pause; needed for entire page load |
+| click_and_wait | st-save-button-link |  |
+| wait_for_element_visible_ok | st-edit-button-link |  |
 
-| *Comment* | Test Case: All Pages sort Revisions desc |  |
+| open_ok | /%%new_ws%%/index.cgi?action=changes&changes=all |  |
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Revisions |
-| text_like | contentContainer | qr/all pages %%start_time%% 0005.+all pages %%start_time%% 0004/ |
-
-| *Comment* | Test Case: All Pages sort Revisions asc |  |
+| text_like | contentContainer | qr/allpages spreadsheet0004%%start_time%%.+allpages spreadsheet0003%%start_time%%/ |
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Revisions (↑) |
-| text_like | contentContainer | qr/all pages %%start_time%% 0004.+all pages %%start_time%% 0005/ |
+| text_like | contentContainer | qr/allpages spreadsheet0003%%start_time%%.+allpages spreadsheet0004%%start_time%%/ |
 
-| *Comment* | Test Case: All Pages sort Revisions desc |  |
-| select_and_wait | sort-picker | label=Revisions (↓) |
-| text_like | contentContainer | qr/all pages %%start_time%% 0005.+all pages %%start_time%% 0004/ |
-
-| *Comment* | Test Case: All Pages default sort Create Date desc |  |
-| select_and_wait | sort-picker | label=Date Created |
-| text_like | contentContainer | qr/all pages %%start_time%% 0005.+all pages %%start_time%% 0004/ |
-
-| *Comment* | Test Case: All Pages sort Create Date asc |  |
-| select_and_wait | sort-picker | label=Date Created (↑) |
-| text_like | contentContainer | qr/all pages %%start_time%% 0002.+all pages %%start_time%% 0003/ |
-
-| *Comment* | Test Case: All Pages sort Create Date desc |  |
-| select_and_wait | sort-picker | label=Date Created (↓) |
-| text_like | contentContainer | qr/all pages %%start_time%% 0002.+all pages %%start_time%% 0001/ |
-
-| *Comment* | Test Case: All Pages delete page |  |
-| st-admin | purge-page --w %%new_ws%% --p all_pages_%%start_time%%_0004 | purged |
-
-| open_ok | /%%new_ws%%/index.cgi?action=recent_changes |  |
-| clickAndWait | link=All Pages |  |
-| text_unlike | contentContainer | all pages %%start_time%% 0004 |
+| *Comment* | Test Case: Calc All Pages sort by Last Edited By |  |
 
 create a user that lexically precedes the logged in user by creating a user that begins with start_time
 However, don't use %%email%% in that username because that permanently creates another user name in the user DB that
 contains %%email%% as a substring and that messes up other tests like Test Case: Email
 
-| *Comment* | Test Case: All Pages verify revision by different user |  |
-
 | set | s_user | %%start_time%%@%%start_time%%.socialtext.net |
+
 | st-admin | create-user --email %%s_user%% --password 123456 |  |
 | st-admin | add-member --email %%s_user%% --workspace %%new_ws%% |  |
-| st-admin | update-page --email %%s_user%% --workspace %%new_ws%% --page "all pages %%start_time%% 0003" < %%wikitest_client_files%%wikitest.txt | The "all pages %%start_time%% 0003" page has been updated. |
+| st-logout |  |  |
+| st-login | %%s_user%% | 123456 |
+
+For some reason, IE 6 blows up when open_ok is used in some places. We avoid it.
+
+| *Comment* | Test Case: Calc All Pages revision by new user |  |
+| open_ok | /%%new_ws%%/index.cgi?action=changes&changes=all |  |
+| click_and_wait | link=allpages spreadsheet0003%%start_time%% |  |
+| wait_for_element_visible_ok | st-edit-button-link |  |
+| click_ok | st-edit-button-link |  |
+| wait_for_element_visible_ok | st-save-button-link |  |
+| pause | 5000 | I hate pause; needed for entire page load |
+| click_and_wait | st-save-button-link |  |
+| wait_for_element_visible_ok | st-edit-button-link |  |
+
+| *Comment* | Test Case: Calc All Pages verify revision by user %%s_user%% |  |
 
 | open_ok | /%%new_ws%%/index.cgi?action=changes&changes=all |  |
-| clickAndWait | link=All Pages |  |
-
-| *Comment* | label=Last Edited By (asc) |  |
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Last Edited By |
-| text_like | contentContainer | qr/all pages %%start_time%% 0003.+all pages %%start_time%% 0001/ |
-
+| text_like | contentContainer | qr/allpages spreadsheet0003%%start_time%%.+allpages spreadsheet0001%%start_time%%/ |
+| wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Last Edited By (↓) |
-| text_like | contentContainer | qr/all pages %%start_time%% 0001.+all pages %%start_time%% 0003/ |
+| text_like | contentContainer | qr/allpages spreadsheet0001%%start_time%%.+allpages spreadsheet0003%%start_time%%/ |
 
-| *Comment* | label=Last Edited By (asc) |  |
-| select_and_wait | sort-picker | label=Last Edited By (↑) |
-| text_like | contentContainer | qr/all pages %%start_time%% 0003.+all pages %%start_time%% 0001/ |
-
-| *Comment* | Test Case: All Pages switch back to Titles view |  |
-| click_and_wait | link=Summaries |  |
-| select_and_wait | sort-picker | label=Date Last Edited |
-| select_and_wait | sort-picker | label=Last Edited By |
-| text_like | contentContainer | qr/all pages %%start_time%% 0003.+all pages %%start_time%% 0001/ |
-
-| *Comment* | label=Last Edited By (desc) |  |
-| select_and_wait | sort-picker | label=Last Edited By (↓) |
-| text_like | contentContainer | qr/all pages %%start_time%% 0001.+all pages %%start_time%% 0003/ |
-
-| *Comment* | label=Last Edited By (asc) |  |
-| select_and_wait | sort-picker | label=Last Edited By (↑) |
-| text_like | contentContainer | qr/all pages %%start_time%% 0003.+all pages %%start_time%% 0001/ |
-
-| *Comment* | Test Case: All Pages Teardown. No need to login again. |  |
+| *Comment* | Test Case: Calc All Pages Teardown. No need to login again. |  |
 
 | st-admin | delete-workspace --workspace %%new_ws%% --no-export | The %%new_ws%% workspace has been deleted. |
 
-| *Comment* | Test Case: All Pages COMPLETED |  |
+| *Comment* | Test Case: Calc All Pages COMPLETED |  |

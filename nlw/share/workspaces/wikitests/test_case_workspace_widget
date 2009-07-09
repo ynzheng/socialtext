@@ -5,6 +5,7 @@
 | st-admin | create-workspace --name workspacewidget-%%start_time%% --title "Workspace Widget %%start_time%%" |  |
 | st-admin | add-member --workspace workspacewidget-%%start_time%% --username %%username%% |  |
 
+| st-clear-json-cache |  |  |
 | open_ok | /?dashboard | 60000 |
 | st-empty-container |  |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
@@ -27,6 +28,9 @@
 | *Comment* | Remove member, see if workspace is gone |  |
 | *Comment* | The widget name is %%myworkspace%% |  |
 | st-admin | remove-member --username %%username%% --workspace workspacewidget-%%start_time%% | is no longer a member |
+| st-logout |  |  |
+| st-clear-json-cache |  |  |
+| st-login |  |  |
 
 | open_ok | /?dashboard | 60000 |
 | st-name-widget | 1 | myworkspace |
