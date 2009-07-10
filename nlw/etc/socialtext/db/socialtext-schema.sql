@@ -459,6 +459,7 @@ CREATE TABLE job (
 
 CREATE TABLE json_proxy_cache (
     expires timestamptz NOT NULL,
+    user_id bigint NOT NULL,
     url text NOT NULL,
     headers text DEFAULT '' NOT NULL,
     authz text,
