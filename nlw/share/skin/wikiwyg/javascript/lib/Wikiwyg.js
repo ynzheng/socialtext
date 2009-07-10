@@ -1377,7 +1377,10 @@ this.addGlobal().setup_wikiwyg = function() {
     }
 
     ww.edit_summary = function () {
-        var val = jQuery('#st-edit-summary .input').val()
+        my $input = jQuery('#st-edit-summary .input');
+        if ($input.size() == 0) return '';
+
+        var val = $input.val()
             .replace(/\s+/g, ' ')
             .replace(/^\s*(.*?)\s*$/, '$1');
         return val;
