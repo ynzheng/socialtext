@@ -1034,9 +1034,11 @@ sub _load_account {
 }
 
 sub create_account {
-    my $self = shift;
-
-    my $name = $self->_require_string('name');
+    my $self  = shift;
+    my $name  = $self->_require_string('name');
+    my $user  = Socialtext::User->SystemUser();
+    my $ws    = Socialtext::NoWorkspace->new();
+    my ($hub) = $self->_make_hub($ws, $user);
 
     require Socialtext::Account;
 
@@ -1045,7 +1047,7 @@ sub create_account {
             qq|The account name you provided, "$name", is already in use.|);
     }
 
-    my $account = eval { Socialtext::Account->create( name => $name ) };
+    my $account = eval { $hub->account_factory->create( name => $name ) };
 
     if ( my $e
         = Exception::Class->caught('Socialtext::Exception::DataValidation') )

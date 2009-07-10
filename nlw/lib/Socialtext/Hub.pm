@@ -403,6 +403,8 @@ BEGIN {
         # keep this last if you want pluggable plugins
         # to be able to override wafls, etc!
         'Socialtext::Pluggable::Adapter',
+        # So that we can use hooks w/accounts.
+        'Socialtext::AccountFactory',
     );
     for my $class (@classes) {
         next if $class =~ m{::SUPER$};
