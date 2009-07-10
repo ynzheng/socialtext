@@ -138,7 +138,8 @@ sub _create_workspace {
     $creator ||= Socialtext::User->SystemUser();
 
     my $account = Socialtext::Account->new( name => $info->{account_name} );
-    $account ||= Socialtext::Account->create( name => $info->{account_name} );
+    $account ||= $self->hub->account_factory->create( 
+        name => $info->{account_name} );
 
     my $ws = Socialtext::Workspace->create(
         title => $info->{title},

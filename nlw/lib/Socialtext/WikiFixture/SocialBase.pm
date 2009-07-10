@@ -204,6 +204,8 @@ sub standard_test_setup {
 sub create_account {
     my $self = shift;
     my $name = shift;
+
+    # REVIEW: Do we need to use the AccountFactory plugin to create this?
     my $acct = Socialtext::Account->create(
         name => $name,
     );

@@ -417,7 +417,8 @@ sub main_hub {
 
     sub create_test_account {
         my $unique_id = shift || create_unique_id;
-        return Socialtext::Account->create(name => $unique_id);
+        my $hub       = main_hub();
+        return $hub->account_factory->create( name => $unique_id );
     }
 
     sub create_test_user {

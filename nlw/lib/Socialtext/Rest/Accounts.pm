@@ -92,11 +92,8 @@ sub _create_account {
     my $new_account;
 
     eval {
-        $new_account =
-          Socialtext::Account->create(
-                                      name => $new_account_name
-                                     );
-        
+        $new_account = $self->hub->account_factory->create(
+            name => $new_account_name );
     };
 
     if ( my $e
