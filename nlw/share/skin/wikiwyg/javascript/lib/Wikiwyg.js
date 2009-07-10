@@ -1377,7 +1377,7 @@ this.addGlobal().setup_wikiwyg = function() {
     }
 
     ww.edit_summary = function () {
-        my $input = jQuery('#st-edit-summary .input');
+        var $input = jQuery('#st-edit-summary .input');
         if ($input.size() == 0) return '';
 
         var val = $input.val()
