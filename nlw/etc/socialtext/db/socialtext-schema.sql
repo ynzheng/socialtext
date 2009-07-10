@@ -1436,6 +1436,11 @@ ALTER TABLE ONLY signal
             FOREIGN KEY (in_reply_to_id)
             REFERENCES signal(signal_id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY json_proxy_cache
+    ADD CONSTRAINT json_proxy_cache_user_id_fk
+            FOREIGN KEY (user_id)
+            REFERENCES users(user_id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY page
     ADD CONSTRAINT page_creator_id_fk
             FOREIGN KEY (creator_id)
