@@ -86,7 +86,7 @@ print "Linking in console cgi ($console_cgi) ...\n";
 unlink $console_cgi;
 set_contents($console_cgi, <<EOT);
 #!/bin/bash
-export ST_APP_CONFIG=$ENV{HOME}/.nlw/etc/appliance.conf
+export ST_APP_CONFIG=$ENV{HOME}/.nlw/etc/socialtext/appliance.conf
 perl -I$ENV{HOME}/src/st/current/nlw/lib $console_dir/cgi/appliance.cgi
 EOT
 chmod 0755, $console_cgi or die "Can't chmod 0755, $console_cgi: $!";
