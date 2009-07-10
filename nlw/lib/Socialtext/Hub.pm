@@ -397,7 +397,6 @@ BEGIN {
             Socialtext::RtfExportPlugin
             Socialtext::WorkspacesUIPlugin
             Socialtext::WorkspaceListPlugin
-            Socialtext::ProvisionPlugin
             Socialtext::PageActivityPlugin
         ),
         # keep this last if you want pluggable plugins
