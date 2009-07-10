@@ -1,6 +1,6 @@
 package Socialtext::Events::Stream::HasPeople;
 use Moose::Role;
-use Socialtext::Events::Source::PersonAccount;
+use Socialtext::Events::Source::PersonVisible;
 use namespace::clean -except => 'meta';
 
 requires 'assemble';
@@ -25,13 +25,11 @@ after 'add_sources' => sub {
     my $sources = shift;
 
     my $ids = $self->people_account_ids;
-    for my $account_id (@$ids) {
-        push @$sources, $self->construct_source(
-            'Socialtext::Events::Source::PersonAccount',
-            account_id => $account_id,
-            visible_account_ids => $ids,
-        );
-    }
+    return unless $ids && @$ids;
+    push @$sources, $self->construct_source(
+        'Socialtext::Events::Source::PersonVisible',
+        visible_account_ids => $ids,
+    );
 };
 
 1;
