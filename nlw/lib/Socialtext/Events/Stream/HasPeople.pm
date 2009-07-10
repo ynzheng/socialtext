@@ -24,10 +24,12 @@ after 'add_sources' => sub {
     my $self = shift;
     my $sources = shift;
 
-    for my $account_id (@{ $self->people_account_ids }) {
+    my $ids = $self->people_account_ids;
+    for my $account_id (@$ids) {
         push @$sources, $self->construct_source(
             'Socialtext::Events::Source::PersonAccount',
             account_id => $account_id,
+            visible_account_ids => $ids,
         );
     }
 };
