@@ -20,10 +20,10 @@ sub _visible_exists {
     my $outer_field = shift;
     my $sa = sql_abstract();
     my ($sql, @binds) = $sa->select(
-        'account_user', '1', [
+        'account_user', '1', {-and => [
             \"user_id = $outer_field",
             account_id => {-in => $self->visible_account_ids},
-        ],
+        ]},
     );
     return \["EXISTS($sql)", @binds];
 }
