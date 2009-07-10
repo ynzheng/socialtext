@@ -223,7 +223,7 @@
 
 | *Comment* | Test Case: Preferences UI User Weblogs. Default: 10 posts |  |
 | click_and_wait | link=Settings |  |
-| click_and_wait | //a[@href='?action=preferences_settings;preferences_class_id=weblog'] |  |
+| click_and_wait | //a[contains(@href,'preferences_class_id=weblog')] |  |
 | text_like | contentContainer | How many posts should be displayed in weblog view |
 | is_selected_ok | weblog__weblog_depth | label=10 |
 
@@ -247,7 +247,7 @@
 
 | *Comment* | Test Case: Preferences UI User Weblogs. Navigate away, come back, verify |  |
 | click_and_wait | link=Settings |  |
-| click_and_wait | //a[@href='?action=preferences_settings;preferences_class_id=weblog'] |  |
+| click_and_wait | //a[contains(@href,'preferences_class_id=weblog')] |  |
 | text_like | contentContainer | How many posts should be displayed in weblog view |
 | is_selected_ok | weblog__weblog_depth | label=50 |
 
@@ -299,7 +299,7 @@
 
 | *Comment* | Test Case: Preferences UI User. What's New. Defaults: Last week, display off, 4 items |  |
 | click_and_wait | link=Settings |  |
-| click_and_wait | //a[@href='?action=preferences_settings;preferences_class_id=recent_changes'] |  |
+| click_and_wait | //a[contains(@href,'preferences_class_id=recent_changes')] |  |
 | text_like | contentContainer | What time interval |
 | text_like | contentContainer | Display as a side box |
 | text_like | contentContainer | How many items from that time period |
@@ -326,7 +326,7 @@
 
 | *Comment* | Test Case: Preferences UI User. What's New. Set: Last Month, off, 2 items |  |
 | click_and_wait | link=Settings |  |
-| click_and_wait | //a[@href='?action=preferences_settings;preferences_class_id=recent_changes'] |  |
+| click_and_wait | //a[contains(@href,'preferences_class_id=recent_changes')] |  |
 | select_ok | recent_changes__changes_depth | label=Last Month |
 | uncheck_ok | recent_changes__include_in_pages |  |
 | select_ok | recent_changes__sidebox_changes_depth | label=2 |
@@ -345,7 +345,7 @@
 
 | *Comment* | Test Case: Preferences UI User. What's New. Save without changing values |  |
 | click_and_wait | link=Settings |  |
-| click_and_wait | //a[@href='?action=preferences_settings;preferences_class_id=recent_changes'] |  |
+| click_and_wait | //a[contains(@href,'preferences_class_id=recent_changes')] |  |
 | click_and_wait | link=Save |  |
 | text_like | qr/Preferences Saved/i |  |
 | is_selected_ok | recent_changes__changes_depth | label=Last Month |
