@@ -1,4 +1,5 @@
 package Socialtext::AccountFactory;
+# @COPYRIGHT@
 use Moose;
 use Socialtext::Account;
 use namespace::clean -except => 'meta';
@@ -21,3 +22,18 @@ sub create {
 no Moose;
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 1;
+
+=head1 NAME
+
+Socialtext::AccountFactory - a factory for creating accounts.
+
+=head1 SYNOPSIS
+
+  $self->hub->account_factory->create( name => $name );
+
+=head1 DESCRIPTION
+
+C<Socialtext::AccountFactory> creates an account and calls the account_create
+pluggable plugin hooks.
+
+=cut
