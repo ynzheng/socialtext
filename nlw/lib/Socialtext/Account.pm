@@ -523,6 +523,9 @@ sub new_from_hash_ref {
     return bless $row, $class;
 }
 
+# NOTE: Use and account_factory to create an account so that
+# the proper hooks get called. To re-iterate: Do NOT call this
+# directly.
 sub create {
     my ( $class, %p ) = @_;
 
