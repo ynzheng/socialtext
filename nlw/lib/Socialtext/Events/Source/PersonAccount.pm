@@ -7,6 +7,7 @@ use namespace::clean -except => 'meta';
 with 'Socialtext::Events::Source', 'Socialtext::Events::SQLSource';
 
 has 'account_id' => ( is => 'ro', isa => 'Int', required => 1 );
+has 'visible_account_ids' => ( is => 'ro', isa => 'ArrayRef' );
 
 sub next { 
     my $self = shift;
@@ -22,17 +23,27 @@ sub query_and_binds {
     # lot fewer queries that we have to run the EXISTS check for the actor_id
     my $person_sql = 
         q{person_id IN (SELECT user_id FROM account_user WHERE account_id = ?)};
-    my $actor_sql = q{EXISTS(
-        SELECT 1 FROM account_user WHERE account_id=? AND user_id=actor_id
-    )};
 
     my @where = (
         event_class => 'person',
         ($self->filter->contributions ? 
             \"is_profile_contribution(action)" : ()),
         \[$person_sql => $self->account_id],
-        \[$actor_sql => $self->account_id],
     );
+
+    {
+        # the actor needs to share *any* of his/her accounts with the viewer
+        # (not necessarily this account)
+        my $sub_sa = sql_abstract();
+        my ($sub_sql, @sub_binds) = $sub_sa->select(
+            'account_user', '1', [
+                \'user_id = actor_id',
+                account_id => {-in => $self->visible_account_ids},
+            ], undef, 1 # no order, limit to 1
+        );
+
+        push @where, \["EXISTS($sub_sql)", @sub_binds];
+    }
 
     $self->add_where_clauses(\@where);
 
