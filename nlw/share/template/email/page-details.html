@@ -12,8 +12,9 @@
   [%- END -%]
 [%- END -%]
 
-<li><a href="[% workspace.uri %]?[% page.uri %]">[% page.metadata.Subject %]</a>  [%- IF include_editor %]
-    <br />
+<dt><a href="[% workspace.uri %]?[% page.uri %]">[% page.metadata.Subject %]</a></dt>
+[%- IF include_editor %]
+  <dd>
     [%- IF user.username == page.last_edited_by.username %]
       [% SET escaped_name = loc('you') | html %]
     [% ELSE %]
@@ -32,5 +33,5 @@
     [% ELSE %]
       [% loc('[_1] <a href="[_3]">[_2]</a> [_4]', action, escaped_name, profile_uri, edit_time) %]
     [%- END %]
-  [%- END %]
-</li>
+  </dd>
+[%- END %]

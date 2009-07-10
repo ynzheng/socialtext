@@ -7,6 +7,9 @@
 </head>
 
 <body>
+<style type="text/css">
+[% PROCESS 'email/page-details.css' %]
+</style>
 
 <p>
   [% user.guess_real_name | html %],
@@ -16,11 +19,11 @@
   [% loc('The following pages in <a href="[_1]">[_2]</a> have recently changed. This email was generated on [_3] at [_4].', workspace.uri, escaped_title, email_date, email_time) %]
 </p>
 
-<ul>
+<dl>
   [%- FOR page = pages %]
     [% PROCESS 'email/page-details.html' %]
   [%- END %]
-</ul>
+</dl>
 
 <hr />
 

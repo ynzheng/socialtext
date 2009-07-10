@@ -8,6 +8,9 @@
 </head>
 
 <body>
+<style type="text/css">
+[% PROCESS 'email/page-details.css' %]
+</style>
 
 <p>
   [% user.guess_real_name | html %],
@@ -17,11 +20,11 @@
   [% loc('The following pages in your <a href="[_1]">watchlist</a> in <a href="[_3]">[_2]</a> have recently changed. This email was generated on [_4] at [_5].', watchlist_uri, escaped_title, workspace.uri, email_date, email_time) %]
 </p>
 
-<ul>
+<dl>
   [%- FOR page = pages %]
     [% PROCESS 'email/page-details.html' %]
   [%- END %]     
-</ul>
+</dl>
 
 <hr />
 <p>
