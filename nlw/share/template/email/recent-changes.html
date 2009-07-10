@@ -9,28 +9,27 @@
 <body>
 
 <p>
-[% user.guess_real_name | html %],
+  [% user.guess_real_name | html %],
 </p>
 
 <p>
-[% loc('The following pages in <a href="[_1]">[_2]</a> have recently changed. This email was generated on [_3] at [_4].', workspace.uri, escaped_str1, email_date, email_time) %]
+  [% loc('The following pages in <a href="[_1]">[_2]</a> have recently changed. This email was generated on [_3] at [_4].', workspace.uri, escaped_str1, email_date, email_time) %]
 </p>
 
 <ul>
-[%- FOR page = pages %]
-  [% PROCESS 'email/page-details.html' %]
-[%- END %]
+  [%- FOR page = pages %]
+    [% PROCESS 'email/page-details.html' %]
+  [%- END %]
 </ul>
 
 <hr />
 
 <p>
-[% loc('To stop receiving or change how often you receive emails about changes to [_1], you can <a href="[_2]">change your preferences</a>.', escaped_str1, escaped_str2) %]
+  [% loc('To stop receiving or change how often you receive emails about changes to [_1], you can <a href="[_2]">change your preferences</a>.', escaped_str1, escaped_str2) %]
 </p>
 
 
-[% PROCESS 'email/standard-footer.html',
-   support_link = 0 %]
+[% PROCESS 'email/standard-footer.html', support_link = 0 %]
 
 </body>
 </html>

@@ -1,35 +1,34 @@
 [%# @COPYRIGHT@ -%]
 <html>
 <head>
- [% SET escaped_title = workspace.title | html %]
- [% SET watchlist_uri = workspace.uri _ '?action=watchlist' %]
- <title>[% loc('Watchlist Update for [_1]', escaped_title) %]</title>
+  [% SET escaped_title = workspace.title | html %]
+  [% SET watchlist_uri = workspace.uri _ '?action=watchlist' %]
+  <title>[% loc('Watchlist Update for [_1]', escaped_title) %]</title>
 </head>
 
 <body>
 
 <p>
-[% user.guess_real_name | html %],
+  [% user.guess_real_name | html %],
 </p>
 
 <p>
-[% loc('The following pages in your <a href="[_1]">watchlist</a> in <a href="[_3]">[_2]</a> have recently changed. This email was generated on [_4] at [_5].', watchlist_uri, escaped_title, workspace.uri, email_date, email_time) %]
+  [% loc('The following pages in your <a href="[_1]">watchlist</a> in <a href="[_3]">[_2]</a> have recently changed. This email was generated on [_4] at [_5].', watchlist_uri, escaped_title, workspace.uri, email_date, email_time) %]
 </p>
 
 <ul>
-[%- FOR page = pages %]
-  [% PROCESS 'email/page-details.html' %]
-[%- END %]     
+  [%- FOR page = pages %]
+    [% PROCESS 'email/page-details.html' %]
+  [%- END %]     
 </ul>
 
 <hr />
 [% SET escaped_str2 = watchlist_preference_uri | html %]
 <p>
-[% loc('To stop receiving or change how often you receive emails about changes to your watchlist in [_1], you can <a href="[_2]">change your preferences</a>.',  escaped_title, escaped_str2) %]
+  [% loc('To stop receiving or change how often you receive emails about changes to your watchlist in [_1], you can <a href="[_2]">change your preferences</a>.',  escaped_title, escaped_str2) %]
 </p>
 
-[% PROCESS 'email/standard-footer.html'
-   support_link = 0 %]
+[% PROCESS 'email/standard-footer.html' support_link = 0 %]
 
 </body>
 </html>
