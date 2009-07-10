@@ -180,10 +180,13 @@ sub default_workspace {
 
 sub signals_only {
     my $self = shift;
-    eval "require Socialtext::Appliance::Config";
 
     # Appliance Code is probably not installed if there's an error.
-    return 0 if $@;
+    eval "require Socialtext::Appliance::Config";
+    if ( my $e = $@ ) {
+        st_log( 'info', "Could not load Socialtext::Appliance::Config: $e\n" );
+        return 0;
+    }
 
     my $config = Socialtext::Appliance::Config->new;
     return $config->value('signals_only');
