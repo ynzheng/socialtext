@@ -1,9 +1,9 @@
 [%# @COPYRIGHT@ -%]
-[% SET escaped_str1 = workspace.title | html %]
-[% SET escaped_str2 = preference_uri | html %]
+[%- SET escaped_title = workspace.title | html -%]
+[%- SET escaped_uri   = preference_uri  | html -%]
 <html>
 <head>
- <title>[% loc('Recent changes in [_1]', escaped_str1) %]</title>
+ <title>[% loc('Recent changes in [_1]', escaped_title) %]</title>
 </head>
 
 <body>
@@ -13,7 +13,7 @@
 </p>
 
 <p>
-  [% loc('The following pages in <a href="[_1]">[_2]</a> have recently changed. This email was generated on [_3] at [_4].', workspace.uri, escaped_str1, email_date, email_time) %]
+  [% loc('The following pages in <a href="[_1]">[_2]</a> have recently changed. This email was generated on [_3] at [_4].', workspace.uri, escaped_title, email_date, email_time) %]
 </p>
 
 <ul>
@@ -25,7 +25,7 @@
 <hr />
 
 <p>
-  [% loc('To stop receiving or change how often you receive emails about changes to [_1], you can <a href="[_2]">change your preferences</a>.', escaped_str1, escaped_str2) %]
+  [% loc('To stop receiving or change how often you receive emails about changes to [_1], you can <a href="[_2]">change your preferences</a>.', escaped_title, escaped_uri) %]
 </p>
 
 

@@ -1,8 +1,9 @@
 [%# @COPYRIGHT@ -%]
+[%- SET escaped_title = workspace.title | html -%]
+[%- SET escaped_uri   = watchlist_preference_uri | html -%]
+[%- SET watchlist_uri = workspace.uri _ '?action=watchlist' -%]
 <html>
 <head>
-  [% SET escaped_title = workspace.title | html %]
-  [% SET watchlist_uri = workspace.uri _ '?action=watchlist' %]
   <title>[% loc('Watchlist Update for [_1]', escaped_title) %]</title>
 </head>
 
@@ -23,9 +24,8 @@
 </ul>
 
 <hr />
-[% SET escaped_str2 = watchlist_preference_uri | html %]
 <p>
-  [% loc('To stop receiving or change how often you receive emails about changes to your watchlist in [_1], you can <a href="[_2]">change your preferences</a>.',  escaped_title, escaped_str2) %]
+  [% loc('To stop receiving or change how often you receive emails about changes to your watchlist in [_1], you can <a href="[_2]">change your preferences</a>.',  escaped_title, escaped_uri) %]
 </p>
 
 [% PROCESS 'email/standard-footer.html' support_link = 0 %]
