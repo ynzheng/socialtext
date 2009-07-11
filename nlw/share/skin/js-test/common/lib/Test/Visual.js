@@ -440,9 +440,12 @@ proto.wikitextModeIsReady = function () {
     );
 }
 
-proto._doEdit = function(check, button) {
+proto._doEdit = function(check, button, mode_name) {
     var t = this;
     return function() {
+        if (mode_name) {
+            t.win.Cookie.set('first_wikiwyg_mode', mode_name);
+        }
         t.$('#st-edit-button-link').click();
         t.poll(
             function() { return t.wikiwyg_started() },
@@ -460,11 +463,11 @@ proto._doEdit = function(check, button) {
 
 proto.doRichtextEdit = function() {
     this.checkRichTextSupport();
-    return this._doEdit(this.richtextModeIsReady, '#st-mode-wysiwyg-button');
+    return this._doEdit(this.richtextModeIsReady, '#st-mode-wysiwyg-button', 'Wikiwyg.Wysiwyg');
 };
 
 proto.doWikitextEdit = function() {
-    return this._doEdit(this.wikitextModeIsReady, '#st-mode-wikitext-button');
+    return this._doEdit(this.wikitextModeIsReady, '#st-mode-wikitext-button', 'Wikiwyg.Wikitext');
 };
 
 proto.doCreatePage = function(content, opts) {
