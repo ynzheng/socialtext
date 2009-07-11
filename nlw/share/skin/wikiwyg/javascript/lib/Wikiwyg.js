@@ -1231,6 +1231,7 @@ this.addGlobal().setup_wikiwyg = function() {
 
     if (!Socialtext.new_page) {
         setTimeout(function() {
+            if (Socialtext.page_type == 'spreadsheet') return;
             jQuery('#st-save-button-link').click(function() {
                 ww.is_editing = false;
                 ww.showScrollbars();
@@ -1242,6 +1243,7 @@ this.addGlobal().setup_wikiwyg = function() {
 
     // node handles
     jQuery('#st-cancel-button-link').click(function() {
+        if (Socialtext.page_type == 'spreadsheet') return;
         ww.signal_edit_cancel();
         try {
             if (ww.contentIsModified()) {
