@@ -61,6 +61,9 @@ TODO: make this run with LDAP user Dev Null Three, perhaps rename him devnull3
 | click_and_wait | link=%%fFname%% |  |
 | wait_for_element_visible_ok | link=Stop following this person | 30000 |
 | click_ok | link=Stop following this person |  |
+
+| *Comment* | Test Case: Follow. Unfollow - IE needs profile reopened |  |
+| click_and_wait | link=%%fFname%% |  |
 | wait_for_element_visible_ok | link=Follow this person | 30000 |
 
 | *Comment* | Test Case: Follow. Verify UnFollow %%fFname%% in %%short_username%% profile |  |
@@ -147,6 +150,9 @@ TODO: make this run with LDAP user Dev Null Three, perhaps rename him devnull3
 | *Comment* | Test Case: Follow. %%fFname%% stops following %%short_username%% |  |
 | wait_for_element_visible_ok | link=Stop following this person | 30000 |
 | click_ok | link=Stop following this person |  |
+
+| *Comment* | Test Case: Follow. Follow - IE needs profile reopened. Use Following link in People dropdown for %%short_username%% |  |
+| click_and_wait | link=%%short_username%% |  |
 | wait_for_element_visible_ok | link=Follow this person | 30000 |
 
 | *Comment* | Test Case: Follow. %%fFname%% Verifies stopped following %%short_username%% |  |
