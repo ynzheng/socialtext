@@ -3,12 +3,12 @@
 | open_ok | /%%workspace%%/index.cgi?car_loan |
 | click_and_wait | link=Mobile |
 
-| *Comment* | Test Case: Miki - wait for the Miki navigation links to appear |
+| *Comment* | Test Case: Miki - wait for the Miki navigation links to appear |  |
 | text_like | //a[contains(@href,'lite/changes/%%workspace%%')] | Recent Changes |
-| text_like | This loan is offered through the Biggie Motors Automation Corporation |
-| text_like | 3890.40 |
-| text_like | Loan Amount |
-| click_and_wait | link=Home |
+| text_like | This loan is offered through the Biggie Motors Automation Corporation |  |
+| text_like | 3890.40 |  |
+| text_like | Loan Amount |  |
+| click_and_wait | link=Home |  |
 
 | *Comment* | Test Case: Miki Open a spreadsheet directly in Miki |  |
 | open_ok | /lite/page/%%workspace%%/car_loan |  |
@@ -17,9 +17,8 @@
 | text_like | 3890.40 |  |
 | text_like | Loan Amount |  |
 | click_ok | link=Edit |  |
-| wait_for_element_visible_ok | link=Cancel Edit |  |
-| pause | 3000 |
-| text_like | edit_textarea | cell:C4:vtc:n%:0.05:5.0% |
+| wait_for_element_visible_ok | link=Cancel Edit | 30000 |
+| wait_for_text_present_ok | cell:C4:vtc:n%:0.05:5.0% | 30000 |
 | click_and_wait | link=Cancel Edit |  |
 | text_like | Loan Amount |  |
 | text_like | Payment |  |
