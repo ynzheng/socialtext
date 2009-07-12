@@ -16,14 +16,12 @@
 | st-name-widget | 1 | tag_cloud |
 | st-widget-title-like | tag_cloud | Tags for help-en workspace |
 
-| *Comment* | Test Case: Tag Cloud Widget. Verify the help-en tags |  |
+| *Comment* | Test Case: Tag Cloud Widget. Verify some help-en tags |  |
 | st-select-widget-frame | tag_cloud |  |
-| text_like | //body | Socialtext |
-| text_like | //body | weblog |
-| text_like | //body | Top Page |
-| text_like | //body | Project |
-| text_like | //body | Dakota |
-| text_like | //body | Help |
+| wait_for_element_visible_ok | link=Socialtext weblog | 30000 |
+| wait_for_element_visible_ok | link=Top Page | 30000 |
+| wait_for_element_visible_ok | link=Project Dakota | 30000 |
+| wait_for_element_visible_ok | link=Help | 30000 |
 
 | *Comment* | Test Case: Tag Cloud Widget. Set the widget for workspace test-data |  |
 | select-frame | relative=parent |  |
@@ -34,7 +32,7 @@
 | click_ok | st-savebutton-%%tag_cloud%% |  |
 | wait_for_element_not_visible_ok | st-savebutton-%%tag_cloud%% | 30000 |
 
-| *Comment* | Test Case: Tag Cloud Widget. Verify the test-data tags |  |
+| *Comment* | Test Case: Tag Cloud Widget. Verify some test-data tags |  |
 | st-select-widget-frame | tag_cloud |  |
 | wait_for_element_visible_ok | link=Welcome | 30000 |
 | wait_for_element_visible_ok | link=jabber | 1000 |
