@@ -35,6 +35,7 @@ our @EXPORT = qw(
     new_hub
     create_test_hub
     create_test_account
+    create_test_account_bypassing_factory
     create_test_user
     create_test_workspace
     create_test_group
@@ -419,6 +420,11 @@ sub main_hub {
         my $unique_id = shift || create_unique_id;
         my $hub       = main_hub();
         return $hub->account_factory->create( name => $unique_id );
+    }
+
+    sub create_test_account_bypassing_factory {
+        my $unique_id = shift || create_unique_id;
+        return Socialtext::Account->create(name => $unique_id);
     }
 
     sub create_test_user {
