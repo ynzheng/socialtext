@@ -42,7 +42,7 @@ configured_group_factories: {
 ###############################################################################
 # TEST: query Groups by Account Id
 query_groups_by_account_id: {
-    my $account = create_test_account();
+    my $account = create_test_account_bypassing_factory();
 
     # create some Groups, *not* in alphabetical order; so we know when we get
     # them back that they're not just returned in "the order they were stuffed

@@ -24,7 +24,7 @@ backup: {
     my $def_role = Socialtext::UserGroupRoleFactory->DefaultRole();
 
     # create dummy data.
-    my $account   = create_test_account();
+    my $account   = create_test_account_bypassing_factory();
     my $group_one = create_test_group(account => $account);
     my $user_one  = create_test_user();
     add_user_to_group($user_one, $group_one);
@@ -60,7 +60,7 @@ basic_restore: {
     my ($test_username, $test_creator_name, $test_group_name, $test_role_name);
 
     do_backup: {
-        my $account = create_test_account();
+        my $account = create_test_account_bypassing_factory();
         my $user    = create_test_user();
         my $group   = create_test_group(account => $account);
         add_user_to_group($user, $group);
@@ -95,7 +95,7 @@ basic_restore: {
 
     # import the data that we just exported
     my $plugin  = Socialtext::Pluggable::Plugin::Groups->new();
-    my $account = create_test_account();
+    my $account = create_test_account_bypassing_factory();
     $plugin->import_groups_for_account($account, $data_ref);
 
     my $groups = $account->groups;
@@ -133,7 +133,7 @@ basic_restore: {
 # TEST: restore, pre-groups
 restore_no_groups: {
     my $data_ref = {};
-    my $account  = create_test_account();
+    my $account  = create_test_account_bypassing_factory();
     my $plugin   = Socialtext::Pluggable::Plugin::Groups->new();
 
     lives_ok { $plugin->import_groups_for_account( $account, $data_ref ) }
@@ -153,7 +153,7 @@ restore_with_existing_group: {
 
     do_backup: {
         # create a Group to test with
-        my $account  = create_test_account();
+        my $account  = create_test_account_bypassing_factory();
         my $group    = create_test_group(account => $account);
         $test_group_name = $group->driver_group_name;
 
@@ -203,7 +203,7 @@ restore_with_existing_group: {
 
     # create an Account and then re-create the Group, so we can test import
     # *merging*
-    my $account = create_test_account();
+    my $account = create_test_account_bypassing_factory();
     my $group   = create_test_group(
         account   => $account,
         unique_id => $test_group_name

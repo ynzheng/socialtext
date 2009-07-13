@@ -38,13 +38,13 @@ $ENV{ST_EXPORT_DIR} = 't/tmp';
 # that we're really concerned about.
 my $default_acct   = Socialtext::Account->Default;
 
-my $test_account   = create_test_account();
+my $test_account   = create_test_account_bypassing_factory();
 my $test_acct_id   = $test_account->account_id();
 my $test_acct_name = $test_account->name();
 my $user_one       = create_test_user(account => $test_account);
 my $user_two       = create_test_user(account => $test_account);
 
-my $dummy_account  = create_test_account();
+my $dummy_account  = create_test_account_bypassing_factory();
 my $test_user      = create_test_user(account => $dummy_account);
 my $test_user_name = $test_user->username();
 

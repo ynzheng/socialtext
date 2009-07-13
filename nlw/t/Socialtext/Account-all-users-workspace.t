@@ -20,7 +20,7 @@ use_ok 'Socialtext::Account';
 ################################################################################
 # TEST: Set all_users_workspace
 set_all_users_workspace: {
-    my $acct = create_test_account();
+    my $acct = create_test_account_bypassing_factory();
     my $ws   = create_test_workspace(account => $acct);
 
     # update the all_users_workspace
@@ -33,7 +33,7 @@ set_all_users_workspace: {
 ################################################################################
 # TEST: Set all_users_workspace, workspace does not exist
 set_workspace_does_not_exist: {
-    my $acct = create_test_account();
+    my $acct = create_test_account_bypassing_factory();
 
     dies_ok {
         $acct->update( all_users_workspace => '-2000' );
@@ -45,7 +45,7 @@ set_workspace_does_not_exist: {
 ################################################################################
 # TEST: Set all_users_workspace, workspace not in account
 set_workspace_not_in_account: {
-    my $acct = create_test_account();
+    my $acct = create_test_account_bypassing_factory();
     my $ws   = create_test_workspace();
 
     dies_ok {
@@ -58,7 +58,7 @@ set_workspace_not_in_account: {
 ################################################################################
 # TEST: Add user to account no all users workspace.
 account_no_workspace: {
-    my $acct = create_test_account();
+    my $acct = create_test_account_bypassing_factory();
     my $ws   = create_test_workspace(account => $acct);
     my $user = create_test_user(account => $acct);
 
@@ -70,8 +70,8 @@ account_no_workspace: {
 ################################################################################
 # TEST: add user to all users workspace, not in account
 user_not_in_account: {
-    my $other_acct = create_test_account();
-    my $acct       = create_test_account();
+    my $other_acct = create_test_account_bypassing_factory();
+    my $acct       = create_test_account_bypassing_factory();
     my $ws         = create_test_workspace(account => $acct);
     my $user       = create_test_user();
 
@@ -89,8 +89,8 @@ user_not_in_account: {
 ################################################################################
 # TEST: Add/Remove user to account with all users workspace ( high level ).
 account_with_workspace_high_level: {
-    my $other_acct = create_test_account();
-    my $acct       = create_test_account();
+    my $other_acct = create_test_account_bypassing_factory();
+    my $acct       = create_test_account_bypassing_factory();
     my $ws         = create_test_workspace(account => $acct);
 
     # Make the workspace the all account workspace.
@@ -118,7 +118,7 @@ account_with_workspace_high_level: {
 ################################################################################
 # TEST: user is added when all users workspace changes
 account_with_workspace_high_level: {
-    my $acct = create_test_account();
+    my $acct = create_test_account_bypassing_factory();
     my $ws   = create_test_workspace(account => $acct);
     my $user = create_test_user(account => $acct);
 
@@ -133,7 +133,7 @@ account_with_workspace_high_level: {
 ################################################################################
 # TEST: all users workspace changes, user stays in ws.
 user_remains: {
-    my $acct     = create_test_account();
+    my $acct     = create_test_account_bypassing_factory();
     my $ws       = create_test_workspace(account => $acct);
     my $other_ws = create_test_workspace(account => $acct);
 

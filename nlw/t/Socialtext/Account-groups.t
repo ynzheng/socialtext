@@ -13,7 +13,7 @@ fixtures(qw( db ));
 ###############################################################################
 # TEST: a newly created Account has *no* Groups in it.
 new_account_has_no_groups: {
-    my $account = create_test_account();
+    my $account = create_test_account_bypassing_factory();
     my $count   = $account->group_count();
     is $count, 0, 'newly created Account has no Groups in it';
 
@@ -28,7 +28,7 @@ new_account_has_no_groups: {
 ###############################################################################
 # TEST: Group count is correct
 group_count_is_correct: {
-    my $account = create_test_account();
+    my $account = create_test_account_bypassing_factory();
 
     # add some Groups, make sure the count goes up
     my $group_one = create_test_group(account => $account);
@@ -47,7 +47,7 @@ group_count_is_correct: {
 ###############################################################################
 # TEST: Group count is correct, when Groups are removed
 group_count_is_correct_when_groups_removed: {
-    my $account = create_test_account();
+    my $account = create_test_account_bypassing_factory();
 
     # add some Groups, make sure the count goes up
     my $group_one = create_test_group(account => $account);
