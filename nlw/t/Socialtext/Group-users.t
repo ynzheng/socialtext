@@ -67,8 +67,7 @@ add_user_to_group_with_default_role: {
     $group->add_user(user => $user);
 
     # Make sure the User got added properly
-    my $users = $group->users();
-    is $users->count(), 1, 'User was added to Group';
+    is $group->users->count(), 1, '... added User to Group';
 
     # Make sure User was given the default Role
     my $default_role = Socialtext::UserGroupRoleFactory->DefaultRole();
@@ -91,8 +90,7 @@ add_user_to_group_with_role: {
     $group->add_user(user => $user, role => $role);
 
     # Make sure the User got added properly
-    my $users = $group->users();
-    is $users->count(), 1, 'User was added to Group';
+    is $group->users->count(), 1, '... added User to Group';
 
     # Make sure User has correct Role
     my $users_role   = $group->role_for_user($user);
