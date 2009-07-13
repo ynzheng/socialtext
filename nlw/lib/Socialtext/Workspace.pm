@@ -1308,6 +1308,17 @@ sub add_group {
     return $gwr;
 }
 
+sub remove_group {
+    my $self  = shift;
+    my %p     = @_;
+    my $group = $p{group} || croak "can't remove_group without a 'group'";
+
+    my $gwr = $self->_gwr_for_group($group);
+    return unless $gwr;
+
+    Socialtext::GroupWorkspaceRoleFactory->Delete($gwr);
+}
+
 sub has_group {
     my $self  = shift;
     my $group = shift;
@@ -2597,6 +2608,11 @@ workspace, ordered by username.
 
 Adds the given C<$group> to the Workspace with the specified C<$role>.  If no
 C<$role> is provided, a default Role will be used instead.
+
+=head2 $workspace->remove_group(group=>$group)
+
+Removes any Role that the given C<$group> may have in the Workspace.  If the
+Group has no Role in the Workspace, this method does nothing.
 
 =head2 $workspace->has_group($group)
 

@@ -3,7 +3,8 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 15;
+use Test::Socialtext tests => 20;
+use Test::Exception;
 use Socialtext::GroupWorkspaceRoleFactory;
 
 ###############################################################################
@@ -154,4 +155,41 @@ does_workspace_have_group: {
 
     # Now the Group is in the Workspace
     ok $workspace->has_group($group), '... but has now been added';
+}
+
+###############################################################################
+# TEST: Remove Group from Workspace
+remove_group_from_workspace: {
+    my $workspace = create_test_workspace();
+    my $group     = create_test_group();
+
+    # Workspace should not (yet) have this Group
+    ok !$workspace->has_group($group),
+        'Group does not yet have Role in Workspace';
+
+    # Add the Group to the Workspace
+    $workspace->add_group(group => $group);
+    ok $workspace->has_group($group),
+        '... Group has been added to Workspace';
+
+    # Remove the Group from the Workspace
+    $workspace->remove_group(group => $group);
+    ok !$workspace->has_group($group),
+        '... Group has been removed from Workspace';
+}
+
+###############################################################################
+# TEST: Remove Group from Workspace, when the Group has *no* Role in the WS
+remove_non_member_group_from_workspace: {
+    my $workspace = create_test_workspace();
+    my $group     = create_test_group();
+
+    # Workspace should not (yet) have this Group
+    ok !$workspace->has_group($group),
+        'Group does not yet have Role in Workspace';
+
+    # Removing a non-member Group from the Workspace shouldn't choke.  No
+    # errors, no warnings, no fatal exceptions... its basically a no-op.
+    lives_ok { $workspace->remove_group(group => $group) }
+        "... removing non-member Group from Workspace doesn't choke";
 }
