@@ -111,14 +111,14 @@ update_users_role_in_group: {
     my $default_role = Socialtext::UserGroupRoleFactory->DefaultRole();
     my $users_role   = $group->role_for_user($user);
     is $users_role->role_id, $default_role->role_id,
-        '... with Default UGR Role';
+        'User has default Role in Group';
 
     # Update the User's Role
     $group->add_user(user => $user, role => $role);
 
     # Make sure User had their Role updated
     $users_role = $group->role_for_user($user);
-    is $users_role->role_id, $role->role_id, '... with updated Role';
+    is $users_role->role_id, $role->role_id, '... Role was updated';
 }
 
 ###############################################################################
