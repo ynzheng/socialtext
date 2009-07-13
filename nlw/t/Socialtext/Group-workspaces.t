@@ -37,15 +37,8 @@ group_has_workspaces: {
     my $group  = create_test_group();
 
     # Create GWRs, giving the Group a default Role
-    Socialtext::GroupWorkspaceRoleFactory->Create( {
-        group_id     => $group->group_id,
-        workspace_id => $ws_one->workspace_id,
-    } );
-
-    Socialtext::GroupWorkspaceRoleFactory->Create( {
-        group_id     => $group->group_id,
-        workspace_id => $ws_two->workspace_id,
-    } );
+    $ws_one->add_group(group => $group);
+    $ws_two->add_group(group => $group);
 
     my $workspaces = $group->workspaces();
 
