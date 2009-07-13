@@ -10,6 +10,11 @@ use Test::Warn;
 
 use Socialtext::User;
 
+################################################################################
+# Fixtures: db
+# - Need a DB around, but don't care what's in it
+fixtures(qw( db ));
+
 use_ok 'Socialtext::Account';
 
 ################################################################################
