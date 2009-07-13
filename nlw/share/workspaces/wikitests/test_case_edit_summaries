@@ -84,10 +84,12 @@
 | text_like | st-listview-form | Edit summary: A second summary for a wikitest %%start_time%% |
 | text_unlike | st-listview-form | Quick Summary for my friends %%start_time%% |
 
-| *Comment* | Test Case: Edit Summaries - All Pages (defaults to date sort, will be on top) |  |
+| *Comment* | Test Case: Edit Summaries - All Pages (better set the sort) |  |
 | click_and_wait | link=All Pages |  |
 | wait_for_element_visible_ok | link=Summaries | 30000 |
 | click_and_wait | link=Summaries |  |
+| select_and_wait | sort-picker | label=Revisions |
+| select_and_wait | sort-picker | label=Date Last Edited |
 | wait_for_element_visible_ok | link=Edit Summaries %%start_time%% | 30000 |
 | text_like | st-listview-form | Edit summary: A second summary for a wikitest %%start_time%% |
 | text_unlike | st-listview-form | Quick Summary for my friends %%start_time%% |
@@ -96,6 +98,8 @@
 | click_and_wait | link=Orphaned Pages |  |
 | wait_for_element_visible_ok | link=Summaries | 30000 |
 | click_and_wait | link=Summaries |  |
+| select_and_wait | sort-picker | label=Revisions |
+| select_and_wait | sort-picker | label=Date Last Edited |
 | wait_for_element_visible_ok | link=Edit Summaries %%start_time%% | 30000 |
 | text_like | st-listview-form | Edit summary: A second summary for a wikitest %%start_time%% |
 | text_unlike | st-listview-form | Quick Summary for my friends %%start_time%% |
