@@ -108,20 +108,12 @@ sub _set_ugrs_on_import {
         my $user = Socialtext::User->new( username => $ugr_data->{username} );
         next unless $user;
 
-        # See if this User already has a Role in this Group; we *don't* want
-        # to over-write any existing UGR.
-        my $ugr = Socialtext::UserGroupRoleFactory->GetUserGroupRole(
-            user_id  => $user->user_id,
-            group_id => $group->group_id,
-        );
-        next if $ugr;
+        # Don't over-write existing UGRs; if the User already has a Role in
+        # the Group then preserve their existing Role.
+        next if ($group->has_user($user));
 
         # Create a new UGR for the User in this Group.
-        Socialtext::UserGroupRoleFactory->Create( {
-            user_id  => $user->user_id,
-            group_id => $group->group_id,
-            role_id  => $role->role_id,
-        } );
+        $group->add_user( user => $user, role => $role );
     }
 }
 
