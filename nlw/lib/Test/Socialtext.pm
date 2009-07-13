@@ -12,6 +12,7 @@ use Test::Builder;
 use Test::Socialtext::Environment;
 use Test::Socialtext::User;
 use Test::Socialtext::Account;
+use Test::Socialtext::Workspace;
 use Socialtext::Account;
 use Socialtext::Group;
 use Socialtext::User;
@@ -305,7 +306,9 @@ sub _teardown_cleanup {
                 my $w = shift;
                 return $w->workspace_id . ' (' . $w->name . ')';
             },
-            delete_item => sub { $_[0]->delete },
+            delete_item => sub {
+                Test::Socialtext::Workspace->delete_recklessly($_[0]);
+            },
         },
         account => {
             get_iterator => sub { Socialtext::Account->All() },
