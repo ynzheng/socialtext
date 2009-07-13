@@ -168,6 +168,18 @@ sub add_user {
 }
 
 ###############################################################################
+sub remove_user {
+    my $self = shift;
+    my %p    = @_;
+    my $user = $p{user} || croak "cannot remove_user with 'user' parameter";
+
+    my $ugr = $self->_ugr_for_user($user);
+    return unless $ugr;
+
+    Socialtext::UserGroupRoleFactory->Delete($ugr);
+}
+
+###############################################################################
 sub has_user {
     my $self = shift;
     my $user = shift;
@@ -241,6 +253,9 @@ Socialtext::Group - Socialtext Group object
 
   # add a User to the Group
   $group->add_user(user => $user, role => $role);
+
+  # remove a User from a Group
+  $group->remove_user(user => $user);
 
   # check if a User already exists in the Group
   $exists = $group->has_user($user);
@@ -325,6 +340,11 @@ C<$role> is provided, a default Role will be used instead.
 
 If the User B<already> has a Role in the Group, the User's Role will be
 B<updated> to match the given C<$role>.
+
+=item B<$group-E<gt>remove_user(user=E<gt>$user)>
+
+Removes any Role that the given C<$user> may have in the Group.  If the User
+has no Role in the Group, this method does nothing.
 
 =item B<$group-E<gt>has_user($user)>
 

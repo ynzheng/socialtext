@@ -3,7 +3,8 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 17;
+use Test::Socialtext tests => 22;
+use Test::Exception;
 use Socialtext::UserGroupRoleFactory;
 
 ################################################################################
@@ -149,4 +150,37 @@ does_group_have_user: {
 
     # Now the User is in the Group
     ok $group->has_user($user), '... but has now been added';
+}
+
+###############################################################################
+# TEST: Remove User from Group
+remove_user_from_group: {
+    my $group = create_test_group();
+    my $user  = create_test_user();
+
+    # Group should be empty to start
+    ok !$group->has_user($user), 'User does not yet have Role in Group';
+
+    # Add the User to the Group
+    $group->add_user(user => $user);
+    ok $group->has_user($user), '... User has been added to Group';
+
+    # Remove the User from the Group
+    $group->remove_user(user => $user);
+    ok !$group->has_user($user), '... User has been removed from Group';
+}
+
+###############################################################################
+# TEST: Remove User from Group, when they have *no* Role in that Group
+remove_non_member_user_from_group: {
+    my $group = create_test_group();
+    my $user  = create_test_user();
+
+    # Group should be empty to start
+    ok !$group->has_user($user), 'User does not have Role in Group';
+
+    # Removing a non-member User from the Group shouldn't choke.  No errors,
+    # no warnings, no fatal exceptions... its basically a no-op
+    lives_ok { $group->remove_user(user => $user) }
+        "... removing non-member User from Group doesn't choke";
 }
