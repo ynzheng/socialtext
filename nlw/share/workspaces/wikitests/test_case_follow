@@ -56,11 +56,23 @@ TODO: make this run with LDAP user Dev Null Three, perhaps rename him devnull3
 | select-frame | relative=parent |  |
 
 | *Comment* | Test Case: Follow. Unfollow %%fFname%% |  |
-| *Comment* | Test Case: Follow. Use Following link in People dropdown for %%fFname%% |  |
 | wait_for_element_visible_ok | link=People | 30000 |
+| click_and_wait | link=People |  |
+| *Comment* | use the profile link that is hidden |  |
+| *Comment* | in the People menu |  |
+| wait_for_element_present_ok | link=%%fFname%% | 30000 |
 | click_and_wait | link=%%fFname%% |  |
 | wait_for_element_visible_ok | link=Stop following this person | 30000 |
 | click_ok | link=Stop following this person |  |
+
+| *Comment* | Test Case: Follow. Unfollow - IE needs profile reopened |  |
+| wait_for_element_visible_ok | link=People | 30000 |
+| click_and_wait | link=People |  |
+| wait_for_element_visible_ok | st-search-term | 30000 |
+| type_ok | st-search-term | %%fuser%% |
+| click_and_wait | st-search-submit |  |
+| wait_for_element_visible_ok | link=%%fFname%% | 30000 |
+| click_and_wait | link=%%fFname%% |  |
 | wait_for_element_visible_ok | link=Follow this person | 30000 |
 
 | *Comment* | Test Case: Follow. Verify UnFollow %%fFname%% in %%short_username%% profile |  |
@@ -125,8 +137,12 @@ TODO: make this run with LDAP user Dev Null Three, perhaps rename him devnull3
 | wait_for_element_visible_ok | link=%%short_username%% | 10000 |
 | select-frame | relative=parent |  |
 
-| *Comment* | Test Case: Follow. Use Following link in People dropdown for %%short_username%% |  |
+| *Comment* | Test Case: Follow. Open profile for %%short_username%% |  |
 | wait_for_element_visible_ok | link=People | 30000 |
+| click_and_wait | link=People |  |
+| *Comment* | use the profile link |  |
+| *Comment* | that is hidden in the People pulldown menu |  |
+| wait_for_element_present_ok | link=%%short_username%% | 30000 |
 | click_and_wait | link=%%short_username%% |  |
 
 | *Comment* | Test Case: Follow. Verify %%short_username%% follows %%fFname%% |  |
@@ -147,10 +163,18 @@ TODO: make this run with LDAP user Dev Null Three, perhaps rename him devnull3
 | *Comment* | Test Case: Follow. %%fFname%% stops following %%short_username%% |  |
 | wait_for_element_visible_ok | link=Stop following this person | 30000 |
 | click_ok | link=Stop following this person |  |
+
+| *Comment* | Test Case: Follow. Follow - IE needs profile reopened to %%short_username%% profile |  |
+| wait_for_element_visible_ok | link=People | 30000 |
+| click_and_wait | link=People |  |
+| wait_for_element_visible_ok | st-search-term | 30000 |
+| type_ok | st-search-term | %%username%% |
+| click_and_wait | st-search-submit |  |
+| wait_for_element_visible_ok | link=%%short_username%% | 30000 |
+| click_and_wait | link=%%short_username%% |  |
 | wait_for_element_visible_ok | link=Follow this person | 30000 |
 
 | *Comment* | Test Case: Follow. %%fFname%% Verifies stopped following %%short_username%% |  |
-
 | click_and_wait | link=Profile |  |
 | wait_for_text_present_ok | Colleagues | 30000 |
 | st-name-widget | 5 | follow_widget |

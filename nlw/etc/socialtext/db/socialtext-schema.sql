@@ -459,6 +459,7 @@ CREATE TABLE job (
 
 CREATE TABLE json_proxy_cache (
     expires timestamptz NOT NULL,
+    user_id bigint NOT NULL,
     url text NOT NULL,
     headers text DEFAULT '' NOT NULL,
     authz text,
@@ -1434,6 +1435,11 @@ ALTER TABLE ONLY signal
     ADD CONSTRAINT in_reply_to_fk
             FOREIGN KEY (in_reply_to_id)
             REFERENCES signal(signal_id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY json_proxy_cache
+    ADD CONSTRAINT json_proxy_cache_user_id_fk
+            FOREIGN KEY (user_id)
+            REFERENCES users(user_id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY page
     ADD CONSTRAINT page_creator_id_fk

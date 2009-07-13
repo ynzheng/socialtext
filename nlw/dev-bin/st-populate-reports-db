@@ -22,7 +22,7 @@ my $strGrowth = './st-qa-growth-report-add-members';
 
 unless (is_dev_env($host)) {
    $exec = 'sudo -u www-data ' . $exec;   
-   $strGrowth ='sudo -u www-data ' . $exec;
+   $strGrowth ='sudo -u www-data ' . $strGrowth;
 }
 
 

@@ -1,31 +1,36 @@
 | *Comment* | Test Case: Calc All Pages |  |
 
+| set | new_ws | all-pages-%%start_time%% |
+| st-admin | create-workspace --name %%new_ws%% --title %%new_ws%% --empty |  |
+| st-admin | add-member --email %%email%% --workspace %%new_ws%% |  |
+| st-admin | enable-plugin --plugin socialcalc --workspace %%new_ws%% |  |
+
 | *Comment* | Test Case: Calc All Pages Set up |  |
-| open_ok | /%%workspace%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0001%%start_time%%#edit |  |
+| open_ok | /%%new_ws%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0001%%start_time%%#edit |  |
 | wait_for_element_visible_ok | st-save-button-link | 30000 |
 | pause | 5000 | I hate pause; needed for entire page load |
 | click_and_wait | st-save-button-link |  |
-| open_ok | /%%workspace%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0002%%start_time%%#edit |  |
+| open_ok | /%%new_ws%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0002%%start_time%%#edit |  |
 | wait_for_element_visible_ok | st-save-button-link | 30000 |
 | pause | 5000 | I hate pause; needed for entire page load |
 | click_and_wait | st-save-button-link |  |
-| open_ok | /%%workspace%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0003%%start_time%%#edit |  |
+| open_ok | /%%new_ws%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0003%%start_time%%#edit |  |
 | wait_for_element_visible_ok | st-save-button-link | 30000 |
 | pause | 5000 | I hate pause; needed for entire page load |
 | click_and_wait | st-save-button-link |  |
-| open_ok | /%%workspace%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0004%%start_time%%#edit |  |
+| open_ok | /%%new_ws%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0004%%start_time%%#edit |  |
 | wait_for_element_visible_ok | st-save-button-link | 30000 |
 | pause | 5000 | I hate pause; needed for entire page load |
 | click_and_wait | st-save-button-link |  |
 
 | *Comment* | Test Case: Calc All Pages name sorting |  |
-| open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |  |
+| open_ok | /%%new_ws%%/index.cgi?action=changes&changes=all |  |
 
 | text_like | contentContainer | All Pages ( |
 | click_and_wait | link=allpages spreadsheet0001%%start_time%% |  |
 | text_like | st-page-titletext | allpages spreadsheet0001%%start_time%% |
 
-| open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |  |
+| open_ok | /%%new_ws%%/index.cgi?action=changes&changes=all |  |
 | wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Title |
 | text_like | contentContainer | qr/allpages spreadsheet0001%%start_time%%.+allpages spreadsheet0004%%start_time%%/ |
@@ -34,12 +39,12 @@
 | text_like | contentContainer | qr/allpages spreadsheet0004%%start_time%%.+allpages spreadsheet0001%%start_time%%/ |
 
 | *Comment* | Test Case: Calc All Pages. Open and Save for a later edit time |  |
-| open_ok | /%%workspace%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0005%%start_time%%#edit |  |
+| open_ok | /%%new_ws%%/index.cgi?action=display;page_type=spreadsheet;page_name=allpages%20spreadsheet0005%%start_time%%#edit |  |
 | wait_for_element_visible_ok | st-save-button-link | 30000 |
 | pause | 5000 | I hate pause; needed for entire page load |
 | click_and_wait | st-save-button-link |  |
 
-| open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |  |
+| open_ok | /%%new_ws%%/index.cgi?action=changes&changes=all |  |
 | wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | Revisions |
 
@@ -52,7 +57,7 @@
 | text_like | contentContainer | qr/allpages spreadsheet0004%%start_time%%.+allpages spreadsheet0005%%start_time%%/ |
 
 | *Comment* | Test Case: Calc All Pages revision sort |  |
-| open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |
+| open_ok | /%%new_ws%%/index.cgi?action=changes&changes=all |
 | click_and_wait | link=allpages spreadsheet0004%%start_time%% |  |
 
 | wait_for_element_visible_ok | st-edit-button-link |  |
@@ -62,7 +67,7 @@
 | click_and_wait | st-save-button-link |  |
 | wait_for_element_visible_ok | st-edit-button-link |  |
 
-| open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |
+| open_ok | /%%new_ws%%/index.cgi?action=changes&changes=all |
 | wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Revisions |
 | text_like | contentContainer | qr/allpages spreadsheet0004%%start_time%%.+allpages spreadsheet0003%%start_time%%/ |
@@ -79,14 +84,14 @@ contains %%email%% as a substring and that messes up other tests like Test Case:
 | set | s_user | %%start_time%%@%%start_time%%.socialtext.net |
 
 | st-admin | create-user --email %%s_user%% --password 123456 |  |
-| st-admin | add-member --email %%s_user%% --workspace %%workspace%% |  |
+| st-admin | add-member --email %%s_user%% --workspace %%new_ws%% |  |
 | st-logout |  |  |
 | st-login | %%s_user%% | 123456 |
 
 For some reason, IE 6 blows up when open_ok is used in some places. We avoid it.
 
 | *Comment* | Test Case: Calc All Pages revision by new user |  |
-| open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |  |
+| open_ok | /%%new_ws%%/index.cgi?action=changes&changes=all |  |
 | click_and_wait | link=allpages spreadsheet0003%%start_time%% |  |
 | wait_for_element_visible_ok | st-edit-button-link |  |
 | click_ok | st-edit-button-link |  |
@@ -97,21 +102,16 @@ For some reason, IE 6 blows up when open_ok is used in some places. We avoid it.
 
 | *Comment* | Test Case: Calc All Pages verify revision by user %%s_user%% |  |
 
-| open_ok | /%%workspace%%/index.cgi?action=changes&changes=all |  |
+| open_ok | /%%new_ws%%/index.cgi?action=changes&changes=all |  |
 | wait_for_element_visible_ok | sort-picker | 30000 |
 | select_and_wait | sort-picker | label=Last Edited By |
 | text_like | contentContainer | qr/allpages spreadsheet0003%%start_time%%.+allpages spreadsheet0001%%start_time%%/ |
 | wait_for_element_visible_ok | sort-picker | 30000 |
-| select_and_wait | sort-picker | label=Last Edited By (↓) |  |
+| select_and_wait | sort-picker | label=Last Edited By (↓) |
 | text_like | contentContainer | qr/allpages spreadsheet0001%%start_time%%.+allpages spreadsheet0003%%start_time%%/ |
 
 | *Comment* | Test Case: Calc All Pages Teardown. No need to login again. |  |
 
-| st-admin | purge-page --workspace %%workspace%% --page allpages_spreadsheet0001%%start_time%% | was purged |
-| st-admin | purge-page --workspace %%workspace%% --page allpages_spreadsheet0002%%start_time%% | was purged |
-| st-admin | purge-page --workspace %%workspace%% --page allpages_spreadsheet0003%%start_time%% | was purged |
-| st-admin | purge-page --workspace %%workspace%% --page allpages_spreadsheet0004%%start_time%% | was purged |
-| st-admin | purge-page --workspace %%workspace%% --page allpages_spreadsheet0005%%start_time%% | was purged |
-| st-admin | remove-member --email %%s_user%% --workspace %%workspace%% |  |
+| st-admin | delete-workspace --workspace %%new_ws%% --no-export | The %%new_ws%% workspace has been deleted. |
 
 | *Comment* | Test Case: Calc All Pages COMPLETED |  |

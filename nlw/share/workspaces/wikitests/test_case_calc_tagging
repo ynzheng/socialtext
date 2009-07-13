@@ -28,7 +28,7 @@
 
 | *Comment* | Test Case: Calc Tagging. verify Chinese chars |  |
 | wait_for_element_visible_ok | st-tags-listing | 30000 |
-| pause | 5000 |  |
+| pause | 5000 | pause needed because wait_for doesn't work on Chinese chars |
 | text_like | st-tags-listing | 所以 |
 
 | *Comment* | Test Case: Calc Tagging. foo bar tag added |  |
@@ -135,8 +135,8 @@ Add any other tag to three different pages | tag is added
 | wait_for_element_visible_ok | st-no-tags-placeholder | 30000 |
 | text_like | st-no-tags-placeholder | There are no tags for this page. |
 
-Navigate to All Tags in list view | All Tags appears 
-Observe that tag | tag is still in list 
+Navigate to All Tags in list view | All Tags appears
+Observe that tag | tag is still in list
 Click that tag | Tag list page appears with two remaining tagged pages
 
 | open_ok | /%%workspace%%/?action=recent_changes |  |

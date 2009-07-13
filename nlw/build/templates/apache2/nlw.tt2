@@ -170,6 +170,15 @@
         # Don't compress images
         SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary
 
+        # XXX: It would be better if no-gzip was set for any 204 No Content
+        # response instead of matching on the DELETE request method.
+        #
+        # Fix {bz: 2824}
+        # mod_deflate is stupid and turns responses of 0 length into
+        # 20 byte gzip strings. This makes IE unhappy because it exexted
+        # a content-length of 0.
+        SetEnvIfNoCase Request_Method DELETE no-gzip dont-vary
+
         # Make sure proxies don't deliver the wrong content
         Header append Vary User-Agent env=!dont-vary
     </Location>

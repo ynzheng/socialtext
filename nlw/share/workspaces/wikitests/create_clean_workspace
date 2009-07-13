@@ -1,0 +1,25 @@
+| *Comment* | Create Clean Workspace CALLED |  |
+
+| st-admin | create-workspace --name %%new_ws%% --title %%new_ws%% |  |
+| st-admin | add-member --email %%email%% --workspace %%new_ws%% |  |
+| st-admin | purge-page --w %%new_ws%% --page advanced_getting_around | was purged |
+| st-admin | purge-page --w %%new_ws%% --page announcements_and_links | was purged |
+| st-admin | purge-page --w %%new_ws%% --page central_page_important_links | was purged |
+| st-admin | purge-page --w %%new_ws%% --page congratulations_you_know_how_to_use_a_workspace | was purged |
+| st-admin | purge-page --w %%new_ws%% --page conversations | was purged |
+| st-admin | purge-page --w %%new_ws%% --page document_library_template | was purged |
+| st-admin | purge-page --w %%new_ws%% --page documents_that_people_are_working_on | was purged |
+| st-admin | purge-page --w %%new_ws%% --page expense_report_template | was purged |
+| st-admin | purge-page --w %%new_ws%% --page how_do_i_find_my_way_around | was purged |
+| st-admin | purge-page --w %%new_ws%% --page how_do_i_make_links | was purged |
+| st-admin | purge-page --w %%new_ws%% --page learning_resources | was purged |
+| st-admin | purge-page --w %%new_ws%% --page lists_of_pages | was purged |
+| st-admin | purge-page --w %%new_ws%% --page meeting_agendas | was purged |
+| st-admin | purge-page --w %%new_ws%% --page people | was purged |
+| st-admin | purge-page --w %%new_ws%% --page member_directory | was purged |
+| st-admin | purge-page --w %%new_ws%% --page project_plans | was purged |
+| st-admin | purge-page --w %%new_ws%% --page quick_start | was purged |
+| st-admin | purge-page --w %%new_ws%% --page what_else_is_here | was purged |
+| st-admin | purge-page --w %%new_ws%% --page what_if_i_make_a_mistake | was purged |
+
+| *Comment* | Create Clean Workspace FINISHED |

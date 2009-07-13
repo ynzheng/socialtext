@@ -10,19 +10,23 @@
 | set | user_2_regex | `all_files_%%start_time%%_2\@ken\.socialtext\.net` |
 
 | *Comment* | Test Case: All Files setup user_1 and user_2 |  |
+| set | new_ws | all-pages-%%start_time%% |
+| st-admin | create-workspace --name %%new_ws%% --title %%new_ws%% --empty |  |
+| st-admin | add-member --email %%email%% --workspace %%new_ws%% |  |
+
 | st-admin | create-user --email %%all_files_user_1%% --password 123456 |  |
-| st-admin | add-member --email %%all_files_user_1%% --workspace %%workspace%% |  |
+| st-admin | add-member --email %%all_files_user_1%% --workspace %%new_ws%% |  |
 | st-admin | create-user --email %%all_files_user_2%% --password 123456 |  |
-| st-admin | add-member --email %%all_files_user_2%% --workspace %%workspace%% |  |
+| st-admin | add-member --email %%all_files_user_2%% --workspace %%new_ws%% |  |
 
 | *Comment* | Test Case: All Files set permissions to member-only |  |
-| st-admin | set-permissions --workspace %%workspace%% --permission member-only |  |
+| st-admin | set-permissions --workspace %%new_ws%% --permission member-only |  |
 
 | *Comment* | Test Case: All Files user_1 uploads wikitest.doc and wikitest.jpg |  |
 | st-logoutin | %%all_files_user_1%% | 123456 |
 
-| st-admin | update-page --e %%all_files_user_1%% --w %%workspace%% --p "All Files %%start_time%% 1" < %%wikitest_client_files%%wikitest.txt | has been created |
-| open_ok | /%%workspace%%/?All Files %%start_time%% 1 |  |
+| st-admin | update-page --e %%all_files_user_1%% --w %%new_ws%% --p "All Files %%start_time%% 1" < %%wikitest_client_files%%wikitest.txt | has been created |
+| open_ok | /%%new_ws%%/?All Files %%start_time%% 1 |  |
 | wait_for_element_visible_ok | st-attachments-uploadbutton | 30000 |
 | click_ok | st-attachments-uploadbutton |  |
 | wait_for_element_visible_ok | st-attachments-attach-filename | 30000 |
@@ -48,8 +52,8 @@
 
 | *Comment* | Test Case: All Files user_2 uploads wikitestzip.zip |  |
 | st-logoutin | %%all_files_user_2%% | 123456 |
-| st-admin | update-page --e %%all_files_user_2%% --w %%workspace%% --p "All Files %%start_time%% 2" < %%wikitest_client_files%%wikitest.txt | has been created |
-| open_ok | /%%workspace%%/?All Files %%start_time%% 2 |  |
+| st-admin | update-page --e %%all_files_user_2%% --w %%new_ws%% --p "All Files %%start_time%% 2" < %%wikitest_client_files%%wikitest.txt | has been created |
+| open_ok | /%%new_ws%%/?All Files %%start_time%% 2 |  |
 
 | wait_for_element_visible_ok | st-attachments-uploadbutton | 30000 |
 | click_ok | st-attachments-uploadbutton |  |
@@ -73,7 +77,7 @@
 | click_and_wait | link=Save |  |
 
 | *Comment* | Test Case: All Files list view |  |
-| open_ok | /%%workspace%%/index.cgi?action=attachments_listall |  |
+| open_ok | /%%new_ws%%/index.cgi?action=attachments_listall |  |
 | text_like | All Files |  |
 
 | *Comment* | Test Case: All Files Sorting tests |  |
@@ -120,9 +124,6 @@
 | text_like | contentContainer | qr/All Files %%start_time%% 1.+All Files %%start_time%% 2/ |
 
 | *Comment* | Test Case: All Files Teardown |  |
-| st-admin | purge-page --workspace %%workspace%% --page all_files_%%start_time%%_1 | page was purged |
-| st-admin | purge-page --workspace %%workspace%% --page all_files_%%start_time%%_2 | page was purged |
-| st-admin | remove-member --email %%all_files_user_1%% --workspace %%workspace%% |  |
-| st-admin | remove-member --email %%all_files_user_2%% --workspace %%workspace%% |  |
+| st-admin | delete-workspace --workspace %%new_ws%% --no-export | The %%new_ws%% workspace has been deleted. |
 
 | *Comment* | Test Case: All Files COMPLETED |

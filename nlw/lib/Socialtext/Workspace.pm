@@ -61,6 +61,7 @@ use Socialtext::Workspace::Permissions;
 use Socialtext::Workspace::Roles;
 use Socialtext::Timer;
 use Socialtext::Pluggable::Adapter;
+use Socialtext::JSON::Proxy::Helper;
 use URI;
 use YAML;
 use Encode qw(decode_utf8);
@@ -1121,6 +1122,8 @@ sub permissions {
         my %p    = validate( @_, $spec );
         my $user = $p{user};
 
+        Socialtext::JSON::Proxy::Helper->ClearForUser($user->user_id);
+
         $p{role} ||= Socialtext::Role->Member();
 
         $self->assign_role_to_user( is_selected => 1, %p );
@@ -1240,6 +1243,7 @@ sub has_user {
 
         $uwr->delete;
 
+        Socialtext::JSON::Proxy::Helper->ClearForUser($p{user}->user_id);
         Socialtext::Cache->clear('authz_plugin');
 
         st_log()->info('REMOVE,USER_ROLE,'

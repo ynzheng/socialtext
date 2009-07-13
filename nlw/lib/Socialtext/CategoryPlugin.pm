@@ -171,6 +171,7 @@ sub category_display {
         direction              => $direction,
         unplug_uri    => "?action=unplug;tag=$uri_escaped_category",
         unplug_phrase => loc('Click this button to save the pages with the tag [_1] to your computer for offline use.', $html_escaped_category),
+        load_row_times         => \&Socialtext::Query::Plugin::load_row_times,
     );
 }
 

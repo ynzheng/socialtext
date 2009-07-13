@@ -1231,6 +1231,7 @@ this.addGlobal().setup_wikiwyg = function() {
 
     if (!Socialtext.new_page) {
         setTimeout(function() {
+            if (Socialtext.page_type == 'spreadsheet') return;
             jQuery('#st-save-button-link').click(function() {
                 ww.is_editing = false;
                 ww.showScrollbars();
@@ -1242,6 +1243,7 @@ this.addGlobal().setup_wikiwyg = function() {
 
     // node handles
     jQuery('#st-cancel-button-link').click(function() {
+        if (Socialtext.page_type == 'spreadsheet') return;
         ww.signal_edit_cancel();
         try {
             if (ww.contentIsModified()) {
@@ -1377,7 +1379,10 @@ this.addGlobal().setup_wikiwyg = function() {
     }
 
     ww.edit_summary = function () {
-        var val = jQuery('#st-edit-summary .input').val()
+        var $input = jQuery('#st-edit-summary .input');
+        if ($input.size() == 0) return '';
+
+        var val = $input.val()
             .replace(/\s+/g, ' ')
             .replace(/^\s*(.*?)\s*$/, '$1');
         return val;

@@ -74,6 +74,7 @@
 | wait_for_text_present_ok | Rockin and a bopin %%start_time%% | 30000 |
 | wait_for_text_present_ok | All the little birds %%start_time%% | 30000 |
 | wait_for_text_present_ok | Love to hear the robin going %%start_time%% | 30000 |
+| wait_for_text_present_ok | Signal %%start_time%% | 30000 |
 | text_like | //body | qr/Super.+Edit.+Summary.+From.+Signal.+%%start_time%%/ |
 | select-frame | relative=parent |  |
 
@@ -87,6 +88,7 @@
 | wait_for_text_present_ok | Rockin and a bopin %%start_time%% | 120000 |
 | wait_for_text_present_ok | All the little birds %%start_time%% | 120000 |
 | wait_for_text_present_ok | Love to hear the robin going %%start_time%% | 120000 |
+| wait_for_text_present_ok | Signal %%start_time%% | 120000 |
 | text_like | //body | qr/Super.+Edit.+Summary.+From.+Signal.+%%start_time%%/ |
 
 | *Comment* | Test Case: Signals widget. Wait for automatic refresh to one minute ago in Activity |  |
@@ -107,6 +109,7 @@
 | wait_for_text_present_ok | Rockin and a bopin %%start_time%% | 10000 |
 | wait_for_text_present_ok | All the little birds %%start_time%% | 10000 |
 | wait_for_text_present_ok | Love to hear the robin going %%start_time%% | 10000 |
+| wait_for_text_present_ok | Signal %%start_time%% | 10000 |
 | text_like | //body | qr/Super.+Edit.+Summary.+From.+Signal.+%%start_time%%/ |
 
 | *Comment* | Test case: Signals Widget. wait for auto refresh to two minutes ago |  |
