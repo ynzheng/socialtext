@@ -319,7 +319,7 @@ Valid C<$key>s include:
 
 =back
 
-=item B<Socialtext::Group-E<gt>ByAccountId(account_id=>$acct_id)>
+=item B<Socialtext::Group-E<gt>ByAccountId(account_id=E<gt>$acct_id)>
 
 Returns a C<Socialtext::MultiCursor> containing a list of all of the Groups
 that exist within the given Account, ordered by "Group Name".
@@ -333,7 +333,7 @@ can be found.
 
 Returns a C<Socialtext::MultiCursor> of Users who have a Role in this Group.
 
-=item B<$group-E<gt>add_user(user=>$user, role=>$role)>
+=item B<$group-E<gt>add_user(user=E<gt>$user, role=E<gt>$role)>
 
 Adds a given C<$user> to the Group with the specified C<$role>.  If no
 C<$role> is provided, a default Role will be used instead.
