@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 15;
+use Test::Socialtext tests => 17;
 use Socialtext::UserGroupRoleFactory;
 
 ################################################################################
@@ -60,6 +60,9 @@ add_user_to_group_with_default_role: {
     my $group = create_test_group();
     my $user  = create_test_user();
 
+    # Group should be empty (have no Users)
+    is $group->users->count(), 0, 'Group has no Users in it (yet)';
+
     # Add the User to the Group
     $group->add_user(user => $user);
 
@@ -80,6 +83,9 @@ add_user_to_group_with_role: {
     my $group = create_test_group();
     my $user  = create_test_user();
     my $role  = Socialtext::Role->Guest();
+
+    # Group should be empty (have no Users)
+    is $group->users->count(), 0, 'Group has no Users in it (yet)';
 
     # Add the User to the Group
     $group->add_user(user => $user, role => $role);
