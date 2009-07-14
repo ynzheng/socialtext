@@ -43,6 +43,9 @@
 | wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
 
+| *Comment* | Test Case: Signals Page. Signals must be spaced by at least two seconds |  |
+| pause | 3000 |  |
+
 | *Comment* | Test Case: Signals Page. I Remember Long Ago |  |
 | selectFrame | signalFrame |  |
 | wait_for_element_visible_ok | //body | 10000 |
@@ -50,6 +53,9 @@
 | select-frame | relative=parent |  |
 | wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
+
+| *Comment* | Test Case: Signals Page. Signals must be spaced by at least two seconds |  |
+| pause | 3000 |  |
 
 | *Comment* | Test Case: Signals Page. Way Back In History |  |
 | selectFrame | signalFrame |  |
@@ -59,6 +65,9 @@
 | wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
 
+| *Comment* | Test Case: Signals Page. Signals must be spaced by at least two seconds |  |
+| pause | 3000 |  |
+
 | *Comment* | Test Case: Signals Page. I May Be Kinda Slow |  |
 | selectFrame | signalFrame |  |
 | wait_for_element_visible_ok | //body | 10000 |
@@ -66,6 +75,9 @@
 | select-frame | relative=parent |  |
 | wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
+
+| *Comment* | Test Case: Signals Page. Signals must be spaced by at least two seconds |  |
+| pause | 3000 |  |
 
 | *Comment* | Test Case: Signals Page. Verify signals in page. |  |
 | select-frame | relative=parent |  |
@@ -78,7 +90,7 @@
 | wait_for_text_present_ok | Way Back In History %%start_time%% %%mark%% | 120000 |
 | wait_for_text_present_ok | I May Be Kinda Slow %%start_time%% %%mark%% | 120000 |
 | text_like | //body | qr/Signal.+Page.+Edit.+Summary.+%%start_time%% %%mark%%/ism |
-| text_like | //body | qr/You.+to.+%%network%%/ism |  |
+| text_like | //body | qr/You.+to.+%%network%%/ism |
 
 | *Comment* | Test Case: Signals widget. Wait for automatic refresh to "one minute ago" in page |  |
 | wait_for_text_present_ok | one minute ago | 120000 |
