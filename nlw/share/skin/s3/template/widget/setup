@@ -40,7 +40,7 @@
                     </select>
                 [% ELSIF pref.datatype == 'account' %]
                     [% IF user.accounts.size == 1 %]
-                    <input value="[% user.accounts.0.account_id %]" type="hidden"/>
+                    <input value="[% user.accounts.0.name %]" type="hidden"/>
                     <div class="fixedSetting">[% user.accounts.0.name %]</div>
                     [% ELSE %]
                     <select class="account_setting" name="up_[% pref.name %]">
