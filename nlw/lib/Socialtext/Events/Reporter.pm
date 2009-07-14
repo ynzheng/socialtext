@@ -191,6 +191,7 @@ my $FIELDS = <<'EOSQL';
     action AS action,
     actor_id AS actor_id,
     person_id AS person_id,
+    signal_id AS signal_id,
     page.page_id as page_id,
         page.name AS page_name,
         page.page_type AS page_type,
