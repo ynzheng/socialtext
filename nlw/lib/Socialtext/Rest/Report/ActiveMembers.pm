@@ -50,14 +50,16 @@ override 'GET_json' => sub {
                 'people', $self->hub->current_user
             );
 
+
             my $user_id = $user->user_id;
 
             push @users, {
-                title       => $user->guess_real_name,
-                uri         => $shared ? "/?profile/$user_id" : undef,
-                is_person   => 1,
-                user_id     => $user_id,
-                count       => $count,
+                title          => $user->guess_real_name,
+                uri            => $shared ? "/?profile/$user_id" : undef,
+                is_person      => 1,
+                user_id        => $user_id,
+                count          => $count,
+                context_title  => $user->primary_account->name,
             };
         }
     };
@@ -76,10 +78,10 @@ sub _account_data {
     my $self    = shift;
     my $report  = shift;
 
-    # it is required that we have a valid account.
-    my $account = $report->account;
-
-    return { name => $account->name };
+    if (my $account = $report->account) {
+        return { name => $account->name };
+    }
+    return;
 }
 
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);

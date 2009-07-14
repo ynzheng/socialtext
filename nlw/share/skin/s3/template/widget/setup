@@ -44,6 +44,9 @@
                     <div class="fixedSetting">[% user.accounts.0.name %]</div>
                     [% ELSE %]
                     <select class="account_setting" name="up_[% pref.name %]">
+                    [% UNLESS pref.required %]
+                        <option value="" [% IF pref.value == '' %]selected="selected"[% END %]>All</option>
+                    [% END %]
                     [% FOR account = user.accounts %]
                         <option value="[% account.name %]" [% IF account.name == pref.value %]selected="selected"[% END %]>
                             [% account.name %]

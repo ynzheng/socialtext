@@ -56,9 +56,8 @@ override 'GET_json' => sub {
                 title          => $page->title,
                 uri            => $page->full_uri,
                 is_spreadsheet => $page->is_spreadsheet,
-                ws_name        => $wksp->name,
-                ws_title       => $wksp->title,
-                ws_uri         => $wksp->uri,
+                context_title  => $wksp->title,
+                context_uri    => $wksp->uri,
                 count          => $count,
             };
         }
@@ -100,7 +99,7 @@ sub _workspace_data {
     my $report    = shift;
     my $workspace = $report->workspace;
 
-    return {} unless $workspace;
+    return unless $workspace;
 
     return {
         title => $workspace->title,
