@@ -27,9 +27,9 @@ override 'GET_json' => sub {
 
     my $report = eval { $self->adapter->_build_report(
         'TopUsers', {
-            start_time => $self->start,
-            duration   => $self->duration,
-            type       => 'raw',
+            start_time  => $self->start,
+            duration    => $self->duration,
+            type        => 'raw',
         }, $user,
     ) };
     return $self->error(400, 'Bad request', $@) if $@;
@@ -56,6 +56,7 @@ override 'GET_json' => sub {
                 title       => $user->guess_real_name,
                 uri         => $shared ? "/?profile/$user_id" : undef,
                 is_person   => 1,
+                user_id     => $user_id,
                 count       => $count,
             };
         }
