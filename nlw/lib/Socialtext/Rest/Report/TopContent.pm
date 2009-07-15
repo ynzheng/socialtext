@@ -2,6 +2,7 @@ package Socialtext::Rest::Report::TopContent;
 # @COPYRIGHT@
 use Moose;
 use Socialtext::JSON qw/encode_json/;
+use Socialtext::String;
 use namespace::clean -except => 'meta';
 
 extends 'Socialtext::Rest::ReportAdapter';
@@ -29,6 +30,7 @@ override 'GET_json' => sub {
         'TopContentByPage', {
             start_time => $self->start,
             duration   => $self->duration,
+            limit      => 20,
             type       => 'raw',
         }, $user,
     ) };
@@ -37,38 +39,17 @@ override 'GET_json' => sub {
     warn $@ if $@;
     return $self->not_authorized unless $authorized;
 
-    my @pages;
-    eval { 
-        my $data = $report->_data;
-        # Clean up the data
-        for my $row (@$data) {
-            my ($ws_name, $page_id, $count) = @$row;
-
-            my $wksp = Socialtext::Workspace->new( name => $ws_name );
-            $page_id ||= $wksp->title;
-
-            $self->hub->current_workspace($wksp);
-
-            my $page  = eval { $self->hub->pages->new_from_uri($page_id) };
-            if ($@) { warn $@; next }
-
-            push @pages, {
-                title          => $page->title,
-                uri            => $page->full_uri,
-                is_spreadsheet => $page->is_spreadsheet,
-                context_title  => $wksp->title,
-                context_uri    => $wksp->uri,
-                count          => $count,
-            };
-        }
-    };
+    my @page_data;
+    eval { @page_data = $self->_combine_page_data( $report ); };
     return $self->error(400, 'Bad request', $@) if $@;
+
+    my @sorted_pages = sort { $b->{count} <=> $a->{count} } @page_data;
 
     $self->rest->header(-type => 'application/json');
     my $json;
     eval {
         $json = encode_json({
-            rows => \@pages,
+            rows => \@sorted_pages,
             meta  => {
                 account   => $self->_account_data( $report ),
                 workspace => $self->_workspace_data( $report ),
@@ -78,6 +59,51 @@ override 'GET_json' => sub {
     return $self->error(400, 'Bad request', $@) if $@;
     return $json;
 };
+
+# There was a bug in the reporting code where the central page of a
+# workspace could generate two distinct entries, one with an actual page_id
+# and the other an empty string, we can get two hits for the same page. Let's
+# combine those here. We'll grab 2X the results we need and sift through 'em.
+#
+# NOTE: this may result in some slightly inaccurate popularity.
+sub _combine_page_data {
+    my $self      = shift;
+    my $report    = shift;
+    my %page_data = ();
+    my $data      = $report->_data;
+
+    # Clean up the data
+    for my $row (@$data) {
+        my ($ws_name, $page_id, $count) = @$row;
+
+        my $wksp = Socialtext::Workspace->new( name => $ws_name );
+        $page_id ||= Socialtext::String::title_to_id( $wksp->title );
+
+        if ( my $content = $page_data{$page_id} ) {
+            $content->{count} += $count;
+            next;
+        }
+
+        $self->hub->current_workspace($wksp);
+        my $page  = eval { $self->hub->pages->new_from_uri($page_id) };
+        if ($@) { warn $@; next }
+
+        $page_data{$page_id} = {
+            title          => $page->title,
+            uri            => $page->full_uri,
+            is_spreadsheet => $page->is_spreadsheet,
+            context_title  => $wksp->title,
+            context_uri    => $wksp->uri,
+            count          => $count,
+        };
+
+        if ( (keys %page_data) == 10 ) {
+            return values %page_data;
+        }
+    }
+
+    return values %page_data;
+}
 
 sub _account_data {
     my $self    = shift;
