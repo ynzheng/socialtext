@@ -4124,24 +4124,26 @@ div.hidesubmit {
     color: #808080;
 }
 
-/* Container stuff */
-body#dashBoard .placeholder {
-    border: 2px dashed rgb(170,170,170);
-    margin: 0;
-    width: 95%; 
-    margin-top: 10px;
-}
-
 body#dashBoard .widgetColumn {
-    width: 33%;
     float: left;
     min-height: 300px;
     -height: 300px; /* For IE6 */
 }
 
-div.widget {
+body#dashBoard #contentContainer {
+    padding: 0 0 0 1%;
+}
+
+body#dashBoard .placeholder {
+    border: 2px dashed rgb(170,170,170);
+    margin: 0;
+    margin-top: 10px;
+}
+
+div.widget,
+body#dashBoard .placeholder {
     float: none;
-    width: 95%;
+    width: 100%;
 }
 
 body#dashBoard div.widget {
@@ -4176,6 +4178,18 @@ body#dashBoard div#controls div#controlsRight {
 
 body#dashBoard div#controls div#controlsRight ul {
     margin-top: 11px;
+}
+
+.container #col0 {
+    padding-right: 1%;
+    width: 26%;
+}
+.container #col1 {
+    padding-right: 1%;
+    width: 45%;
+}
+.container #col2 {
+    width: 26%;
 }
 
 .container.edit_profile #col0 {
