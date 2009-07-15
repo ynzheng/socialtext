@@ -44,3 +44,19 @@ sub _entity_hash {
 
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 1;
+
+=head1 NAME
+
+Socialtext::Rest::AccountWorkspaces - Workspaces in an account.
+
+=head1 SYNOPSIS
+
+    GET /data/accounts/:acct/workspaces
+
+=head1 DESCRIPTION
+
+Every socialtext account has a collection of zero or more workspaces
+associated with it. At the URI above, it is possible to view a list of those
+workspaces.
+
+=cut
