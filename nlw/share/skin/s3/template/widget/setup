@@ -57,7 +57,7 @@
                 [% ELSIF pref.datatype == 'page' %]
                     <input value="[% pref.value %]" name="up_[% pref.name %]" class="page_setting"/>
                 [% ELSIF pref.datatype == 'bool' %]
-                    <input name="up_[% pref.name %]" type="checkbox" value="[% pref.value %]"/>
+                    <input name="up_[% pref.name %]" type="checkbox" value="true" [% IF pref.value == 'true' %]checked="checked"[% END %]/>
                 [% ELSE %]
                     <input name="up_[% pref.name %]" type="text" value="[% pref.value %]"/>
                 [% END %]
