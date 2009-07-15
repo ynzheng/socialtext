@@ -1,0 +1,129 @@
+| *Comment* | Test Case: Active Content Widget |  |
+
+* Fixture: SocialWidgets
+
+| set | conv_email | my-conv-%%start_time%%@ken.socialtext.net |
+| set | conv_user | my conv %%start_time%% |
+| set | acw | active-content-%%start_time%% |
+| st-admin | create-user --email %%conv_email%% --password %%password%% |  |
+| st-admin | create-workspace --name %%acw%% --title %%acw%% |  |
+| st-admin | add-member --workspace %%acw%% --username %%username%% |  |
+| st-admin | add-member --workspace %%acw%% --username %%conv_email%% |  |
+
+| *Comment* | Test Case: Active Content Widget Create Tag page though GUI |  |
+| open_ok | /%%acw%%/index.cgi?action=new_page |  |
+| wait_for_element_visible_ok | link=Wiki Text | 30000 |
+| click_ok | link=Wiki Text |  |
+| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| wait_for_element_visible_ok | st-newpage-pagename-edit | 30000 |  |
+| type_ok | st-newpage-pagename-edit | Active Content Tag %%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
+| click_ok | st-save-button-link |  |
+| wait_for_element_visible_ok | st-edit-button-link | 30000 |
+
+| *Comment* | Test Case: Active Content Widget Create Edit page though GUI |  |
+| open_ok | /%%acw%%/index.cgi?action=new_page |  |
+| wait_for_element_visible_ok | link=Wiki Text | 30000 |
+| click_ok | link=Wiki Text |  |
+| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| wait_for_element_visible_ok | st-newpage-pagename-edit | 30000 |  |
+| type_ok | st-newpage-pagename-edit | Active Content Edit %%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
+| click_ok | st-save-button-link |  |
+| wait_for_element_visible_ok | st-edit-button-link | 30000 |
+
+| *Comment* | Test Case: Active Content Widget Create Comment page though GUI |  |
+| open_ok | /%%acw%%/index.cgi?action=new_page |  |
+| wait_for_element_visible_ok | link=Wiki Text | 30000 |
+| click_ok | link=Wiki Text |  |
+| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| wait_for_element_visible_ok | st-newpage-pagename-edit | 30000 |  |
+| type_ok | st-newpage-pagename-edit | Active Content Comment %%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
+| click_ok | st-save-button-link |  |
+| wait_for_element_visible_ok | st-edit-button-link | 30000 |
+
+| *Comment* | Test Case: Active Content Widget Create Watched page though GUI |  |
+| open_ok | /%%acw%%/index.cgi?action=new_page |  |
+| wait_for_element_visible_ok | link=Wiki Text | 30000 |
+| click_ok | link=Wiki Text |  |
+| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| wait_for_element_visible_ok | st-newpage-pagename-edit | 30000 |  |
+| type_ok | st-newpage-pagename-edit | Active Content Watch %%start_time%% |
+| wait_for_element_visible_ok | st-save-button-link | 30000 |
+| click_ok | st-save-button-link |  |
+| wait_for_element_visible_ok | st-edit-button-link | 30000 |
+
+| *Comment* | Test Case: Active Content Widget Login as %%conv_email%% |  |
+| st-logoutin | %%conv_email%% | %%password%% |
+
+| *Comment* | Test Case: Active Content Widget Edit a page |  |
+| open_ok | /%%acw%%/?Active Content Edit %%start_time%% |  |
+| wait_for_element_visible_ok | st-edit-button-link |  |
+| click_ok | st-edit-button-link |  |
+| wait_for_element_visible_ok | link=Wiki Text | 30000 |
+| click_ok | link=Wiki Text |  |
+| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
+| type_ok | wikiwyg_wikitext_textarea | %%conv_user%% edits |
+| click_and_wait | link=Save |  |
+
+| *Comment* | Test Case: Active Content Widget comment on a page |  |
+| open_ok | /%%acw%%/?Active Content Comment %%start_time%% |  |
+| wait_for_element_visible_ok | link=Comment | 30000 |
+| click_ok | link=Comment |  |
+| wait_for_element_visible_ok | comment | 30000 |
+| type_ok | comment | %%conv_user%% comments |
+| click_ok | link=Save |  |
+
+| *Comment* | Test Case: Active Content Widget tag a page |  |
+| open_ok | /%%acw%%/?Active Content Tag %%start_time%% |  |
+| wait_for_element_visible_ok | link=Add Tag | 30000 |
+| click_ok | link=Add Tag |  |
+| wait_for_element_visible_ok | st-tags-field | 30000 |
+| type_ok | st-tags-field | %%conv_user%% tags |
+| wait_for_element_visible_ok | st-tags-plusbutton-link | 30000 |
+| click_ok | st-tags-plusbutton-link |  |
+| wait_for_element_visible_ok | link=%%conv_user%% tags | 30000 |
+
+| *Comment* | Test Case: Active Content Widget if you logout now, IE raises an authen dialog for no reason |  |
+| *Comment* | Try to find a workaround by leaving page |
+| open_ok | /%%acw%%/ |  |
+| wait_for_element_visible_ok | link=Home | 30000 |
+
+st-logout | | |
+wait_for_element_visible_ok | link=Log in | 30000 |
+st-login | %%username%% | %%password%% |
+
+| open_ok | /?dashboard | 60000 |
+| st-empty-container |  |  |
+| st-catchup-logs |  |  |
+
+| wait_for_element_visible_ok | link=Add Content | 30000 |
+| click_and_wait | link=Add Content |  |
+| wait_for_element_visible_ok | gallery-widget-Active Content | 30000 |
+| click_and_wait | gallery-widget-Active Content |  |
+
+| *Comment* | Test Case: Test Case: Active Content Widget is the widget there? |  |
+| wait_for_element_visible_ok | //a[@class='close'] | 30000 |
+
+| st-name-widget | 1 | active_content |
+| st-widget-title-like | active_content | Active Content |
+| st-widget-settings | active_content |  |
+| wait_for_element_visible_ok | up_workspace | 30000 |
+| select_ok | up_workspace | %%acw%% |
+| click_ok | st-savebutton-%%active_content%% |  |
+| wait_for_element_not_visible_ok | up_workspace | 30000 |
+
+| st-select-widget-frame | active_content |  |
+| pause | 60000 |  |
+| text_like | //body | Viewed |
+| wait_for_element_visible_ok | link=Edited |  |
+| wait_for_element_visible_ok | link=Watched |  |
+| wait_for_element_visible_ok | link=Emailed |  |
+| pause | 60000 |  |
+| select-frame | relative=parent |  |
+| st-empty-container |  |  |
+
+| *Comment* | Test case: Active Content Widget TEARDOWN |  |
+| st-admin | delete-workspace --w %%acw%% --no-export |  |
+| *Comment* | Test case: Active Content Widget COMPLETED |  |
