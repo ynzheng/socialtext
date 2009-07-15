@@ -4124,6 +4124,10 @@ div.hidesubmit {
     color: #808080;
 }
 
+body#dashboard #mainWrap {
+    width: 98%;
+}
+
 body#dashBoard .widgetColumn {
     float: left;
     min-height: 300px;
