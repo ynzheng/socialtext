@@ -17,6 +17,7 @@ use Socialtext::HitCounterPlugin;
 
 # use real classes unless already mocked
 use unmocked 'Socialtext::Helpers';
+use unmocked 'Socialtext::AccountFactory';
 use unmocked 'Socialtext::DisplayPlugin';
 use unmocked 'Socialtext::BacklinksPlugin';
 use unmocked 'Socialtext::FavoritesPlugin';
@@ -31,7 +32,7 @@ use unmocked 'Socialtext::Pluggable::Adapter';
 use unmocked 'Socialtext::Formatter';
 use unmocked 'Socialtext::Formatter::Viewer';
 
-#warn "MOCKED HUB";
+# warn "MOCKED HUB";
 
 sub import {
     my $class = shift;
@@ -86,6 +87,11 @@ sub status_message { 'mock_hub_status_message' }
 
 
 # These methods return real libraries
+sub account_factory { 
+    return $_[0]{account_factory} 
+        ||= Socialtext::AccountFactory->new(hub => $_[0]);
+}
+
 sub helpers { 
     return $_[0]{helpers} ||= Socialtext::Helpers->new(hub => $_[0]);
 }
