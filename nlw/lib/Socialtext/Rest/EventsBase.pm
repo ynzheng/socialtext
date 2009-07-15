@@ -89,11 +89,12 @@ sub extract_common_args {
 
     my $event_class = $self->rest->query->param('event_class');
     push @args, event_class => lc $event_class if $event_class;
+
     my $action = $self->rest->query->param('action');
-    push @args, action => lc $action if $action;
+    push @args, action => ($action =~ /,/ ? [map { lc $_ } split(/,/, $action)] : lc $action) if $action;
 
     my $tag_name = $self->rest->query->param('tag_name');
-    push @args, tag_name => $tag_name if $tag_name;
+    push @args, tag_name => ($tag_name =~ /,/ ? [split(/,/, $tag_name)] : $tag_name) if $tag_name;
 
     my $actor_id = $self->rest->query->param('actor.id');
     push @args, actor_id => $actor_id if $actor_id;
