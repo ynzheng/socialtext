@@ -23,8 +23,18 @@ _get_workspace_list_for_template: {
     is scalar(@$workspacelist), 2, 'length of workspace list';
     is_deeply $workspacelist,
         [
-        { label => "Admin Wiki",               link => "/admin" },
-        { label => "Socialtext Documentation", link => "/help-en" }
+            {
+                label   => 'Admin Wiki',
+                account => 'topaz.socialtext.net',
+                name    => 'admin',
+                id      => 2
+            },
+            {
+                label   => 'Socialtext Documentation',
+                account => 'Socialtext',
+                name    => 'help-en',
+                id      => 1
+            },
         ],
         "expected workspace list returned";
 }
