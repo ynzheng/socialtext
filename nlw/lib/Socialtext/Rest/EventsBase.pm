@@ -93,6 +93,9 @@ sub extract_common_args {
     my $action = $self->rest->query->param('action');
     push @args, action => ($action =~ /,/ ? [map { lc $_ } split(/,/, $action)] : lc $action) if $action;
 
+    my $ne_action = $self->rest->query->param('!action');
+    push @args, '!action' => ($ne_action =~ /,/ ? [map { lc $_ } split(/,/, $ne_action)] : lc $ne_action) if $ne_action;
+
     my $tag_name = $self->rest->query->param('tag_name');
     push @args, tag_name => ($tag_name =~ /,/ ? [split(/,/, $tag_name)] : $tag_name) if $tag_name;
 

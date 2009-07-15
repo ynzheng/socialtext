@@ -315,6 +315,23 @@ sub _process_field_conditions {
             $self->add_condition("e.$eq_key IS NULL");
         }
     }
+
+    foreach my $eq_key (@QueryOrder) {
+        my $ne_key = "!$eq_key";
+        next unless exists $opts->{$ne_key};
+
+        my $arg = $opts->{$ne_key};
+        if ((defined $arg) && (ref($arg) eq "ARRAY")) {
+            my $placeholders = "(".join(",", map( "?", @$arg)).")";
+            $self->add_condition("e.$eq_key NOT IN $placeholders", @$arg);
+        }
+        elsif (defined $arg) {
+            $self->add_condition("e.$eq_key <> ?", $arg);
+        }
+        else {
+            $self->add_condition("e.$eq_key IS NOT NULL");
+        }
+    }
 }
 
 sub _limit_and_offset {
