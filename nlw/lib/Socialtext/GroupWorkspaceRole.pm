@@ -2,8 +2,10 @@ package Socialtext::GroupWorkspaceRole;
 # @COPYRIGHT@
 
 use Moose;
-use Socialtext::MooseX::SQL;
+use Socialtext::Moose::SqlTable;
 use namespace::clean -except => 'meta';
+
+has_table 'group_workspace_role';
 
 has_column 'group_id' => (
     is => 'rw', isa => 'Int',

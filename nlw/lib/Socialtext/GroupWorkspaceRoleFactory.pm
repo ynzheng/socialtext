@@ -2,62 +2,62 @@ package Socialtext::GroupWorkspaceRoleFactory;
 # @COPYRIGHT@
 
 use MooseX::Singleton;
-use Carp qw(croak);
+use Socialtext::Moose::SqlBuilder;
+with qw(
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlInsert
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlSelect
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlUpdate
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlDelete
+    Socialtext::Moose::SqlBuilder::Role::DoesColumnFiltering
+);
+
+use List::Util qw(first);
 use Socialtext::Events;
 use Socialtext::Log qw(st_log);
-use Socialtext::SQL qw(:exec);
-use Socialtext::SQL::Builder qw(:all);
 use Socialtext::Role;
 use Socialtext::Timer;
 use Socialtext::GroupWorkspaceRole;
 use namespace::clean -except => 'meta';
 
+builds_sql_for 'Socialtext::GroupWorkspaceRole';
+
 sub GetGroupWorkspaceRole {
     my ($self, %p) = @_;
 
-    # make sure we have all primary key values, and build up the SQL to search
-    # for that specific key
-    my %pkey = $self->_ensure_pkey(\%p);
-
-    # map GWR attributes to DB columns
-    my ($clause, @bindings) = $self->_pkey_where_clause(%pkey);
+    # Only concern ourselves with valid Db Columns
+    my $where = $self->FilterValidColumns( \%p );
 
     # fetch the GWR from the DB
-    my $sql = qq{
-        SELECT role_id
-          FROM group_workspace_role
-         WHERE $clause;
-    };
-    my $role_id = sql_singlevalue($sql, @bindings);
-    return undef unless $role_id;
+    my $sth = $self->SqlSelectOneRecord( {
+        where => $where,
+    } );
+
+    my $row = $sth->fetchrow_hashref();
+    return unless $row;
 
     # create the GWR object
-    return Socialtext::GroupWorkspaceRole->new( {
-        %pkey,
-        role_id  => $role_id,
-    } );
+    return Socialtext::GroupWorkspaceRole->new( $row );
 }
 
 sub CreateRecord {
     my ($self, $proto_gwr) = @_;
-    my @attrs = Socialtext::GroupWorkspaceRole->meta->get_all_column_attributes;
+
+    # Only concern ourselves with valid Db Columns
+    my $valid = $self->FilterValidColumns( $proto_gwr );
 
     # SANITY CHECK: need all required attributes
-    foreach my $attr (@attrs) {
-        my $attr_name = $attr->name;
-        if (($attr->is_required) && (!defined $proto_gwr->{$attr_name})) {
-            die "need a $attr_name attribute to create a GroupWorkspaceRole";
-        }
-    }
-
-    # map GWR attributes to SQL INSERT args
-    my %insert_args =
-        map { $_->column_name => $proto_gwr->{ $_->name } } @attrs;
+    my $table_class = $self->meta->sql_table_class();
+    my $missing =
+        first { not defined $valid->{$_} }
+        map   { $_->name }
+        grep  { $_->is_required }
+        $table_class->meta->get_all_column_attributes;
+    die "need a $missing attribute to create a GroupWorkspaceRole" if $missing;
 
     # INSERT the new record into the DB
-    sql_insert('group_workspace_role', \%insert_args);
+    $self->SqlInsert( $valid );
 
-    $self->_emit_event($proto_gwr, 'create_role');
+    $self->_emit_event($valid, 'create_role');
 }
 
 sub Create {
@@ -75,16 +75,23 @@ sub Create {
 sub UpdateRecord {
     my ($self, $proto_gwr) = @_;
 
-    # SANITY CHECK: need to know which UG* we're updating
-    my %pkey = $self->_ensure_pkey($proto_gwr);
+    # Only concern ourselves with valid Db Columns
+    my $valid = $self->FilterValidColumns( $proto_gwr );
 
-    # map GWR attributes to SQL UPDATE args
-    my %update_args =
-        map { $_->column_name => $proto_gwr->{ $_->name } }
-        grep { exists $proto_gwr->{ $_->name } }
-        Socialtext::GroupWorkspaceRole->meta->get_all_column_attributes;
+    # Update is done against the primary key
+    my $pkey = $self->FilterPrimaryKeyColumns( $valid );
 
-    my $sth = sql_update('group_workspace_role', \%update_args, [keys %pkey]);
+    # Don't allow for primary key fields to be updated
+    my $values = $self->FilterNonPrimaryKeyColumns( $valid );
+
+    # If there's nothing to update, *don't*.
+    return unless %{$values};
+
+    # UPDATE the record in the DB
+    my $sth = $self->SqlUpdateOneRecord( {
+        values => $values,
+        where  => $pkey,
+    } );
 
     my $did_update = ($sth && $sth->rows) ? 1 : 0;
     $self->_emit_event($proto_gwr, 'update_role') if $did_update;
@@ -96,22 +103,19 @@ sub Update {
     my $timer = Socialtext::Timer->new();
 
     # update the record for this GWR in the DB
+    my $primary_key = $group_workspace_role->primary_key();
     my $updates_ref = {
         %{$proto_gwr},
-        group_id     => $group_workspace_role->group_id,
-        workspace_id => $group_workspace_role->workspace_id,
+        %{$primary_key},
     };
     my $did_update = $self->UpdateRecord($updates_ref);
 
     if ($did_update) {
-        # merge the updates back into the GWR object
-        foreach my $attr (keys %{$updates_ref}) {
-            # can't update pkey attrs
-            my $meta_attr =
-                $group_workspace_role->meta->find_attribute_by_name($attr);
-            next if ($meta_attr->is_primary_key());
+        # merge the updates back into the GWR object, skipping primary key
+        # columns (which *aren't* updateable
+        my $to_merge = $self->FilterNonPrimaryKeyColumns($updates_ref);
 
-            # update non pkey attrs
+        foreach my $attr (keys %{$to_merge}) {
             my $setter = "_$attr";
             $group_workspace_role->$setter( $updates_ref->{$attr} );
         }
@@ -125,14 +129,11 @@ sub Update {
 sub DeleteRecord {
     my ($self, $proto_gwr) = @_;
 
-    # SANITY CHECK: need to know which UG* we're updating
-    my %pkey = $self->_ensure_pkey($proto_gwr);
+    # Only concern ourselves with valid Db Columns
+    my $where = $self->FilterValidColumns( $proto_gwr );
 
-    # map GWR attributes to SQL DELETE args
-    my ($clause, @bindings) = $self->_pkey_where_clause(%pkey);
-
-    my $sql = qq{DELETE FROM group_workspace_role WHERE $clause};
-    my $sth = sql_execute($sql, @bindings);
+    # DELETE the record in the DB
+    my $sth = $self->SqlDeleteOneRecord( $where );
 
     my $did_delete = $sth->rows();
     $self->_emit_event($proto_gwr, 'delete_role') if $did_delete;
@@ -143,10 +144,7 @@ sub DeleteRecord {
 sub Delete {
     my ($self, $gwr) = @_;
     my $timer = Socialtext::Timer->new();
-    my $did_delete = $self->DeleteRecord( {
-        group_id     => $gwr->group_id,
-        workspace_id => $gwr->workspace_id,
-        } );
+    my $did_delete = $self->DeleteRecord( $gwr->primary_key() );
     $self->_record_log_entry('REMOVE', $gwr, $timer) if $did_delete;
     return $did_delete;
 }
@@ -156,22 +154,11 @@ sub ByGroupId {
     my $group_id      = shift;
     my $closure       = shift;
 
-    # introspect the names of the DB columns for these attributes
-    my $meta = Socialtext::GroupWorkspaceRole->meta();
-    my ($group_column, $ws_column) =
-        map { $meta->find_attribute_by_name($_)->column_name() }
-        qw(group_id workspace_id);
-
-    # build the SQL used to get the GWRs for this Group Id
-    my $sql = qq{
-        SELECT *
-          FROM group_workspace_role
-         WHERE $group_column = ?
-      ORDER BY $ws_column
-    };
-
-    # go get the list of GWRs
-    return $self_or_class->_GwrCursor( $sql, [$group_id], $closure );
+    my $sth = $self_or_class->SqlSelect( {
+        where => { group_id => $group_id },
+        order => 'workspace_id',
+    } );
+    return $self_or_class->_GwrCursor( $sth, $closure );
 }
 
 sub ByWorkspaceId {
@@ -179,33 +166,18 @@ sub ByWorkspaceId {
     my $workspace_id  = shift;
     my $closure       = shift;
 
-    # introspect the names of the DB columns for these attributes
-    my $meta = Socialtext::GroupWorkspaceRole->meta();
-    my ($group_column, $ws_column) =
-        map { $meta->find_attribute_by_name($_)->column_name() }
-        qw(group_id workspace_id);
-
-    # build the SQL used to get the GWRs for this Workspace Id
-    my $sql = qq{
-        SELECT *
-          FROM group_workspace_role
-         WHERE $ws_column = ?
-      ORDER BY $group_column
-    };
-
-    # go get the list of GWRs
-    return $self_or_class->_GwrCursor( $sql, [$workspace_id], $closure );
+    my $sth = $self_or_class->SqlSelect( {
+        where => { workspace_id => $workspace_id },
+        order => 'group_id',
+    } );
+    return $self_or_class->_GwrCursor( $sth, $closure );
 }
 
-# When calling _GwrCursor(), your SQL *MUST* include the "group_id",
-# "workspace_id", and "role_id" columns in the SELECT.
 sub _GwrCursor {
     my $self_or_class = shift;
-    my $sql           = shift;
-    my $bindings      = shift;
+    my $sth           = shift;
     my $closure       = shift;
 
-    my $sth = sql_execute($sql, @$bindings);
     return Socialtext::MultiCursor->new(
         iterables => [ $sth->fetchall_arrayref( {} ) ],
         apply     => sub {
@@ -234,40 +206,6 @@ sub _emit_event {
         actor       => $actor,
         context     => $proto_gwr,
     } );
-}
-
-sub _ensure_pkey {
-    my ($self, $proto_gwr) = @_;
-    my @attrs = Socialtext::GroupWorkspaceRole->meta->get_all_column_attributes;
-    my %pkey;
-    foreach my $attr (@attrs) {
-        next unless $attr->is_primary_key();
-        my $attr_name = $attr->name();
-        unless ($proto_gwr->{$attr_name}) {
-            croak "missing required primary key attribute '$attr_name'";
-        }
-        $pkey{$attr_name} = $proto_gwr->{$attr_name};
-    }
-    return %pkey;
-}
-
-sub _pkey_where_clause {
-    my ($self, %pkey) = @_;
-
-    my $meta = Socialtext::GroupWorkspaceRole->meta;
-    my %args =
-        map { $_->column_name => $pkey{ $_->name } }
-        map { $meta->find_attribute_by_name($_) }
-        keys %pkey;
-
-    # build the SQL to do the DELETE
-    my $clause =
-        join ' AND ',
-        map { "$_ = ?" }
-        keys %args;
-    my @bindings = values %args;
-
-    return ($clause, @bindings);
 }
 
 sub _record_log_entry {
