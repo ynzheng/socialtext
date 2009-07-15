@@ -957,21 +957,6 @@ div#contentColumns div#contentLeft	{
 	float: left;
 }
 
-body#dashBoard div#contentColumns div#columnCombined	{
-	width: 66%;
-	float: left;
-}
-
-body#dashBoard div#contentColumns div#columnCombined div#contentLeft {
-	width: 50%;
-	float: left;
-}
-
-body#dashBoard div#contentColumns div#columnCombined div#columnMiddle {
-	width: 50%;
-	float: right;
-}
-
 body#settingsPage div#contentColumns div#contentLeft	{
 	width: 20%;
 	float: left;
