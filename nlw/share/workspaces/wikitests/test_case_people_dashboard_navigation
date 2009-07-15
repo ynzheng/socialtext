@@ -2,49 +2,24 @@
 
 | *Comment* | STARTING Test Case: People Dashboard Navigation |  |
 
-| *Comment* | Test Case: People Dashboard Navigation - Create accounts, make sure they show up in people list |  |
+| *Comment* | Test Case: People Dashboard Navigation - Create user, make sure they show up in people list |  |
 | set | new_email | `0_aaa_%%start_time%%@ken.socialtext.net` |
 | set | new_email_find_me | `0 aaa %%start_time%%` |
 | set | new_email_prefix | `0_aaa_` |
 
 | st-admin | create_user --email %%new_email%% --password %%password%% |  |
-| st-admin | add-member --username %%new_email%% --workspace %%workspace%% |  |
-
-| open_ok | / |  |
-| wait_for_element_visible_ok | link=Add Content | 30000 |
-| click_and_wait | link=Add Content |  |
-
-TO DO - Add testability hooks and confirm Grey Ghost Icon
-
-| *Comment* | Test Case: People Dashboard Navigation - Add Content has correct content |  |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-All People Tags'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Recent Conversations'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Workspaces'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Wiki Page'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-One Image'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-RSS Viewer'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Workspace Tags'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Socialtext Signals'] | 30000 |
-
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Microsoft Outlook'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Google Calendar'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-YouTube Video Player'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-SlideShare Feeds'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-BeTwittered'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-My del.icio.us'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-MapQuest'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Wikipedia'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Flickr Photos'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-LabPixies Calculator'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Clock & Date'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-LabPixies ToDo'] | 30000 |
-
-| text_like | Displays a single page from any of your workspaces within a Socialtext Widget. |  |
+| open-ok | /nlw/submit/logout |  |
+| wait_for_element_visible_ok | username | 30000 |
+| wait_for_element_visible_ok | password | 30000 |
+| type_ok | username | %%username%% |
+| type_ok | password | %%password%% |
+| click_and_wait | login_btn |  |
 
 | *Comment* | Test Case: People Dashboard Navigation People. Last people page. |  |
+| wait_for_element_visible_ok | link=People | 30000 |
 | click_and_wait | link=People |  |
 | wait_for_element_visible_ok | link=%%new_email_find_me%% | 30000 |
-| text_like | contentContainer | %%new_email_find_me%% |  |
+| text_like | contentContainer | %%new_email_find_me%% |
 | text_like | contentContainer | %%new_email%% |
 
 | *Comment* | Test Case: People Dashboard Navigation People. Search for %%new_email_prefix%% |  |
@@ -62,6 +37,5 @@ TO DO - Add testability hooks and confirm Grey Ghost Icon
 | text_unlike | contentContainer | %%new_email%% |
 
 | *comment* | Test Case: People Dashboard Navigation TEARDOWN |  |
-| st-admin | remove-member --username %%new_email%% --workspace %%workspace%% | is no longer |
 
 | *comment* | Test Case: People Dashboard Navigation COMPLETED |  |

@@ -1,6 +1,7 @@
 | *Comment* | Test Case: Servername redirect to default ws |
 | *Comment* | Test Case: Servername redirect to default ws is based on "http colon slash slash servername goes to default workspace" |
 
+| st-admin | enable-plugin --account %%hostname%% --p dashboard |  |
 
 | st-config | set default_workspace '' | Wrote updated config file to |
 | open_ok | / |  |

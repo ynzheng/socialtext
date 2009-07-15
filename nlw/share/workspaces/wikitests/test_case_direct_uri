@@ -2,7 +2,7 @@
 
 | st-admin | create-user --email %%start_time%%@ken.socialtext.net --password 123456 |  |
 | st-admin | create-workspace --name duri-%%start_time%% --title DURI |  |
-| st-admin | set-workspace-config --workspace duri-%%start_time%% skin_name s3 | The workspace config for duri-%%start_time%% has been updated |
+| st-admin | enable-plugin --account %%hostname%% --p dashboard |  |
 | st-logoutin | %%start_time%%@ken.socialtext.net | 123456 |
 
 | *Comment* | Test Case: Direct URI: should return to the Help home page silently because you are not a member of the help workspace. |  |

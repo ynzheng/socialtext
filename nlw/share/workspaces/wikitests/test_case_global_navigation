@@ -1,6 +1,9 @@
 | *Comment* | Test Case: Global Navigation |  |
 | *Comment* | requires People and Dashboard |  |
 
+| st-admin | enable-plugin --account %%hostname%% --p dashboard |  |
+| st-admin | enable-plugin --account %%hostname%% --p people |  |
+
 | *Comment* | Test Case: Global Navigation Home People Workspaces |  |
 | text_like | mainNav | Home |
 | text_like | mainNav | People |

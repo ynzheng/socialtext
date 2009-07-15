@@ -1,9 +1,11 @@
 * Fixture: SocialWidgets
 
-| *Comment* | Starting Test Case: Tagging Profile |  |
-| click_and_wait | link=Profile |  |
+| *Comment* | Starting Test Case: Tagging Profile. Log in %%username%% |  |
+| click_and_wait | link=Home |  |
+| st-logoutin |  |  |
 
 | *Comment* | Test Case: Tagging Profile. fog tag added |  |
+| click_and_wait | link=Profile |  |
 | wait_for_element_visible_ok | new_tag | 30000 |
 | type_ok | new_tag | fog %%start_time%% |
 | click_ok | //input[@value='Add Tag'] |  |
@@ -60,7 +62,7 @@ text_like | 所以 | |
 | clickAndWait | login_btn |  |
 
 | wait_for_element_visible_ok | link=Profile | 60000 |
-| text_like | st-editing-tools-edit | %%fname%% %%lname%% |
+| text_like | %%fname%% %%lname%% |  |
 | click_and_wait | link=Profile |  |
 
 | *Comment* | Test Case: Tagging Profile. fog tag added to %%e_user%% |  |

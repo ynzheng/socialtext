@@ -1,0 +1,13 @@
+A convenience testset for running all of our Signals tests
+
+Signals Widget
+
+* [Test Case: Signals Widget]
+
+Signals Page
+
+* [Test Case: Signals Page]
+
+Signal to Networks
+
+* [Test Case: Signal to Networks]

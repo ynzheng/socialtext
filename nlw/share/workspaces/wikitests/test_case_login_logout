@@ -36,7 +36,7 @@
 | st-admin | create-user --email %%inout_user%% --password 123456 |  |
 | st-admin | add-member --email %%inout_user%% --workspace %%workspace%% |  |
 | st-login | %%inout_user%% | 123456 |
-| text_unlike | //body | Add Members |  |
+| text_unlike | //body | Add Members |
 | st-logout |  |  |
 
 | *Comment* | Test Case: Login/Logout Forgotten password (bad user): |  |

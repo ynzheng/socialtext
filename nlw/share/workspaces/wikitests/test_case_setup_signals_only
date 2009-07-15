@@ -1,0 +1,34 @@
+| *Comment* | Test Case: Setup Signals Only |
+
+* Fixture: SocialWidgets
+
+This testcase sets up the Signals Only configuration in a dev env: dashboard disabled, signals enabled, no wikis other than Help wikis.
+
+It will delete all the standard wikis from a dev env and remove devnull1 membership from help-en and help-adminguide
+Since it will delete all wikis, the plan server and plan workspace must be in a different running environment.
+
+It is intended to be called from [Signals Only Testcases]
+
+| click_and_wait | link=Home |  |
+| st-admin | enable-plugin --all-accounts --p signals |  |
+| st-admin | disable-plugin --all-accounts --p dashboard |  |
+| st-logout |  |  |
+
+| *Comment* | Test Case: Setup Signals Only. Delete dev env workspaces |  |
+| st-admin | delete-workspace --no-export --w admin |  |
+| st-admin | delete-workspace --no-export --w a_test_stub_ws |  |
+| st-admin | delete-workspace --no-export --w auth-to-edit |  |
+| st-admin | delete-workspace --no-export --w b_test_stub_ws |  |
+| st-admin | delete-workspace --no-export --w exchange |  |
+| st-admin | delete-workspace --no-export --w foobar |  |
+| st-admin | delete-workspace --no-export --w growth_report_test |  |
+| st-admin | delete-workspace --no-export --w public |  |
+| st-admin | delete-workspace --no-export --w sale |  |
+| st-admin | delete-workspace --no-export --w wikitests |  |
+| st-admin | delete-workspace --no-export --w test-data |  |
+
+| *Comment* | Test Case: Setup Signals Only. remove devnull1 from Help spaces |  |
+| st-admin | remove-member --w help-en --e devnull1@socialtext.com |  |
+| st-admin | remove-member --w help-adminguide --e devnull1@socialtext.com |  |
+
+| *Comment* | Test Case: Setup Signals Only COMPLETED |

@@ -48,7 +48,7 @@
 | wait_for_element_visible_ok | force-update | 30000 |
 | check_ok | force-update |  |
 | click_ok | st-save-widget-template |  |
-|  *Comment* |  Selenium can't see Success message. Re-open the Dashboard and verify. |  |
+| *Comment* | Selenium can't see Success message. Re-open the Dashboard and verify. |  |
 
 | *Comment* | Test Case: Reset to Default Dashboard - verify force update |  |
 | open_ok | /?dashboard | 60000 |
@@ -77,8 +77,8 @@
 | click_and_wait | link=Administer Dashboards |  |
 | wait_for_element_visible_ok | link=Revert to Default... |  |
 | click_ok | link=Revert to Default... |  |
-|  *Comment* |  must wait for page to load but can't use click and wait because lightbox comes up immediately. |  |
-|  pause |  15000 |  I hate pause |
+| *Comment* | must wait for page to load but can't use click and wait because lightbox comes up immediately. |  |
+| pause | 15000 | I hate pause |
 | wait_for_text_present_ok | Are you sure you want to revert to the Socialtext defaults? | 30000 |
 | wait_for_element_visible_ok | //a[@id='dashboard-revert-yes'] | 30000 |
 | click_and-wait | //a[@id='dashboard-revert-yes'] |  |
@@ -93,8 +93,11 @@
 | wait_for_element_visible_ok | link=Revert to Default... |  |
 | wait_for_text_not_present_ok | Wikipedia | 30000 |
 | wait_for_text_not_present_ok | Socialtext blog | 30000 |
-| st-name-widget | 1 | topcat |
-| st-widget-title-like | topcat | Welcome |
+
+| *Comment* | Test Case: Reset to Default Dashboard should have two WikiPage widgets |  |
+| wait_for_text_present_ok | Learning Resources | 30000 |
+| text_like | contentColumns | Welcome |
+| text_like | contentColumns | Learning Resources |
 
 | *Comment* | Test Case: Reset to Default Dashboard TEARDOWN |  |
 | *Comment* | Test Case: Reset to Default Dashboard. No teardown, throw away the account and the users. |  |

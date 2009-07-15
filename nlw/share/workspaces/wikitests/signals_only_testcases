@@ -1,0 +1,34 @@
+* Fixture: SocialWidgets
+
+This testset tests the Signals Only configuration: dashboard disabled, signals enabled, no wikis other than Help wikis.
+
+It will delete all the standard wikis from a dev env and devnull1 member from help-en and help-adminguide
+Since it will delete all wikis, the plan server and plan workspace must be in a different running environment.
+
+To use this testset:
+
+`export SELENIUM_PLAN_SERVER=http://$PLAN_SERVER:$PLAN_PORT`
+`cdcur; source nlw/dev-bin/sotc`
+
+for example:
+
+.pre
+export SELENIUM_PLAN_SERVER=<http://talc.socialtext.net:22004> (plan server and workspace is from talc:22004)
+sudo su - qa1 (Signals Only dev env is user qa1 dev env, talc:22201)
+cdcur
+source nlw/dev-bin/sotc
+.pre
+
+sotc will `run-wiki-tests --plan-page signals_only_testcases` using the plan server and workspace, thus executing this page:
+
+NOTE: each of these test must manage its own plugin enables/disables, logins and logouts independently so order is not significant
+
+* [Test Case: Setup Signals Only]
+* [Test Case: Edit Profile]
+* [Test Case: Verify Profile]
+* [Test Case: Tagging Profile]
+* [Test Case: Signal to Networks]
+* [Test Case: Follow]
+* [Test Case: People Dashboard Navigation]
+* [Test case: Signals Login Logout]
+* [Test Case: Invite people to your network]

@@ -4,27 +4,12 @@
 
 | *Comment* | Test Case: Signals Page |  |
 
-| set-default | acc | %%hostname%% |
-| set-default | ws | %%workspace%% |
-| set-default | member | %%email%% |
 | set-default | mark | single |
 | set-default | network | %%hostname%% |
 
-| st-admin | update-page --workspace %%ws%% --email %%member%% --page "Signals Page Edit Summary %%start_time%%" < %%wikitest_client_files%%wikitest_toc.txt | The "Signals Page Edit Summary %%start_time%%" page has been created. |
-
-| *Comment* | Test Case: Signals Page. Create one edit summary from signal |  |
-| open_ok | /%%ws%%/index.cgi?Signals Page Edit Summary %%start_time%% |  |
-| wait_for_element_visible_ok | st-edit-button-link | 30000 |
-| click_ok | st-edit-button-link |  |
-| wait_for_element_visible_ok | link=Wiki Text | 30000 |
-| click_ok | link=Wiki Text |  |
-| wait_for_element_visible_ok | wikiwyg_wikitext_textarea | 30000 |
-| wait_for_element_visible_ok | st-save-button-link | 30000 |
-| wait_for_element_present_ok | st-edit-summary-text-area | 30000 |
-| click_ok | st-edit-summary-text-area |  |
-| type_ok | st-edit-summary-text-area | Signals Page Edit Summary %%start_time%% %%mark%% |
-| click_ok | st-edit-summary-signal-checkbox |  |
-| click_and_wait | st-save-button-link |  |
+| *Comment* | Test Case: Signals Page. REMOVED EDIT SUMMARY SIGNAL TEST FOR SIGNALS ONLY CASE |  |
+| *Comment* | Test case: Signals Page. Removed checking Signals widget for Signals Only testing. |  |
+| *Comment* | Test case: Signals Page. AREN'T THESE REDUNDANT WITH SIGNALS WIDGET TESTS ?? |  |
 
 | *Comment* | Test Case: Signals Page. Get to the Signals page |  |
 | open_ok | /?signals |  |
@@ -38,6 +23,10 @@
 | *Comment* | Test Case: Signals Page. Once Upon A Time |  |
 | selectFrame | signalFrame |  |
 | wait_for_element_visible_ok | //body | 10000 |
+
+| *Comment* | Test Case: Signals Page. Signals must be spaced by at least two seconds |  |
+| pause | 3000 |  |
+
 | type_ok | //body | Once Upon A Time %%start_time%% %%mark%% |
 | select-frame | relative=parent |  |
 | wait_for_element_visible_ok | post | 10000 |
@@ -89,7 +78,6 @@
 | wait_for_text_present_ok | I Remember Long Ago %%start_time%% %%mark%% | 120000 |
 | wait_for_text_present_ok | Way Back In History %%start_time%% %%mark%% | 120000 |
 | wait_for_text_present_ok | I May Be Kinda Slow %%start_time%% %%mark%% | 120000 |
-| text_like | //body | qr/Signal.+Page.+Edit.+Summary.+%%start_time%% %%mark%%/ism |
 | text_like | //body | qr/You.+to.+%%network%%/ism |
 
 | *Comment* | Test Case: Signals widget. Wait for automatic refresh to "one minute ago" in page |  |
@@ -97,34 +85,7 @@
 | select-frame | relative=parent |  |
 | wait_for_element_present_ok | //iframe[@name='widget_2'] | 30000 |
 
-| *Comment* | Test Case: Signals Page. Get a fresh signals widget |  |
-| open_ok | /?dashboard |  |
-| wait_for_element_visible_ok | link=Add Content | 60000 |
-| st-empty-container |  |  |
-| click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Socialtext Signals'] | 30000 |
-| click_and_wait | //a[@id='gallery-widget-Socialtext Signals'] |  |
-
-| *Comment* | Test case: Signals Page. Check Dashboard, then wait for auto refresh |  |
-| wait_for_text_present_ok | Socialtext Signals | 30000 |
-| st-name-widget | 1 | signals_widget |
-| st-widget-title-like | signals_widget | Signals |
-| st-select-widget-frame | signals_widget |  |
-
-| *Comment* | Test case: Signals Page. Signals should be there |  |
-| wait_for_text_present_ok | Once Upon A Time %%start_time%% %%mark%% | 10000 |
-| wait_for_text_present_ok | I Remember Long Ago %%start_time%% %%mark%% | 10000 |
-| wait_for_text_present_ok | Way Back In History %%start_time%% %%mark%% | 10000 |
-| wait_for_text_present_ok | I May Be Kinda Slow %%start_time%% %%mark%% | 10000 |
-| text_like | //body | qr/Signal.+Page.+Edit.+Summary.+%%start_time%% %%mark%%/ism |
-
-| *Comment* | Test case: Signals Page. wait for auto refresh to "two minutes ago" |  |
-| wait_for_text_present_ok | 2 minutes ago | 120000 |
-
 | *Comment* | Test Case: Signals Page Teardown |  |
-| select-frame | relative=parent |  |
-| st-empty-container |  |  |
-| st-admin | purge-page --w %%ws%% --page signals_page_edit_summary_%%start_time%% | was purged |
 
 | *Comment* | Test Case: Signals Page COMPLETED |  |
 

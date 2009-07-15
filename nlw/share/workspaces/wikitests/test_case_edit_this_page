@@ -1,6 +1,9 @@
 | *Comment* | Starting Test Case: Edit This Page |  |
 | *Comment* | %%username%% - %%email%% - %%short_username%% |  |
 
+| *Comment* | Test Case: Edit This Page wants Dashboard |  |
+| st-admin | enable-plugin --account %%hostname%% --p dashboard |  |
+
 | *Comment* | Test Case: Edit This Page content |  |
 | open_ok | /%%workspace%%/index.cgi?action=new_page |  |
 | wait_for_element_visible_ok | link=Wiki Text | 30000 |

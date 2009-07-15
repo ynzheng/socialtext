@@ -14,7 +14,6 @@
 | *Comment* | Test Case: Invite people. Default allow_invitations is YES |  |
 | *Comment* | The user to be invited is %%to_ws_user%% and the wiki to be created is %%to_ws%%, so the user email addr and wiki email addr are identical, so we can read the email in the wiki! |  |
 | st-admin | create-account --name "%%acct%%" | created |
-| st-admin | enable-plugin --account "%%acct%%" --plugin dashboard |  |
 | st-admin | create-user --e %%acct_user%% --p %%password%% --account "%%acct%%" | created |
 | st-admin | create-workspace --name %%to_ws%% --title "IPN %%to_ws%%" --account "%%acct%%" --empty | created |
 
@@ -26,11 +25,16 @@
 | st-admin | add-workspace-admin --w %%to_ws%% --e %%email%% |  |
 
 | *Comment* | Test Case: Invite people. Login as account user |  |
-| st-logoutin | %%acct_user%% | %%password%% |
+| open-ok | /nlw/submit/logout |  |
+| wait_for_element_visible_ok | username | 30000 |
+| wait_for_element_visible_ok | password | 30000 |
+| type_ok | username | %%acct_user%% |
+| type_ok | password | %%password%% |
+| click_and_wait | login_btn |  |
 
 | *Comment* | Test Case: Invite people. Disable People, verify cannot invite |  |
 | st-admin | disable-plugin --account "%%acct%%" --plugin people |  |
-| open_ok | /?dashboard | 60000 |
+| open_ok | / |  |
 | wait_for_element_visible_ok | link=Home | 30000 |
 | wait_for_element_not_present_ok | st-wiki-subnav-link-invite | 30000 |
 
@@ -38,7 +42,7 @@ TODO: verify cannot actually issue invitations via URL
 
 | *Comment* | Test Case: Invite people. Enable People, verify can invite |  |
 | st-admin | enable-plugin --account "%%acct%%" --plugin people | is now enabled |
-| open_ok | /?dashboard | 60000 |
+| open_ok | / |  |
 | wait_for_element_visible_ok | link=Home | 30000 |
 | wait_for_element_visible_ok | st-wiki-subnav-link-invite | 30000 |
 
@@ -88,9 +92,7 @@ TODO: verify cannot actually issue invitations via URL
 | type_ok | password2 | %%password%% |
 | click_and_wait | link=Register |  |
 
-| *Comment* | Test Case: Invite people. log in and go to dashboard. No workspaces |  |
-| text_like | qr/Welcome.+New User/i |  |
-
+| *Comment* | Test Case: Invite people. Go Home. No workspaces |  |
 | *Comment* | Test Case: Invite people. Disable invitations |  |
 | wait_for_element_visible_ok | st-wiki-subnav-link-invite | 30000 |
 | st-admin | set-account-config --account "%%acct%%" allow_invitation 0 | The account config for %%acct%% has been updated |
@@ -107,7 +109,8 @@ TODO: verify cannot actually issue invitations via URL
 | *Comment* | Test Case: Invite people. Invite UI for new user |  |
 | click_and_wait | st-wiki-subnav-link-invite |  |
 | wait_for_element_visible_ok | account_id | 30000 |
-| select_ok | account_id | %%acct%% (primary) |
+| select_ok | account_id | label=%%acct%% (primary) |
+| is_selected_ok | account_id | label=%%acct%% (primary) |
 
 | *Comment* | Test Case: Invite people TEARDOWN |  |
 | st-admin | delete-workspace --w %%to_ws%% --no-export | has been deleted |
