@@ -2,62 +2,62 @@ package Socialtext::UserGroupRoleFactory;
 # @COPYRIGHT@
 
 use MooseX::Singleton;
-use Carp qw(croak);
+use Socialtext::Moose::SqlBuilder;
+with qw(
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlInsert
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlSelect
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlUpdate
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlDelete
+    Socialtext::Moose::SqlBuilder::Role::DoesColumnFiltering
+);
+
+use List::Util qw(first);
 use Socialtext::Events;
 use Socialtext::Log qw(st_log);
-use Socialtext::SQL qw(:exec);
-use Socialtext::SQL::Builder qw(:all);
 use Socialtext::Role;
 use Socialtext::Timer;
 use Socialtext::UserGroupRole;
 use namespace::clean -except => 'meta';
 
+builds_sql_for 'Socialtext::UserGroupRole';
+
 sub GetUserGroupRole {
     my ($self, %p) = @_;
 
-    # make sure we have all primary key values, and build up the SQL to search
-    # for that specific key
-    my %pkey = $self->_ensure_pkey(\%p);
-
-    # map UGR attributes to DB columns
-    my ($clause, @bindings) = $self->_pkey_where_clause(%pkey);
+    # Only concern ourselves with valid Db Columns
+    my $where = $self->FilterValidColumns( \%p );
 
     # fetch the UGR from the DB
-    my $sql = qq{
-        SELECT role_id
-          FROM user_group_role
-         WHERE $clause;
-    };
-    my $role_id = sql_singlevalue($sql, @bindings);
-    return undef unless $role_id;
+    my $sth = $self->SqlSelectOneRecord( {
+        where => $where,
+    } );
+
+    my $row = $sth->fetchrow_hashref();
+    return unless $row;
 
     # create the UGR object
-    return Socialtext::UserGroupRole->new( {
-        %pkey,
-        role_id  => $role_id,
-    } );
+    return Socialtext::UserGroupRole->new( $row );
 }
 
 sub CreateRecord {
     my ($self, $proto_ugr) = @_;
-    my @attrs = Socialtext::UserGroupRole->meta->get_all_column_attributes;
+
+    # Only concern ourselves with valid Db Columns
+    my $valid = $self->FilterValidColumns( $proto_ugr );
 
     # SANITY CHECK: need all required attributes
-    foreach my $attr (@attrs) {
-        my $attr_name = $attr->name;
-        if (($attr->is_required) && (!defined $proto_ugr->{$attr_name})) {
-            die "need a $attr_name attribute to create a UserGroupRole";
-        }
-    }
-
-    # map UGR attributes to SQL INSERT args
-    my %insert_args =
-        map { $_->column_name => $proto_ugr->{ $_->name } } @attrs;
+    my $table_class = $self->meta->sql_table_class();
+    my $missing =
+        first { not defined $valid->{$_} }
+        map   { $_->name }
+        grep  { $_->is_required }
+        $table_class->meta->get_all_column_attributes;
+    die "need a $missing attribute to create a UserGroupRole" if $missing;
 
     # INSERT the new record into the DB
-    sql_insert('user_group_role', \%insert_args);
+    $self->SqlInsert( $valid );
 
-    $self->_emit_event($proto_ugr, 'create_role');
+    $self->_emit_event($valid, 'create_role');
 }
 
 sub Create {
@@ -75,16 +75,23 @@ sub Create {
 sub UpdateRecord {
     my ($self, $proto_ugr) = @_;
 
-    # SANITY CHECK: need to know which UG* we're updating
-    my %pkey = $self->_ensure_pkey($proto_ugr);
+    # Only concern ourselves with valid Db Columns
+    my $valid = $self->FilterValidColumns( $proto_ugr );
 
-    # map UGR attributes to SQL UPDATE args
-    my %update_args =
-        map { $_->column_name => $proto_ugr->{ $_->name } }
-        grep { exists $proto_ugr->{ $_->name } }
-        Socialtext::UserGroupRole->meta->get_all_column_attributes;
+    # Update is done against the primary key
+    my $pkey = $self->FilterPrimaryKeyColumns( $valid );
 
-    my $sth = sql_update('user_group_role', \%update_args, [keys %pkey]);
+    # Don't allow for primary key fields to be updated
+    my $values = $self->FilterNonPrimaryKeyColumns( $valid );
+
+    # If there's nothing to update, *don't*.
+    return unless %{$values};
+
+    # UPDATE the record in the DB
+    my $sth = $self->SqlUpdateOneRecord( {
+        values => $values,
+        where  => $pkey,
+    } );
 
     my $did_update = ($sth && $sth->rows) ? 1 : 0;
     $self->_emit_event($proto_ugr, 'update_role') if $did_update;
@@ -96,24 +103,21 @@ sub Update {
     my $timer = Socialtext::Timer->new();
 
     # update the record for this UGR in the DB
+    my $primary_key = $user_group_role->primary_key();
     my $updates_ref = {
         %{$proto_ugr},
-        user_id  => $user_group_role->user_id,
-        group_id => $user_group_role->group_id,
+        %{$primary_key},
     };
     my $did_update = $self->UpdateRecord($updates_ref);
 
     if ($did_update) {
-        # merge the updates back into the UGR object
-        foreach my $attr (keys %{$updates_ref}) {
-            # can't update pkey attrs
-            my $meta_attr =
-                $user_group_role->meta->find_attribute_by_name($attr);
-            next if ($meta_attr->is_primary_key());
+        # merge the updates back into the UGR object, skipping primary key
+        # columns (which *aren't* updateable)
+        my $to_merge = $self->FilterNonPrimaryKeyColumns($updates_ref);
 
-            # update non pkey attrs
+        foreach my $attr (keys %{$to_merge}) {
             my $setter = "_$attr";
-            $user_group_role->$setter( $updates_ref->{$attr} );
+            $user_group_role->$setter( $to_merge->{$attr} );
         }
 
         $self->_record_log_entry('CHANGE', $user_group_role, $timer);
@@ -125,14 +129,11 @@ sub Update {
 sub DeleteRecord {
     my ($self, $proto_ugr) = @_;
 
-    # SANITY CHECK: need to know which UG* we're updating
-    my %pkey = $self->_ensure_pkey($proto_ugr);
+    # Only concern ourselves with valid Db Columns
+    my $where = $self->FilterValidColumns( $proto_ugr );
 
-    # map UGR attributes to SQL DELETE args
-    my ($clause, @bindings) = $self->_pkey_where_clause(%pkey);
-
-    my $sql = qq{DELETE FROM user_group_role WHERE $clause};
-    my $sth = sql_execute($sql, @bindings);
+    # DELETE the record in the DB
+    my $sth = $self->SqlDeleteOneRecord( $where );
 
     my $did_delete = $sth->rows();
     $self->_emit_event($proto_ugr, 'delete_role') if $did_delete;
@@ -143,10 +144,7 @@ sub DeleteRecord {
 sub Delete {
     my ($self, $ugr) = @_;
     my $timer = Socialtext::Timer->new();
-    my $did_delete = $self->DeleteRecord( {
-        user_id  => $ugr->user_id,
-        group_id => $ugr->group_id,
-        } );
+    my $did_delete = $self->DeleteRecord( $ugr->primary_key() );
     $self->_record_log_entry('REMOVE', $ugr, $timer) if $did_delete;
     return $did_delete;
 }
@@ -156,22 +154,11 @@ sub ByUserId {
     my $user_id       = shift;
     my $closure       = shift;
 
-    # introspect the names of the DB columns for these attributes
-    my $meta = Socialtext::UserGroupRole->meta();
-    my ($user_column, $group_column) =
-        map { $meta->find_attribute_by_name($_)->column_name() }
-        qw(user_id group_id);
-
-    # build the SQL used to get the UGRs for this User Id
-    my $sql = qq{
-        SELECT *
-          FROM user_group_role
-         WHERE $user_column = ?
-      ORDER BY $group_column
-    };
-
-    # go get the list of UGRs
-    return $self_or_class->_UgrCursor( $sql, [$user_id], $closure );
+    my $sth = $self_or_class->SqlSelect( {
+        where => { user_id => $user_id },
+        order => 'group_id',
+    } );
+    return $self_or_class->_UgrCursor( $sth, $closure );
 }
 
 sub ByGroupId {
@@ -179,33 +166,18 @@ sub ByGroupId {
     my $group_id      = shift;
     my $closure       = shift;
 
-    # introspect the names of the DB columns for these attributes
-    my $meta = Socialtext::UserGroupRole->meta();
-    my ($user_column, $group_column) =
-        map { $meta->find_attribute_by_name($_)->column_name() }
-        qw(user_id group_id);
-
-    # build the SQL used to get the UGRs for this Group Id
-    my $sql = qq{
-        SELECT *
-          FROM user_group_role
-         WHERE $group_column = ?
-      ORDER BY $user_column
-    };
-
-    # go get the list of UGRs
-    return $self_or_class->_UgrCursor( $sql, [$group_id], $closure );
+    my $sth = $self_or_class->SqlSelect( {
+        where => { group_id => $group_id},
+        order => 'user_id',
+    } );
+    return $self_or_class->_UgrCursor( $sth, $closure );
 }
 
-# When calling _UgrCursor(), your SQL *MUST* include the "user_id", "group_id"
-# and "role_id" columns in the SELECT.
 sub _UgrCursor {
     my $self_or_class = shift;
-    my $sql           = shift;
-    my $bindings      = shift;
+    my $sth           = shift;
     my $closure       = shift;
 
-    my $sth = sql_execute($sql, @$bindings);
     return Socialtext::MultiCursor->new(
         iterables => [ $sth->fetchall_arrayref( {} ) ],
         apply     => sub {
@@ -234,40 +206,6 @@ sub _emit_event {
         actor       => $actor,
         context     => $proto_ugr,
     } );
-}
-
-sub _ensure_pkey {
-    my ($self, $proto_ugr) = @_;
-    my @attrs = Socialtext::UserGroupRole->meta->get_all_column_attributes;
-    my %pkey;
-    foreach my $attr (@attrs) {
-        next unless $attr->is_primary_key();
-        my $attr_name = $attr->name();
-        unless ($proto_ugr->{$attr_name}) {
-            croak "missing required primary key attribute '$attr_name'";
-        }
-        $pkey{$attr_name} = $proto_ugr->{$attr_name};
-    }
-    return %pkey;
-}
-
-sub _pkey_where_clause {
-    my ($self, %pkey) = @_;
-
-    my $meta = Socialtext::UserGroupRole->meta;
-    my %args =
-        map { $_->column_name => $pkey{ $_->name } }
-        map { $meta->find_attribute_by_name($_) }
-        keys %pkey;
-
-    # build the SQL to do the DELETE
-    my $clause =
-        join ' AND ',
-        map { "$_ = ?" }
-        keys %args;
-    my @bindings = values %args;
-
-    return ($clause, @bindings);
 }
 
 sub _record_log_entry {

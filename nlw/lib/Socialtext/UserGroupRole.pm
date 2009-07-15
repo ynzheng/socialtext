@@ -2,8 +2,10 @@ package Socialtext::UserGroupRole;
 # @COPYRIGHT@
 
 use Moose;
-use Socialtext::MooseX::SQL;
+use Socialtext::Moose::SqlTable;
 use namespace::clean -except => 'meta';
+
+has_table 'user_group_role';
 
 has_column 'user_id' => (
     is => 'rw', isa => 'Int',
