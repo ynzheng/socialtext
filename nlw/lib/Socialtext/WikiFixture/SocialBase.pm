@@ -733,6 +733,16 @@ sub set_from_header {
     }
 }
 
+=head2 st_clear_cache
+
+Clears the server cache for the widgets 
+
+=cut
+
+sub st_clear_json_cache {
+    _run_command("purge-json-proxy-cache",'ignore output');   
+}
+
 =head2 st-clear-events
 
 Delete all events
@@ -1241,5 +1251,20 @@ sub st_fast_forward_jobs {
     sql_commit;
     pass "fast-forwarded jobs by $minutes minutes";
 }
+
+sub _run_command {
+    my $command = shift;
+    my $verify = shift || '';
+    my $output = qx($command 2>&1);
+    return if $verify eq 'ignore output';
+
+    if ($verify) {
+        like $output, $verify, $command;
+    }
+    else {
+        warn $output;
+    }
+}
+
 
 1;

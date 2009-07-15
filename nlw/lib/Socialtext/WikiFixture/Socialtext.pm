@@ -475,16 +475,6 @@ sub st_qa_setup_reports {
     _run_command("st-qa-setup-reports",'ignore output');
 }
 
-=head2 st_clear_cache
-
-Clears the server cache for the widgets 
-
-=cut
-
-sub st_clear_json_cache {
-    _run_command("purge-json-proxy-cache",'ignore output');   
-}
-
 =head2 st_admin( $command_options )
 
 Runs st_admin command line script with the supplied options.
@@ -695,20 +685,6 @@ sub _click_user_row {
     }
     ok 0, "Could not find '$email' in the table";
     return;
-}
-
-sub _run_command {
-    my $command = shift;
-    my $verify = shift || '';
-    my $output = qx($command 2>&1);
-    return if $verify eq 'ignore output';
-
-    if ($verify) {
-        like $output, $verify, $command;
-    }
-    else {
-        warn $output;
-    }
 }
 
 =head1 AUTHOR
