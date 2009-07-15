@@ -30,7 +30,7 @@ override 'GET_json' => sub {
         'TopContentByPage', {
             start_time => $self->start,
             duration   => $self->duration,
-            limit      => 20,
+            top        => 20,
             type       => 'raw',
         }, $user,
     ) };
