@@ -312,3 +312,4 @@ lib/Socialtext/Pluggble/Plugin/SimpleAppliance.pm
 lib/Socialtext/Pluggable/Plugin/SimpleAppliance.pm
 lib/Socialtext/Pluggable/Plugin/SignalsAppliance.pm
 lib/Socialtext/Pluggable/Plugin/Appliance.pm
+t/rest_files/atom.json

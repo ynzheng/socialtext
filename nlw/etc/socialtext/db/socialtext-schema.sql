@@ -458,12 +458,14 @@ CREATE TABLE job (
 );
 
 CREATE TABLE json_proxy_cache (
-    expires timestamptz NOT NULL,
     user_id bigint NOT NULL,
     url text NOT NULL,
-    headers text DEFAULT '' NOT NULL,
     authz text,
-    content text
+    content text,
+    "key" text NOT NULL,
+    "at" timestamptz DEFAULT now() NOT NULL,
+    refresh_interval interval DEFAULT '01:00:00'::interval NOT NULL,
+    expiry timestamptz NOT NULL
 );
 
 CREATE TABLE note (
@@ -1117,8 +1119,11 @@ CREATE INDEX job_funcid_coalesce
 CREATE INDEX job_funcid_runafter
 	    ON job (funcid, run_after);
 
-CREATE INDEX json_proxy_cache_idx
-	    ON json_proxy_cache (url, headers);
+CREATE INDEX json_proxy_cache_expiry_idx
+	    ON json_proxy_cache (expiry);
+
+CREATE UNIQUE INDEX json_proxy_cache_key_idx
+	    ON json_proxy_cache (user_id, "key");
 
 CREATE INDEX page_creator_time
 	    ON page (creator_id, create_time);
@@ -1647,4 +1652,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '72');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '73');
