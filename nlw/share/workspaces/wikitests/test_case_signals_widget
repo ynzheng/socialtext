@@ -126,9 +126,24 @@
 
 | *Comment* | Test case: Signals Widget. wait for auto refresh to two minutes ago |  |
 | wait_for_text_present_ok | 2 minutes ago | 120000 |
+| select-frame | relative=parent |  |
+
+| *Comment* | Test case: Signals Widget. check for agreement with Signals page |  |
+| click_and_wait | link=Signals |  |
+
+| wait_for_element_present_ok | //iframe[@name='widget_2'] | 30000 |
+| st-name-widget | 3 | signal_activity |
+| st-select-widget-frame | signal_activity |  |
+
+| wait_for_text_present_ok | She rocks in the treehouse %%start_time%% | 10000 |
+| wait_for_text_present_ok | Rockin and a bopin %%start_time%% | 10000 |
+| wait_for_text_present_ok | All the little birds %%start_time%% | 10000 |
+| wait_for_text_present_ok | Love to hear the robin going %%start_time%% | 10000 |
+| wait_for_text_present_ok | Signal %%start_time%% | 10000 |
+| text_like | //body | qr/Super.+Edit.+Summary.+From.+Signal.+%%start_time%%/ |
 
 | *Comment* | Test Case: Signals Widget Teardown |  |
-| select-frame | relative=parent |  |
+| open_ok | / |  |
 | st-empty-container |  |  |
 | st-admin | purge-page --w %%workspace%% --page edit_summary_signal_%%start_time%% | was purged |
 

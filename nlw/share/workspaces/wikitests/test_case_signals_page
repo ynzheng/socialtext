@@ -7,10 +7,6 @@
 | set-default | mark | single |
 | set-default | network | %%hostname%% |
 
-| *Comment* | Test Case: Signals Page. REMOVED EDIT SUMMARY SIGNAL TEST FOR SIGNALS ONLY CASE |  |
-| *Comment* | Test case: Signals Page. Removed checking Signals widget for Signals Only testing. |  |
-| *Comment* | Test case: Signals Page. AREN'T THESE REDUNDANT WITH SIGNALS WIDGET TESTS ?? |  |
-
 | *Comment* | Test Case: Signals Page. Get to the Signals page |  |
 | open_ok | /?signals |  |
 | wait_for_text_present_ok | Send a Signal | 60000 |
