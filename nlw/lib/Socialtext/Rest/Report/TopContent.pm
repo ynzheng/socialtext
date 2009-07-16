@@ -125,7 +125,7 @@ sub _workspace_data {
     my $report    = shift;
     my $workspace = $report->workspace;
 
-    return unless $workspace;
+    return undef unless $workspace;
 
     return {
         title => $workspace->title,
