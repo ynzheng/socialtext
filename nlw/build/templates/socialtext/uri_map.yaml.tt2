@@ -63,16 +63,6 @@
             'application/atom+xml':   [Socialtext::Rest::Events::Followed, GET_atom]
             'text/plain':             [Socialtext::Rest::Events::Followed, GET_text]
         '*':                    [Socialtext::Rest::Events::Followed, bad_method]
--
-    '/data/events/awesome/:user':
-        'GET':
-            '*/*':           &default [Socialtext::Rest::Events::Awesome, GET_html]
-            'text/html':              *default
-            'application/json':       [Socialtext::Rest::Events::Awesome, GET_json]
-            'text/x-yaml':            [Socialtext::Rest::Events::Awesome, GET_yaml]
-            'application/atom+xml':   [Socialtext::Rest::Events::Awesome, GET_atom]
-            'text/plain':             [Socialtext::Rest::Events::Awesome, GET_text]
-        '*':                    [Socialtext::Rest::Events::Awesome, bad_method]
 - 
     '/data/echo/:text':
         'GET':
