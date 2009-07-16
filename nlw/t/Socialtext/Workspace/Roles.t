@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 10;
+use Test::Socialtext tests => 18;
 
 ###############################################################################
 # Fixtures: db
@@ -112,4 +112,68 @@ count_users_by_workspace_id_multiple_group_roles: {
         workspace_id => $workspace->workspace_id,
     );
     is $count, 1, 'WS has correct number of Users';
+}
+
+###############################################################################
+# TEST: User has a specific Role in the WS.
+user_has_role: {
+    my $system_user = Socialtext::User->SystemUser();
+    my $workspace   = create_test_workspace(user => $system_user);
+    my $role_admin  = Socialtext::Role->WorkspaceAdmin();
+    my $role_member = Socialtext::Role->Member();
+    my $role_guest  = Socialtext::Role->Guest();
+    my $rc;
+
+    # User has explicit UWR
+    user_has_role_explicit_uwr: {
+        my $user = create_test_user();
+        $workspace->add_user(user => $user, role => $role_admin);
+
+        $rc = $workspace->user_has_role(user => $user, role => $role_admin);
+        ok $rc, 'User with explicit UWR has specific Role in WS';
+
+        $rc = $workspace->user_has_role(user => $user, role => $role_guest);
+        ok !$rc, 'User does not have this Role in WS';
+    }
+
+    # User has UWR+GWR
+    user_has_role_uwr_and_gwr: {
+        my $user = create_test_user();
+        $workspace->add_user(user => $user, role => $role_admin);
+
+        my $group = create_test_group();
+        $group->add_user(user => $user);
+        $workspace->add_group(group => $group, role => $role_member);
+
+        $rc = $workspace->user_has_role(user => $user, role => $role_admin);
+        ok $rc, 'User has UWR Role in WS';
+        
+        $rc = $workspace->user_has_role(user => $user, role => $role_member);
+        ok $rc, 'User has GWR Role in WS';
+
+        $rc = $workspace->user_has_role(user => $user, role => $role_guest);
+        ok !$rc, 'User does not have this Role in WS';
+    }
+
+    # User has multiple GWRs
+    user_has_role_multiple_gwrs: {
+        my $user      = create_test_user();
+        my $group_one = create_test_group();
+        my $group_two = create_test_group();
+
+        $group_one->add_user(user => $user);
+        $workspace->add_group(group => $group_one, role => $role_admin);
+
+        $group_two->add_user(user => $user);
+        $workspace->add_group(group => $group_two, role => $role_member);
+
+        $rc = $workspace->user_has_role(user => $user, role => $role_admin);
+        ok $rc, 'User has GWR Role in WS';
+        
+        $rc = $workspace->user_has_role(user => $user, role => $role_member);
+        ok $rc, 'User has alternate GWR Role in WS';
+
+        $rc = $workspace->user_has_role(user => $user, role => $role_guest);
+        ok !$rc, 'User does not have this Role in WS';
+    }
 }

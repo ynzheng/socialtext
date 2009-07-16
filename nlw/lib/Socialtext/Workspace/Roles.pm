@@ -73,6 +73,52 @@ sub CountUsersByWorkspaceId {
     return $count;
 }
 
+###############################################################################
+# Check to see if a User has a specific Role in the Workspace (either directly
+# as an UWR, or indirectly as an UGR+GWR)
+sub UserHasRoleInWorkspace {
+    my $class = shift;
+    my %p     = @_;
+    my $user  = $p{user};
+    my $role  = $p{role};
+    my $ws    = $p{workspace};
+
+    my $user_id = $user->user_id();
+    my $role_id = $role->role_id();
+    my $ws_id   = $ws->workspace_id();
+
+    my $sql = qq{
+        SELECT 1
+          FROM users
+         WHERE users.user_id = ?
+           AND (
+                    ( EXISTS (
+                        SELECT user_id
+                          FROM "UserWorkspaceRole" AS uwr
+                         WHERE uwr.user_id = users.user_id
+                           AND uwr.role_id = ?
+                    ) )
+                    OR
+                    ( EXISTS (
+                        SELECT gwr.group_id
+                          FROM group_workspace_role AS gwr
+                         WHERE gwr.role_id = ?
+                           AND gwr.group_id IN (
+                                  SELECT ugr.group_id
+                                    FROM user_group_role AS ugr
+                                   WHERE ugr.user_id = ?
+                             )
+                    ) )
+               )
+    };
+    my $is_ok = sql_singlevalue(
+        $sql, $user_id,
+        $role_id,
+        ($role_id, $user_id)
+    );
+    return $is_ok;
+}
+
 1;
 
 =head1 NAME
@@ -124,6 +170,29 @@ the given C<workspace_id>.
 This method has been optimized so that it doesn't have to fetch B<all> of the
 Users from the DB in order to count them up; we just issue the query and take
 the count of the results.
+
+=item B<Socialtext::Workspace::Roles-E<gt>UserHasRoleInWorkspace(PARAMS)>
+
+Checks to see if a given User has a given Role in a given Workspace.  Returns
+true if it does, false otherwise.
+
+C<PARAMS> must include:
+
+=over
+
+=item user
+
+User object
+
+=item role
+
+Role object
+
+=item workspace
+
+Workspace object
+
+=back
 
 =back
 
