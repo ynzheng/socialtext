@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 18;
+use Test::Socialtext tests => 28;
 
 ###############################################################################
 # Fixtures: db
@@ -175,5 +175,87 @@ user_has_role: {
 
         $rc = $workspace->user_has_role(user => $user, role => $role_guest);
         ok !$rc, 'User does not have this Role in WS';
+    }
+}
+
+###############################################################################
+# TEST: Get the list of Roles for a User in the Workspace.
+get_roles_for_user_in_workspace: {
+    my $system_user = Socialtext::User->SystemUser();
+    my $workspace   = create_test_workspace(user => $system_user);
+    my $role_admin  = Socialtext::Role->WorkspaceAdmin();
+    my $role_member = Socialtext::Role->Member();
+    my $role_guest  = Socialtext::Role->Guest();
+
+    get_roles_for_user_explicit_uwr: {
+        my $user = create_test_user();
+        $workspace->add_user(user => $user, role => $role_admin);
+
+        my $role = Socialtext::Workspace::Roles->RolesForUserInWorkspace(
+            user      => $user,
+            workspace => $workspace,
+        );
+        isa_ok $role, 'Socialtext::Role', 'Users Role in WS';
+        is $role->role_id(), $role_admin->role_id(),
+            '... is the assigned Role';
+    }
+
+    get_roles_for_user_uwr_and_gwr: {
+        my $user = create_test_user();
+        $workspace->add_user(user => $user, role => $role_admin);
+
+        my $group = create_test_group();
+        $group->add_user(user => $user);
+        $workspace->add_group(group => $group, role => $role_member);
+
+        # SCALAR: highest effective Role
+        my $role = Socialtext::Workspace::Roles->RolesForUserInWorkspace(
+            user      => $user,
+            workspace => $workspace,
+        );
+        is $role->role_id, $role_admin->role_id,
+            'Users highest effective Role in the WS';
+
+        # LIST: all Roles, ordered from highest->lowest
+        my @roles = Socialtext::Workspace::Roles->RolesForUserInWorkspace(
+            user      => $user,
+            workspace => $workspace,
+        );
+        is scalar @roles, 2, 'User has multiple Roles in the WS';
+        is $roles[0]->role_id, $role_admin->role_id,
+            '... first Role has higher effectiveness';
+        is $roles[1]->role_id, $role_member->role_id,
+            '... second Role has lower effectiveness';
+    }
+
+    get_roles_for_user_multiple_gwrs: {
+        my $user = create_test_user();
+        my $group_one = create_test_group();
+        my $group_two = create_test_group();
+
+        $group_one->add_user(user => $user);
+        $workspace->add_group(group => $group_one, role => $role_member);
+
+        $group_two->add_user(user => $user);
+        $workspace->add_group(group => $group_two, role => $role_guest);
+
+        # SCALAR: highest effective Role
+        my $role = Socialtext::Workspace::Roles->RolesForUserInWorkspace(
+            user      => $user,
+            workspace => $workspace,
+        );
+        is $role->role_id, $role_member->role_id,
+            'Users highest effective Role in the WS';
+
+        # LIST: all Roles, ordered from highest->lowest
+        my @roles = Socialtext::Workspace::Roles->RolesForUserInWorkspace(
+            user      => $user,
+            workspace => $workspace,
+        );
+        is scalar @roles, 2, 'User has multiple Roles in the WS';
+        is $roles[0]->role_id, $role_member->role_id,
+            '... first Role has higher effectiveness';
+        is $roles[1]->role_id, $role_guest->role_id,
+            '... second Role has lower effectiveness';
     }
 }

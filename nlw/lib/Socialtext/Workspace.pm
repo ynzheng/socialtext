@@ -1221,12 +1221,10 @@ sub has_user {
     sub role_for_user {
         my $self = shift;
         my %p = validate( @_, $spec );
-
-        my $sql = 'select role_id from "UserWorkspaceRole" where workspace_id = ? and user_id = ?';
-        my $role_id = sql_singlevalue($sql, $self->workspace_id, $p{user}->user_id);
-        return unless $role_id;
-
-        return Socialtext::Role->new( role_id => $role_id );
+        return scalar Socialtext::Workspace::Roles->RolesForUserInWorkspace(
+            workspace => $self,
+            %p,
+        );
     }
 
     sub remove_user {
@@ -2578,8 +2576,10 @@ assigned role for this workspace.
 
 =head2 $workspace->role_for_user( user => $user )
 
-Returns the C<Socialtext::Role> for this user in the workspace if they
-have an explicitly assigned role. Otherwise it returns false.
+Returns the most effective C<Socialtext::Role> that this user has in the
+workspace (which was either assigned to them explicitly, or was inferred via
+Group membership).  If the User has B<no> Role in the workspace, this method
+returns false.
 
 =head2 $workspace->remove_user( user => $user )
 

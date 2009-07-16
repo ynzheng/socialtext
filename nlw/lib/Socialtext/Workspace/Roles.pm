@@ -119,6 +119,53 @@ sub UserHasRoleInWorkspace {
     return $is_ok;
 }
 
+###############################################################################
+# Get the list of Roles that this User has in the given Workspace (either
+# directly as UWRs, or indirectly as UGR+GWRs)
+sub RolesForUserInWorkspace {
+    my $class = shift;
+    my %p     = @_;
+    my $user  = $p{user};
+    my $ws    = $p{workspace};
+
+    my $user_id = $user->user_id();
+    my $ws_id   = $ws->workspace_id();
+
+    my $sql = qq{
+        SELECT DISTINCT(role_id)
+          FROM (
+                ( SELECT uwr.role_id
+                    FROM "UserWorkspaceRole" AS uwr
+                   WHERE uwr.user_id = ?
+                     AND uwr.workspace_id = ?
+                )
+                UNION
+                ( SELECT gwr.role_id
+                    FROM group_workspace_role AS gwr
+                    JOIN user_group_role ugr USING (group_id)
+                   WHERE ugr.user_id = ?
+                     AND gwr.workspace_id = ?
+                )
+          ) AS all_his_roles
+    };
+    my $sth = sql_execute(
+        $sql,
+        ($user_id, $ws_id),
+        ($user_id, $ws_id),
+    );
+
+    # turn the results into a list of Roles
+    my @all_roles =
+        map  { Socialtext::Role->new(role_id => $_->[0]) }
+        @{ $sth->fetchall_arrayref() };
+
+    # sort it from highest->lowest effectiveness
+    my @sorted =
+        reverse Socialtext::Role->SortByEffectiveness(roles => \@all_roles);
+
+    return wantarray ? @sorted : shift @sorted;
+}
+
 1;
 
 =head1 NAME
@@ -137,6 +184,18 @@ Socialtext::Workspace::Roles - User/Workspace Role helper methods
   # Get Count of Users that have _some_ Role in a WS
   $count = Socialtext::Workspace::Roles->CountUsersByWorkspaceId(
     workspace_id => $ws_id
+  );
+
+  # Most effective Role that User has in Workspace
+  $role = Socialtext::Workspace::Roles->RolesForUserInWorkspace(
+    user      => $user,
+    workspace => $workspace,
+  );
+
+  # List of all Roles that User has in Workspace
+  @roles = Socialtext::Workspace::Roles->RolesForUserInWorkspace(
+    user      => $user,
+    workspace => $workspace,
   );
 
 =head1 DESCRIPTION
@@ -187,6 +246,32 @@ User object
 =item role
 
 Role object
+
+=item workspace
+
+Workspace object
+
+=back
+
+=item B<Socialtext::Workspace::Roles-E<gt>RolesForUserInWorkspace(PARAMS)>
+
+Returns the Roles that the User has in the given Workspace.
+
+In a I<LIST> context, this is the complete list of Roles that the User has in
+the Workspace (either explicit, or via Group membership).  List is ordered
+from "highest effectiveness to lowest effectiveness", according to the rules
+outlined in L<Socialtext::Role>.
+
+In a I<SCALAR> context, this method returns the highest effective Role that
+the User has in the Workspace.
+
+C<PARAMS> must include:
+
+=over
+
+=item user
+
+User object
 
 =item workspace
 
