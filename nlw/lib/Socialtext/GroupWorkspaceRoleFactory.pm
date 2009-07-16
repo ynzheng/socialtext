@@ -2,15 +2,6 @@ package Socialtext::GroupWorkspaceRoleFactory;
 # @COPYRIGHT@
 
 use MooseX::Singleton;
-use Socialtext::Moose::SqlBuilder;
-with qw(
-    Socialtext::Moose::SqlBuilder::Role::DoesSqlInsert
-    Socialtext::Moose::SqlBuilder::Role::DoesSqlSelect
-    Socialtext::Moose::SqlBuilder::Role::DoesSqlUpdate
-    Socialtext::Moose::SqlBuilder::Role::DoesSqlDelete
-    Socialtext::Moose::SqlBuilder::Role::DoesColumnFiltering
-);
-
 use List::Util qw(first);
 use Socialtext::Events;
 use Socialtext::Log qw(st_log);
@@ -19,7 +10,16 @@ use Socialtext::Timer;
 use Socialtext::GroupWorkspaceRole;
 use namespace::clean -except => 'meta';
 
-builds_sql_for 'Socialtext::GroupWorkspaceRole';
+with qw(
+    Socialtext::Moose::SqlBuilder
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlInsert
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlSelect
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlUpdate
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlDelete
+    Socialtext::Moose::SqlBuilder::Role::DoesColumnFiltering
+);
+
+sub Builds_sql_for { 'Socialtext::GroupWorkspaceRole' }
 
 sub GetGroupWorkspaceRole {
     my ($self, %p) = @_;
@@ -46,12 +46,11 @@ sub CreateRecord {
     my $valid = $self->FilterValidColumns( $proto_gwr );
 
     # SANITY CHECK: need all required attributes
-    my $table_class = $self->meta->sql_table_class();
     my $missing =
         first { not defined $valid->{$_} }
         map   { $_->name }
         grep  { $_->is_required }
-        $table_class->meta->get_all_column_attributes;
+        $self->Sql_columns;
     die "need a $missing attribute to create a GroupWorkspaceRole" if $missing;
 
     # INSERT the new record into the DB
