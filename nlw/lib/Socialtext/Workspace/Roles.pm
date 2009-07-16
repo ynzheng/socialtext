@@ -8,6 +8,26 @@ use Socialtext::SQL qw(:exec);
 use Socialtext::User;
 
 ###############################################################################
+# Common SQL UNION used to get the UserIds of those Users that have a
+# relationship with a Workspace.
+#
+# *REQUIRES* that you pass in "workspace_id" as a binding, *twice*.
+our $SQL_UNION_UWR_GWR = qq{
+    (   SELECT user_id
+          FROM users
+          JOIN "UserWorkspaceRole" uwr USING (user_id)
+         WHERE uwr.workspace_id = ?
+    )
+    UNION
+    (   SELECT user_id
+          FROM users
+          JOIN user_group_role ugr USING (user_id)
+          JOIN group_workspace_role gwr USING (group_id)
+          WHERE gwr.workspace_id = ?
+    )
+};
+
+###############################################################################
 # Get a MultiCursor of the Users that have a Role in a given Workspace (either
 # directly as an UWR, or indirectly as an UGR+GWR).
 #
@@ -21,20 +41,7 @@ sub UsersByWorkspaceId {
     my $sql = qq{
         SELECT user_id, driver_username
           FROM users
-         WHERE user_id IN (
-                    (   SELECT user_id
-                          FROM users
-                          JOIN "UserWorkspaceRole" uwr USING (user_id)
-                         WHERE uwr.workspace_id = ?
-                    )
-                    UNION
-                    (   SELECT user_id
-                          FROM users
-                          JOIN user_group_role ugr USING (user_id)
-                          JOIN group_workspace_role gwr USING (group_id)
-                          WHERE gwr.workspace_id = ?
-                    )
-                )
+         WHERE user_id IN ( $SQL_UNION_UWR_GWR )
          ORDER BY driver_username
     };
 
