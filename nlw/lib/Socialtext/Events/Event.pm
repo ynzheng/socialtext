@@ -36,7 +36,7 @@ sub _build_context_hash {
         $c = Encode::encode_utf8(Socialtext::Encode::ensure_is_utf8($c));
         $c = decode_json($c);
     };
-    warn $@ if $@;
+    warn "unable to decode json: $@" if $@;
     return $c;
 }
 

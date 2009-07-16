@@ -7,6 +7,7 @@ use namespace::clean -except => 'meta';
 with 'Socialtext::Events::Source', 'Socialtext::Events::SQLSource';
 
 has 'visible_account_ids' => ( is => 'ro', isa => 'ArrayRef' );
+has 'activity_mode' => ( is => 'ro', isa => 'Bool', default => undef );
 
 sub next { 
     my $self = shift;
@@ -35,9 +36,24 @@ sub query_and_binds {
         event_class => 'person',
         ($self->filter->contributions ? 
             \"is_profile_contribution(action)" : ()),
-        $self->_visible_exists('person_id'),
-        $self->_visible_exists('actor_id'),
     );
+
+    push @where,
+        $self->_visible_exists('person_id'),
+        $self->_visible_exists('actor_id');
+
+    if ($self->activity_mode) {
+        my $activity = q{
+            -- target ix_event_person_contribs_actor
+            (event_class = 'person' AND is_profile_contribution(action)
+                AND actor_id = ?)
+            OR
+            -- target ix_event_person_contribs_person
+            (event_class = 'person' AND is_profile_contribution(action)
+                AND person_id = ?)
+        };
+        push @where, \[$activity, ($self->user_id) x 2];
+    }
 
     push @where, -nest => $self->filter->generate_filter(
         qw(before after action actor_id person_id tag_name)

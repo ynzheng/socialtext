@@ -8,6 +8,7 @@ use namespace::clean -except => 'meta';
 with 'Socialtext::Events::Source', 'Socialtext::Events::SQLSource';
 
 has 'account_id' => ( is => 'ro', isa => 'Int', required => 1 );
+has 'activity_mode' => ( is => 'ro', isa => 'Bool', default => undef );
 
 sub next { 
     my $self = shift;
@@ -40,6 +41,21 @@ sub query_and_binds {
            SELECT signal_id FROM signal_account WHERE account_id = ?
         )", $self->account_id],
     );
+
+    if ($self->activity_mode) {
+        my $mentioned = \[
+            q{EXISTS (
+                SELECT 1
+                  FROM topic_signal_user tsu
+                 WHERE tsu.signal_id = event.signal_id
+                   AND tsu.user_id = ?
+            )}, $self->user_id
+        ];
+        push @where, -or => [
+            actor_id => $self->user_id,
+            $mentioned
+        ];
+    }
 
     push @where, -nest => $self->filter->generate_filter(
         qw(before after actor_id person_id)

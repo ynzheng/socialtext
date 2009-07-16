@@ -2,7 +2,6 @@ package Socialtext::Events::Stream;
 use Moose;
 use MooseX::AttributeHelpers;
 use MooseX::StrictConstructor;
-use Clone qw/clone/;
 use Socialtext::SQL qw/:exec/;
 use Socialtext::Events::FilterParams;
 use Array::Heap;
@@ -12,6 +11,8 @@ with 'Socialtext::Events::Source', 'MooseX::Traits';
 
 # new_with_traits() will apply this prefix to traits:
 has '+_trait_namespace' => (default => 'Socialtext::Events::Stream');
+
+has '+filter' => (required => 1);
 
 has 'sources' => (
     is => 'rw', isa => 'ArrayRef[Socialtext::Events::Source]',
@@ -49,12 +50,14 @@ sub effective_limit {
 sub construct_source {
     my $self = shift;
     my $class = shift;
-    return $class->new(
+    my $constructor
+        = $class->can('new_with_traits') ? 'new_with_traits' : 'new';
+    return $class->$constructor(
+        filter => $self->filter,
         @_,
         viewer => $self->viewer,
         user => $self->user,
         limit => $self->effective_limit,
-        filter => clone($self->filter),
     );
 }
 

@@ -44,12 +44,13 @@ This test case assumes a logged in user.
 | body-like | []                                              |
 
 | comment         | check that signals are included in activities |                    |
-| post-json       | /data/signals                                     | {"signal":"booya"} |
+| post-json       | /data/signals                                     | {"signal":"*booya*"} |
 | code-is         | 201                                               |                    |
 | get             | /data/events/activities/%%username%%              | application/json   |
 | code-is         | 200                                               |                    |
-| body-like       | "body":"booya"                                             |                    |
-| st-clear-events |                                                   |                    |
+| body-like       | qr/"html":".+<b>booya<\/b>.+"/                                             |                    |
+
+| st-clear-events |
 
 | comment | post a person event | . | .. |
 | post-json | /data/events | {"event_class":"person", "action":"edit_save", "person":{"id":"%%user_id%%"}, "context":{"testkey":"1"}} |

@@ -2,6 +2,7 @@ package Socialtext::Events::FilterParams;
 use Moose;
 use Carp qw/croak/;
 use MooseX::StrictConstructor;
+use Clone ();
 use namespace::clean -except => 'meta';
 
 use constant AutoFilterParam => 'Socialtext::Events::FilterParams::AutoFilterParam';
@@ -47,6 +48,11 @@ has_param 'after'  => (isa => 'Num', sql_builder => '_sb_after');
 
 has 'followed'  => (is => 'rw', isa => 'Bool');
 has 'contributions'  => (is => 'rw', isa => 'Bool');
+
+sub clone {
+    my $self = shift;
+    return Clone::clone($self);
+}
 
 sub generate_standard_filter {
     my $self = shift;
