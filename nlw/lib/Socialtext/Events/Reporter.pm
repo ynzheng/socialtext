@@ -424,23 +424,6 @@ EOSQL
     return $sql, [@{$self->{_condition_args}}, @{$self->{_outer_condition_args}}, @limit_args];
 }
 
-sub _get_events {
-    my $self   = shift;
-    my $opts = ref($_[0]) eq 'HASH' ? $_[0] : {@_};
-
-    my ($sql, $args) = $self->_build_standard_sql($opts);
-
-    Socialtext::Timer->Continue('get_events');
-    #$Socialtext::SQL::PROFILE_SQL = 1;
-    my $sth = sql_execute($sql, @$args);
-    #$Socialtext::SQL::PROFILE_SQL = 0;
-    my $result = $self->decorate_event_set($sth);
-    Socialtext::Timer->Pause('get_events');
-
-    return @$result if wantarray;
-    return $result;
-}
-
 sub get_events {
     my $self   = shift;
     my $opts = ref($_[0]) eq 'HASH' ? $_[0] : {@_};
@@ -695,47 +678,6 @@ sub get_events_followed {
     #$Socialtext::SQL::PROFILE_SQL = 0;
     my $result = $self->decorate_event_set($sth);
     Socialtext::Timer->Pause('get_followed_events');
-    return $result;
-}
-
-sub get_awesome_events {
-    my $self = shift;
-    my $opts = {@_};
-
-    $opts->{followed} = 1;
-    $opts->{contributions} = 1;
-    my ($followed_sql, $followed_args) = $self->_build_standard_sql($opts);
-
-    delete $opts->{followed};
-    delete $opts->{contributions};
-    $opts->{user_id} = $self->viewer->user_id;
-    my ($convos_sql, $convos_args) = $self->_build_convos_sql($opts);
-    if (!$convos_sql) {
-        return $self->get_events(%$opts);
-    }
-
-    my ($limit_stmt, @limit_args) = $self->_limit_and_offset($opts);
-
-    my $sql = <<EOSQL;
-        SELECT * FROM (
-            ($followed_sql)
-            UNION
-            ($convos_sql)
-        ) awesome
-        ORDER BY at DESC
-        $limit_stmt
-EOSQL
-
-    Socialtext::Timer->Continue('get_awesome');
-
-    local $Socialtext::SQL::TRACE_SQL = 1;
-
-    my $sth = sql_execute($sql, @$followed_args, @$convos_args, @limit_args);
-    $Socialtext::SQL::TRACE_SQL = 0;
-    my $result = $self->decorate_event_set($sth);
-
-    Socialtext::Timer->Pause('get_awesome');
-
     return $result;
 }
 
