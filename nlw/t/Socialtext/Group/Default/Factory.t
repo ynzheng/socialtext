@@ -33,13 +33,13 @@ create_group: {
     my $factory = Socialtext::Group::Default::Factory->new();
     isa_ok $factory, 'Socialtext::Group::Default::Factory';
 
-    my $account_id = Socialtext::Account->Socialtext->account_id();
-    my $creator_id = Socialtext::User->SystemUser->user_id();
+    my $account = create_test_account_bypassing_factory();
+    my $creator = create_test_user(account => $account);
     my $test_start = $factory->Now();
     my $group = $factory->Create( {
         driver_group_name   => 'Test Group',
-        primary_account_id  => $account_id,
-        created_by_user_id  => $creator_id,
+        primary_account_id  => $account->account_id(),
+        created_by_user_id  => $creator->user_id(),
     } );
     my $test_finish = $factory->Now();
     isa_ok $group, 'Socialtext::Group::Default';
@@ -56,9 +56,9 @@ create_group: {
         '... group_id matches driver_unique_id (for Default Groups)';
     is $group->driver_group_name, 'Test Group',
         '... with driver_group_name matching provided Group Name';
-    is $group->primary_account_id, $account_id,
+    is $group->primary_account_id, $account->account_id(),
         '... with provided primary Account Id';
-    is $group->created_by_user_id, $creator_id,
+    is $group->created_by_user_id, $creator->user_id(),
         '... with provided creator User Id';
 
     my $created_when = $group->creation_datetime;
@@ -75,12 +75,12 @@ delete_group: {
     isa_ok $factory, 'Socialtext::Group::Default::Factory';
 
     # create a Group that we can monkey with
-    my $account_id = Socialtext::Account->Socialtext->account_id();
-    my $creator_id = Socialtext::User->SystemUser->user_id();
+    my $account = create_test_account_bypassing_factory();
+    my $creator = create_test_user(account => $account);
     my $group = $factory->Create( {
         driver_group_name   => 'Test Group',
-        primary_account_id  => $account_id,
-        created_by_user_id  => $creator_id,
+        primary_account_id  => $account->account_id(),
+        created_by_user_id  => $creator->user_id(),
     } );
     isa_ok $group, 'Socialtext::Group::Default';
 
@@ -103,12 +103,12 @@ delete_nonexistent_group: {
     isa_ok $factory, 'Socialtext::Group::Default::Factory';
 
     # create a Group that we can monkey with
-    my $account_id = Socialtext::Account->Socialtext->account_id();
-    my $creator_id = Socialtext::User->SystemUser->user_id();
+    my $account = create_test_account_bypassing_factory();
+    my $creator = create_test_user(account => $account);
     my $group = $factory->Create( {
         driver_group_name   => 'Test Group',
-        primary_account_id  => $account_id,
-        created_by_user_id  => $creator_id,
+        primary_account_id  => $account->account_id(),
+        created_by_user_id  => $creator->user_id(),
     } );
     isa_ok $group, 'Socialtext::Group::Default';
 

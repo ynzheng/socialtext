@@ -18,12 +18,12 @@ use_ok 'Socialtext::Group';
 create_default_group: {
     Socialtext::AppConfig->set( 'group_factories', 'Default' );
 
-    my $account_id = Socialtext::Account->Socialtext->account_id();
-    my $creator_id = Socialtext::User->SystemUser->user_id();
+    my $account = create_test_account_bypassing_factory();
+    my $creator = create_test_user(account => $account);
     my $group = Socialtext::Group->Create( {
         driver_group_name   => 'Test Group',
-        primary_account_id  => $account_id,
-        created_by_user_id  => $creator_id,
+        primary_account_id  => $account->account_id(),
+        created_by_user_id  => $creator->user_id(),
         } );
     isa_ok $group, 'Socialtext::Group', 'newly created group';
     isa_ok $group->homunculus, 'Socialtext::Group::Default',
@@ -35,12 +35,12 @@ create_default_group: {
 retrieve_default_group: {
     Socialtext::AppConfig->set( 'group_factories', 'Default' );
 
-    my $account_id = Socialtext::Account->Socialtext->account_id();
-    my $creator_id = Socialtext::User->SystemUser->user_id();
+    my $account = create_test_account_bypassing_factory();
+    my $creator = create_test_user(account => $account);
     my $group = Socialtext::Group->Create( {
         driver_group_name   => 'Test Group',
-        primary_account_id  => $account_id,
-        created_by_user_id  => $creator_id,
+        primary_account_id  => $account->account_id(),
+        created_by_user_id  => $creator->user_id(),
         } );
     isa_ok $group, 'Socialtext::Group', 'newly created group';
 
@@ -68,29 +68,29 @@ retrieve_default_group: {
 update_default_group: {
     Socialtext::AppConfig->set( 'group_factories', 'Default' );
 
-    my $account_id = Socialtext::Account->Socialtext->account_id();
-    my $creator_id = Socialtext::User->SystemUser->user_id();
+    my $account = create_test_account_bypassing_factory();
+    my $creator = create_test_user(account => $account);
     my $group = Socialtext::Group->Create( {
         driver_group_name   => 'Test Group',
-        primary_account_id  => $account_id,
-        created_by_user_id  => $creator_id,
+        primary_account_id  => $account->account_id(),
+        created_by_user_id  => $creator->user_id(),
         } );
     isa_ok $group, 'Socialtext::Group', 'newly created group';
     my $cached_at = $group->cached_at();
 
-    my $new_account_id = Socialtext::Account->Unknown->account_id();
-    my $new_creator_id = Socialtext::User->Guest->user_id();
+    my $new_account = create_test_account_bypassing_factory();
+    my $new_creator = create_test_user(account => $account);
     $group->update_store( {
         driver_group_name   => 'Updated Group Name',
-        primary_account_id  => $new_account_id,
-        created_by_user_id  => $new_creator_id,
+        primary_account_id  => $new_account->account_id(),
+        created_by_user_id  => $new_creator->user_id(),
     } );
 
     is $group->driver_group_name, 'Updated Group Name',
         '... driver_group_name updated';
-    is $group->primary_account_id, $new_account_id,
+    is $group->primary_account_id, $new_account->account_id(),
         '... primary_account_id updated';
-    is $group->created_by_user_id, $new_creator_id,
+    is $group->created_by_user_id, $new_creator->user_id(),
         '... created_by_user_id updated';
     ok $group->cached_at->hires_epoch > $cached_at->hires_epoch,
         '... cached_at updated';
@@ -100,9 +100,9 @@ update_default_group: {
 
     is $refreshed->driver_group_name, 'Updated Group Name',
         '... with updated driver_group_name';
-    is $refreshed->primary_account_id, $new_account_id,
+    is $refreshed->primary_account_id, $new_account->account_id(),
         '... with updated primary_account_id';
-    is $refreshed->created_by_user_id, $new_creator_id,
+    is $refreshed->created_by_user_id, $new_creator->user_id(),
         '... with updated created_by_user_id';
     # XXX: should be ">" instead of "!=", but we lose hi-res resolution when
     #      the DateTime object is marshalled into the DB.
