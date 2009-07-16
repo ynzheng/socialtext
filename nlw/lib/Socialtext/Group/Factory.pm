@@ -3,14 +3,25 @@ package Socialtext::Group::Factory;
 
 use Moose::Role;
 use Carp qw(croak);
+use List::Util qw(first);
 use Socialtext::Date;
 use Socialtext::Exceptions qw(data_validation_error);
-use Socialtext::Group;
 use Socialtext::Group::Homunculus;
 use Socialtext::SQL qw(:exec :time);
 use Socialtext::SQL::Builder qw(:all);
 use Socialtext::l10n qw(loc);
 use namespace::clean -except => 'meta';
+
+with qw(
+    Socialtext::Moose::SqlBuilder
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlInsert
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlSelect
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlUpdate
+    Socialtext::Moose::SqlBuilder::Role::DoesSqlDelete
+    Socialtext::Moose::SqlBuilder::Role::DoesColumnFiltering
+);
+
+sub Builds_sql_for { 'Socialtext::Group::Homunculus' };
 
 has 'driver_key' => (
     is => 'ro', isa => 'Str',
@@ -32,7 +43,7 @@ has 'cache_lifetime' => (
     lazy_build => 1,
 );
 
-# Methods we require Factories consuming this Role to implement:
+# Methods we require downstream classes consuming this role to implement:
 requires 'Create';
 requires 'Update';
 requires 'can_update_store';
@@ -52,18 +63,15 @@ sub _build_driver_id {
 
 # Retrieves a Group from the DB, managed by this Factory instance, and returns
 # a Group Homunculus object for the Group back to the caller.
-my %valid_get_group_term = (
-    group_id => 1,
-);
 sub GetGroupHomunculus {
-    my ($self, $key, $val) = @_;
+    my ($self, %p) = @_;
 
-    # SANITY CHECK: valid lookup key
-    return unless ($valid_get_group_term{$key});
+    # Only concern ourselves with valid Db Columns
+    my $where = $self->FilterValidColumns( \%p );
 
     # check DB for existing cached Group
     # ... if cached copy exists and is fresh, use that
-    my $proto_group = $self->_get_cached_group($key, $val);
+    my $proto_group = $self->_get_cached_group($where);
     if ($proto_group && $self->_cached_group_is_fresh($proto_group)) {
         return $self->NewGroupHomunculus($proto_group);
     }
@@ -104,49 +112,17 @@ sub GetGroupHomunculus {
 
 # Looks up a Group in the DB, to see if we have a cached copy of it already.
 sub _get_cached_group {
-    my ($self, $key, $val) = @_;
+    my ($self, $where) = @_;
 
-    # Figure out what DB column is used for the lookup key
-    my $meta_attr = Socialtext::Group::Homunculus->meta
-        ->find_attribute_by_name($key);
-    unless ($meta_attr) {
-        # unknown lookup key; be defensive here and choke hard (we *shouldn't*
-        # get here unless %valid_get_group_term is out of sync with the DB
-        # schema.
-        croak "invalid group lookup key: $key";
-    }
-
-    my $column = $meta_attr->column_name();
-
-    # LOOKUP: group_id
-    # - group_id lookups can only be performed if the value is numeric; if
-    #   given a non-numeric group_id return empty handed (rather than handing
-    #   the non-numeric to the DB and watching it choke)
-    if ($key eq 'group_id') {
-        return if ($val =~ /\D/);
-    }
-
-    # Build the WHERE clause and bindings for the lookup column
-    my @where    = ("$column = ?");
-    my @bindings = ($val);
-
-    # Add in our specific driver key to the WHERE clause
-    unshift @where,    "driver_key = ?";
-    unshift @bindings, $self->driver_key;
-
-    # Fire the query off to the DB to find this Group in the local cache
-    my $clause = join ' AND ', @where;
-    my $sth = sql_execute(
-        qq{SELECT * FROM groups WHERE $clause},
-        @bindings
-    );
+    # fetch the Group from the DB
+    my $sth = $self->SqlSelectOneRecord( {
+        where => {
+            %{$where},
+            driver_key  => $self->driver_key,
+        },
+    } );
 
     my $row = $sth->fetchrow_hashref();
-    unless ($row) {
-        # didn't find cached copy of Group; return empty-handed
-        return;
-    }
-
     return $row;
 }
 
@@ -173,27 +149,18 @@ sub _cached_group_is_fresh {
 # Delete a Group object from the local DB.
 sub Delete {
     my ($self, $group) = @_;
-    $self->DeleteGroupRecord( { group_id => $group->group_id } );
+    $self->DeleteGroupRecord( $group->primary_key() );
 }
 
 # Deletes a Group record from the local DB.
 sub DeleteGroupRecord {
     my ($self, $proto_group) = @_;
-    my $group_id = $proto_group->{group_id};
 
-    # SANITY CHECK: need to know which "group_id" we're deleting
-    die "must have a group_id to delete a Group record" unless $group_id;
-
-    # map Group Id attribute to SQL DELETE args
-    my $group_column_name = Socialtext::Group::Homunculus->meta
-        ->find_attribute_by_name('group_id')
-        ->column_name();
+    # Only concern ourselves with valid Db Columns
+    my $where = $self->FilterValidColumns( $proto_group );
 
     # DELETE the record in the DB
-    my $sth = sql_execute(
-        qq{ DELETE FROM groups WHERE $group_column_name = ? },
-        $group_id
-    );
+    my $sth = $self->SqlDeleteOneRecord( $where );
     return $sth->rows();
 }
 
@@ -201,33 +168,35 @@ sub DeleteGroupRecord {
 sub UpdateGroupRecord {
     my ($self, $proto_group) = @_;
 
-    # SANITY CHECK: need to know which "group_id" we're updating
-    die "must have a group_id to update a Group record"
-        unless $proto_group->{group_id};
-
-    # set "cached_at" to "now" unless otherwise specified
+    # set "cached_at" 
     $proto_group->{cached_at} ||= $self->Now();
 
-    # map Group attributes to SQL UPDATE args
-    my %update_args =
-        map { $_->column_name => $proto_group->{ $_->name } }
-        grep { exists $proto_group->{ $_->name } }
-        Socialtext::Group::Homunculus->meta->get_all_column_attributes;
+    # Only concern ourselves with valid Db Columns
+    my $valid = $self->FilterValidColumns( $proto_group );
+
+    # Update is done against the primary key
+    my $pkey = $self->FilterPrimaryKeyColumns( $valid );
+
+    # Don't allow for primary key fields to be updated
+    my $values = $self->FilterNonPrimaryKeyColumns( $valid );
+
+    # If there's nothing to update, *don't*.
+    return unless %{$values};
 
     # UPDATE the record in the DB
-    sql_update('groups', \%update_args, 'group_id');
+    my $sth = $self->SqlUpdateOneRecord( {
+        values => $values,
+        where  => $pkey,
+    } );
 }
 
 # Expires a Group record in the local DB store
 sub ExpireGroupRecord {
     my ($self, %p) = @_;
-    my $group_id = $p{group_id};
-    return unless $group_id;
-    sql_execute( q{
-        UPDATE groups
-           SET cached_at = '-infinity'
-         WHERE group_id = ?
-        }, $group_id );
+    return $self->UpdateGroupRecord( {
+        %p,
+        'cached_at' => '-infinity',
+    } );
 }
 
 # Current date/time, as DateTime object
@@ -266,24 +235,19 @@ sub NewGroupRecord {
     # new Group records default to being cached _now_.
     $proto_group->{cached_at} ||= $self->Now();
 
-    # map Group attributes to SQL INSERT args
-    my @attrs = Socialtext::Group::Homunculus->meta->get_all_column_attributes;
-    my %insert_args =
-        map { $_->column_name => $proto_group->{ $_->name } }
-        @attrs;
-    # ... including marshalling DateTime columns to STRs
-    foreach my $attr (@attrs) {
-        if ($attr->type_constraint->is_a_type_of('DateTime')) {
-            my $column_name = $attr->column_name;
-            if ($insert_args{$column_name}) {
-                $insert_args{$column_name} =
-                    sql_format_timestamptz($insert_args{$column_name});
-            }
-        }
-    }
+    # Only concern ourselves with valid Db Columns
+    my $valid = $self->FilterValidColumns( $proto_group );
+
+    # SANITY CHECK: need all required attributes
+    my $missing =
+        first { not defined $valid->{$_} }
+        map   { $_->name }
+        grep  { $_->is_required }
+        $self->Sql_columns;
+    die "need a $missing attribute to create a Group" if $missing;
 
     # INSERT the new record into the DB
-    sql_insert('groups', \%insert_args);
+    $self->SqlInsert( $valid );
 }
 
 # Validates a hash-ref of Group data, cleaning it up where appropriate.  If
@@ -297,12 +261,6 @@ sub ValidateAndCleanData {
     # are we "creating a new group", or "updating an existing group"
     my $is_create = defined $group ? 0 : 1;
 
-    # get the metaclass for the Group object, using the default Group
-    # Homunculus metaclass if no Group was provided
-    my $meta = defined $group
-             ? $group->meta
-             : Socialtext::Group::Homunculus->meta;
-
     # figure out which attributes are required; they're marked as required but
     # *DON'T* include any attributes that we build lazily (our convention is
     # that lazily built attrs depend on the value of some other attr, so
@@ -310,7 +268,7 @@ sub ValidateAndCleanData {
     my @required_fields =
         map { $_->name }
         grep { $_->is_required and !$_->is_lazy_build }
-        $meta->get_all_attributes;
+        $self->Builds_sql_for->meta->get_all_attributes;
 
     # new Groups *have* to have a Group Id
     $self->_validate_assign_group_id($p) if ($is_create);
@@ -358,8 +316,8 @@ sub _validate_trim_values {
     map { $p->{$_} = Socialtext::String::trim($p->{$_}) }
         grep { !ref($p->{$_}) }
         grep { defined $p->{$_} }
-        map { $_->name }
-        Socialtext::Group::Homunculus->meta->get_all_column_attributes;
+        map  { $_->name }
+        $self->Sql_columns;
     return;
 }
 

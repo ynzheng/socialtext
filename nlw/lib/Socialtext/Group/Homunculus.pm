@@ -2,12 +2,14 @@ package Socialtext::Group::Homunculus;
 # @COPYRIGHT@
 
 use Moose;
-use Socialtext::MooseX::SQL;
+use Socialtext::Moose::SqlTable;
 use Socialtext::MooseX::Types::Pg;
 use Socialtext::Account;
 use Socialtext::User;
 use Socialtext::Group;
 use namespace::clean -except => 'meta';
+
+has_table 'groups';
 
 has_column 'group_id' => (
     is => 'rw', isa => 'Int',
@@ -91,6 +93,8 @@ has 'factory' => (
     lazy_build => 1,
     handles => [qw( can_update_store )],
 );
+
+has_unique_key ('driver_key','driver_unique_id');
 
 sub _set_driver_key {
     my $self = shift;

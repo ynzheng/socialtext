@@ -114,13 +114,14 @@ sub Create {
 
 ###############################################################################
 sub GetGroup {
-    my ($class, $key, $val) = @_;
+    my $class = shift;
+    my %p = (@_==1) ? %{+shift} : @_;
 
     # ask all of the configured Group Factories if they know about this Group
     my @drivers = $class->Drivers();
     foreach my $driver_key (@drivers) {
         my $factory = $class->Factory(driver_key => $driver_key);
-        my $homey   = $factory->GetGroupHomunculus($key => $val);
+        my $homey   = $factory->GetGroupHomunculus(%p);
         if ($homey) {
             return Socialtext::Group->new(homunculus => $homey);
         }

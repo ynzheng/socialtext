@@ -5,7 +5,9 @@ use Moose;
 use DateTime::Duration;
 use namespace::clean -except => 'meta';
 
-with 'Socialtext::Group::Factory';
+with qw(
+    Socialtext::Group::Factory
+);
 
 has '+driver_key' => (
     default => 'Default',
@@ -39,19 +41,17 @@ sub Update {
     $self->ValidateAndCleanData($group, $proto_group);
 
     # update the record for this Group in the DB
+    my $primary_key = $group->primary_key();
     my $updates_ref = {
         %{$proto_group},
-        group_id => $group->group_id,
+        %{$primary_key},
     };
     $self->UpdateGroupRecord($updates_ref);
 
-    # merge the updates back into the Group object
-    foreach my $attr (keys %{$updates_ref}) {
-        # can't update pkey attrs
-        my $meta_attr = $group->meta->find_attribute_by_name($attr);
-        next if ($meta_attr->is_primary_key);
-
-        # update non pkey attrs
+    # merge the updates back into the Group object, skipping primary key
+    # columns (which *aren't* updateable)
+    my $to_merge = $self->FilterNonPrimaryKeyColumns($updates_ref);
+    foreach my $attr (keys %{$to_merge}) {
         my $setter = "_$attr";
         $group->$setter( $updates_ref->{$attr} );
     }

@@ -136,6 +136,6 @@ delete_group_record_without_id: {
 
     my $rc = eval { $factory->DeleteGroupRecord() };
     ok !$rc, 'deleting Group record fails when no group_id';
-    like $@, qr/must have a group_id/,
+    like $@, qr/Cannot accurately identify unique record to delete/,
         '... throwing exception about no group_id';
 }
