@@ -31,6 +31,7 @@ sub _build_html_body {
     my $self = shift;
     my $ctx = $self->context_hash;
     die "no context hash" unless $ctx;
+    die "no body" unless $ctx->{body};
     my $parser = Socialtext::WikiText::Parser::Messages->new(
        receiver => Socialtext::WikiText::Emitter::Messages::HTML->new(
            callbacks => {

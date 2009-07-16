@@ -19,6 +19,7 @@ use Socialtext::Events::Stream::HasPeople;
 use Socialtext::Events::Stream::HasSignals;
 use Socialtext::Events::Stream::Pages;
 use Socialtext::Events::Stream::Regular;
+use Socialtext::Events::Stream::ProfileActivity;
 
 field 'viewer';
 
@@ -542,71 +543,32 @@ sub get_events_activities {
     my $maybe_user = shift;
     my $opts = ref($_[0]) eq 'HASH' ? $_[0] : {@_};
 
-    Socialtext::Timer->Continue('get_activity');
-
     # First we need to get the user id in case this was email or username used
     my $user = Socialtext::User->Resolve($maybe_user);
-    my $user_id = $user->user_id;
+    return [] unless $user;
 
-    my $user_ids;
-    my @conditions;
-    if (!$opts->{event_class}) {
-        $opts->{event_class} = [qw(page person signal)];
-    }
+    my %opts_slice = map { $_ => $opts->{$_} }
+        grep { exists $opts->{$_} }
+        qw(before after page_id page_workspace_id actor_id person_id tag_name);
 
-    my %classes;
-    if (ref $opts->{event_class}) {
-        %classes = map {$_ => 1} @{$opts->{event_class}};
-    }
-    else {
-        $classes{$opts->{event_class}} = 1;
-    }
+    my $result = [];
+    time_this {
+    eval {
+        my $stream = Socialtext::Events::Stream::ProfileActivity->new(
+            filter => Socialtext::Events::FilterParams->new(
+                %opts_slice,
+            ),
+            user => $user,
+            viewer => $self->viewer,
+        );
 
-    if ($classes{page}) {
-        push @conditions, q{
-            event_class = 'page'
-            AND is_page_contribution(action)
-            AND actor_id = ?
-        };
-        $user_ids++;
-    }
+        $stream->prepare();
+        $result = $stream->all_hashes();
+    }; warn $@ if $@; die $@ if $@;
+    } 'get_activity';
 
-    if ($classes{person}) {
-        push @conditions, q{
-            -- target ix_event_person_contribs_actor
-            (event_class = 'person' AND is_profile_contribution(action)
-                AND actor_id = ?)
-            OR
-            -- target ix_event_person_contribs_person
-            (event_class = 'person' AND is_profile_contribution(action)
-                AND person_id = ?)
-        };
-        $user_ids += 2;
-    }
-
-    if ($classes{signal}) {
-        push @conditions, q{
-            event_class = 'signal' AND (
-                actor_id = ?
-                OR EXISTS (
-                    SELECT 1
-                      FROM topic_signal_user tsu
-                     WHERE tsu.signal_id = e.signal_id
-                       AND tsu.user_id = ?
-                )
-                OR person_id = ?
-            )
-        };
-        $user_ids += 3;
-    }
-
-    my $cond_sql = join(' OR ', map {"($_)"} @conditions);
-    $self->add_condition($cond_sql, ($user_id) x $user_ids);
-    my $evs = $self->_get_events(@_);
-    Socialtext::Timer->Pause('get_activity');
-
-    return @$evs if wantarray;
-    return $evs;
+    return @$result if wantarray;
+    return $result;
 }
 
 my $CONVERSATIONS_WHERE = <<"EOSQL";
