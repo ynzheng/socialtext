@@ -8,6 +8,8 @@ use Carp qw(croak);
 use Socialtext::SQL::Builder qw(sql_abstract);
 use Socialtext::SQL qw(sql_execute);
 
+requires 'Sql_table_name';
+
 sub SqlSelect {
     my $self = shift;
     my $opts = shift;
@@ -18,9 +20,8 @@ sub SqlSelect {
     my $limit  = $opts->{limit};
     my $offset = $opts->{offset};
 
-    my $table_class = $self->meta->sql_table_class();
-    my $table       = $table_class->meta->table();
-    my $builder     = sql_abstract();
+    my $table   = $self->Sql_table_name();
+    my $builder = sql_abstract();
     my ($sql, @bindings) = $builder->select(
         $table, $cols, $where, $order, $limit, $offset
     );

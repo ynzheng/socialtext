@@ -3,14 +3,13 @@ package Socialtext::Moose::SqlBuilder::Role::DoesIdentifiesUniqueRecord;
 use Moose::Role;
 use List::MoreUtils qw(all);
 
+requires 'Sql_unique_key_columns';
+
 sub IdentifiesUniqueRecord {
     my $self  = shift;
     my $where = shift;
 
-    my $table_class = $self->meta->sql_table_class;
-    my @unique_keys = $table_class->meta->get_unique_key_attributes();
-
-    foreach my $key (@unique_keys) {
+    foreach my $key ($self->Sql_unique_key_columns) {
         my $have_all_attrs = all { exists $where->{ $_->name } } @{$key};
         return 1 if ($have_all_attrs);
     }

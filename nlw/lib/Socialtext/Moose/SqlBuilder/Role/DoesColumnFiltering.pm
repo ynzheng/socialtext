@@ -2,48 +2,39 @@ package Socialtext::Moose::SqlBuilder::Role::DoesColumnFiltering;
 
 use Moose::Role;
 
-sub FilterColumns {
-    my $self   = shift;
-    my $proto  = shift;
-    my $filter = shift;
-
-    my $table_class = $self->meta->sql_table_class();
-    my $table_meta  = $table_class->meta();
-    my %valid =
-        map  { $_ => $proto->{$_} }
-        grep { exists $proto->{$_} }
-        map  { $_->name }
-        grep { $filter->($_) }
-        $table_meta->get_all_column_attributes;
-
-    return \%valid;
-}
+requires 'Sql_columns';
 
 sub FilterValidColumns {
     my $self  = shift;
     my $proto = shift;
-    return $self->FilterColumns(
-        $proto,
-        sub { 1 },
-    );
+    my %valid =
+        map  { $_ => $proto->{$_} }
+        grep { exists $proto->{$_} }
+        map  { $_->name }
+        $self->Sql_columns;
+    return \%valid;
 }
 
 sub FilterPrimaryKeyColumns {
     my $self  = shift;
     my $proto = shift;
-    return $self->FilterColumns(
-        $proto,
-        sub { $_->primary_key },
-    );
+    my %valid =
+        map  { $_ => $proto->{$_} }
+        grep { exists $proto->{$_} }
+        map  { $_->name }
+        $self->Sql_pkey_columns;
+    return \%valid;
 }
 
 sub FilterNonPrimaryKeyColumns {
     my $self  = shift;
     my $proto = shift;
-    return $self->FilterColumns(
-        $proto,
-        sub { not $_->primary_key },
-    );
+    my %valid =
+        map  { $_ => $proto->{$_} }
+        grep { exists $proto->{$_} }
+        map  { $_->name }
+        $self->Sql_non_pkey_columns;
+    return \%valid;
 }
 
 no Moose::Role;
@@ -62,10 +53,7 @@ Socialtext::Moose::SqlBuilder::Role::DoesColumnFiltering - Filter Db Table colum
   $pkey = MyFactory->FilterPrimaryKeyColumns( $data );
 
   # filter to include only key/value pairs for NON primary key columns
-  $non_pkey = MyFactory->FilterPrimaryKeyColumns( $data );
-
-  # generic filter
-  $filtered = MyFactory->FilterGeneric( $data, sub { $_->is_required } );
+  $non_pkey = MyFactory->FilterNonPrimaryKeyColumns( $data );
 
 =head1 DESCRIPTION
 
@@ -94,13 +82,6 @@ key of the Db Table we're managing.
 Filters the provided hash-ref of C<\%data>, returning a hash-ref that contains
 only those field/value pairs which are for columns that are B<NOT> part of the
 primary key of the Db Table we're managing.
-
-=item B<$class-E<gt>FilterGeneric( \%data, $coderef )>
-
-Filters the provided hash-ref of C<\%data>, using the provided C<$coderef> to
-C<grep> for the attributes that we are concerned with.  Returns a hash-ref of
-the field/value pairs that match the filtering condition implemented by the
-C<$coderef>.
 
 =back
 

@@ -1,30 +1,41 @@
 package Socialtext::Moose::SqlBuilder;
+use Moose::Role;
 
-use Moose;
-use Moose::Exporter;
+requires 'Builds_sql_for';
 
-use Socialtext::Moose::SqlBuilder::Meta::Class::Trait::SqlBuilder;
-
-Moose::Exporter->setup_import_methods(
-    with_caller => [qw( builds_sql_for )],
-);
-
-sub init_meta {
-    my ($junk, %options) = @_;
-    Moose->init_meta(%options);
-    Moose::Util::MetaRole::apply_metaclass_roles(
-        for_class => $options{for_class},
-        metaclass_roles => [qw( Socialtext::Moose::SqlBuilder::Meta::Class::Trait::SqlBuilder )],
-    );
-    return $options{for_class}->meta();
+sub _get_for_meta {
+    my $class = shift;
+    Class::MOP::load_class($class->Builds_sql_for);
+    return $class->Builds_sql_for->meta;
 }
 
-sub builds_sql_for {
-    my ($caller, $name) = @_;
-    $caller->meta->sql_table_class($name);
+sub Sql_table_name {
+    my $class = shift;
+    $class->_get_for_meta->table;
 }
 
-no Moose;
+sub Sql_columns {
+    my $class = shift;
+    $class->_get_for_meta->get_all_column_attributes();
+}
+
+sub Sql_unique_key_columns {
+    my $class = shift;
+    $class->_get_for_meta->get_unique_key_attributes();
+}
+
+sub Sql_pkey_columns {
+    my $class = shift;
+    $class->_get_for_meta->get_primary_key_attributes();
+}
+
+sub Sql_non_pkey_columns {
+    my $class = shift;
+    my @cols  = grep { !$_->primary_key() } $class->Sql_columns();
+    return @cols;
+}
+
+no Moose::Role;
 1;
 
 =head1 NAME

@@ -31,7 +31,7 @@ sub has_column {
     $options{traits} ||= [];
     unshift @{$options{traits}}, 'Socialtext::Moose::SqlTable::Meta::Attribute::Trait::DbColumn';
 
-    Class::MOP::Class->initialize($caller)->add_attribute($name, %options);
+    Moose::Meta::Class->initialize($caller)->add_attribute($name, %options);
 }
 
 sub has_table {

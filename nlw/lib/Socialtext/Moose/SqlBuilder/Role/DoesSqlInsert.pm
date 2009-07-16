@@ -4,13 +4,14 @@ use Moose::Role;
 use Socialtext::SQL::Builder qw(sql_abstract);
 use Socialtext::SQL qw(sql_execute);
 
+requires 'Sql_table_name';
+
 sub SqlInsert {
     my $self  = shift;
     my $proto = shift;
 
-    my $table_class = $self->meta->sql_table_class();
-    my $table       = $table_class->meta->table();
-    my $builder     = sql_abstract();
+    my $table   = $self->Sql_table_name();
+    my $builder = sql_abstract();
     my ($sql, @bindings) = $builder->insert($table, $proto);
     return sql_execute($sql, @bindings);
 }
