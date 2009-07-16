@@ -55,6 +55,24 @@ sub UsersByWorkspaceId {
     );
 }
 
+###############################################################################
+# Get the Count of Users that have a Role in a given Workspace (either
+# directly as an UWR, or indirectly as an UGR+GWR).
+sub CountUsersByWorkspaceId {
+    my $class = shift;
+    my %p     = @_;
+    my $ws_id = $p{workspace_id};
+
+    my $sql = qq{
+        SELECT COUNT(user_id)
+          FROM users
+         WHERE user_id IN ( $SQL_UNION_UWR_GWR )
+    };
+
+    my $count = sql_singlevalue($sql, $ws_id, $ws_id);
+    return $count;
+}
+
 1;
 
 =head1 NAME
@@ -67,6 +85,11 @@ Socialtext::Workspace::Roles - User/Workspace Role helper methods
 
   # Get Users that have _some_ Role in a WS
   $cursor = Socialtext::Workspace::Roles->UsersByWorkspaceId(
+    workspace_id => $ws_id
+  );
+
+  # Get Count of Users that have _some_ Role in a WS
+  $count = Socialtext::Workspace::Roles->CountUsersByWorkspaceId(
     workspace_id => $ws_id
   );
 
@@ -92,6 +115,15 @@ Role in the Workspace represented by the given C<workspace_id>.
 
 The list of Users returned is I<already> de-duped (so any User appears once
 and only once in the list), and is ordered by Username.
+
+=item B<Socialtext::Workspace::Roles-E<gt>CountUsersByWorkspaceId(workspace_id =E<gt> $ws_id)>
+
+Returns the count of Users that have a Role in the Workspace represented by
+the given C<workspace_id>.
+
+This method has been optimized so that it doesn't have to fetch B<all> of the
+Users from the DB in order to count them up; we just issue the query and take
+the count of the results.
 
 =back
 

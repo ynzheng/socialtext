@@ -1271,7 +1271,9 @@ sub has_user {
 
 sub user_count {
     my $self = shift;
-    return $self->users->count();
+    return Socialtext::Workspace::Roles->CountUsersByWorkspaceId(
+        workspace_id => $self->workspace_id,
+    );
 }
 
 sub users {
