@@ -2,10 +2,11 @@
 # @COPYRIGHT@
 use strict;
 use warnings;
-use Test::Socialtext tests => 21;
+use Test::Socialtext tests => 28;
 use Test::Exception;
 use Test::Socialtext::Account;
 use Test::Socialtext::User;
+use Test::Output;
 use Socialtext::UserGroupRoleFactory;
 use Socialtext::Role;
 
@@ -35,7 +36,9 @@ backup: {
 
     # make backup data
     my $plugin = Socialtext::Pluggable::Plugin::Groups->new();
-    $plugin->export_groups_for_account($account, $data_ref);
+    stdout_is {
+        $plugin->export_groups_for_account($account, $data_ref);
+    } "Exporting all groups for account '".$account->name."'...\n";
 
     my $expected = [
         {
@@ -76,7 +79,9 @@ basic_restore: {
 
         # make backup data
         my $plugin = Socialtext::Pluggable::Plugin::Groups->new();
-        $plugin->export_groups_for_account($account, $data_ref);
+        stdout_is {
+            $plugin->export_groups_for_account($account, $data_ref);
+        } "Exporting all groups for account '".$account->name."'...\n";
 
         ### CLEANUP: nuke stuff in DB before we import
         ### - we can't nuke the User; the Account import is responsible for
@@ -96,7 +101,9 @@ basic_restore: {
     # import the data that we just exported
     my $plugin  = Socialtext::Pluggable::Plugin::Groups->new();
     my $account = create_test_account_bypassing_factory();
-    $plugin->import_groups_for_account($account, $data_ref);
+    stdout_is {
+        $plugin->import_groups_for_account($account, $data_ref);
+    } "Importing all groups for account '".$account->name."'...\n";
 
     my $groups = $account->groups;
     is $groups->count, 1, 'got a group';
@@ -136,8 +143,11 @@ restore_no_groups: {
     my $account  = create_test_account_bypassing_factory();
     my $plugin   = Socialtext::Pluggable::Plugin::Groups->new();
 
-    lives_ok { $plugin->import_groups_for_account( $account, $data_ref ) }
-        'import with no groups data lives';
+    lives_ok { 
+        stdout_is {
+            $plugin->import_groups_for_account($account, $data_ref);
+        } "";
+    } 'import with no groups data lives';
 
     is $account->groups->count, 0, '... and no groups are imported';
 }
@@ -184,7 +194,9 @@ restore_with_existing_group: {
 
         # make backup data
         my $plugin = Socialtext::Pluggable::Plugin::Groups->new();
-        $plugin->export_groups_for_account($account, $data_ref);
+        stdout_is {
+            $plugin->export_groups_for_account($account, $data_ref);
+        } "Exporting all groups for account '".$account->name."'...\n";
 
         ### CLEANUP: nuke stuff in DB before we import
         ### - don't nuke the Users, though; the Account import is responsible
@@ -223,7 +235,9 @@ restore_with_existing_group: {
 
     # import the data that we just exported
     my $plugin = Socialtext::Pluggable::Plugin::Groups->new();
-    $plugin->import_groups_for_account($account, $data_ref);
+    stdout_is {
+        $plugin->import_groups_for_account($account, $data_ref);
+    } "Importing all groups for account '".$account->name."'...\n";
 
     # CHECK: the User we'd added to the Group already has his Role untouched
     my $ugr = Socialtext::UserGroupRoleFactory->GetUserGroupRole(
