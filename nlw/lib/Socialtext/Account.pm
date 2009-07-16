@@ -638,7 +638,7 @@ sub add_to_all_users_workspace {
         || $user->primary_account_id != $self->account_id;
 
     my $ws = Socialtext::Workspace->new(workspace_id => $ws_id);
-    return if $ws->role_for_user( user => $user );
+    return if $ws->has_user($user);
 
     $ws->assign_role_to_user(
         user => $user,
