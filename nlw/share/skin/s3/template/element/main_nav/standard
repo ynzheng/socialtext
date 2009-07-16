@@ -1,6 +1,6 @@
 <div id="homeLink">
   <a id="st-home-link" href="[% FILTER decorate('home_href') %]/[% END %]">
-      [% loc("Home") %]</a></div>
+      [% loc("Dashboard") %]</a></div>
 
 <ul id="st-wiki-subnav-left" class="level1">
 
