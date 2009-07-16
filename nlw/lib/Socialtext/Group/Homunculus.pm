@@ -95,6 +95,7 @@ has 'factory' => (
 );
 
 has_unique_key ('driver_key','driver_unique_id');
+has_unique_key ('primary_account_id', 'created_by_user_id', 'driver_group_name');
 
 sub _set_driver_key {
     my $self = shift;

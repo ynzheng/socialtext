@@ -956,6 +956,9 @@ CREATE INDEX gallery_gadget_gadget_id_idx
 CREATE INDEX group_workspace_role_workspace_id
 	    ON group_workspace_role (workspace_id);
 
+CREATE UNIQUE INDEX groups_account_user_group_name
+	    ON groups (primary_account_id, created_by_user_id, driver_group_name);
+
 CREATE UNIQUE INDEX groups_driver_unique_id
 	    ON groups (driver_key, driver_unique_id);
 
@@ -1652,4 +1655,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '73');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '74');
