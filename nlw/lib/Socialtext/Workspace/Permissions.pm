@@ -3,6 +3,7 @@ package Socialtext::Workspace::Permissions;
 use strict;
 use warnings;
 use Readonly;
+use List::Util qw(first);
 use Socialtext::SQL qw( sql_execute sql_commit sql_rollback sql_begin_work
                         sql_in_transaction);
 use Socialtext::Validate qw(
@@ -379,31 +380,24 @@ EOSQL
     };
     sub user_can {
         my $self = shift;
-        my $wksp_id = $self->{wksp}->workspace_id;
-        my %p = validate( @_, $spec );
+        my %p    = validate(@_, $spec);
+        my $user = $p{user};
+        my $perm = $p{permission};
+        my $ws   = $self->{wksp};
 
-        my $sth = sql_execute(<<EOSQL,
-SELECT * FROM "WorkspaceRolePermission"
-    WHERE workspace_id = ?
-      AND permission_id = ?
-      AND role_id IN (
-        SELECT role_id FROM "UserWorkspaceRole"
-            WHERE workspace_id = ?
-              AND user_id = ?
-      )
-EOSQL
-            $wksp_id,
-            $p{permission}->permission_id,
-            $wksp_id,
-            $p{user}->user_id,
-        );
-        my $has_permission = $sth->fetchall_arrayref->[0];
-        return 1 if $has_permission;
+        # get the list of Roles this User has in the WS, falling back to a
+        # default Role if the User has no explicit Role in the WS
+        my @roles = $ws->role_for_user(user => $user) || $user->default_role;
 
-        return 1 if $self->role_can(
-            role       => $p{user}->default_role,
-            permission => $p{permission},
-        );
+        # check if any of those Roles have the specified Permission
+        my $has_permission = first {
+            $self->role_can(
+                role       => $_,
+                permission => $perm,
+            );
+            }
+            @roles;
+        return $has_permission ? 1 : 0;
     }
 }
 
