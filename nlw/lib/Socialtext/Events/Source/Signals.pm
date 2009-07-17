@@ -1,4 +1,4 @@
-package Socialtext::Events::Source::SignalAccount;
+package Socialtext::Events::Source::Signals;
 use Moose;
 use MooseX::StrictConstructor;
 use Socialtext::SQL::Builder qw/sql_abstract/;
@@ -7,7 +7,7 @@ use namespace::clean -except => 'meta';
 
 with 'Socialtext::Events::Source', 'Socialtext::Events::SQLSource';
 
-has 'account_id' => ( is => 'ro', isa => 'Int', required => 1 );
+has 'account_ids' => ( is => 'ro', isa => 'ArrayRef[Int]', required => 1 );
 has 'activity_mode' => ( is => 'ro', isa => 'Bool', default => undef );
 
 sub next { 
@@ -34,12 +34,16 @@ sub query_and_binds {
 # CREATE INDEX ix_event_signal_indirect ON event (at)
 #   WHERE event_class = 'signal' AND NOT is_direct_signal(actor_id,person_id);
 
+    my ($acct_sql, @acct_binds) = sql_abstract()->select(
+        'signal_account', 'signal_id', [
+            account_id => {-in => $self->account_ids},
+        ], 
+    );
+
     my @where = (
         event_class => 'signal',
         \"NOT is_direct_signal(actor_id,person_id)",
-        \["signal_id IN (
-           SELECT signal_id FROM signal_account WHERE account_id = ?
-        )", $self->account_id],
+        \["signal_id IN ($acct_sql)", @acct_binds]
     );
 
     if ($self->activity_mode) {
