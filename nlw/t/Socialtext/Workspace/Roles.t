@@ -229,7 +229,7 @@ get_roles_for_user_in_workspace: {
     }
 
     get_roles_for_user_multiple_gwrs: {
-        my $user = create_test_user();
+        my $user      = create_test_user();
         my $group_one = create_test_group();
         my $group_two = create_test_group();
 
