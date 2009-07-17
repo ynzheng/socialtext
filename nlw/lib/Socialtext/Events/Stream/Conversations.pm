@@ -1,11 +1,10 @@
-package Socialtext::Events::Stream::HasPages;
-use Moose::Role;
-use Socialtext::Events::Source::Workspace;
+package Socialtext::Events::Stream::Conversations;
+use Moose;
+use Socialtext::Events::Source::WorkspaceConversations;
 use namespace::clean -except => 'meta';
 
+extends 'Socialtext::Events::Stream';
 with 'Socialtext::Events::Stream::HasWorkspaces';
-
-requires 'add_sources';
 
 after 'add_sources' => sub {
     my $self = shift;
@@ -13,10 +12,11 @@ after 'add_sources' => sub {
 
     for my $workspace_id (@{ $self->workspace_ids }) {
         push @$sources, $self->construct_source(
-            'Socialtext::Events::Source::Workspace',
+            'Socialtext::Events::Source::WorkspaceConversations',
             workspace_id => $workspace_id
         );
     }
 };
 
+__PACKAGE__->meta->make_immutable;
 1;
