@@ -1,6 +1,6 @@
 package Socialtext::Events::Stream::HasSignals;
 use Moose::Role;
-use Socialtext::Events::Source::SignalAccount;
+use Socialtext::Events::Source::Signals;
 use Socialtext::Events::Source::SignalPersonal;
 use namespace::clean -except => 'meta';
 
@@ -21,14 +21,13 @@ after 'add_sources' => sub {
     my $self = shift;
     my $sources = shift;
    
-    return unless @{$self->signals_account_ids};
+    my $ids = $self->signals_account_ids;
+    return unless $ids && @$ids;
 
-    for my $account_id (@{ $self->signals_account_ids }) {
-        push @$sources, $self->construct_source(
-            'Socialtext::Events::Source::SignalAccount',
-            account_id => $account_id,
-        );
-    }
+    push @$sources, $self->construct_source(
+        'Socialtext::Events::Source::Signals',
+        account_ids => $ids,
+    );
 
     # TODO: is there a parameter to exclude direct-messages from certain feeds?
     push @$sources, $self->construct_source(

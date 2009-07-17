@@ -43,12 +43,14 @@ This test case assumes a logged in user.
 | code-is   | 200                                             |
 | body-like | []                                              |
 
-| comment         | check that signals are included in activities |                    |
-| post-json       | /data/signals                                     | {"signal":"*booya*"} |
-| code-is         | 201                                               |                    |
-| get             | /data/events/activities/%%username%%              | application/json   |
-| code-is         | 200                                               |                    |
-| body-like       | qr/"html":".+<b>booya<\/b>.+"/                                             |                    |
+| comment         | check that signals are included in activities |                      |
+| post-json       | /data/signals                                 | {"signal":"*booya*"} |
+| code-is         | 201                                           |                      |
+| get             | /data/events/activities/%%username%%          | application/json     |
+| code-is         | 200                                           |                      |
+| body-like       | qr/"html":".+<b>booya<\/b>.+"/                |                      |
+| json-parse      |                                               |                      |
+| json-array-size | 1                                             |                      |
 
 | st-clear-events |
 

@@ -48,16 +48,14 @@ override 'add_sources' => sub {
 
         # sent to a shared account by the user
         # any signal mentioning that user (to a shared account)
-        for my $acct_id (@$accts) {
-            push @$sources, $self->construct_source(
-                'Socialtext::Events::Source::SignalAccount' => (
-                    viewer => $self->viewer,
-                    user => $self->user,
-                    account_id => $acct_id,
-                    activity_mode => 1, # includes mentions
-                )
-            );
-        }
+        push @$sources, $self->construct_source(
+            'Socialtext::Events::Source::Signals' => (
+                viewer => $self->viewer,
+                user => $self->user,
+                account_ids => $accts,
+                activity_mode => 1, # includes mentions
+            )
+        );
     }
 };
 
