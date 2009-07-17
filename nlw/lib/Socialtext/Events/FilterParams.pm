@@ -40,8 +40,9 @@ has_param 'page_id'           => (isa => bunch_of('Str'));
 has_param 'page_workspace_id' => (isa => bunch_of('Int'));
 has_param 'tag_name'          => (isa => bunch_of('Str'));
 
-has_param 'before' => (isa => 'Num', sql_builder => '_sb_before');
-has_param 'after'  => (isa => 'Num', sql_builder => '_sb_after');
+# TODO: coerce from "Any" => "Iso8601Str" these two attrs:
+has_param 'before' => (isa => 'Str', sql_builder => '_sb_before');
+has_param 'after'  => (isa => 'Str', sql_builder => '_sb_after');
 
 # These params require special implementation so the caller should handle
 # them.  SQLSource may have some hints.
@@ -105,7 +106,7 @@ sub _before_after {
     my $val = $attr->get_value($self);
     return unless $val;
     return 'at' => \[
-        "$op 'epoch'::timestamptz + ? * '1 second'::interval",
+        "$op ?::timestamptz",
         $val
     ];
 }

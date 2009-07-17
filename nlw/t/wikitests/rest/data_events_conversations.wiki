@@ -72,10 +72,10 @@ This test case assumes a logged in user.
 | code-is         | 200                              |
 | body-like       | []                               |
 
-| comment   | no conversations yet                  |
-| get        | /data/events/conversations/%%user_c%% | application/json |
-| code-is   | 200                                   |
-| body-like | []                                    |
+| comment   | no conversations yet                  |                  |
+| get       | /data/events/conversations/%%user_c%% | application/json |
+| code-is   | 200                                   |                  |
+| body-like | []                                    |                  |
 
 Note that page x20 should show up as the 'created' special case and not because we made some event for it.
 
