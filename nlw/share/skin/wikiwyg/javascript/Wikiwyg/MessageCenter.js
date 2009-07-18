@@ -57,8 +57,10 @@ General Public License for more details.
 NLW Message Center Class
  =============================================================================*/
  
-proto = Subclass('Wikiwyg.MessageCenter');
-klass = Wikiwyg.MessageCenter;
+{
+
+var proto = Subclass('Wikiwyg.MessageCenter');
+var klass = Wikiwyg.MessageCenter;
 klass.closeTimer = null;
 
 proto.messageCenter = jQuery('#st-message-center');
@@ -128,4 +130,4 @@ proto.installControls = function () {
     this.messageCenterControlClose.click(function () { self.closeMessageCenter() });
 };
 
-
+}

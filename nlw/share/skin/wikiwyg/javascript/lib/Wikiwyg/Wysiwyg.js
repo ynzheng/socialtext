@@ -1802,7 +1802,7 @@ proto.get_editable_div = function () {
 /*==============================================================================
 Socialtext Debugging code
  =============================================================================*/
-klass = Wikiwyg;
+{ var klass = Wikiwyg;
 
 klass.run_formatting_tests = function(link) {
     var all = document.getDivsByClassName('wikiwyg_formatting_test');
@@ -1847,6 +1847,8 @@ wikiwyg_run_all_formatting_tests = function() {
 }
 
 klass.run_all_formatting_tests = wikiwyg_run_all_formatting_tests;
+
+}
 
 /* The code below were originally in Wikiwyg.Widgets. */
 var widgets_list = Wikiwyg.Widgets.widgets;
