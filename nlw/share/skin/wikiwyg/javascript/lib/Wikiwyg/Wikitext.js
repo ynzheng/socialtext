@@ -1989,7 +1989,9 @@ proto.format_td = function(elem) {
         elem.firstChild &&
         elem.firstChild.nodeName.match(/^(H[123456])$/)
     ) {
-        elem.wikitext = elem.wikitext.replace(/\n?$/, '\n');
+        if (elem.wikitext != '') {
+            elem.wikitext = elem.wikitext.replace(/\n?$/, '\n');
+        }
         return '| ' + elem.wikitext;
     }
 
