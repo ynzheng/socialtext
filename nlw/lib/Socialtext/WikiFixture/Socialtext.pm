@@ -687,6 +687,10 @@ sub _click_user_row {
     return;
 }
 
+sub _run_command {
+    Socialtext::WikiFixture::SocialBase->can('_run_command')->(@_);
+}
+
 =head1 AUTHOR
 
 Luke Closs, C<< <luke.closs at socialtext.com> >>
