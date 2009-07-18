@@ -131,7 +131,7 @@ Automated backup and restore testing
 | text_like | contentContainer | Backup Restore 3 content %%start_time%% |
 
 | *Comment* | Test Case: Console Backup and Restore: People and Dashboard |  |
-| click_and_wait | link=Home |  |
+| click_and_wait | link=Dashboard |  |
 | text_like | st-editing-tools-edit | Welcome |
 | click_and_wait | link=Add Content |  |
 | text_like | Widget Gallery |  |

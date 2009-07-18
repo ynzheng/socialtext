@@ -58,7 +58,7 @@
 TODO: come back and finish this test when {bz: 1039} is fixed. Can't seem to click st-duplicate-savelink multiple times. That could be a problem with Selenium or with the dialog boxes.
 
 | *Comment* | Test Case: Tools: Duplicate Page. Duplicate the edited page |  |
-| click_and_wait | link=Home | navigate away and back |
+| click_and_wait | link=Dashboard | navigate away and back |
 | open_ok | /%%workspace%%/?Duplicate This Page %%start_time%% |  |
 | click_ok | link=Duplicate Page |  |
 | wait_for_element_visible_ok | st-duplicate-savelink | 30000 |

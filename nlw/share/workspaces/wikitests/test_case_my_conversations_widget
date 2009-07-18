@@ -47,7 +47,7 @@
 | *Comment* | Test Case: My Conversations Widget if you logout now, IE raises an authen dialog for no reason |  |
 | *Comment* | Try to find a workaround by leaving page |
 | open_ok | /%%workspace%%/ |  |
-| wait_for_element_visible_ok | link=Home | 30000 |
+| wait_for_element_visible_ok | link=Dashboard | 30000 |
 | st-logout |  |  |
 | wait_for_element_visible_ok | link=Log in | 30000 |
 | st-login | %%username%% | %%password%% |

@@ -13,7 +13,7 @@ the original but it is better than failing completely because IE 6 caches Miki p
 
 | *Comment* | Test Case: IE Miki Authentication Login and Logout from Miki/Lite UI |  |
 | open_ok | /lite/page/%%miki_space%% |  |
-| text_like | link=Home | Home |
+| text_like | link=Dashboard | Dashboard |
 | text_like | link=Recent Changes | Recent Changes |
 | text_like | link=Search | Search |
 | text_like | link=Log out | Log out |
@@ -33,7 +33,7 @@ you will appear to succeed. The workaround is to open a non-existent page instea
 
 | *Comment* | Test Case: IE Miki Authentication now open central page |  |
 | open_ok | /lite/page/%%miki_space%% |  |
-| text_like | link=Home | Home |
+| text_like | link=Dashboard | Dashboard |
 | text_like | link=Recent Changes | Recent Changes |
 | text_like | link=Search | Search |
 | text_like | link=Edit | Edit |
@@ -74,7 +74,7 @@ you will appear to succeed. The workaround is to open a non-existent page instea
 | type_ok | password | %%password%% |
 | click_and_wait | //input[@value='Log in'] |  |
 | open_ok | /lite/page/%%miki_space%% |  |
-| text_like | link=Home | Home |
+| text_like | link=Dashboard | Dashboard |
 | text_like | link=Recent Changes | Recent Changes |
 | text_like | link=Search | Search |
 | text_like | link=Edit | Edit |

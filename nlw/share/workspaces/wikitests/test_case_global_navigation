@@ -2,7 +2,7 @@
 | *Comment* | requires People and Dashboard |  |
 
 | *Comment* | Test Case: Global Navigation Home People Workspaces |  |
-| text_like | mainNav | Home |
+| text_like | mainNav | Dashboard |
 | text_like | mainNav | People |
 | text_like | mainNav | Workspaces |
 | click_and_wait | st-home-link |  |

@@ -181,7 +181,7 @@ Post by Email popup
 *** All in Category
 
 | clickAndWait | link=Mobile |
-| clickAndWait | link=Home |
+| clickAndWait | link=Dashboard |
 | *Comment* | SEE MIKI Home |
 | pause | %%pt%% |
 
@@ -609,7 +609,7 @@ Lightbox screens:
 | open_ok | /%%wiki%%/ |  |
 | *Comment* | SEE Global Navigation Home People Workspaces Signals Invite |  |
 | pause | %%pt%% |  |
-| click_and_wait | link=Home |  |
+| click_and_wait | link=Dashboard |  |
 | *Comment* | SEE Default widgets |  |
 | pause | %%pt%% |  |
 | click_and_wait | link=Workspaces |  |
