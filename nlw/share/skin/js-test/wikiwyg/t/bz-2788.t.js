@@ -10,8 +10,8 @@ t.run_is('html', 'text');
 /* Test
 === Line break inside headings should be empty
 --- html
-<div class="wiki"><h1><br/></h1></div>
+<div class="wiki"><h1><br/></h1>...</div>
 --- text
-
+...
 
 */
