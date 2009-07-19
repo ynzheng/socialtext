@@ -8,7 +8,7 @@
 | text_like | This loan is offered through the Biggie Motors Automation Corporation |  |
 | text_like | 3890.40 |  |
 | text_like | Loan Amount |  |
-| click_and_wait | link=Dashboard |  |
+| click_and_wait | link=Home |  |
 
 | *Comment* | Test Case: Miki Open a spreadsheet directly in Miki |  |
 | open_ok | /lite/page/%%workspace%%/car_loan |  |
