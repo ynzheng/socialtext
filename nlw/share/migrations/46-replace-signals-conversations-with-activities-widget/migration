@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Socialtext::SQL qw/get_dbh/;
 use Socialtext::JSON qw/encode_json/;
+use Socialtext::System qw/shell_run/;
 
 my $dbh = get_dbh();
 
