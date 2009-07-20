@@ -210,24 +210,11 @@ sub get_events_followed {
 
     $opts->{followed} = 1;
     $opts->{contributions} = 1;
+    $opts->{"action!"} = 'view';
     die "no limit?!" unless $opts->{count};
-
-    if ($opts->{action} && $opts->{action} eq 'view') {
-        return []; # view events aren't contributions
-    }
-    else {
-        # by using non-view indexes, we can get a simple perf boost until we
-        # devise something better
-        $self->prepend_condition(q{action <> 'view'});
-    }
-    my ($followed_sql, $followed_args) = $self->_build_standard_sql($opts);
-
-    Socialtext::Timer->Continue('get_followed_events');
-    #$Socialtext::SQL::PROFILE_SQL = 1;
-    my $sth = sql_execute($followed_sql, @$followed_args);
-    #$Socialtext::SQL::PROFILE_SQL = 0;
-    my $result = $self->decorate_event_set($sth);
-    Socialtext::Timer->Pause('get_followed_events');
+    my $result;
+    time_this { $result = $self->get_events($opts) } 'get_followed_events';
+    return @$result if wantarray;
     return $result;
 }
 
