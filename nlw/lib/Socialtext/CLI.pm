@@ -793,7 +793,7 @@ sub _make_role_toggler {
         my $role         = Socialtext::Role->new( name => $rolename );
         my $display_name = $role->display_name();
 
-        if ( $add_p == $ws->user_has_role( user => $user, role => $role ) ) {
+        if ( $add_p == ($ws->user_has_role( user => $user, role => $role ) || 0) ) {
             $self->_error( $user->username
                     . " is $pre_failure $article $display_name for the "
                     . $ws->name
