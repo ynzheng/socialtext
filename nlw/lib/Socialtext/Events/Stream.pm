@@ -61,28 +61,6 @@ sub construct_source {
     );
 }
 
-sub all {
-    my $self = shift;
-    my @events;
-    $#events = $self->limit - 1; $#events = -1; # preallocate space
-    while (my $e = $self->next) {
-        push @events, $e;
-    }
-    return @events if wantarray;
-    return \@events;
-}
-
-sub all_hashes {
-    my $self = shift;
-    my @hashes;
-    $#hashes = $self->limit - 1; $#hashes = -1; # preallocate space
-    while (my $e = $self->next) {
-        push @hashes, $e->build_hash({});
-    }
-    return @hashes if wantarray;
-    return \@hashes;
-}
-
 # force the creation of all sources
 sub assemble {
     my $self = shift;
