@@ -28,6 +28,28 @@ has 'viewer' => (is => 'ro', isa => 'Socialtext::User',
     }
 );
 
+sub opts_slice {
+    my $opts = shift;
+    my @allowed = @_;
+
+    my @opts_slice = map { $_ => $opts->{$_} }
+        grep { exists $opts->{$_} }
+        @allowed;
+
+    push @opts_slice, map { $_ => $opts->{$_} }
+        grep { exists $opts->{$_} }
+        map { "$_!" } @allowed;
+
+    return {@opts_slice};
+}
+
+sub _limit_offset {
+    my $opts = shift;
+    my $limit = $opts->{limit} || $opts->{count} || 50;
+    my $offset = $opts->{offset} || 0;
+    return (limit => $limit, offset => $offset);
+}
+
 sub get_events {
     my $self   = shift;
     my $opts = ref($_[0]) eq 'HASH' ? $_[0] : {@_};
@@ -38,21 +60,18 @@ sub get_events {
         return $self->get_events_page_contribs($opts);
     }
 
-    my %opts_slice = map { $_ => $opts->{$_} }
-        grep { exists $opts->{$_} }
-        qw(action before after page_id page_workspace_id actor_id person_id followed tag_name);
-
-    my $limit = $opts->{limit} || $opts->{count} || 50;
-    my $offset = $opts->{offset} || 0;
+    my $opts_slice = opts_slice($opts, qw(
+        action contributions followed before after
+        page_id page_workspace_id actor_id person_id tag_name
+    ));
     
     my %construct = (
         viewer => $self->viewer,
         user => $self->viewer,
-        limit => $limit,
-        offset => $offset,
         filter => Socialtext::Events::FilterParams->new(
-            %opts_slice,
-        )
+            $opts_slice,
+        ),
+        _limit_offset($opts),
     );
     
     my $result = [];
@@ -98,23 +117,19 @@ sub get_events_page_contribs {
     my $self = shift;
     my $opts = ref($_[0]) eq 'HASH' ? $_[0] : {@_};
 
-    my %opts_slice = map { $_ => $opts->{$_} }
-        grep { exists $opts->{$_} }
-        qw(actor_id before after followed tag_name);
-
-    my $limit = $opts->{limit} || $opts->{count} || 50;
-    my $offset = $opts->{offset} || 0;
+    my $opts_slice = opts_slice($opts, qw(
+        actor_id before after followed tag_name page_workspace_id page_id
+    ));
+    $opts_slice->{contributions} = 1;
 
     my $result = [];
     time_this {
         my $stream = Socialtext::Events::Stream::Pages->new(
             viewer => $self->viewer,
-            limit => $limit,
-            offset => $offset,
             filter => Socialtext::Events::FilterParams->new(
-                contributions => 1,
-                %opts_slice,
+                $opts_slice,
             ),
+            _limit_offset($opts),
         );
 
         $stream->prepare();
@@ -134,28 +149,23 @@ sub get_events_activities {
     my $user = Socialtext::User->Resolve($maybe_user);
     return [] unless $user;
 
-    my %opts_slice = map { $_ => $opts->{$_} }
-        grep { exists $opts->{$_} }
-        qw(before after page_id page_workspace_id actor_id person_id tag_name);
-    my $limit = $opts->{limit} || $opts->{count} || 50;
-    my $offset = $opts->{offset} || 0;
+    my $opts_slice = opts_slice($opts, qw(
+        before after page_id page_workspace_id actor_id person_id tag_name
+    ));
 
     my $result = [];
     time_this {
-    eval {
         my $stream = Socialtext::Events::Stream::ProfileActivity->new(
-            filter => Socialtext::Events::FilterParams->new(
-                %opts_slice,
-            ),
             user => $user,
             viewer => $self->viewer,
-            limit => $limit,
-            offset => $offset,
+            filter => Socialtext::Events::FilterParams->new(
+                $opts_slice,
+            ),
+            _limit_offset($opts),
         );
 
         $stream->prepare();
         $result = $stream->all_hashes();
-    }; warn $@ if $@; die $@ if $@;
     } 'get_activity';
 
     return @$result if wantarray;
@@ -168,15 +178,11 @@ sub get_events_conversations {
     my $opts = (@_==1) ? $_[0] : {@_};
 
     # filter the options to a subset of what's usually allowed
-    my %opts_slice = map {
-        defined($opts->{$_}) ? ($_ => $opts->{$_}) : ()
-    } qw(
+    my $opts_slice = opts_slice($opts, qw(
        action actor_id page_workspace_id page_id tag_name
        before after
-    );
-    my $limit = $opts->{limit} || $opts->{count} || 50;
-    my $offset = $opts->{offset} || 0;
-    delete $opts_slice{actor_id} unless defined $opts_slice{actor_id};
+    ));
+    delete $opts_slice->{actor_id} unless defined $opts_slice->{actor_id};
 
     # First we need to get the user id in case this was email or username used
     my $user = Socialtext::User->Resolve($maybe_user);
@@ -184,20 +190,17 @@ sub get_events_conversations {
 
     my $result = [];
     time_this {
-    eval {
         my $stream = Socialtext::Events::Stream::Conversations->new(
-            filter => Socialtext::Events::FilterParams->new(
-                %opts_slice,
-            ),
             user => $user,
             viewer => $self->viewer,
-            limit => $limit,
-            offset => $offset,
+            filter => Socialtext::Events::FilterParams->new(
+                $opts_slice,
+            ),
+            _limit_offset($opts),
         );
 
         $stream->prepare();
         $result = $stream->all_hashes();
-    }; warn $@ if $@; die $@ if $@;
     } 'get_convos';
 
     return @$result if wantarray;
