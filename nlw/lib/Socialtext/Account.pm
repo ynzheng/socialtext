@@ -184,7 +184,6 @@ sub reset_skin {
 
 sub workspaces {
     my $self = shift;
-
     return Socialtext::Workspace->ByAccountId( 
         account_id => $self->account_id, 
         @_ 
@@ -193,10 +192,7 @@ sub workspaces {
 
 sub workspace_count {
     my $self = shift;
-
-    my $sql = 'select count(*) from "Workspace" where account_id = ?';
-    my $count = sql_singlevalue($sql, $self->account_id);
-    return $count;
+    return $self->workspaces->count();
 }
 
 sub groups {
