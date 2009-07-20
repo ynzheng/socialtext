@@ -9,12 +9,7 @@ with 'Socialtext::Events::Source', 'Socialtext::Events::SQLSource';
 has 'visible_account_ids' => ( is => 'ro', isa => 'ArrayRef' );
 has 'activity_mode' => ( is => 'ro', isa => 'Bool', default => undef );
 
-sub next { 
-    my $self = shift;
-    my $e = Socialtext::Events::Event::Person->new($self->next_sql_result);
-    $e->source($self);
-    return $e;
-}
+use constant event_type => 'Socialtext::Events::Event::Person';
 
 sub _visible_exists {
     my $self = shift;

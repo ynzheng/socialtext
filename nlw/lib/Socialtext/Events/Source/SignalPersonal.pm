@@ -7,12 +7,7 @@ use namespace::clean -except => 'meta';
 
 with 'Socialtext::Events::Source', 'Socialtext::Events::SQLSource';
 
-sub next { 
-    my $self = shift;
-    my $e = Socialtext::Events::Event::Signal->new($self->next_sql_result);
-    $e->source($self);
-    return $e;
-}
+use constant event_type => 'Socialtext::Events::Event::Signal';
 
 sub query_and_binds {
     my $self = shift;
