@@ -12,6 +12,7 @@ use Net::LDAP::Constant qw(LDAP_REFERRAL);
 use Net::LDAP::Util qw(escape_filter_value);
 use URI::ldap;
 use Socialtext::Log qw(st_log);
+use Socialtext::Timer;
 
 field 'config';
 
@@ -64,7 +65,9 @@ sub connect {
 
 sub _ldap_connect {
     my ($host, %opts) = @_;
+    Socialtext::Timer->Continue('ldap_connect');
     my $ldap = Net::LDAP->new($host, %opts);
+    Socialtext::Timer->Pause('ldap_connect');
     return $ldap;
 }
 
@@ -79,7 +82,9 @@ sub bind {
     }
 
     # attempt to bind to LDAP connection
+    Socialtext::Timer->Continue('ldap_bind');
     my $mesg = _ldap_bind($self->{ldap}, $user, %opts);
+    Socialtext::Timer->Pause('ldap_bind');
     if ($mesg->code()) {
         my $conn_str = $self->config->name() || $self->config->id();
         st_log->error( "ST::LDAP::Base: unable to bind to LDAP connection '$conn_str'; " . $mesg->error() );
@@ -158,6 +163,7 @@ sub search {
             $args{filter} = $filter;
         }
     }
+
     # do search, return results
     return $self->_do_following_referrals(
         action => sub {

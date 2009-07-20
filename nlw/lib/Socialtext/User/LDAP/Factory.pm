@@ -13,6 +13,7 @@ use Socialtext::Log qw(st_log);
 use Socialtext::SQL qw(sql_selectrow);
 use Net::LDAP::Util qw(escape_filter_value);
 use Socialtext::SQL qw(sql_execute sql_singlevalue);
+use Socialtext::Timer;
 use Readonly;
 use List::MoreUtils qw(part);
 
@@ -89,13 +90,17 @@ sub GetUser {
     # If we have a fresly cached copy of the User, use that
     local $self->{_cache_lookup}; # temporary cache-lookup storage
     if ($CacheEnabled) {
+        Socialtext::Timer->Continue('ldap_user_check_cache');
         my $cached = $self->_check_cache($key => $val);
+        Socialtext::Timer->Pause('ldap_user_check_cache');
         return $cached if $cached;
     }
 
     # Look the User up in LDAP
     local $self->{_user_not_found};
+    Socialtext::Timer->Continue('ldap_user_lookup');
     my $proto_user = $self->lookup($key => $val);
+    Socialtext::Timer->Pause('ldap_user_lookup');
 
     # If we found the User in LDAP, cache the data in the DB and return that
     # back to the caller as the homunculus.
