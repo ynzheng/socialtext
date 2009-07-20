@@ -71,8 +71,8 @@ sub page_uri {
     return "/data/workspaces/".$self->workspace_name."/pages/".$self->page_id;
 }
 
-sub revision_id    { $_[0]->context->{revision_id} }
-sub revision_count { $_[0]->context->{revision_count} }
+sub revision_id    { $_[0]->context_hash->{revision_id} }
+sub revision_count { $_[0]->context_hash->{revision_count} }
 
 after 'build_hash' => sub {
     my $self = shift;
