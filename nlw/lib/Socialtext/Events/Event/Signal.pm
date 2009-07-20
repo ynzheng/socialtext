@@ -47,6 +47,7 @@ after 'build_hash' => sub {
     my $hash = shift;
 
     $hash->{event_class} = 'signal';
+    $hash->{signal_id} = $self->signal_id;
 
     # TODO: thunk this or allow plugins to hook "build_hash"
     $hash->{context}{body} = $self->html_body;
