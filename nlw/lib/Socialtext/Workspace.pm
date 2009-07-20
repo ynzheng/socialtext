@@ -1203,15 +1203,15 @@ sub permissions {
 sub has_user {
     my $self = shift;
     my $user = shift; # [in] User
-
-    my $sql = 'select 1 from "UserWorkspaceRole" where workspace_id = ? and user_id = ? and role_id <> ?';
-    my $exists = sql_singlevalue(
-        $sql,
-        $self->workspace_id,
-        $user->user_id,
-        Socialtext::Role->Guest()->role_id(),
-    );
-    return (defined($exists) && $exists);
+    # User has _some_ Role in the Workspace, that's *NOT* the Guest role.
+    my $guest    = Socialtext::Role->Guest();
+    my $has_user =
+        List::MoreUtils::any { $_->role_id != $guest->role_id }
+        Socialtext::Workspace::Roles->RolesForUserInWorkspace(
+            user      => $user,
+            workspace => $self,
+        );
+    return $has_user;
 }
 
 {
