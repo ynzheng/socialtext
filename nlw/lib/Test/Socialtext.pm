@@ -432,11 +432,13 @@ sub main_hub {
 
     sub create_test_user {
         my %opts = @_;
-        $opts{unique_id} ||= create_unique_id;
-        $opts{account} ||= Socialtext::Account->Default;
+        $opts{unique_id}          ||= create_unique_id;
+        $opts{account}            ||= Socialtext::Account->Default;
+        $opts{created_by_user_id} ||= Socialtext::User->SystemUser->user_id;
         my $user = Socialtext::User->create(
-            username      => $opts{unique_id} . '@ken.socialtext.net',
-            email_address => $opts{unique_id} . '@ken.socialtext.net',
+            username           => $opts{unique_id} . '@ken.socialtext.net',
+            email_address      => $opts{unique_id} . '@ken.socialtext.net',
+            created_by_user_id => $opts{created_by_user_id},
         );
         $user->primary_account($opts{account}->account_id);
         return $user;
