@@ -687,6 +687,20 @@ sub _click_user_row {
     return;
 }
 
+sub _run_command {
+    my $command = shift;
+    my $verify = shift || '';
+    my $output = qx($command 2>&1);
+    return if $verify eq 'ignore output';
+
+    if ($verify) {
+        like $output, $verify, $command;
+    }
+    else {
+        warn $output;
+    }
+}
+
 =head1 AUTHOR
 
 Luke Closs, C<< <luke.closs at socialtext.com> >>
