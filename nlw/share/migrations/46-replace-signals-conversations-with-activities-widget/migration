@@ -12,7 +12,7 @@ $dbh->{RaiseError} = 1;
 $dbh->{AutoCommit} = 0;
 
 # Install the activities widget
-shell_run("st-widgets delete-widget --src 'local:widgets:activities'");
+shell_run("st-widgets install-widget --src 'local:widgets:activities'");
 
 my $signals_id = get_gadget_id('local:signals:signals');
 my $conversations_id = get_gadget_id('local:widgets:recent_conversations');
