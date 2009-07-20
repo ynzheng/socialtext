@@ -24,26 +24,32 @@
 | st-empty-container |  |  |
 | wait_for_element_visible_ok | link=Add Content | 30000 |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Socialtext Signals'] | 30000 |
-| click_and_wait | //a[@id='gallery-widget-Socialtext Signals'] |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Activities'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Activities'] |  |
 
 | *Comment* | Test Case: Signals Widget. Verify back at Dashboard with widget |  |
 | wait_for_text_present_ok | Welcome | 30000 |
 | text_like | st-editing-tools-edit | Welcome |
-| wait_for_text_present_ok | Socialtext Signals | 30000 |
+| wait_for_text_present_ok | Activities | 30000 |
 
 | *Comment* | Test Case: Signals Widget. Send four signals |  |
 | st-name-widget | 1 | signals_widget |
-| st-widget-title-like | signals_widget | Signals |
+| st-widget-title-like | signals_widget | Activities |
 | st-select-widget-frame | signals_widget |  |
 
 | *Comment* | Test Case: Signals Widget. She rocks in the treehouse |  |
+| wait_for_element_visible_ok | expand-input | 10000 |
+| click_ok | expand-input |  |
+| wait_for_element_visible_ok | signalFrame | 10000 |
 | selectFrame | signalFrame |  |
 | wait_for_element_visible_ok | //body | 10000 |
 | type_ok | //body | She rocks in the treehouse %%start_time%% |
 | select-frame | relative=parent |  |
 | wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
+
+| *Comment* | Test Case: Signals Widget. Signals must be spaced by at least two seconds |  |
+| pause | 3000 |  |
 
 | *Comment* | Test Case: Signals Widget. Rockin and a bopin |  |
 | selectFrame | signalFrame |  |
@@ -53,6 +59,9 @@
 | wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
 
+| *Comment* | Test Case: Signals Widget. Signals must be spaced by at least two seconds |  |
+| pause | 3000 |  |
+
 | *Comment* | Test Case: Signals Widget. All the little birds |  |
 | selectFrame | signalFrame |  |
 | wait_for_element_visible_ok | //body | 10000 |
@@ -61,6 +70,9 @@
 | wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
 
+| *Comment* | Test Case: Signals Widget. Signals must be spaced by at least two seconds |  |
+| pause | 3000 |  |
+
 | *Comment* | Test Case: Signals Widget. Love to hear the robin going |  |
 | selectFrame | signalFrame |  |
 | wait_for_element_visible_ok | //body | 10000 |
@@ -68,6 +80,9 @@
 | select-frame | relative=parent |  |
 | wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
+
+| *Comment* | Test Case: Signals Widget. Signals must be spaced by at least two seconds |  |
+| pause | 3000 |  |
 
 | *Comment* | Test Case: Signals Widget. Verify signals in widget. |  |
 | wait_for_text_present_ok | She rocks in the treehouse %%start_time%% | 30000 |
@@ -78,7 +93,7 @@
 | text_like | //body | qr/Super.+Edit.+Summary.+From.+Signal.+%%start_time%%/ |
 | select-frame | relative=parent |  |
 
-| *Comment* | Test case: Signals Widget. Wait for Signal to appear in Activity |  |
+| *Comment* | Test case: Signals Widget. Wait for Signal to appear in Profile Activity |  |
 | click_and_wait | link=Profile |  |
 | wait_for_text_present_ok | Activity | 30000 |
 | st-name-widget | 4 | profile_activity |
@@ -99,9 +114,9 @@
 | open_ok | / |  |
 | wait_for_text_present_ok | Welcome | 30000 |
 | text_like | st-editing-tools-edit | Welcome |
-| wait_for_text_present_ok | Socialtext Signals | 30000 |
+| wait_for_text_present_ok | Activities | 30000 |
 | st-name-widget | 1 | signals_widget |
-| st-widget-title-like | signals_widget | Signals |
+| st-widget-title-like | signals_widget | Activities |
 | st-select-widget-frame | signals_widget |  |
 
 | *Comment* | Test case: Signals Widget. Signals should still be there |  |

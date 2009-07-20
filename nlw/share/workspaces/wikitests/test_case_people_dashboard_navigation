@@ -18,13 +18,14 @@ TO DO - Add testability hooks and confirm Grey Ghost Icon
 
 | *Comment* | Test Case: People Dashboard Navigation - Add Content has correct content |  |
 | wait_for_element_visible_ok | //a[@id='gallery-widget-All People Tags'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Recent Conversations'] | 30000 |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Active Content'] | 30000 |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Active Members'] | 30000 |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Activities'] | 30000 |
 | wait_for_element_visible_ok | //a[@id='gallery-widget-Workspaces'] | 30000 |
 | wait_for_element_visible_ok | //a[@id='gallery-widget-Wiki Page'] | 30000 |
 | wait_for_element_visible_ok | //a[@id='gallery-widget-One Image'] | 30000 |
 | wait_for_element_visible_ok | //a[@id='gallery-widget-RSS Viewer'] | 30000 |
 | wait_for_element_visible_ok | //a[@id='gallery-widget-Workspace Tags'] | 30000 |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Socialtext Signals'] | 30000 |
 
 | wait_for_element_visible_ok | //a[@id='gallery-widget-Microsoft Outlook'] | 30000 |
 | wait_for_element_visible_ok | //a[@id='gallery-widget-Google Calendar'] | 30000 |
