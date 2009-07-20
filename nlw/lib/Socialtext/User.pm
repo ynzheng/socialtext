@@ -1020,7 +1020,7 @@ SELECT DISTINCT ua.user_id,
                 ua.driver_username,
                 ua.creation_datetime
     FROM user_account ua
-    WHERE $account_where
+    WHERE ($account_where)
           $exclude_hidden_clause
     ORDER BY creation_datetime $p{sort_order}, driver_username ASC
     LIMIT ? OFFSET ?
@@ -1034,7 +1034,7 @@ SELECT DISTINCT ua.user_id AS user_id,
     FROM user_account ua
          LEFT JOIN "UserMetadata" um2 ON (ua.creator_id = um2.user_id)
          LEFT JOIN users u2 ON (um2.user_id = u2.user_id)
-    WHERE $account_where
+    WHERE ($account_where)
           $exclude_hidden_clause
     ORDER BY u2.driver_username $p{sort_order}, ua.driver_username ASC
     LIMIT ? OFFSET ?
@@ -1045,7 +1045,7 @@ SELECT DISTINCT ua.user_id,
                 ua.driver_unique_id,
                 ua.driver_username
     FROM user_account ua
-    WHERE $account_where
+    WHERE ($account_where)
           $exclude_hidden_clause
     ORDER BY driver_username $p{sort_order}
     LIMIT ? OFFSET ?
@@ -1060,7 +1060,7 @@ SELECT DISTINCT ua.user_id AS user_id,
     FROM user_account ua
          LEFT JOIN "UserMetadata" um ON (ua.user_id = um.user_id)
          JOIN "Account" a ON a.account_id = um.primary_account_id
-    WHERE $account_where
+    WHERE ($account_where)
           $exclude_hidden_clause
     ORDER BY a.name $p{sort_order}, driver_username ASC
     LIMIT ? OFFSET ?
