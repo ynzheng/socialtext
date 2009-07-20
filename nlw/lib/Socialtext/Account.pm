@@ -208,7 +208,7 @@ sub groups {
 }
 
 sub group_count {
-    my $self   = shift;
+    my $self = shift;
     return $self->groups->count();
 }
 
