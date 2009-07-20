@@ -15,14 +15,14 @@ has 'sql_results' => (
     },
 );
 
-# write 'next' like this:
-# sub next {
-#     my $self = shift;
-#     my $e = My::Event::Type->new(shift->next_sql_result);
-#     $e->source($self);
-#     return $e;
-# }
-requires 'next';
+sub next {
+    my $self = shift;
+    my $res = $self->next_sql_result || return;
+    my $e = $self->event_type->new($res);
+    $e->source($self);
+    return $e;
+}
+requires 'event_type';
 requires 'query_and_binds';
 
 sub _build_sql_results {

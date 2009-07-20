@@ -8,12 +8,7 @@ with 'Socialtext::Events::Source', 'Socialtext::Events::SQLSource';
 
 has 'workspace_id' => ( is => 'ro', isa => 'Int', required => 1 );
 
-sub next { 
-    my $self = shift;
-    my $e = Socialtext::Events::Event::Page->new($self->next_sql_result);
-    $e->source($self);
-    return $e;
-}
+use constant event_type => 'Socialtext::Events::Event::Page';
 
 sub query_and_binds {
     my $self = shift;

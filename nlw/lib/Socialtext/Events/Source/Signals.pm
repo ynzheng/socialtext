@@ -10,12 +10,7 @@ with 'Socialtext::Events::Source', 'Socialtext::Events::SQLSource';
 has 'account_ids' => ( is => 'ro', isa => 'ArrayRef[Int]', required => 1 );
 has 'activity_mode' => ( is => 'ro', isa => 'Bool', default => undef );
 
-sub next { 
-    my $self = shift;
-    my $e = Socialtext::Events::Event::Signal->new($self->next_sql_result);
-    $e->source($self);
-    return $e;
-}
+use constant event_type => 'Socialtext::Events::Event::Signal';
 
 sub query_and_binds {
     my $self = shift;
