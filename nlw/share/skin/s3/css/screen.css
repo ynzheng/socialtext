@@ -219,7 +219,7 @@ div#mainNav ul li a.selected ,div#homeLink a.selected {
 }	
 
 div#mainNav div#workSpaceLink {
-	width: 40%;
+	width: 39%;
 	float: right;
 	background: url(../images/mainNavRight.png) no-repeat top right;
 }
