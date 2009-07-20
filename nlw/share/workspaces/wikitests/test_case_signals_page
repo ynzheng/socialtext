@@ -35,6 +35,9 @@
 | st-widget-title-like | signals_widget | Send a Signal |
 | st-select-widget-frame | signals_widget |  |
 
+| *Comment* | Test Case: Signals Page. Signals must be spaced by at least two seconds |  |
+| pause | 3000 |  |
+
 | *Comment* | Test Case: Signals Page. Once Upon A Time |  |
 | selectFrame | signalFrame |  |
 | wait_for_element_visible_ok | //body | 10000 |
@@ -42,6 +45,9 @@
 | select-frame | relative=parent |  |
 | wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
+
+| *Comment* | Test Case: Signals Page. Signals must be spaced by at least two seconds |  |
+| pause | 3000 |  |
 
 | *Comment* | Test Case: Signals Page. I Remember Long Ago |  |
 | selectFrame | signalFrame |  |
@@ -51,6 +57,9 @@
 | wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
 
+| *Comment* | Test Case: Signals Page. Signals must be spaced by at least two seconds |  |
+| pause | 3000 |  |
+
 | *Comment* | Test Case: Signals Page. Way Back In History |  |
 | selectFrame | signalFrame |  |
 | wait_for_element_visible_ok | //body | 10000 |
@@ -59,6 +68,9 @@
 | wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
 
+| *Comment* | Test Case: Signals Page. Signals must be spaced by at least two seconds |  |
+| pause | 3000 |  |
+
 | *Comment* | Test Case: Signals Page. I May Be Kinda Slow |  |
 | selectFrame | signalFrame |  |
 | wait_for_element_visible_ok | //body | 10000 |
@@ -66,6 +78,9 @@
 | select-frame | relative=parent |  |
 | wait_for_element_visible_ok | post | 10000 |
 | click_ok | post |  |
+
+| *Comment* | Test Case: Signals Page. Signals must be spaced by at least two seconds |  |
+| pause | 3000 |  |
 
 | *Comment* | Test Case: Signals Page. Verify signals in page. |  |
 | select-frame | relative=parent |  |
@@ -90,13 +105,13 @@
 | wait_for_element_visible_ok | link=Add Content | 60000 |
 | st-empty-container |  |  |
 | click_and_wait | link=Add Content |  |
-| wait_for_element_visible_ok | //a[@id='gallery-widget-Socialtext Signals'] | 30000 |
-| click_and_wait | //a[@id='gallery-widget-Socialtext Signals'] |  |
+| wait_for_element_visible_ok | //a[@id='gallery-widget-Activities'] | 30000 |
+| click_and_wait | //a[@id='gallery-widget-Activities'] |  |
 
 | *Comment* | Test case: Signals Page. Check Dashboard, then wait for auto refresh |  |
-| wait_for_text_present_ok | Socialtext Signals | 30000 |
+| wait_for_text_present_ok | Activities | 30000 |
 | st-name-widget | 1 | signals_widget |
-| st-widget-title-like | signals_widget | Signals |
+| st-widget-title-like | signals_widget | Activities |
 | st-select-widget-frame | signals_widget |  |
 
 | *Comment* | Test case: Signals Page. Signals should be there |  |
