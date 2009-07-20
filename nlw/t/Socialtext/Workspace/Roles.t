@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::Socialtext tests => 28;
+use Test::Socialtext tests => 33;
 
 ###############################################################################
 # Fixtures: db
@@ -11,6 +11,7 @@ use Test::Socialtext tests => 28;
 fixtures(qw( db ));
 
 use_ok 'Socialtext::Workspace::Roles';
+use_ok 'Socialtext::Role';
 
 ###############################################################################
 # TEST: Get Users with a Role in a given Workspace
@@ -39,6 +40,32 @@ users_by_workspace_id: {
         '... ... first expected test User';
     is $cursor->next->user_id, $user_two->user_id,
         '... ... second expected test User';
+
+    # Test for UserHasRoleInWorkspace
+    for my $user ($user_one, $user_two) {
+        ok(Socialtext::Workspace::Roles->UserHasRoleInWorkspace(
+            user      => $user_one,
+            role      => Socialtext::Role->Member,
+            workspace => $workspace
+        ), "UserHasRoleInWorkspace returns true for " . $user->best_full_name);
+    }
+
+    # Unrelated workspaces shouldn't affect UserHasRoleInWorkspace -- {bz: 2862}
+    my $yet_another_workspace = create_test_workspace(user => $system_user);
+    my $yet_another_user_one  = create_test_user();
+    my $yet_another_user_two  = create_test_user();
+    my $yet_another_group     = create_test_group();
+
+    $yet_another_group->add_user(user => $yet_another_user_two);
+    $yet_another_workspace->add_group(group => $yet_another_group);
+
+    for my $yet_another_user ($yet_another_user_one, $yet_another_user_two) {
+        ok(!Socialtext::Workspace::Roles->UserHasRoleInWorkspace(
+            user      => $yet_another_user,
+            role      => Socialtext::Role->Member,
+            workspace => $workspace
+        ), "UserHasRoleInWorkspace returns false for " . $yet_another_user->best_full_name);
+    }
 }
 
 ###############################################################################
