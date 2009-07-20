@@ -97,12 +97,14 @@ sub UserHasRoleInWorkspace {
                           FROM "UserWorkspaceRole" AS uwr
                          WHERE uwr.user_id = users.user_id
                            AND uwr.role_id = ?
+                           AND uwr.workspace_id = ?
                     ) )
                     OR
                     ( EXISTS (
                         SELECT gwr.group_id
                           FROM group_workspace_role AS gwr
                          WHERE gwr.role_id = ?
+                           AND gwr.workspace_id = ?
                            AND gwr.group_id IN (
                                   SELECT ugr.group_id
                                     FROM user_group_role AS ugr
@@ -112,9 +114,9 @@ sub UserHasRoleInWorkspace {
                )
     };
     my $is_ok = sql_singlevalue(
-        $sql, $user_id,
-        $role_id,
-        ($role_id, $user_id)
+        $sql,
+        ($user_id, $role_id, $ws_id),
+        ($role_id, $ws_id, $user_id)
     );
     return $is_ok;
 }
