@@ -30,8 +30,9 @@ use Socialtext::WikiText::Parser;
 use Socialtext::WikiText::Emitter::SearchSnippets;
 use Socialtext::String;
 use Socialtext::Events;
-use Socialtext::SQL qw/:exec :txn get_dbh sql_parse_timestamptz/;
+use Socialtext::SQL qw/:exec :txn get_dbh :time/;
 use Socialtext::SQL::Builder qw/sql_insert_many/;
+use Socialtext::Events::Source::Workspace;
 
 use Carp ();
 use Class::Field qw( field const );
@@ -46,6 +47,7 @@ use Readonly;
 use Text::Autoformat;
 use Time::Duration::Object;
 use Socialtext::Validate qw(validate :types SCALAR ARRAYREF BOOLEAN POSITIVE_INT_TYPE USER_TYPE UNDEF);
+use List::Util qw/reduce/;
 
 Readonly my $SYSTEM_EMAIL_ADDRESS       => 'noreply@socialtext.com';
 Readonly my $IS_RECENTLY_MODIFIED_LIMIT => 60 * 60; # one hour
@@ -2005,38 +2007,37 @@ for this page.
 sub edit_in_progress {
     my $self = shift;
 
-    my $reporter = Socialtext::Events::Reporter->new(
-        viewer => $self->hub->current_user,
-    );
-
     my $yesterday = DateTime->now() - DateTime::Duration->new( days => 1 );
-    my $events = $reporter->get_page_contention_events({
-        page_workspace_id => $self->hub->current_workspace->workspace_id,
-        page_id => $self->id,
-        after  => $yesterday,
-    }) || [];
+
+    my $source = Socialtext::Events::Source::Workspace->new(
+        viewer => $self->hub->current_user,
+        workspace_id => $self->hub->current_workspace->workspace_id,
+        filter => Socialtext::Events::FilterParams->new(
+            page_id => $self->id,
+            after => sql_format_timestamptz($yesterday),
+            action => ['edit_start','edit_cancel'],
+        ),
+        limit => 50,
+    );
+    $source->prepare() or return; # no events
+    my $events = $source->all();
 
     my $cur_rev = $self->revision_id;
     my @relevant_events;
     for my $evt (@$events) {
-        last if $evt->{context}{revision_id} < $cur_rev;
+        last if $evt->revision_id < $cur_rev;
         unshift @relevant_events, $evt;
     }
 
     my %open_edits;
     for my $evt (@relevant_events) {
-        my $actor_id = $evt->{actor}{id};
-        if ($evt->{action} eq 'edit_start') {
-            if (my $e = $open_edits{ $actor_id }) {
-                push @{ $open_edits{ $actor_id }}, $evt;
-            }
-            else {
-                $open_edits{ $actor_id } = [ $evt ];
-            }
+        my $actor_id = $evt->actor_id;
+        if ($evt->action eq 'edit_start') {
+            $open_edits{$actor_id} ||= [];
+            push @{$open_edits{$actor_id}}, $evt;
         }
-
-        if ($evt->{action} eq 'edit_cancel') {
-            my $evts = $open_edits{ $actor_id };
+        else { # ($evt->action eq 'edit_cancel')
+            my $evts = $open_edits{$actor_id};
             if ($evts) {
                 pop @$evts;
                 delete $open_edits{$actor_id} if @$evts == 0;
@@ -2045,26 +2046,24 @@ sub edit_in_progress {
         }
     }
 
-    if (%open_edits) {
-        my @edits = sort { $a->{at} cmp $b->{at} }
-                    map { @{$open_edits{$_}} }
-                    keys %open_edits;
-        for my $evt (@edits) {
-            my $user = Socialtext::User->new(user_id => $evt->{actor}{id});
-            return {
-                username => $user->best_full_name,
-                email_address => $user->email_address,
-                user_business_card => $self->hub->pluggable->hook(
-                    'template.user_business_card.content', $user->user_id),
-                user_link => $self->hub->pluggable->hook(
-                    'template.open_user_link.content', $user->user_id
-                ),
-                minutes_ago   => int((time - str2time($evt->{at})) / 60 ),
-            };
-        }
-    }
+    return unless keys %open_edits;
 
-    return undef;
+    my $least_recent = reduce { $a->at_epoch < $b->at_epoch ? $a : $b }
+        map { @{$open_edits{$_}} }
+        keys %open_edits;
+
+    my $user = $least_recent->actor;
+    return {
+        username => $user->best_full_name,
+        email_address => $user->email_address,
+        user_business_card => $self->hub->pluggable->hook(
+            'template.user_business_card.content', $user->user_id),
+        user_link => $self->hub->pluggable->hook(
+            'template.open_user_link.content', $user->user_id
+        ),
+        minutes_ago => int((time - $least_recent->at_epoch) / 60),
+    };
+
 }
 
 sub _get_index_file {
