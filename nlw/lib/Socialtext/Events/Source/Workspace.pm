@@ -29,7 +29,7 @@ sub query_and_binds {
     push @where, -nest => $self->filter->generate_standard_filter();
 
     if ($self->filter->followed) {
-        push @where, actor_id => [$self->followed_clause, $self->viewer_id];
+        push @where, actor_id => \[$self->followed_clause, $self->viewer_id];
     }
 
     my $sa = sql_abstract();
@@ -46,57 +46,3 @@ around 'columns' => sub {
 __PACKAGE__->meta->make_immutable;
 1;
 
-# package Socialtext::Events::Source::Workspace::Conversations;
-# use Moose;
-# 
-# extends 'Socialtext::Events::Source::Workspace';
-# 
-# before 'query_and_binds' => sub {
-#     my $self = shift;
-#     $self->filter->contributions(1);
-# };
-# 
-# my $my_convos = q{
-#     -- it's in my watchlist
-#     EXISTS (
-#         SELECT 1
-#         FROM "Watchlist" wl
-#         WHERE page_workspace_id = wl.workspace_id
-#           AND wl.user_id = ?
-#           AND page_id = wl.page_text_id::text
-#     )
-#     OR
-#     -- i created it
-#     EXISTS (
-#         SELECT 1
-#         FROM page p
-#         WHERE p.workspace_id = event.page_workspace_id
-#           AND p.page_id = event.page_id
-#           AND p.creator_id = ?
-#     )
-#     OR
-#     -- they contributed to it after i did
-#     EXISTS (
-#         SELECT 1
-#         FROM event my_contribs
-#         WHERE my_contribs.event_class = 'page'
-#           AND is_page_contribution(my_contribs.action)
-#           AND my_contribs.actor_id = ?
-#           AND my_contribs.page_workspace_id = event.page_workspace_id
-#           AND my_contribs.page_id = event.page_id
-#           AND my_contribs.at < event.at
-#     )
-# };
-# 
-# override 'add_where_clauses' => sub {
-#     my $self = shift;
-#     my $where = shift;
-# 
-#     push @$where, -nest => [\$my_convos, ($self->viewer_id) x 3];
-# 
-#     push @$where, -nest => $self->filter->generate_filter(
-#         qw(before after action actor_id page_id tag_name));
-# };
-# 
-# __PACKAGE__->meta->make_immutable;
-# 1;
