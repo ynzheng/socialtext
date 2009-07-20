@@ -31,6 +31,28 @@ requires 'peek';
 requires 'next';
 requires 'skip';
 
+sub all {
+    my $self = shift;
+    my @events;
+    $#events = $self->limit - 1; $#events = -1; # preallocate space
+    while (my $e = $self->next) {
+        push @events, $e;
+    }
+    return @events if wantarray;
+    return \@events;
+}
+
+sub all_hashes {
+    my $self = shift;
+    my @hashes;
+    $#hashes = $self->limit - 1; $#hashes = -1; # preallocate space
+    while (my $e = $self->next) {
+        push @hashes, $e->build_hash({});
+    }
+    return @hashes if wantarray;
+    return \@hashes;
+}
+
 package Socialtext::Events::EmptySource;
 use Moose;
 with 'Socialtext::Events::Source';
