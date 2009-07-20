@@ -429,17 +429,12 @@ sub users {
 sub user_ids {
     my $self = shift;
     Socialtext::Timer->Continue('acct_user_ids');
-    my $sth = sql_execute(<<EOSQL, $self->account_id);
-        SELECT user_id
-            FROM user_account
-            WHERE primary_account_id = ?
-EOSQL
-
-    my $users = [ map { $_->[0] } @{$sth->fetchall_arrayref} ];
+    my @user_ids =
+        map { $_->user_id }
+        $self->users->all(@_);
     Socialtext::Timer->Pause('acct_user_ids');
-    return $users;
+    return \@user_ids;
 }
-
 
 sub user_count {
     my $self = shift;
@@ -1083,6 +1078,11 @@ hidden Users B<are> counted towards the total count of Users in the Account.
 =item $account->users()
 
 Returns a cursor of the users for this account, ordered by username.
+
+=item $account->user_ids()
+
+Returns a list-ref of User Ids, for Users that have access to this Account
+(either as a primary or secondary account).
 
 =item $account->is_plugin_enabled($plugin)
 
