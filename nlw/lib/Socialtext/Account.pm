@@ -447,8 +447,10 @@ EOSQL
 
 sub user_count {
     my $self = shift;
-    my $primary_only = shift;
-    my $exclude_hidden_people = shift;
+    my %p    = @_;
+
+    my $primary_only   = $p{primary_only}          || 0;
+    my $exclude_hidden = $p{exclude_hidden_people} || 0;
 
     my $account_where = 'primary_account_id = ?';
     my @bind = ($self->account_id);
@@ -460,7 +462,7 @@ sub user_count {
     Socialtext::Timer->Continue('acct_user_count');
 
     my $exclude_hidden_clause = '';
-    if ($exclude_hidden_people) {
+    if ($exclude_hidden) {
         $exclude_hidden_clause = 'AND NOT is_profile_hidden';
     }
 
@@ -1061,12 +1063,26 @@ Returns a count of Groups that exist within this Account.
 Returns a cursor of the Groups that exist within this Account, ordered by
 Group name.
 
-=item $account->user_count([ $primary_only ], [ $exclude_hidden_people ])
+=item $account->user_count(PARAMS)
 
-Returns a count of users for this account.  If the first parameter is TRUE,
-then only users for which this is their primary account will be included.
+Returns the count of Users in this Account.
 
-If the second parameter is TRUE, users with a hidden profile will not be counted.
+Accepts the following PARAMS:
+
+=over
+
+=item primary_only
+
+Specifies that we should only return a count of Users that have this Account
+as their B<primary> Account.  By default, we return Users that have this
+Account as I<either> a primary or secondary Account.
+
+=item exclude_hidden_people
+
+Specifies that we should exclude hidden Users from the count.  By default,
+hidden Users B<are> counted towards the total count of Users in the Account.
+
+=back
 
 =item $account->users()
 

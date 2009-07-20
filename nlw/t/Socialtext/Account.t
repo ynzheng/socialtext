@@ -267,8 +267,12 @@ sub users_are {
     # check user count
     # check user list
 
-    is( $account->user_count($primary_only, $exclude_hidden_people), scalar(@$users), 
-        $account->name . ' account has right number of users' );
+    my $count = $account->user_count(
+        primary_only          => $primary_only,
+        exclude_hidden_people => $exclude_hidden_people,
+    );
+    is $count, scalar(@$users), 
+        $account->name . ' account has right number of users';
 
     for my $order_by (qw( username creation_datetime creator )) {
         my $mc = $account->users(
