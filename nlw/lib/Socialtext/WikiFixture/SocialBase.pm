@@ -7,7 +7,7 @@ use Socialtext::User;
 use Socialtext::SQL qw/:exec :txn/;
 use Socialtext::JSON qw/decode_json encode_json/;
 use Socialtext::File;
-use Socialtext::System;
+use Socialtext::System qw();
 use Socialtext::HTTP::Ports;
 use Socialtext::Role;
 use File::LogReader;
