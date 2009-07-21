@@ -27,6 +27,14 @@ CREATE FUNCTION cleanup_sessions() RETURNS "trigger"
 $$
     LANGUAGE plpgsql;
 
+CREATE FUNCTION is_direct_signal(actor_id bigint, person_id bigint) RETURNS boolean
+    AS $$
+BEGIN
+    RETURN (actor_id IS NOT NULL AND person_id IS NOT NULL);
+END;
+$$
+    LANGUAGE plpgsql IMMUTABLE;
+
 CREATE FUNCTION is_page_contribution("action" text) RETURNS boolean
     AS $$
 BEGIN
@@ -1045,8 +1053,16 @@ CREATE INDEX ix_event_signal_at
 	    ON event ("at")
 	    WHERE (event_class = 'signal');
 
+CREATE INDEX ix_event_signal_direct
+	    ON event ("at")
+	    WHERE ((event_class = 'signal') AND is_direct_signal((actor_id)::bigint, (person_id)::bigint));
+
 CREATE INDEX ix_event_signal_id_at
 	    ON event (signal_id, "at");
+
+CREATE INDEX ix_event_signal_indirect
+	    ON event ("at")
+	    WHERE ((event_class = 'signal') AND (NOT is_direct_signal((actor_id)::bigint, (person_id)::bigint)));
 
 CREATE INDEX ix_event_workspace_contrib
 	    ON event (page_workspace_id, "at")
@@ -1655,4 +1671,4 @@ ALTER TABLE ONLY workspace_plugin
             REFERENCES "Workspace"(workspace_id) ON DELETE CASCADE;
 
 DELETE FROM "System" WHERE field = 'socialtext-schema-version';
-INSERT INTO "System" VALUES ('socialtext-schema-version', '74');
+INSERT INTO "System" VALUES ('socialtext-schema-version', '75');
