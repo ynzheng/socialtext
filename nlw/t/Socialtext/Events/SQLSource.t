@@ -17,6 +17,7 @@ BEGIN {
     use Socialtext::SQL::Builder qw/sql_abstract/;
     with 'Socialtext::Events::Source', 'Socialtext::Events::SQLSource';
 
+    use constant event_type => 'Socialtext::Events::Event';
 
     sub query_and_binds {
         my $self = shift;
@@ -37,10 +38,6 @@ BEGIN {
             'event_page_contrib', '*', \@where, 'at DESC', $self->limit);
 
         return $sql, \@binds;
-    }
-
-    sub next {
-        Socialtext::Events::Event->new(shift->next_sql_result);
     }
 }
 
@@ -85,9 +82,9 @@ Happy_path: {
             WHERE ( (
                 junk
                 AND (
-                    at < 'epoch'::timestamptz + ? * '1 second'::interval
+                    at < ?::timestamptz
                     AND 
-                    at > 'epoch'::timestamptz + ? * '1 second'::interval
+                    at > ?::timestamptz
                     AND actor_id = ?
                     AND person_id IS NULL
                     AND tag_name IN ( ?, ? )
