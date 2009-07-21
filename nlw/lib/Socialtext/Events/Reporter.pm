@@ -33,7 +33,11 @@ sub opts_slice {
     my @allowed = @_;
 
     my @opts_slice = map { $_ => $opts->{$_} }
-        grep { exists $opts->{$_} }
+        grep { 
+            ($_ eq 'before' || $_ eq 'after')
+                ? defined $opts->{$_}
+                : exists $opts->{$_} 
+        }
         @allowed;
 
     push @opts_slice, map { $_ => $opts->{$_} }
