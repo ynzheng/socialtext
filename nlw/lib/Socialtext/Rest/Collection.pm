@@ -104,7 +104,7 @@ sub _make_getter {
                         $rest->header(%new_headers);
                         $result = $self->$perl_method($resource);
                     };
-                    if ($@) {
+                    if (my $err = $@) {
                         if (Exception::Class->caught(
                                 'Socialtext::Exception::Auth')) {
                             return $self->not_authorized;
@@ -119,8 +119,8 @@ sub _make_getter {
                             $rest->header(-status => $e->{http_status});
                             return $e->{error};
                         }
-                        st_log->info("Rest Collection Error: $@");
-                        die;
+                        st_log->info("Rest Collection Error: $err");
+                        die "Rest Collection Error: $err";
                     }
                     return $result;
                 }
